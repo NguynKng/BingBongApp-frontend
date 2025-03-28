@@ -17,7 +17,7 @@ function Header() {
         <header className="fixed w-full min-h-[10vh] flex justify-between gap-2 items-center z-10 px-2 border-b-2 border-gray-200 bg-white">
             {/* Logo + Search */}
             <div className="flex items-center gap-2">
-                <img src="/facebook-logo.webp" alt="facebook-logo" className="size-10 object-cover"/>
+                <img src="/images/ico/logo.ico" alt="facebook-logo" className="size-14 object-cover"/>
                 <div className="relative w-[16rem]">
                     <Search className="absolute size-5 top-3 left-3 text-gray-500" />
                     <input type="text" placeholder="Tìm kiếm trên facebook" className="text-gray-700 w-full h-full py-3 pl-10 bg-gray-100 rounded-full focus:outline-none"/>
