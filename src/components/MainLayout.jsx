@@ -7,13 +7,6 @@ import Meta from "./Meta";
 import Footer from "./Footer";
 
 function MainLayout({ Element }) {
-    const [isOpenNavbar, setNavbarIsOpen] = useState(true);
-
-    const OpenNavbar = () => {
-        setNavbarIsOpen(!isOpenNavbar)
-    }
-
-
     return (
         <>
             <Meta title={`BingBong`} />
