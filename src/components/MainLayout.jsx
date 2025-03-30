@@ -14,7 +14,7 @@ function MainLayout({ Element }) {
             <div className={`relative z-10`}>
                 <Navbar />
                 <div className={`absolute w-full top-[10vh] right-0 lg:w-[75%]`}>
-                    <div className="p-6">
+                    <div className="bg-gray-100 w-[60%]">
                         <Element />
                     </div>
                     <Footer />

@@ -1,6 +1,10 @@
+import CreateStatus from "../components/CreateStatus";
+
 function HomePage(){
     return (
-        <><h1>Homepage</h1></>
+        <div className="p-4">
+            <CreateStatus />
+        </div>
     )
 }
 
