@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom"
 import PropTypes from 'prop-types';
-import { useState } from "react";
 import Navbar from "./Navbar";
 import Header from "./Header";
 import Meta from "./Meta";
