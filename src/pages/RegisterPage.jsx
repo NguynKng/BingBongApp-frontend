@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export default function RegisterPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [message, setMessage] = useState("");
+    const navigate = useNavigate(); // Lấy hàm điều hướng
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -19,7 +21,10 @@ export default function RegisterPage() {
         console.log("Đăng ký với Email:", email, "Mật khẩu:", password);
 
         // Đăng ký thành công
-        setMessage("✅ Đăng ký thành công! Chuyển sang đăng nhập...");
+        setMessage("✅ Đăng ký thành công!");
+        setTimeout(() => {
+            navigate("/login"); // Chuyển hướng đến trang đăng nhập
+          }, 1000); // Thay đổi thời gian chuyển hướng nếu cần
     };
 
     return (
@@ -68,7 +73,7 @@ export default function RegisterPage() {
                                 className="w-full px-4 py-2 mt-2 border rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-purple-400"
                             />
                         </div>
-                        <div className="h-6">
+                        <div className="h-5">
                             {message && (
                                 <p className="text-green-400 text-center font-semibold">{message}</p>
                             )}

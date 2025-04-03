@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export default function LoginPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [message, setMessage] = useState("");
+    const navigate = useNavigate(); // Lấy hàm điều hướng
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -12,11 +14,13 @@ export default function LoginPage() {
 
         // Giả lập đăng nhập thành công
         setMessage("🎉 Đăng nhập thành công!");
-
         // Xóa thông báo sau 3 giây
         setTimeout(() => {
             setMessage("");
         }, 3000);
+        setTimeout(() => {
+            navigate("/"); // Chuyển hướng đến trang đăng nhập
+          }, 1000); // Thay đổi thời gian chuyển hướng nếu cần
     };
 
     return (
