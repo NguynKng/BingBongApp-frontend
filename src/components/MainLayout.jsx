@@ -10,10 +10,11 @@ function MainLayout({ Element }) {
         <>
             <Meta title={`BingBong`} />
             <Header />
-            <div className={`relative z-10`}>
+            <div className="flex min-h-screen pt-[10vh]">
+                {/* Navbar component is now fixed positioned */}
                 <Navbar />
-                <div className={`absolute w-full top-[10vh] right-0 lg:w-[75%]`}>
-                    <div className="bg-gray-100 w-[60%]">
+                <div className="w-full lg:ml-[25%] bg-gray-100 min-h-[90vh]">
+                    <div className="w-full lg:w-2/3">
                         <Element />
                     </div>
                     <Footer />
