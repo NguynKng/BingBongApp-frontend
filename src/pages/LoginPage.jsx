@@ -1,26 +1,27 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import useAuthStore from "../store/authStore";
 
 export default function LoginPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [message, setMessage] = useState("");
-    const navigate = useNavigate(); // Lấy hàm điều hướng
+    
+    const navigate = useNavigate();
+    const { login, isLoading, isAuthenticated, resetError } = useAuthStore();
 
-    const handleSubmit = (e) => {
+    // If already authenticated, redirect to home
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate("/");
+        }
+        
+        // Reset error when component unmounts
+        return () => resetError();
+    }, [isAuthenticated, navigate, resetError]);
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("Email:", email, "Password:", password);
-
-        // Giả lập đăng nhập thành công
-        setMessage("🎉 Đăng nhập thành công!");
-        // Xóa thông báo sau 3 giây
-        setTimeout(() => {
-            setMessage("");
-        }, 3000);
-        setTimeout(() => {
-            navigate("/"); // Chuyển hướng đến trang đăng nhập
-          }, 1000); // Thay đổi thời gian chuyển hướng nếu cần
+        await login({ email, password });
     };
 
     return (
@@ -38,8 +39,6 @@ export default function LoginPage() {
                 {/* Right Side - Login Form */}
                 <div className="w-full md:w-1/2 p-8 bg-gray-900 rounded-r-lg">
                     <h2 className="text-2xl font-bold text-center text-white mb-6">Đăng nhập</h2>
-
-                    {/* Hiển thị thông báo đăng nhập thành công */}
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div>
                             <label className="block text-gray-400">Email</label>
@@ -62,16 +61,12 @@ export default function LoginPage() {
                                 className="w-full px-4 py-2 border rounded-lg mt-2 bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
                             />
                         </div>
-                        <div className="h-6">
-                            {message && (
-                                <p className="text-green-400 text-center font-semibold">{message}</p>
-                            )}
-                        </div>
                         <button
                             type="submit"
                             className="w-full cursor-pointer bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition duration-200"
-                            >
-                            Đăng nhập
+                            disabled={isLoading}
+                        >
+                            {isLoading ? "Đang xử lý..." : "Đăng nhập"}
                         </button>
                     </form>
                     <p className="text-center text-gray-400 text-sm mt-4">

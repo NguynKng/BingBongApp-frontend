@@ -1,10 +1,17 @@
+import { Link } from "react-router-dom"
+import Config from "../envVars.js"
+import useAuthStore from "../store/authStore.js"
+
 function CreateStatus(){
+    const { user } = useAuthStore()
     return(
         <div className="px-4 bg-white rounded-lg">
             <div className="flex items-center gap-2 py-4 border-b-2 border-gray-200">
-                <img src="/user.png" alt="user-avatar" className="object-cover rounded-full size-12 border-2 border-gray-300 cursor-pointer hover:opacity-[110%]" />
+                <Link to="/profile" className="size-12 rounded-full border-2 border-gray-300 cursor-pointer hover:opacity-[70%]">
+                    <img src={user?.avatar ? `${Config.BACKEND_URL}${user.avatar}` : '/user.png'} alt="user-avatar" className="object-cover rounded-full size-full" />
+                </Link>
                 <div className="py-2 px-4 rounded-full bg-gray-100 w-full hover:bg-gray-200 cursor-pointer">
-                    <span className="text-gray-500 text-[1.1rem]">{`What's on your mind, Khang?`}</span>
+                    <span className="text-gray-500 text-[1.1rem]">{`What's on your mind, ${user.fullName}?`}</span>
                 </div>
             </div>
             <div className="flex items-center py-2">
