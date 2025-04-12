@@ -66,7 +66,7 @@ function ProfilePage() {
 
     return (
         <>
-            <Meta title="Facebook" />
+            <Meta title="Bing Bong" />
             <Header />
             {/*Section 1*/}
             <section className="pt-[10vh] px-[15%]">

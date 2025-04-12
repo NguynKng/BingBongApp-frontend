@@ -5,18 +5,19 @@ import MainLayout from "./components/MainLayout";
 import RegisterPage from "./pages/RegisterPage";
 import LoginPage from "./pages/LoginPage";
 import ProfilePage from "./pages/ProfilePage";
-import {Toaster} from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 import useAuthStore from "./store/authStore";
 import { ProtectedRoute, AuthRoute } from "./middleware/auth";
+import Friends from './components/Friends';
 
 function App() {
     const { checkAuth } = useAuthStore();
-    
+
     useEffect(() => {
         // Check authentication when app loads
         checkAuth();
     }, [checkAuth]);
-    
+
     return (
         <>
             <Routes>
@@ -25,24 +26,26 @@ function App() {
                         <MainLayout Element={HomePage} />
                     </ProtectedRoute>
                 } />
-                
+
                 <Route path="/login" element={
                     <AuthRoute>
                         <LoginPage />
                     </AuthRoute>
                 } />
-                
+
                 <Route path="/register" element={
                     <AuthRoute>
                         <RegisterPage />
                     </AuthRoute>
                 } />
-                
+
                 <Route path="/profile" element={
                     <ProtectedRoute>
                         <ProfilePage />
                     </ProtectedRoute>
                 } />
+
+                <Route path="/Friends" element={<Friends />} />
                 {/* Other routes */}
             </Routes>
             <Toaster />

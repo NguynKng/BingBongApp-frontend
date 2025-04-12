@@ -13,7 +13,7 @@ function Navbar(){
 
     const navbarData = [
         { src: avatarUrl, text: fullName, link: "/profile" },
-        { src: "/two-people.png", text: "Bạn bè", link: "#" },
+        { src: "/two-people.png", text: "Bạn bè", link: "/Friends" },
         { src: "/clock.png", text: "Kỷ niệm", link: "#" },
         { src: "/bookmark.png", text: "Đã lưu", link: "#" },
         { src: "/group.png", text: "Nhóm", link: "#" },
