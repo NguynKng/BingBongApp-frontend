@@ -13,7 +13,7 @@ function MainLayout({ Element }) {
             <div className="flex min-h-screen pt-[10vh]">
                 {/* Navbar component is now fixed positioned */}
                 <Navbar />
-                <div className="w-full lg:ml-[25%] bg-gray-100 min-h-[90vh]">
+                <div className="w-full lg:ml-[25%] px-10 bg-gray-100 min-h-[90vh]">
                     <div className="w-full lg:w-2/3">
                         <Element />
                     </div>
