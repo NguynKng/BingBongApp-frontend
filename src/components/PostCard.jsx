@@ -3,18 +3,25 @@ import { Heart, MessageCircle } from "lucide-react";
 import EmotionBar from './EmotionBar';
 
 function PostCard({ post }) {
-    const { likes, comments, avatar, author, time, content, image } = post;
+    const {
+        likes,
+        comments,
+        time,
+        content,
+        image,
+        author, // author là object
+    } = post;
 
     return (
-        <div className="bg-white p-5 rounded-lg shadow-md mb-4">  {/* Đổi nền màu trắng */}
+        <div className="bg-white p-5 rounded-lg shadow-md mb-4">
             <div className="flex items-center space-x-2 mb-3">
                 <img
-                    src={avatar}
-                    alt={author}
+                    src={author?.avatar}
+                    alt={author?.name}
                     className="w-10 h-10 rounded-full border-2 border-indigo-500"
                 />
                 <div>
-                    <h3 className="text-black font-semibold">{author}</h3>  {/* Đổi màu chữ thành đen */}
+                    <h3 className="text-black font-semibold">{author?.name}</h3>
                     <div className="flex items-center gap-1 text-gray-500 text-sm"> 
                         <span>{time}</span>
                         <span className="text-gray-400">•</span>
@@ -23,7 +30,7 @@ function PostCard({ post }) {
                 </div>
             </div>
 
-            <p className="text-gray-800 mb-3">{content}</p>  {/* Đổi màu chữ thành xám đậm */}
+            <p className="text-gray-800 mb-3">{content}</p>
 
             {image && <img src={image} alt="Post" className="rounded-lg w-full mb-3" />}
 
@@ -43,7 +50,17 @@ function PostCard({ post }) {
 }
 
 PostCard.propTypes = {
-    post: PropTypes.object.isRequired
+    post: PropTypes.shape({
+        likes: PropTypes.number,
+        comments: PropTypes.number,
+        time: PropTypes.string,
+        content: PropTypes.string,
+        image: PropTypes.string,
+        author: PropTypes.shape({
+            name: PropTypes.string,
+            avatar: PropTypes.string,
+        })
+    }).isRequired
 };
 
 export default PostCard;
