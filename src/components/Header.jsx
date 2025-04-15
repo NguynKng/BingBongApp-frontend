@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Bell, CircleUserRound, Grip, House, MonitorPlay, Search, Store, ChevronDown, UsersRound } from "lucide-react";
+import { Bell, CircleUserRound, Grip, House, MonitorPlay, Search, Store, ChevronDown, UsersRound ,Gamepad2 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import useAuthStore from "../store/authStore";
 import Config from "../envVars";
@@ -20,7 +20,7 @@ function Header({ onToggleChat }) {
         if (path === "/") setActiveTab("home");
         else if (path.startsWith("/friends")) setActiveTab("friends");
         else if (path.startsWith("/watch")) setActiveTab("watch");
-        else if (path.startsWith("/marketplace")) setActiveTab("marketplace");
+        else if (path.startsWith("/quiz")) setActiveTab("quiz");
         else if (path.startsWith("/profile")) setActiveTab("profile");
     }, [location.pathname]);
 
@@ -28,7 +28,7 @@ function Header({ onToggleChat }) {
         { id: "home", icon: <House />, label: "Trang chủ", link: "/" },
         { id: "friends", icon: <UsersRound />, label: "Bạn bè", link: "/friends" },
         { id: "watch", icon: <MonitorPlay />, label: "Video", link: "#" },
-        { id: "marketplace", icon: <Store />, label: "Marketplace", link: "#" },
+        { id: "quiz", icon: <Gamepad2 />, label: "Quizz", link: "/quiz" },
         { id: "profile", icon: <CircleUserRound />, label: "Cá nhân", link: "/profile" },
     ];
 

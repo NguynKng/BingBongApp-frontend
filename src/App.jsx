@@ -6,6 +6,7 @@ import RegisterPage from "./pages/RegisterPage";
 import LoginPage from "./pages/LoginPage";
 import FriendPage from "./pages/FriendPage";
 import ProfilePage from "./pages/ProfilePage";
+import QuizPage from "./pages/QuizPage";
 import { Toaster } from "react-hot-toast";
 import useAuthStore from "./store/authStore";
 import { ProtectedRoute, AuthRoute } from "./middleware/auth";
@@ -45,6 +46,11 @@ function App() {
                     </ProtectedRoute>
                 } />
                 <Route path="/friends" element={<FriendPage />} />
+                <Route path="/quiz" element={
+                    <ProtectedRoute>
+                        <QuizPage />
+                    </ProtectedRoute>
+                } />
                 {/* Other routes */}
             </Routes>
             <Toaster />
