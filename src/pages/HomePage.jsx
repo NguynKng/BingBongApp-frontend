@@ -1,21 +1,30 @@
-import CreateStatus from "../components/CreateStatus";
 import React from 'react';
-import PostCard from "../components/PostCard";  // Import PostCard
-import { useGetFeed } from "../hooks/usePosts";  // Import hook để lấy dữ liệu bài viết
+import CreateStatus from "../components/CreateStatus";
+import PostCard from "../components/PostCard";
+import { useGetFeed } from "../hooks/usePosts";
+import SpinnerLoading from '../components/SpinnerLoading';
 
-function HomePage(){
-    const { feed } = useGetFeed(); 
+function HomePage() {
+    const { feed, loading } = useGetFeed();
+
     return (
         <div className="p-4 space-y-4">
             <CreateStatus />
-            {/* Truyền dữ liệu bài viết vào PostCard */}
-            {feed && feed.length > 0 ? (
-                feed.map((post) => <PostCard key={post._id} post={post} />)
+
+            {/* Spinner when loading */}
+            {loading ? (
+                <SpinnerLoading />
             ) : (
-                <p className="text-center text-2xl">No feeds available</p>
+                <>
+                    {feed && feed.length > 0 ? (
+                        feed.map((post) => <PostCard key={post._id} post={post} />)
+                    ) : (
+                        <p className="text-center text-2xl">No feeds available</p>
+                    )}
+                </>
             )}
         </div>
-    )
+    );
 }
 
-export default HomePage;    
+export default HomePage;
