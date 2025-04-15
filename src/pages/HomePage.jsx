@@ -1,20 +1,20 @@
 import CreateStatus from "../components/CreateStatus";
 import React from 'react';
 import PostCard from "../components/PostCard";  // Import PostCard
-import posts from "../data/posts";  // Import dữ liệu bài viết
+import { useGetFeed } from "../hooks/usePosts";  // Import hook để lấy dữ liệu bài viết
 
 function HomePage(){
+    const { feed } = useGetFeed(); 
     return (
         <div className="p-4 space-y-4">
             <CreateStatus />
             {/* Truyền dữ liệu bài viết vào PostCard */}
-            {posts && posts.length > 0 ? (
-                posts.map((post) => <PostCard key={post.id} post={post} />)
+            {feed && feed.length > 0 ? (
+                feed.map((post) => <PostCard key={post._id} post={post} />)
             ) : (
-                <p>No posts available</p>
+                <p className="text-center text-2xl">No feeds available</p>
             )}
         </div>
-        
     )
 }
 

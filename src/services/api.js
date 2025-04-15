@@ -114,6 +114,22 @@ export const authAPI = {
 
 // User services
 export const userAPI = {
+    getUserPost: async(userId) => {
+        try {
+            const response = await api.get(`/posts/user/${userId}`);
+            if (response.data.success === false) {
+            throw new Error(response.data.message);
+            }
+            return response.data;
+        } catch (error) {
+            if (error.response) {
+            const errorMessage = error.response.data.message || 'Failed to get user posts';
+            toast.error(errorMessage);
+            throw new Error(errorMessage);
+            }
+            throw error;
+        }
+    },
   // Upload user avatar
   uploadAvatar: async (file) => {
     try {
@@ -193,6 +209,48 @@ export const userAPI = {
       throw error;
     }
   }
+};
+
+export const postAPI = {
+  // Get user feed (posts from user and their friends)
+  getFeed: async (page = 1, limit = 10) => {
+    try {
+      const response = await api.get(`/posts/feed?page=${page}&limit=${limit}`);
+      
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+      
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage = error.response.data.message || 'Failed to fetch feed';
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  
+  // Get posts by user ID
+  getUserPosts: async (userId, page = 1, limit = 10) => {
+    try {
+      const response = await api.get(`/posts/user/${userId}?page=${page}&limit=${limit}`);
+      
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+      
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage = error.response.data.message || 'Failed to fetch user posts';
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  
+  // ...you can add other post-related APIs here
 };
 
 // Export the axios instance for use in other API services

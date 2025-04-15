@@ -10,13 +10,12 @@ function MainLayout({ Element }) {
         <>
             <Meta title={`BingBong`} />
             <Header />
-            <div className="flex min-h-screen pt-[10vh]">
-                {/* Navbar component is now fixed positioned */}
-                <Navbar />
-                <div className="w-full lg:ml-[25%] bg-gray-100 min-h-[90vh]">
-                    <div className="w-full lg:w-2/3">
-                        <Element />
-                    </div>
+            
+            {/* Navbar component is now fixed positioned */}
+            <Navbar />
+            <div className="pt-[10vh] min-h-screen bg-gray-100 lg:ml-[25%]">
+                <div className="lg:w-[70%] w-full px-4 md:px-8 min-h-[90vh]">
+                    <Element />
                     <Footer />
                 </div>
             </div>

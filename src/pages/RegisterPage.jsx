@@ -75,7 +75,7 @@ export default function RegisterPage() {
                         </div>
                         <div className="space-y-2">
                             <div className="flex items-center gap-1">
-                                <label className="text-xs text-gray-500">Date of birth</label>
+                                <label className="text-xs text-gray-500">Ngày sinh</label>
                                 <div className="flex items-center justify-center rounded-full bg-gray-500 size-4 cursor-pointer">
                                     <span className="text-xs text-white">?</span>
                                 </div>
@@ -87,7 +87,7 @@ export default function RegisterPage() {
                                     onChange={(e) => setBirthDay(e.target.value)}
                                     required
                                 >
-                                    <option value="">Day</option>
+                                    <option value="">Ngày</option>
                                     {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
                                         <option key={day} value={day}>
                                             {day}
@@ -100,7 +100,7 @@ export default function RegisterPage() {
                                     onChange={(e) => setBirthMonth(e.target.value)}
                                     required
                                 >
-                                    <option value="">Month</option>
+                                    <option value="">Tháng</option>
                                     {[
                                         "Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec",
                                     ].map((month, i) => (
@@ -115,7 +115,7 @@ export default function RegisterPage() {
                                     onChange={(e) => setBirthYear(e.target.value)}
                                     required
                                 >
-                                    <option value="">Year</option>
+                                    <option value="">Năm</option>
                                     {Array.from({ length: 121 }, (_, i) => 2023 - i).map((year) => (
                                         <option key={year} value={year}>
                                             {year}
@@ -127,7 +127,7 @@ export default function RegisterPage() {
                         {/* Gender */}
                         <div className="space-y-2 mt-4">
                             <div className="flex items-center gap-1">
-                                <label className="text-xs text-gray-500">Gender</label>
+                                <label className="text-xs text-gray-500">Giới tính</label>
                                 <div className="flex items-center justify-center rounded-full bg-gray-500 size-4 cursor-pointer">
                                     <span className="text-xs text-white">?</span>
                                 </div>

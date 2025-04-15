@@ -13,7 +13,7 @@ function Navbar(){
 
     const navbarData = [
         { src: avatarUrl, text: fullName, link: "/profile" },
-        { src: "/two-people.png", text: "Bạn bè", link: "#" },
+        { src: "/two-people.png", text: "Bạn bè", link: "/friends" },
         { src: "/clock.png", text: "Kỷ niệm", link: "#" },
         { src: "/bookmark.png", text: "Đã lưu", link: "#" },
         { src: "/group.png", text: "Nhóm", link: "#" },
@@ -38,7 +38,7 @@ function Navbar(){
     ? navbarData
     : navbarData.slice(0, navbarData.findIndex((item) => item.text === "Bảng feed") + 1);
     return (
-        <nav className="fixed top-[10vh] left-0 h-[90vh] w-[25%] bg-gray-100 px-4 py-4 overflow-y-auto z-40 hidden lg:block">
+        <nav className="fixed top-[10vh] left-0 h-[90vh] lg:w-1/4 bg-gray-100 px-4 py-4 overflow-y-auto custom-scroll z-40 hidden lg:block">
             <div className="space-y-2">
                 {displayData.map((item, index) => (
                     <Link key={index} to={item.link}

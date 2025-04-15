@@ -26,22 +26,22 @@ function CreateStatus() {
             onClick={() => setIsModalOpen(true)}
           >
             <span className="text-gray-500 text-[1.1rem]">
-              {`What's on your mind, ${user.fullName}?`}
+              {`${user.fullName} ơi, bạn đang nghĩ gì thế?`}
             </span>
           </div>
         </div>
 
         {/* Hàng icon: Live, Photo, Feeling */}
         <div className="flex items-center py-2">
-          <div className="flex items-center justify-center w-1/3 gap-2 hover:bg-gray-100 cursor-pointer rounded-md py-2 px-4">
+          <div className="flex items-center justify-center w-1/3 gap-2 hover:bg-gray-100 cursor-pointer rounded-md py-2 px-4" onClick={() => setIsModalOpen(true)}>
             <img src="/video-player.png" className="object-cover size-8" alt="video-player" />
             <span className="text-gray-600">Live video</span>
           </div>
-          <div className="flex items-center justify-center w-1/3 gap-2 hover:bg-gray-100 cursor-pointer rounded-md py-2 px-4">
+          <div className="flex items-center justify-center w-1/3 gap-2 hover:bg-gray-100 cursor-pointer rounded-md py-2 px-4" onClick={() => setIsModalOpen(true)}>
             <img src="/photos.png" className="object-cover size-8" alt="photos" />
             <span className="text-gray-600">Photo/video</span>
           </div>
-          <div className="flex items-center justify-center w-1/3 gap-2 hover:bg-gray-100 cursor-pointer rounded-md py-2 px-4">
+          <div className="flex items-center justify-center w-1/3 gap-2 hover:bg-gray-100 cursor-pointer rounded-md py-2 px-4" onClick={() => setIsModalOpen(true)}>
             <img src="/smiling-face.png" className="object-cover size-8" alt="feeling" />
             <span className="text-gray-600">Feeling/activity</span>
           </div>
