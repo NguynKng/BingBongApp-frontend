@@ -19,7 +19,7 @@ function PostCard({ post }) {
                 <img
                     src={author?.avatar ? `${Config.BACKEND_URL}${author.avatar}` : "/user-none.webp"}
                     alt={author?.fullName}
-                    className="w-10 h-10 rounded-full border-2 border-indigo-500"
+                    className="w-10 h-10 rounded-full border-2 border-indigo-500 object-cover"
                 />
                 <div>
                     <h3 className="text-black font-semibold">{author?.fullName}</h3>
