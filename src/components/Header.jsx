@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Bell, CircleUserRound, Grip, House, MonitorPlay, Search, Store, ChevronDown, UsersRound } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import useAuthStore from "../store/authStore";
 import Config from "../envVars";
 
@@ -9,17 +9,27 @@ function Header() {
     const [hoveredTab, setHoveredTab] = useState(null);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const { user, logout } = useAuthStore();
+    const location = useLocation();
+
+    useEffect(() => {
+        const path = location.pathname;
+        if (path === "/") setActiveTab("home");
+        else if (path.startsWith("/friends")) setActiveTab("friends");
+        else if (path.startsWith("/watch")) setActiveTab("watch");
+        else if (path.startsWith("/marketplace")) setActiveTab("marketplace");
+        else if (path.startsWith("/profile")) setActiveTab("profile");
+    }, [location.pathname]);
 
     const handleLogout = async () => {
         await logout();
     };
 
     const tabs = [
-        { id: "home", icon: <House />, label: "Trang chủ" },
-        { id: "friends", icon: <UsersRound />, label: "Bạn bè" },
-        { id: "watch", icon: <MonitorPlay />, label: "Video" },
-        { id: "marketplace", icon: <Store />, label: "Marketplace" },
-        { id: "profile", icon: <CircleUserRound />, label: "Cá nhân" },
+        { id: "home", icon: <House />, label: "Trang chủ", link: "/" },
+        { id: "friends", icon: <UsersRound />, label: "Bạn bè", link: "/friends" },
+        { id: "watch", icon: <MonitorPlay />, label: "Video", link: "#" },
+        { id: "marketplace", icon: <Store />, label: "Marketplace", link: "#" },
+        { id: "profile", icon: <CircleUserRound />, label: "Cá nhân", link: "/profile" },
     ];
 
     const footerLinks = [
@@ -49,22 +59,19 @@ function Header() {
                 {/* Tabs with Tooltip */}
                 <div className="hidden md:flex items-center justify-center flex-1 gap-1">
                     {tabs.map((tab) => (
-                        <div key={tab.id}
+                        <Link to={tab.link} key={tab.id}
                             className={`relative py-4 px-12 cursor-pointer border-b-4 transition 
                                 ${activeTab === tab.id ? "border-blue-500 text-blue-500 bg-transparent" : "border-transparent text-gray-500 hover:bg-gray-200 rounded-md"}`}
-                            onClick={() => setActiveTab(tab.id)}
                             onMouseEnter={() => setHoveredTab(tab.id)}
                             onMouseLeave={() => setHoveredTab(null)}
                         >
                             {tab.icon}
-
-                            {/* Tooltip */}
                             {hoveredTab === tab.id && (
                                 <div className="absolute -bottom-10 left-1/2 transform -translate-x-1/2 bg-gray-700 text-white text-xs px-3 py-2 rounded-full shadow-lg whitespace-nowrap">
                                     {tab.label}
                                 </div>
                             )}
-                        </div>
+                        </Link>
                     ))}
                 </div>
 
@@ -89,9 +96,8 @@ function Header() {
                         </div>
                     </div>
                     <div className="relative">
-                        {/* Avatar + Tooltip */}
                         <div className="bg-gray-200 hover:bg-gray-300 rounded-full size-10 flex items-center justify-center cursor-pointer group" onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
-                            <img src={user?.avatar ? `${Config.BACKEND_URL}${user.avatar}` : `user.png`} className="size-full rounded-full" />
+                            <img src={user?.avatar ? `${Config.BACKEND_URL}${user.avatar}` : `user.png`} className="size-full rounded-full object-cover" />
                             <div className="absolute -bottom-10 left-1/2 transform -translate-x-1/2 bg-gray-700 text-white text-xs px-3 py-2 rounded-xl shadow-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-300 z-50">
                                 Account
                             </div>
@@ -99,10 +105,8 @@ function Header() {
                                 <ChevronDown className="size-3.5 text-black" />
                             </div>
                         </div>
-                        {/* Dropdown User */}
                         {isDropdownOpen && (
                             <div className="absolute top-[100%] right-0 min-w-92 rounded-lg shadow-lg border-2 border-gray-200 bg-white p-3">
-                                {/* User */}
                                 <div className="shadow-lg p-1 w-full rounded-lg border-2 border-gray-200">
                                     <Link to="/profile" className="p-2 hover:bg-gray-100 w-full flex items-center gap-2 rounded-lg cursor-pointer">
                                         <img src={user?.avatar ? `${Config.BACKEND_URL}${user.avatar}`: `/user.png`} className="size-9 object-cover rounded-full border-2 border-gray-200" />
@@ -118,48 +122,38 @@ function Header() {
                                         </button>
                                     </div>
                                 </div>
-                                {/* Setting */}
                                 <div className="mt-4">
-                                    {/* Setting and privacy */}
                                     <div className="rounded-md hover:bg-gray-100 flex items-center gap-2 p-2 cursor-pointer">
                                         <div className="p-2 rounded-full bg-gray-300">
                                             <img src="/settings.png" className="size-5 object-cover" />
                                         </div>
                                         <span className="font-medium">Settings & privacy</span>
                                     </div>
-                                    {/* Help and support */}
                                     <div className="rounded-md hover:bg-gray-100 flex items-center gap-2 p-2 cursor-pointer">
                                         <div className="p-2 rounded-full bg-gray-300">
                                             <img src="/help-web-button.png" className="size-5 object-cover" />
                                         </div>
                                         <span className="font-medium">Help & support</span>
                                     </div>
-                                    {/* Display and accessibility */}
                                     <div className="rounded-md hover:bg-gray-100 flex items-center gap-2 p-2 cursor-pointer">
                                         <div className="p-2 rounded-full bg-gray-300">
                                             <img src="/moon.png" className="size-5 object-cover" />
                                         </div>
                                         <span className="font-medium">Display and accessibility</span>
                                     </div>
-                                    {/* Give feedback */}
                                     <div className="rounded-md hover:bg-gray-100 flex items-center gap-2 p-2 cursor-pointer">
                                         <div className="p-2 rounded-full bg-gray-300">
                                             <img src="/feedback.png" className="size-5 object-cover" />
                                         </div>
                                         <span className="font-medium">Give feedback</span>
                                     </div>
-                                    {/* Logout */}
-                                    <div 
-                                        className="rounded-md hover:bg-gray-100 flex items-center gap-2 p-2 cursor-pointer"
-                                        onClick={handleLogout}
-                                    >
+                                    <div className="rounded-md hover:bg-gray-100 flex items-center gap-2 p-2 cursor-pointer" onClick={handleLogout}>
                                         <div className="p-2 rounded-full bg-gray-300">
                                             <img src="/logout.png" className="size-5 object-cover" />
                                         </div>
                                         <span className="font-medium">Log out</span>
                                     </div>
                                 </div>
-                                {/* Privacy Term */}
                                 <div className="mt-4 flex flex-wrap items-center gap-1 text-gray-500 text-[13px] leading-4">
                                 {footerLinks.map((label, index) => (
                                     <div key={label} className="flex items-center">

@@ -41,7 +41,7 @@ function PostCard({ post }) {
                       className="relative"
                       style={{
                         flex: media.length === 1 ? "1 1 100%" : "1 1 calc(50% - 0.5rem)",
-                        maxHeight: "240px",
+                        minHeight: "240px",
                       }}
                     >
                       <img
