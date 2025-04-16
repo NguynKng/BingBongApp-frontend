@@ -3,10 +3,9 @@ import { Heart, MessageCircle } from "lucide-react";
 import EmotionBar from './EmotionBar';
 import Config from '../envVars';
 import { formatTime } from '../utils/timeUtils';
+import { Link } from 'react-router-dom';
 function PostCard({ post }) {
     const {
-        likes,
-        comments,
         createdAt,
         content,
         media,
@@ -16,13 +15,15 @@ function PostCard({ post }) {
     return (
         <div className="bg-white p-5 rounded-lg shadow-md mb-4">
             <div className="flex items-center space-x-2 mb-3">
-                <img
-                    src={author?.avatar ? `${Config.BACKEND_URL}${author.avatar}` : "/user-none.webp"}
-                    alt={author?.fullName}
-                    className="w-10 h-10 rounded-full border-2 border-indigo-500 object-cover"
-                />
+                <Link to={`/profile/${author._id}`} className='w-10 h-10 rounded-full'>
+                    <img
+                        src={author?.avatar ? `${Config.BACKEND_URL}${author.avatar}` : "/user-none.webp"}
+                        alt={author?.fullName}
+                        className="object-cover size-full rounded-full"
+                    />
+                </Link>
                 <div>
-                    <h3 className="text-black font-semibold">{author?.fullName}</h3>
+                    <Link to={`/profile/${author._id}`} className="text-black font-semibold hover:underline underline-offset-2">{author?.fullName}</Link>
                     <div className="flex items-center gap-1 text-gray-500 text-sm"> 
                         <span>{formatTime(createdAt)}</span>
                         <span className="text-gray-400">•</span>

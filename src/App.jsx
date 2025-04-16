@@ -39,7 +39,7 @@ function App() {
                     </AuthRoute>
                 } />
                 
-                <Route path="/profile" element={
+                <Route path="/profile/:userId" element={
                     <ProtectedRoute>
                         <ProfilePage />
                     </ProtectedRoute>
