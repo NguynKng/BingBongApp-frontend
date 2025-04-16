@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Bell, CircleUserRound, Grip, House, MonitorPlay, Search, Store, ChevronDown, UsersRound } from "lucide-react";
+import { Bell, CircleUserRound, Grip, House, MonitorPlay, Search, Store, ChevronDown, UsersRound, Gamepad2 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import useAuthStore from "../store/authStore";
 import Config from "../envVars";
@@ -40,7 +40,7 @@ function Header({ onToggleChat }) {
         { id: "home", icon: <House />, label: "Trang chủ", link: "/" },
         { id: "friends", icon: <UsersRound />, label: "Bạn bè", link: "/friends" },
         { id: "watch", icon: <MonitorPlay />, label: "Video", link: "#" },
-        { id: "marketplace", icon: <Store />, label: "Marketplace", link: "#" },
+        { id: "marketplace", icon: <Gamepad2 />, label: "Quizz", link: "/quiz" },
         { id: "profile", icon: <CircleUserRound />, label: "Cá nhân", link: `/profile/${user._id}` },
     ];
 
