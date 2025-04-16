@@ -1,5 +1,5 @@
 // posts.js
-const posts = [
+const test_posts = [
     {
       id: 1,
       author: "Vũ Nguyên Nguyễn",
@@ -62,5 +62,5 @@ const posts = [
     },
   ];
   
-  export default posts;
+  export default test_posts;
  

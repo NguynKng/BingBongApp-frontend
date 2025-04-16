@@ -2,15 +2,16 @@ import { useState, useRef } from "react";
 import Header from "../components/Header";
 import Meta from "../components/Meta";
 import { ChevronDown, Ellipsis, Plus } from "lucide-react";
-import posts from "../data/posts";
 import friends from "../data/friends";
 import CreateStatus from "../components/CreateStatus";
 import PostCard from "../components/PostCard";
+import test_posts from "../data/posts";
 import { Link } from "react-router-dom";
 import useAuthStore from "../store/authStore";
 import Config from "../envVars";
 import { userAPI } from "../services/api"; // Import from consolidated API
 import { toast } from "react-hot-toast";
+import { useGetUserPosts } from "../hooks/usePosts"; 
 
 function ProfilePage() {
     const [activeTab, setActiveTab] = useState("Bài viết");
@@ -18,6 +19,7 @@ function ProfilePage() {
     const { user, updateUser } = useAuthStore();
     const avatarInputRef = useRef(null);
     const coverPhotoInputRef = useRef(null);
+    const { posts } = useGetUserPosts(user?._id) // Fetch user posts using custom hook
 
     const tabs = [
         { name: "Bài viết" },
@@ -66,7 +68,11 @@ function ProfilePage() {
 
     return (
         <>
+<<<<<<< HEAD
             <Meta title="Bing Bong" />
+=======
+            <Meta title="BingBong" />
+>>>>>>> 87a741aac8efa0f8147c7b775143503dad2f47ef
             <Header />
             {/*Section 1*/}
             <section className="pt-[10vh] px-[15%]">
@@ -203,7 +209,7 @@ function ProfilePage() {
                                 <h1 className="text-blue-500 rounded-md py-2 px-4 cursor-pointer hover:bg-gray-200">Xem tất cả ảnh</h1>
                             </div>
                             <div className="grid grid-cols-3 gap-2">
-                                {posts.map((post) => (
+                                {test_posts.map((post) => (
                                     <div key={post.id} className="relative w-full h-32 overflow-hidden rounded-md cursor-pointer hover:scale-105 transition-transform duration-300">
                                         <img src={post.image} alt="Post" className="w-full h-full object-cover rounded-md" />
                                     </div>
@@ -232,8 +238,13 @@ function ProfilePage() {
                     {/*Right Content*/}
                     <div className="w-[60%] space-y-4">
                         <CreateStatus />
-                        {posts.map((post) => (
-                            <PostCard key={post.id} post={post} />
+                        {/*Posts*/}
+                        {posts.length === 0 ? (
+                            <h2 className="text-gray-500 text-center text-2xl">Bạn chưa có bài viết nào</h2>
+                        ) : (
+                            posts.map((post) => (
+                                <PostCard key={post._id} post={post} />
+                            )
                         ))}
                     </div>
                 </div>

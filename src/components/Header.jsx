@@ -1,25 +1,35 @@
-import { useState } from "react";
-import { Bell, CircleUserRound, Grip, House, MonitorPlay, Search, Store, ChevronDown, UsersRound } from "lucide-react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Bell, CircleUserRound, Grip, House, MonitorPlay, Search, Store, ChevronDown, UsersRound ,Gamepad2 } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
 import useAuthStore from "../store/authStore";
 import Config from "../envVars";
+import DropdownUser from "./DropdownUser";
+import DropdownChat from "./DropdownChat";
 
-function Header() {
+function Header({ onToggleChat }) {
     const [activeTab, setActiveTab] = useState("home");
-    const [hoveredTab, setHoveredTab] = useState(null);
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const { user, logout } = useAuthStore();
+    const [dropdown, setDropdown] = useState({
+        user: false,
+        chat: false,
+    });
+    const { user } = useAuthStore();
+    const location = useLocation();
 
-    const handleLogout = async () => {
-        await logout();
-    };
+    useEffect(() => {
+        const path = location.pathname;
+        if (path === "/") setActiveTab("home");
+        else if (path.startsWith("/friends")) setActiveTab("friends");
+        else if (path.startsWith("/watch")) setActiveTab("watch");
+        else if (path.startsWith("/quiz")) setActiveTab("quiz");
+        else if (path.startsWith("/profile")) setActiveTab("profile");
+    }, [location.pathname]);
 
     const tabs = [
-        { id: "home", icon: <House />, label: "Trang chủ", to: "/" },
-        { id: "friends", icon: <UsersRound />, label: "Bạn bè", to: "/Friends" },
-        { id: "watch", icon: <MonitorPlay />, label: "Video", to: "/Video" },
-        { id: "marketplace", icon: <Store />, label: "Marketplace", to: "/Marketplace" },
-        { id: "profile", icon: <CircleUserRound />, label: "Cá nhân", to: "/Profile" },
+        { id: "home", icon: <House />, label: "Trang chủ" },
+        { id: "friends", icon: <UsersRound />, label: "Bạn bè" },
+        { id: "watch", icon: <MonitorPlay />, label: "Video" },
+        { id: "marketplace", icon: <Store />, label: "Marketplace" },
+        { id: "profile", icon: <CircleUserRound />, label: "Cá nhân" },
     ];
 
     const footerLinks = [
@@ -31,10 +41,10 @@ function Header() {
         "More",
         "Meta © 2025"
     ];
-
+    
     return (
         <header className="fixed top-0 left-0 h-[10vh] w-full z-50 bg-white border-b border-gray-200 shadow-md">
-            <div className="container mx-auto h-full flex justify-between items-center px-4">
+            <div className="container h-full flex justify-between items-center px-4">
                 {/* Logo + Search */}
                 <div className="flex items-center gap-2">
                     <Link to="/" className="size-10">
@@ -49,23 +59,22 @@ function Header() {
                 {/* Tabs with Tooltip */}
                 <div className="hidden md:flex items-center justify-center flex-1 gap-1">
                     {tabs.map((tab) => (
-                        <Link key={tab.id} to={tab.to}>
-                            <div 
-                                className={`relative py-4 px-12 cursor-pointer border-b-4 transition 
-                                    ${activeTab === tab.id ? "border-blue-500 text-blue-500 bg-transparent" : "border-transparent text-gray-500 hover:bg-gray-200 rounded-md"}`}
-                                onClick={() => setActiveTab(tab.id)}
-                                onMouseEnter={() => setHoveredTab(tab.id)}
-                                onMouseLeave={() => setHoveredTab(null)}
-                            >
-                                {tab.icon}
-                                {/* Tooltip */}
-                                {hoveredTab === tab.id && (
-                                    <div className="absolute -bottom-10 left-1/2 transform -translate-x-1/2 bg-gray-700 text-white text-xs px-3 py-2 rounded-full shadow-lg whitespace-nowrap">
-                                        {tab.label}
-                                    </div>
-                                )}
-                            </div>
-                        </Link>
+                        <div key={tab.id}
+                            className={`relative py-4 px-12 cursor-pointer border-b-4 transition 
+                                ${activeTab === tab.id ? "border-blue-500 text-blue-500 bg-transparent" : "border-transparent text-gray-500 hover:bg-gray-200 rounded-md"}`}
+                            onClick={() => setActiveTab(tab.id)}
+                            onMouseEnter={() => setHoveredTab(tab.id)}
+                            onMouseLeave={() => setHoveredTab(null)}
+                        >
+                            {tab.icon}
+
+                            {/* Tooltip */}
+                            {hoveredTab === tab.id && (
+                                <div className="absolute -bottom-10 left-1/2 transform -translate-x-1/2 bg-gray-700 text-white text-xs px-3 py-2 rounded-full shadow-lg whitespace-nowrap">
+                                    {tab.label}
+                                </div>
+                            )}
+                        </div>
                     ))}
                 </div>
 
@@ -73,27 +82,26 @@ function Header() {
                 <div className="flex items-center gap-2">
                     <div className="relative bg-gray-200 hover:bg-gray-300 rounded-full size-10 p-2.5 flex items-center justify-center cursor-pointer group">
                         <Grip />
-                        <div className="absolute -bottom-10 left-1/2 transform -translate-x-1/2 bg-gray-700 text-white text-xs px-3 py-2 rounded-xl shadow-lg whitespace-nowrap group-hover:opacity-100 opacity-0 transition-opacity duration-500 delay-300">
+                        <div className="absolute -bottom-10 left-1/2 transform -translate-x-1/2 bg-gray-700 text-white text-xs px-3 py-2 rounded-xl shadow-lg whitespace-nowrap group-hover:block hidden transition-opacity duration-500 delay-300 z-50">
                             Menu
                         </div>
                     </div>
-                    <div className="relative bg-gray-200 hover:bg-gray-300 rounded-full size-10 p-2.5 cursor-pointer group">
+                    <div className="relative bg-gray-200 hover:bg-gray-300 rounded-full size-10 p-2.5 cursor-pointer group" onClick={() => toggleDropdown("chat")}>
                         <img src="/messenger-icon.png" className="size-full object-cover" />
-                        <div className="absolute -bottom-10 left-1/2 transform -translate-x-1/2 bg-gray-700 text-white text-xs px-3 py-2 rounded-xl shadow-lg whitespace-nowrap group-hover:opacity-100 opacity-0 transition-opacity duration-500 delay-300">
+                        <div className="absolute -bottom-10 left-1/2 transform -translate-x-1/2 bg-gray-700 text-white text-xs px-3 py-2 rounded-xl shadow-lg whitespace-nowrap group-hover:block hidden transition-opacity duration-500 delay-300 z-50">
                             Messenger
                         </div>
                     </div>
                     <div className="relative bg-gray-200 hover:bg-gray-300 rounded-full size-10 p-2.5 flex items-center justify-center cursor-pointer group">
                         <Bell className="fill-black" />
-                        <div className="absolute -bottom-10 left-1/2 transform -translate-x-1/2 bg-gray-700 text-white text-xs px-3 py-2 rounded-xl shadow-lg whitespace-nowrap group-hover:opacity-100 opacity-0 transition-opacity duration-500 delay-300">
+                        <div className="absolute -bottom-10 left-1/2 transform -translate-x-1/2 bg-gray-700 text-white text-xs px-3 py-2 rounded-xl shadow-lg whitespace-nowrap group-hover:block hidden transition-opacity duration-500 delay-300 z-50">
                             Notifications
                         </div>
                     </div>
                     <div className="relative">
-                        {/* Avatar + Tooltip */}
-                        <div className="bg-gray-200 hover:bg-gray-300 rounded-full size-10 flex items-center justify-center cursor-pointer group" onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
-                            <img src={user?.avatar ? `${Config.BACKEND_URL}${user.avatar}` : `user.png`} className="size-full rounded-full" />
-                            <div className="absolute -bottom-10 left-1/2 transform -translate-x-1/2 bg-gray-700 text-white text-xs px-3 py-2 rounded-xl shadow-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-300 z-50">
+                        <div className="bg-gray-200 hover:bg-gray-300 rounded-full size-10 flex items-center justify-center cursor-pointer group" onClick={() => toggleDropdown("user")}>
+                            <img src={user?.avatar ? `${Config.BACKEND_URL}${user.avatar}` : `user.png`} className="size-full rounded-full object-cover" />
+                            <div className="absolute -bottom-10 left-1/2 transform -translate-x-1/2 bg-gray-700 text-white text-xs px-3 py-2 rounded-xl shadow-lg whitespace-nowrap hidden group-hover:block transition-opacity duration-500 delay-300 z-50">
                                 Account
                             </div>
                             <div className="absolute rounded-full bottom-0 -right-0.5 bg-gray-100 size-4 flex items-center justify-center">
@@ -106,7 +114,7 @@ function Header() {
                                 {/* User */}
                                 <div className="shadow-lg p-1 w-full rounded-lg border-2 border-gray-200">
                                     <Link to="/profile" className="p-2 hover:bg-gray-100 w-full flex items-center gap-2 rounded-lg cursor-pointer">
-                                        <img src={user?.avatar ? `${Config.BACKEND_URL}${user.avatar}` : `/user.png`} className="size-9 object-cover rounded-full border-2 border-gray-200" />
+                                        <img src={user?.avatar ? `${Config.BACKEND_URL}${user.avatar}`: `/user.png`} className="size-9 object-cover rounded-full border-2 border-gray-200" />
                                         <span className="text-[17px]">{user?.fullName}</span>
                                     </Link>
                                     <div className="w-full py-1 px-2">
@@ -162,14 +170,14 @@ function Header() {
                                 </div>
                                 {/* Privacy Term */}
                                 <div className="mt-4 flex flex-wrap items-center gap-1 text-gray-500 text-[13px] leading-4">
-                                    {footerLinks.map((label, index) => (
-                                        <div key={label} className="flex items-center">
-                                            <Link to="#" className="hover:underline">{label}</Link>
-                                            {index < footerLinks.length - 1 && (
-                                                <span className="mx-1 text-gray-400">•</span>
-                                            )}
-                                        </div>
-                                    ))}
+                                {footerLinks.map((label, index) => (
+                                    <div key={label} className="flex items-center">
+                                        <Link to="#" className="hover:underline">{label}</Link>
+                                        {index < footerLinks.length - 1 && (
+                                            <span className="mx-1 text-gray-400">•</span>
+                                        )}
+                                    </div>
+                                ))}
                                 </div>
                             </div>
                         )}

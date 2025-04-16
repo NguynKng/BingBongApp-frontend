@@ -6,7 +6,7 @@ function EmotionBar() {
     const [hoveredEmotion, setHoveredEmotion] = useState(Number);
 
     return (
-        <div className="flex gap-1 bg-white rounded-full shadow-md border border-gray-200 relative z-50">
+        <div className="flex gap-1 bg-white rounded-full shadow-md border border-gray-200 relative z-40">
             {emotions.map((emotion) => (
                 <div
                     key={emotion.id}
