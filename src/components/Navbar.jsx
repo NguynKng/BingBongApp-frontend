@@ -12,7 +12,7 @@ function Navbar(){
     const fullName = user?.fullName ? user?.fullName : "User";
 
     const navbarData = [
-        { src: avatarUrl, text: fullName, link: "/profile" },
+        { src: avatarUrl, text: fullName, link: `profile/${user._id}` },
         { src: "/two-people.png", text: "Bạn bè", link: "/friends" },
         { src: "/clock.png", text: "Kỷ niệm", link: "#" },
         { src: "/bookmark.png", text: "Đã lưu", link: "#" },

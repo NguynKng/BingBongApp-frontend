@@ -1,25 +1,44 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Header from "../components/Header";
 import Meta from "../components/Meta";
-import { ChevronDown, Ellipsis, Plus } from "lucide-react";
+import { ChevronDown, Ellipsis, Plus, UserCheck, UserPlus } from "lucide-react";
 import friends from "../data/friends";
 import CreateStatus from "../components/CreateStatus";
 import PostCard from "../components/PostCard";
 import test_posts from "../data/posts";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import useAuthStore from "../store/authStore";
 import Config from "../envVars";
-import { userAPI } from "../services/api"; // Import from consolidated API
+import { userAPI } from "../services/api";
 import { toast } from "react-hot-toast";
 import { useGetUserPosts } from "../hooks/usePosts"; 
+import { useGetProfile } from "../hooks/useProfile";
+import SpinnerLoading from "../components/SpinnerLoading";
 
 function ProfilePage() {
+    const { userId } = useParams();
     const [activeTab, setActiveTab] = useState("Bài viết");
     const [isUploading, setIsUploading] = useState({ avatar: false, coverPhoto: false });
     const { user, updateUser } = useAuthStore();
     const avatarInputRef = useRef(null);
     const coverPhotoInputRef = useRef(null);
-    const { posts } = useGetUserPosts(user?._id) // Fetch user posts using custom hook
+    const { posts, loading } = useGetUserPosts(userId);
+    const isMyProfile = userId === user?._id;
+    const { profile } = useGetProfile(userId, { enabled: !isMyProfile });
+    const displayedUser = isMyProfile ? user : profile;
+    const isFriend = displayedUser && user?.friends?.includes(displayedUser._id);
+    const [hasSentFriendRequest, setHasSentFriendRequest] = useState(false);
+    const [isReceivingFriendRequest, setIsReceivingFriendRequest] = useState(false);
+
+    useEffect(() => {
+        if (!isMyProfile) {
+            if (displayedUser?.friendRequests?.includes(user?._id)) {
+                setHasSentFriendRequest(true);
+            } else if (user?.friendRequests?.includes(displayedUser?._id)) {
+                setIsReceivingFriendRequest(true);
+            }
+        }
+    }, [displayedUser, user, isMyProfile]);
 
     const tabs = [
         { name: "Bài viết" },
@@ -37,8 +56,6 @@ function ProfilePage() {
         try {
             setIsUploading(prev => ({ ...prev, avatar: true }));
             const response = await userAPI.uploadAvatar(file);
-            
-            // Update user avatar in store
             updateUser({ avatar: response.user.avatar });
             toast.success("Avatar updated successfully");
         } catch (error) {
@@ -55,8 +72,6 @@ function ProfilePage() {
         try {
             setIsUploading(prev => ({ ...prev, coverPhoto: true }));
             const response = await userAPI.uploadCoverPhoto(file);
-            
-            // Update user cover photo in store
             updateUser({ coverPhoto: response.user.coverPhoto });
             toast.success("Cover photo updated successfully");
         } catch (error) {
@@ -66,21 +81,54 @@ function ProfilePage() {
         }
     };
 
+    const handleAddFriendRequest = async () => {
+        try {
+            const response = await userAPI.sendFriendRequest(userId); // This should be your API function
+            updateUser({ friendRequests: response.friendRequests });
+            setHasSentFriendRequest(true);
+            toast.success("Đã gửi lời mời kết bạn");
+        } catch (error) {
+            console.error("Error sending friend request:", error);
+            toast.error("Không thể gửi lời mời kết bạn");
+        }
+    };
+
+    const handleRemoveFriendRequest = async () => {
+        try {
+            const response = await userAPI.cancelFriendRequest(userId); // This should be your API function
+            updateUser({ friendRequests: response.friendRequests });
+            setHasSentFriendRequest(false);
+            toast.success("Đã huỷ lời mời kết bạn");
+        } catch (error) {
+            console.error("Error cancel friend request:", error);
+            toast.error("Không thể huỷ lời mời kết bạn");
+        }
+    };
+
+    const handleAcceptFriendRequest = async () => {
+        try {
+            const response = await userAPI.acceptFriendRequest(userId);
+            updateUser({ friends: response.friends, friendRequests: response.friendRequests });
+            setIsReceivingFriendRequest(false);
+            toast.success("Đã chấp nhận lời mời kết bạn");
+        } catch (error) {
+            console.error("Error accepting friend request:", error);
+            toast.error("Không thể chấp nhận lời mời");
+        }
+    };
+
     return (
         <>
             <Meta title="BingBong" />
             <Header />
-            {/*Section 1*/}
             <section className="pt-[10vh] px-[15%]">
                 <div className="relative h-[38rem]">
-                    {/*Cover Photo*/}
                     <div className="relative w-full h-[71%] rounded-b-md">
-                        <img 
-                            src={user?.coverPhoto ? `${Config.BACKEND_URL}${user.coverPhoto}` : "/background-gray.avif"} 
+                        <img
+                            src={displayedUser?.coverPhoto ? `${Config.BACKEND_URL}${displayedUser.coverPhoto}` : "/background-gray.avif"} 
                             className="size-full rounded-b-md object-cover" 
                             alt="Cover photo"
                         />
-                        {/* Hidden file input for cover photo */}
                         <input 
                             type="file" 
                             ref={coverPhotoInputRef}
@@ -88,32 +136,28 @@ function ProfilePage() {
                             accept="image/*"
                             className="hidden"
                         />
-                        {/* Cover Photo Upload Button */}
-                        <div 
-                            className="absolute bottom-4 right-8 z-31 flex items-center gap-2 bg-white hover:bg-gray-300 cursor-pointer rounded-md py-2 px-4 text-black font-medium"
-                            onClick={() => coverPhotoInputRef.current.click()}
-                        >
-                            <img src="/camera.png" className="size-4 object-cover" />
-                            <span>{isUploading.coverPhoto ? "Uploading..." : user?.coverPhoto ? "Thay ảnh bìa" : "Thêm ảnh bìa"}</span>
-                        </div>
+                        {isMyProfile && (
+                            <div 
+                                className="absolute bottom-4 right-8 z-31 flex items-center gap-2 bg-white hover:bg-gray-300 cursor-pointer rounded-md py-2 px-4 text-black font-medium"
+                                onClick={() => coverPhotoInputRef.current.click()}
+                            >
+                                <img src="/camera.png" className="size-4 object-cover" />
+                                <span>{isUploading.coverPhoto ? "Uploading..." : user?.coverPhoto ? "Thay ảnh bìa" : "Thêm ảnh bìa"}</span>
+                            </div>
+                        )}
                     </div>
-                    {/*Profile Container*/}
                     <div className="absolute w-full -bottom-1">
                         <div className="relative w-full">
                             <div className="absolute top-0 w-full bg-gradient-to-t from-black/50 to-transparent h-[30%] rounded-md"></div>
-                            {/*Profile*/}
                             <div className="px-8">
                                 <div className="flex justify-between border-b-2 border-gray-200 pb-4">
-                                    {/*Profile Info*/}
                                     <div className="flex gap-2">
-                                        {/*Avatar*/}
                                         <div className="relative bg-gray-200 hover:bg-gray-300 rounded-full size-46 flex border-4 border-white items-center justify-center">
                                             <img 
-                                                src={user?.avatar ? `${Config.BACKEND_URL}${user.avatar}` : "/user.png"} 
+                                                src={displayedUser?.avatar ? `${Config.BACKEND_URL}${displayedUser.avatar}` : "/user.png"} 
                                                 className="size-full rounded-full object-cover cursor-pointer hover:opacity-70"
                                                 alt="Avatar" 
                                             />
-                                            {/* Hidden file input for avatar */}
                                             <input 
                                                 type="file" 
                                                 ref={avatarInputRef}
@@ -121,42 +165,89 @@ function ProfilePage() {
                                                 accept="image/*"
                                                 className="hidden" 
                                             />
-                                            <div 
-                                                className="absolute bottom-4 right-0 p-2 size-9 rounded-full bg-gray-200 hover:bg-gray-300 cursor-pointer"
-                                                onClick={() => avatarInputRef.current.click()}
-                                            >
-                                                {isUploading.avatar ? (
-                                                    <div className="size-full flex items-center justify-center">
-                                                        <div className="w-4 h-4 border-2 border-gray-600 border-t-transparent rounded-full animate-spin"></div>
-                                                    </div>
-                                                ) : (
-                                                    <img src="/camera.png" className="size-full object-cover" />
-                                                )}
-                                            </div>
+                                            {isMyProfile && (
+                                                <div 
+                                                    className="absolute bottom-4 right-0 p-2 size-9 rounded-full bg-gray-200 hover:bg-gray-300 cursor-pointer"
+                                                    onClick={() => avatarInputRef.current.click()}
+                                                >
+                                                    {isUploading.avatar ? (
+                                                        <div className="size-full flex items-center justify-center">
+                                                            <div className="w-4 h-4 border-2 border-gray-600 border-t-transparent rounded-full animate-spin"></div>
+                                                        </div>
+                                                    ) : (
+                                                        <img src="/camera.png" className="size-full object-cover" />
+                                                    )}
+                                                </div>
+                                            )}
                                         </div>
-                                        {/*Info*/}
                                         <div className="flex flex-col justify-center self-end py-4 px-2">
                                             <h1 className="text-3xl font-bold">
-                                                {user?.fullName}
+                                                {displayedUser?.fullName || "Loading..."}
                                             </h1>
-                                            <p className="text-gray-500">120 người bạn</p>
+                                            <p className="text-gray-500">{`${displayedUser?.friends.length} người bạn`}</p>
                                         </div>
                                     </div>
-                                    {/*Edit Profile Button*/}
                                     <div className="flex flex-col justify-end items-end py-4 z-30">
                                         <div className="flex gap-2 items-center">
-                                            <div className="flex gap-2 bg-blue-500 hover:bg-blue-600 cursor-pointer rounded-md py-2 px-4 text-white items-center justify-center">
-                                                <Plus className="size-5" />
-                                                <span>Thêm vào tin</span>
-                                            </div>
-                                            <div className="flex gap-2 items-center justify-center bg-gray-200 hover:bg-gray-300 cursor-pointer rounded-md py-2 px-4 text-black font-medium">
-                                                <img src="/pen.png" className="size-5 object-cover" />
-                                                <span>Chỉnh sửa trang cá nhân</span>
-                                            </div>
+                                            {isMyProfile ? (
+                                                <>
+                                                    <button className="flex gap-2 bg-blue-500 hover:bg-blue-600 cursor-pointer rounded-md py-2 px-4 text-white items-center justify-center">
+                                                        <Plus className="size-5" />
+                                                        <span>Thêm vào tin</span>
+                                                    </button>
+                                                    <button className="flex gap-2 items-center justify-center bg-gray-200 hover:bg-gray-300 cursor-pointer rounded-md py-2 px-4 text-black font-medium">
+                                                        <img src="/pen.png" className="size-5 object-cover" />
+                                                        <span>Chỉnh sửa trang cá nhân</span>
+                                                    </button>
+                                                </>
+                                            ) : isFriend ? (
+                                                <>
+                                                <button className="flex gap-2 bg-gray-200 text-black rounded-md py-2 px-4 font-medium items-center cursor-default">
+                                                    <UserCheck />
+                                                    <span>Bạn bè</span>
+                                                </button>
+                                                <button className="flex gap-2 items-center justify-center bg-gray-200 hover:bg-gray-300 cursor-pointer rounded-md py-2 px-4 text-black font-medium">
+                                                    <img src="/messenger-icon.png" className="size-5 object-cover" />
+                                                    <span>Nhắn tin</span>
+                                                </button>
+                                                </>
+                                            ) : isReceivingFriendRequest ? (
+                                                <>
+                                                    <button 
+                                                        className="flex gap-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md py-2 px-4 font-medium items-center cursor-pointer"
+                                                        onClick={handleAcceptFriendRequest}
+                                                    >
+                                                        <span>Chấp nhận lời mời</span>
+                                                    </button>
+                                                    <button 
+                                                        className="flex gap-2 bg-gray-200 hover:bg-gray-300 text-black rounded-md py-2 px-4 font-medium items-center cursor-pointer"
+                                                        onClick={handleRemoveFriendRequest}
+                                                    >
+                                                        <span>Xoá lời mời</span>
+                                                    </button>
+                                                    <button className="flex gap-2 items-center justify-center bg-gray-200 hover:bg-gray-300 cursor-pointer rounded-md py-2 px-4 text-black font-medium">
+                                                        <img src="/messenger-icon.png" className="size-5 object-cover" />
+                                                        <span>Nhắn tin</span>
+                                                    </button>
+                                                </>
+                                            ) : (
+                                                <>
+                                                <button 
+                                                    className={`flex gap-2 font-medium cursor-pointer ${hasSentFriendRequest ? "bg-gray-200 hover:bg-gray-300 text-black" : "bg-blue-500 hover:bg-blue-600 text-white"} rounded-md py-2 px-4 items-center justify-center`}
+                                                    onClick={hasSentFriendRequest ? handleRemoveFriendRequest : handleAddFriendRequest}
+                                                >
+                                                    <UserPlus />
+                                                    <span>{hasSentFriendRequest ? "Huỷ lời mời" : "Thêm bạn bè"}</span>
+                                                </button>
+                                                <button className="flex gap-2 items-center justify-center bg-gray-200 hover:bg-gray-300 cursor-pointer rounded-md py-2 px-4 text-black font-medium">
+                                                    <img src="/messenger-icon.png" className="size-5 object-cover" />
+                                                    <span>Nhắn tin</span>
+                                                </button>
+                                                </>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
-                                {/*Profile Bar*/}
                                 <div className="flex justify-between items-center">
                                     <div className="flex py-1">
                                         {tabs.map((tab, index) => (
@@ -178,12 +269,9 @@ function ProfilePage() {
                     </div>
                 </div>
             </section>
-            {/*Section 2*/}
             <section className="bg-gray-200 px-[17%] py-4">
                 <div className="flex gap-4">
-                    {/*Left Content*/}
                     <div className="w-[40%] space-y-4 sticky top-[8.5vh] h-fit">
-                        {/*Intro*/}
                         <div className="rounded-md bg-white border-2 border-gray-200 p-4 space-y-4">
                             <h1 className="text-xl font-bold">Giới thiệu</h1>
                             <button className="py-2 px-4 text-center w-full rounded-md bg-gray-200 font-medium  cursor-pointer hover:bg-gray-300">Thêm tiểu sử</button>
@@ -198,7 +286,6 @@ function ProfilePage() {
                             <button className="py-2 px-4 text-center w-full rounded-md bg-gray-200 font-medium  cursor-pointer hover:bg-gray-300">Chỉnh sửa chi tiết</button>
                             <button className="py-2 px-4 text-center w-full rounded-md bg-gray-200 font-medium cursor-pointer hover:bg-gray-300">Thêm nội dung đáng chú ý</button>
                         </div>
-                        {/*Photos*/}
                         <div className="rounded-md bg-white border-2 border-gray-200 p-4 space-y-2">
                             <div className="flex items-center justify-between gap-2">
                                 <h1 className="text-xl font-bold">Ảnh</h1>
@@ -212,7 +299,6 @@ function ProfilePage() {
                                 ))}
                             </div>
                         </div>
-                        {/*Friends*/}
                         <div className="rounded-md bg-white border-2 border-gray-200 p-4 space-y-2">
                             <div className="flex items-center justify-between gap-2">
                                 <h1 className="text-xl font-bold">Bạn bè</h1>
@@ -231,22 +317,28 @@ function ProfilePage() {
                             </div>
                         </div>
                     </div>
-                    {/*Right Content*/}
                     <div className="w-[60%] space-y-4">
-                        <CreateStatus />
-                        {/*Posts*/}
-                        {posts.length === 0 ? (
-                            <h2 className="text-gray-500 text-center text-2xl">Bạn chưa có bài viết nào</h2>
+                        {isMyProfile && <CreateStatus />}
+                        <div className="py-2 px-4 bg-white rounded-lg">
+                            <h1 className="text-xl font-bold">Bài viết</h1>
+                        </div>
+                        {/* Spinner when loading */}
+                        {loading ? (
+                            <SpinnerLoading />
                         ) : (
-                            posts.map((post) => (
-                                <PostCard key={post._id} post={post} />
-                            )
-                        ))}
+                            <>
+                                {posts && posts.length > 0 ? (
+                                    posts.map((post) => <PostCard key={post._id} post={post} />)
+                                ) : (
+                                    <p className="text-center text-2xl">No feeds available</p>
+                                )}
+                            </>
+                        )}
                     </div>
                 </div>
             </section>
         </>
-    )
+    );
 }
 
 export default ProfilePage;

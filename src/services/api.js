@@ -1,14 +1,14 @@
-import axios from 'axios';
-import { toast } from 'react-hot-toast';
-import Config from '../envVars';
+import axios from "axios";
+import { toast } from "react-hot-toast";
+import Config from "../envVars";
 
 // Create axios instance with default config
 const api = axios.create({
   baseURL: `${Config.BACKEND_URL}/api/v1`,
   withCredentials: true,
   headers: {
-    'Content-Type': 'application/json'
-  }
+    "Content-Type": "application/json",
+  },
 });
 
 // Authentication services
@@ -16,129 +16,132 @@ export const authAPI = {
   // Register a new user
   signup: async (userData) => {
     try {
-      const response = await api.post('/auth/signup', userData);
-      
+      const response = await api.post("/auth/signup", userData);
+
       // Check if response indicates failure
       if (response.data.success === false) {
         toast.error(response.data.message);
         throw new Error(response.data.message);
       }
-      
+
       return response.data;
     } catch (error) {
       // Handle axios error
       if (error.response) {
-        const errorMessage = error.response.data.message || 'Signup failed';
+        const errorMessage = error.response.data.message || "Signup failed";
         toast.error(errorMessage);
         throw new Error(errorMessage);
       }
-      
+
       // Handle other errors
-      toast.error(error.message || 'Signup failed');
+      toast.error(error.message || "Signup failed");
       throw error;
     }
   },
-  
+
   // Login user
   login: async (credentials) => {
     try {
-      const response = await api.post('/auth/login', credentials);
-      
+      const response = await api.post("/auth/login", credentials);
+
       // Check if response indicates failure
       if (response.data.success === false) {
         toast.error(response.data.message);
         throw new Error(response.data.message);
       }
-      
+
       return response.data;
     } catch (error) {
       // Handle axios error
       if (error.response) {
-        const errorMessage = error.response.data.message || 'Login failed';
+        const errorMessage = error.response.data.message || "Login failed";
         toast.error(errorMessage);
         throw new Error(errorMessage);
       }
-      
+
       // Handle other errors
-      toast.error(error.message || 'Login failed');
+      toast.error(error.message || "Login failed");
       throw error;
     }
   },
-  
+
   // Logout user
   logout: async () => {
     try {
-      const response = await api.post('/auth/logout');
-      
+      const response = await api.post("/auth/logout");
+
       // Check if response indicates failure
       if (response.data.success === false) {
         toast.error(response.data.message);
         throw new Error(response.data.message);
       }
-      
+
       return response.data;
     } catch (error) {
       // Handle axios error
       if (error.response) {
-        const errorMessage = error.response.data.message || 'Logout failed';
+        const errorMessage = error.response.data.message || "Logout failed";
         toast.error(errorMessage);
         throw new Error(errorMessage);
       }
-      
+
       // Handle other errors
-      toast.error(error.message || 'Logout failed');
+      toast.error(error.message || "Logout failed");
       throw error;
     }
   },
-  
+
   // Check authentication status
   checkAuth: async () => {
     try {
-      const response = await api.get('/auth/authCheck');
-      
+      const response = await api.get("/auth/authCheck");
+
       // Check if response indicates failure
       if (response.data.success === false) {
         throw new Error(response.data.message);
       }
-      
+
       return response.data;
     } catch (error) {
       // Don't show error toast for auth check failures since this is often expected
       if (error.response && error.response.status !== 401) {
-        toast.error(error.response.data.message || 'Authentication check failed');
+        toast.error(
+          error.response.data.message || "Authentication check failed"
+        );
       }
       throw error;
     }
-  }
+  },
 };
 
 // User services
 export const userAPI = {
-    getUserPost: async(userId) => {
-        try {
-            const response = await api.get(`/posts/user/${userId}`);
-            if (response.data.success === false) {
-            throw new Error(response.data.message);
-            }
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-            const errorMessage = error.response.data.message || 'Failed to get user posts';
-            toast.error(errorMessage);
-            throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
+  getUserPost: async (userId) => {
+    try {
+      const response = await api.get(`/posts/user/${userId}`);
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to get user posts";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
   // Upload user avatar
   uploadAvatar: async (file) => {
     try {
       const formData = new FormData();
-      formData.append('avatar', file);
+      formData.append("avatar", file);
 
-      const response = await api.post('/user/avatar', formData, {
+      const response = await api.post("/user/avatar", formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          "Content-Type": "multipart/form-data",
         },
       });
 
@@ -150,11 +153,12 @@ export const userAPI = {
       return response.data;
     } catch (error) {
       if (error.response) {
-        const errorMessage = error.response.data.message || 'Failed to upload avatar';
+        const errorMessage =
+          error.response.data.message || "Failed to upload avatar";
         toast.error(errorMessage);
         throw new Error(errorMessage);
       }
-      toast.error(error.message || 'Failed to upload avatar');
+      toast.error(error.message || "Failed to upload avatar");
       throw error;
     }
   },
@@ -163,11 +167,11 @@ export const userAPI = {
   uploadCoverPhoto: async (file) => {
     try {
       const formData = new FormData();
-      formData.append('coverPhoto', file);
+      formData.append("coverPhoto", file);
 
-      const response = await api.post('/user/cover-photo', formData, {
+      const response = await api.post("/user/cover-photo", formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          "Content-Type": "multipart/form-data",
         },
       });
 
@@ -179,11 +183,12 @@ export const userAPI = {
       return response.data;
     } catch (error) {
       if (error.response) {
-        const errorMessage = error.response.data.message || 'Failed to upload cover photo';
+        const errorMessage =
+          error.response.data.message || "Failed to upload cover photo";
         toast.error(errorMessage);
         throw new Error(errorMessage);
       }
-      toast.error(error.message || 'Failed to upload cover photo');
+      toast.error(error.message || "Failed to upload cover photo");
       throw error;
     }
   },
@@ -192,7 +197,7 @@ export const userAPI = {
   getUserProfile: async (userId) => {
     try {
       // Use different endpoints based on whether userId is provided
-      const url = userId ? `/user/profile/${userId}` : '/user/profile';
+      const url = userId ? `/user/profile/${userId}` : "/user/profile";
       const response = await api.get(url);
 
       if (response.data.success === false) {
@@ -202,13 +207,100 @@ export const userAPI = {
       return response.data;
     } catch (error) {
       if (error.response) {
-        const errorMessage = error.response.data.message || 'Failed to get user profile';
+        const errorMessage =
+          error.response.data.message || "Failed to get user profile";
         toast.error(errorMessage);
         throw new Error(errorMessage);
       }
       throw error;
     }
-  }
+  },
+
+  getUserProfileByName: async (name) => {
+    try {
+      // Use different endpoints based on whether userId is provided
+      const url = `/user/search?name=${name}`;
+      const response = await api.get(url);
+
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to get user profile";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  // Add friend-related actions
+  acceptFriendRequest: async (userId) => {
+    try {
+      const response = await api.post(`/user/friend-request/accept/${userId}`);
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || "Failed to accept friend request";
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
+    }
+  },
+
+  sendFriendRequest: async (userId) => {
+    try {
+      const response = await api.post(`/user/friend-request/${userId}`);
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || "Failed to send friend request";
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
+    }
+  },
+
+  cancelFriendRequest: async (userId) => {
+    try {
+      const response = await api.delete(`/user/friend-request/${userId}`);
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || "Failed to cancel friend request";
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
+    }
+  },
+
+  removeFriend: async (userId) => {
+    try {
+      const response = await api.delete(`/user/friend/${userId}`);
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || "Failed to remove friend";
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
+    }
+  },
 };
 
 export const postAPI = {
@@ -216,40 +308,44 @@ export const postAPI = {
   getFeed: async (page = 1, limit = 10) => {
     try {
       const response = await api.get(`/posts/feed?page=${page}&limit=${limit}`);
-      
+
       if (response.data.success === false) {
         throw new Error(response.data.message);
       }
-      
+
       return response.data;
     } catch (error) {
       if (error.response) {
-        const errorMessage = error.response.data.message || 'Failed to fetch feed';
+        const errorMessage =
+          error.response.data.message || "Failed to fetch feed";
         throw new Error(errorMessage);
       }
       throw error;
     }
   },
-  
+
   // Get posts by user ID
   getUserPosts: async (userId, page = 1, limit = 10) => {
     try {
-      const response = await api.get(`/posts/user/${userId}?page=${page}&limit=${limit}`);
-      
+      const response = await api.get(
+        `/posts/user/${userId}?page=${page}&limit=${limit}`
+      );
+
       if (response.data.success === false) {
         throw new Error(response.data.message);
       }
-      
+
       return response.data;
     } catch (error) {
       if (error.response) {
-        const errorMessage = error.response.data.message || 'Failed to fetch user posts';
+        const errorMessage =
+          error.response.data.message || "Failed to fetch user posts";
         throw new Error(errorMessage);
       }
       throw error;
     }
   },
-  
+
   // ...you can add other post-related APIs here
 };
 

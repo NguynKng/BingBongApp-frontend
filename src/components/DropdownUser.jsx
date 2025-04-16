@@ -20,7 +20,7 @@ function DropdownUser() {
         <div className="absolute top-[110%] right-0 min-w-92 rounded-lg shadow-lg border-2 border-gray-200 bg-white p-3">
             {/* User */}
             <div className="shadow-lg p-1 w-full rounded-lg border-2 border-gray-200">
-                <Link to="/profile" className="p-2 hover:bg-gray-100 w-full flex items-center gap-2 rounded-lg cursor-pointer">
+                <Link to={`/profile/${user._id}`} className="p-2 hover:bg-gray-100 w-full flex items-center gap-2 rounded-lg cursor-pointer">
                     <img src={user?.avatar ? `${Config.BACKEND_URL}${user.avatar}` : '/user.png'} className="size-9 object-cover rounded-full border-2 border-gray-200" />
                     <span className="text-[17px]">{`${user.fullName}`}</span>
                 </Link>

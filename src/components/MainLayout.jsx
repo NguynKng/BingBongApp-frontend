@@ -7,7 +7,7 @@ import ChatBox from "./ChatBox";
 import { useState } from "react";
 
 function MainLayout({ Element }) {
-    const [showChat, setShowChat] = useState(true); // giữ nguyên qua các route
+    const [showChat, setShowChat] = useState(false); // giữ nguyên qua các route
 
     return (
         <>

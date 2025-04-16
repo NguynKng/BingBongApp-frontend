@@ -13,7 +13,7 @@ function CreateStatus() {
       <div className="px-4 bg-white rounded-lg">
         {/* Dòng tạo status */}
         <div className="flex items-center gap-2 py-4 border-b-2 border-gray-200">
-          <Link to="/profile" className="size-12 rounded-full border-2 border-gray-300 cursor-pointer hover:opacity-[70%]">
+          <Link to={`/profile/${user._id}`} className="size-12 rounded-full border-2 border-gray-300 cursor-pointer hover:opacity-[70%]">
             <img
               src={user?.avatar ? `${Config.BACKEND_URL}${user.avatar}` : '/user.png'}
               alt="user-avatar"
