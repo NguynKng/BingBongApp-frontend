@@ -41,7 +41,7 @@ function Header({ onToggleChat }) {
         { id: "home", icon: <House />, label: "Trang chủ", link: "/" },
         { id: "friends", icon: <UsersRound />, label: "Bạn bè", link: "/friends" },
         { id: "watch", icon: <MonitorPlay />, label: "Video", link: "#" },
-        { id: "marketplace", icon: <Gamepad2 />, label: "Quizz", link: "/quiz" },
+        { id: "quiz", icon: <Gamepad2 />, label: "Quizz", link: "/quiz" },
         { id: "profile", icon: <CircleUserRound />, label: "Cá nhân", link: `/profile/${user._id}` },
     ];
 
