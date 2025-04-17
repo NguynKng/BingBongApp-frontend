@@ -91,7 +91,7 @@ function PostModal({ user, onClose }) {
             src={
               user?.avatar ? `${Config.BACKEND_URL}${user.avatar}` : "/user.png"
             }
-            className="w-10 h-10 rounded-full"
+            className="w-10 h-10 rounded-full object-cover"
           />
           <div>
             <p className="font-medium">{user.fullName}</p>

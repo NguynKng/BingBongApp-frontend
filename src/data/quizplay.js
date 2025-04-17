@@ -1,6 +1,6 @@
 const quizData = [
     {
-      id: 1,
+      id: 3,
       title: "Kiến thức React cơ bản",
       description: "Quiz này giúp bạn ôn lại kiến thức cơ bản về React.",
       questions: [
@@ -47,7 +47,7 @@ const quizData = [
       ],
     },
     {
-      id: 2,
+      id: 1,
       title: "Lịch sử Việt Nam",
       description: "Quiz này giúp bạn kiểm tra kiến thức lịch sử Việt Nam.",
       questions: [
@@ -79,7 +79,7 @@ const quizData = [
       ],
     },
     {
-      id: 3,
+      id: 4,
       title: "Toán học THPT",
       description: "Quiz này giúp bạn ôn lại các kiến thức toán học phổ biến trong chương trình THPT.",
       questions: [
@@ -111,7 +111,7 @@ const quizData = [
       ],
     },
     {
-      id: 4,
+      id: 5,
       title: "Kiến thức tổng quát",
       description: "Quiz này giúp bạn kiểm tra các kiến thức về thế giới xung quanh.",
       questions: [
@@ -143,7 +143,7 @@ const quizData = [
       ],
     },
     {
-      id: 5,
+      id: 9,
       title: "Lập trình Python",
       description: "Quiz này giúp bạn kiểm tra kiến thức cơ bản về Python.",
       questions: [

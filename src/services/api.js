@@ -345,7 +345,63 @@ export const postAPI = {
       throw error;
     }
   },
+  addComment: async (postId, commentData) => {
+    try {
+      const response = await api.post(`/posts/${postId}/comments`, {content: commentData});
 
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to add comment";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  addReply: async (commentId, replyData) => {
+    try {
+      const response = await api.post(
+        `/posts/comments/${commentId}/replies`,
+        replyData
+      );
+
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to add reply";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getComments: async (postId) => {
+    try {
+      const response = await api.get(`/posts/${postId}/comments`);
+
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch comments";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
   // ...you can add other post-related APIs here
 };
 
