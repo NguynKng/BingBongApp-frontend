@@ -4,28 +4,38 @@ import { Gamepad2 } from "lucide-react";
 function QuizCard({ quiz }) {
   const navigate = useNavigate();
 
-  const handlePlayClick = () => {
-    if (quiz && quiz.id) {
-      navigate(`/quiz/play/${quiz.id}`); // ✅ Đã sửa lại path đúng
-    } else {
-      console.error("Quiz không hợp lệ!");
-    }
+  const handlePlayClick = (id) => {
+    navigate(`/quiz/play/${id}`);
   };
 
   return (
-    <div className="bg-gradient-to-r from-blue-600 via-teal-500 to-green-500 rounded-xl shadow-lg transform transition-all hover:scale-105 hover:rotate-3 hover:shadow-2xl p-6">
-      <h3 className="text-2xl font-semibold text-white mb-2 transition-transform transform hover:scale-105 hover:text-teal-200 shadow-md hover:shadow-lg">
-        {quiz.title}
-      </h3>
-      <p className="text-base text-gray-100 mb-2">{quiz.description}</p>
-      <p className="text-base text-gray-100 mb-4">{quiz.questionCount} câu hỏi</p>
-      <button
-        onClick={handlePlayClick}
-        className="flex items-center gap-2 text-white bg-gradient-to-r from-green-400 to-green-600 hover:scale-105 px-6 py-3 rounded-lg shadow-md transition-all duration-300 ease-in-out transform hover:translate-y-1"
+    <div>
+      <div
+        key={quiz._id}
+        className="bg-gradient-to-tr from-purple-100 to-indigo-100 border border-purple-300 rounded-xl shadow-lg hover:shadow-xl transition p-4 mb-6 transform hover:scale-105"
       >
-        <Gamepad2 size={18} />
-        Chơi
-      </button>
+        {/* Tiêu đề có khung màu tím */}
+        <h3 className="text-2xl font-bold mb-3 text-center text-purple-800 border border-purple-500 rounded-lg px-3 py-2 bg-white shadow">
+          {quiz.title}
+        </h3>
+
+        {/* Mô tả */}
+        <p className="text-lg text-gray-700 mb-2">{quiz.description}</p>
+
+        {/* Số câu hỏi */}
+        <p className="text-xl text-gray-600 mb-4">
+          {quiz.questionCount} câu hỏi
+        </p>
+
+        {/* Nút chơi */}
+        <button
+          onClick={() => handlePlayClick(quiz._id)}
+          className="flex items-center gap-2 text-white bg-gradient-to-r from-green-400 to-green-600 hover:bg-orange-500 active:bg-orange-700 px-4 py-2 rounded-lg cursor-pointer transition transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-opacity-50 shadow ml-auto"
+        >
+          <Gamepad2 size={18} />
+          Chơi
+        </button>
+      </div>
     </div>
   );
 }

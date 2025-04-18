@@ -1,34 +1,54 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import quizData from "../../data/quizplay";
+import axios from "axios";
 
 function QuizPlayPage() {
   const { quizId } = useParams();
-  const quiz = quizData.find(q => q.id === parseInt(quizId, 10));
   const navigate = useNavigate();
 
-  if (!quiz) {
-    return <div className="text-red-500">Quiz không tồn tại.</div>;
-  }
-
-  const [answers, setAnswers] = useState(Array(quiz.questions.length).fill(null));
+  const [quiz, setQuiz] = useState(null);
+  const [answers, setAnswers] = useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [timeLeft, setTimeLeft] = useState(60);
   const [isFinished, setIsFinished] = useState(false);
   const [answered, setAnswered] = useState(false);
 
+  useEffect(() => {
+    const fetchQuiz = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:8000/api/v1/quiz/${quizId}`
+        );
+        const quizData = response.data;
+        const actualQuiz = quizData.questions ? quizData : quizData.quiz;
+
+        if (!Array.isArray(actualQuiz.questions)) {
+          throw new Error("Quiz không hợp lệ: questions phải là mảng");
+        }
+
+        setQuiz(actualQuiz);
+        setAnswers(Array(actualQuiz.questions.length).fill(null));
+      } catch (error) {
+        console.error("Lỗi khi lấy dữ liệu quiz:", error.message || error);
+      }
+    };
+
+    fetchQuiz();
+  }, [quizId]);
+
   const handleAnswerChange = (e) => {
     const newAnswer = e.target.value;
-    setAnswers(prev => {
-      const updatedAnswers = [...prev];
-      updatedAnswers[currentQuestionIndex] = newAnswer;
-      return updatedAnswers;
+    setAnswers((prev) => {
+      const updated = [...prev];
+      updated[currentQuestionIndex] = newAnswer;
+      return updated;
     });
 
     if (newAnswer === quiz.questions[currentQuestionIndex].correctAnswer) {
-      setScore(prevScore => prevScore + 1);
+      setScore((prev) => prev + 1);
     }
+
     setAnswered(true);
   };
 
@@ -36,20 +56,20 @@ function QuizPlayPage() {
     if (answered) {
       const timer = setTimeout(() => {
         if (currentQuestionIndex < quiz.questions.length - 1) {
-          setCurrentQuestionIndex(currentQuestionIndex + 1);
+          setCurrentQuestionIndex((prev) => prev + 1);
           setAnswered(false);
         } else {
           setIsFinished(true);
         }
-      }, 1000);
+      }, 1500);
       return () => clearTimeout(timer);
     }
-  }, [answered, currentQuestionIndex, quiz.questions.length]);
+  }, [answered, currentQuestionIndex, quiz?.questions?.length]);
 
   useEffect(() => {
     if (timeLeft > 0 && !isFinished) {
       const timer = setInterval(() => {
-        setTimeLeft(prevTime => prevTime - 1);
+        setTimeLeft((prev) => prev - 1);
       }, 1000);
       return () => clearInterval(timer);
     }
@@ -74,79 +94,98 @@ function QuizPlayPage() {
     setAnswered(false);
   };
 
+  if (!quiz || !quiz.questions || quiz.questions.length === 0) {
+    return (
+      <div className="text-center mt-20 text-gray-500 text-xl">
+        Đang tải quiz hoặc quiz không hợp lệ...
+      </div>
+    );
+  }
+
+  const currentQuestion = quiz.questions[currentQuestionIndex];
+
   return (
-    <div className="max-w-3xl mx-auto p-6 animate-fade-in">
-      <h1 className="text-4xl font-extrabold bg-gradient-to-r from-indigo-500 to-purple-500 text-transparent bg-clip-text mb-4">
-        {quiz.title}
-      </h1>
-      <p className="text-lg text-gray-700 mb-6 italic">{quiz.description}</p>
-
-      <div className="mb-4 text-lg">
-        ⏱️ <span className="font-semibold">Thời gian còn lại:</span>{" "}
-        <span className="text-red-600 font-bold">{timeLeft}s</span>
-      </div>
-
-      <div className="question mb-6 p-6 bg-white rounded-2xl shadow-2xl transform transition-all duration-300 hover:scale-[1.01]">
-        <h3 className="text-xl font-bold mb-4 text-gray-800">
-          {quiz.questions[currentQuestionIndex].question}
-        </h3>
-
-        <div className="grid grid-cols-2 gap-4">
-          {quiz.questions[currentQuestionIndex].options.map((option, i) => {
-            const isCorrect = option === quiz.questions[currentQuestionIndex].correctAnswer;
-            const isSelected = answers[currentQuestionIndex] === option;
-            const statusClass = answered
-              ? isCorrect
-                ? "bg-gradient-to-r from-green-400 to-green-600 text-white"
-                : isSelected
-                ? "bg-gradient-to-r from-red-400 to-red-600 text-white"
-                : "bg-gray-100"
-              : "bg-white";
-
-            return (
-              <label
-                key={i}
-                className={`p-4 rounded-xl border-2 shadow-lg cursor-pointer transform transition duration-300 hover:scale-105 ${statusClass}`}
-              >
-                <input
-                  type="radio"
-                  name={`question-${currentQuestionIndex}`}
-                  value={option}
-                  checked={isSelected}
-                  onChange={handleAnswerChange}
-                  disabled={answered}
-                  className="hidden"
-                />
-                <span className="text-md font-medium">{option}</span>
-              </label>
-            );
-          })}
+    <div className="min-h-screen flex flex-col justify-center items-center p-6 bg-gray-50">
+      <div className="w-full max-w-5xl">
+        <h1 className="text-4xl font-bold text-center text-indigo-700 mb-2">
+          {quiz.title}
+        </h1>
+        <p className="text-center text-xl text-gray-600 mb-6">
+          {quiz.description}
+        </p>
+        <div className="text-center mb-8">
+          <span className="font-medium text-xl">⏳ Thời gian còn lại: </span>
+          <span className="text-red-500 font-bold text-2xl">{timeLeft}s</span>
         </div>
-      </div>
 
-      {isFinished && (
-        <div className="mt-8 p-6 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-xl shadow-lg animate-fade-in">
-          <p className="text-2xl font-bold text-indigo-800 mb-2">🎉 Bạn đã hoàn thành Quiz!</p>
-          <p className="text-xl font-semibold text-gray-700">
-            Điểm của bạn là: <span className="text-indigo-600">{score}/{quiz.questions.length}</span>
-          </p>
+        {!isFinished && (
+          <div className="bg-white shadow-xl border border-gray-200 p-10 rounded-2xl">
+            <h3 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+              Câu {currentQuestionIndex + 1}: {currentQuestion.question}
+            </h3>
 
-          <div className="flex gap-4 mt-6">
-            <button
-              onClick={handleGoBack}
-              className="px-6 py-2 bg-gradient-to-r from-blue-500 to-blue-700 text-white rounded-xl shadow hover:scale-105 transition"
-            >
-              Quay lại
-            </button>
-            <button
-              onClick={handlePlayAgain}
-              className="px-6 py-2 bg-gradient-to-r from-green-500 to-green-700 text-white rounded-xl shadow hover:scale-105 transition"
-            >
-              Chơi lại
-            </button>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              {currentQuestion.options.map((option, i) => {
+                const isSelected = answers[currentQuestionIndex] === option;
+                const isCorrect = option === currentQuestion.correctAnswer;
+
+                return (
+                  <label
+                    key={i}
+                    className={`flex items-center justify-center text-xl p-6 rounded-2xl font-semibold cursor-pointer border-2 transition-all duration-300 text-center
+                      ${
+                        answered
+                          ? isCorrect
+                            ? "bg-green-500 text-white border-green-600"
+                            : isSelected
+                            ? "bg-red-500 text-white border-red-600"
+                            : "bg-white text-gray-800"
+                          : "bg-white text-gray-800 hover:bg-indigo-100 hover:shadow-md"
+                      }`}
+                  >
+                    <input
+                      type="radio"
+                      name={`question-${currentQuestionIndex}`}
+                      value={option}
+                      checked={isSelected}
+                      onChange={handleAnswerChange}
+                      disabled={answered}
+                      className="hidden"
+                    />
+                    <span>{option}</span>
+                  </label>
+                );
+              })}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+
+        {isFinished && (
+          <div className="bg-white border shadow-lg rounded-2xl p-10 text-center mt-8">
+            <h2 className="text-3xl font-bold text-green-600 mb-4">
+              🎉 Bạn đã hoàn thành quiz!
+            </h2>
+            <p className="text-xl text-gray-700 mb-2">Điểm số của bạn là:</p>
+            <p className="text-5xl font-bold text-indigo-700 mb-6">
+              {score} / {quiz.questions.length}
+            </p>
+            <div className="flex justify-center gap-6 mt-4 flex-wrap">
+              <button
+                onClick={handleGoBack}
+                className="px-8 py-3 text-lg bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300 transition"
+              >
+                🔙 Quay lại
+              </button>
+              <button
+                onClick={handlePlayAgain}
+                className="px-8 py-3 text-lg bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-300 transition"
+              >
+                🔄 Chơi lại
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

@@ -1,3 +1,4 @@
+// [GIỮ NGUYÊN IMPORT GỐC]
 import { useState, useEffect } from "react";
 import {
     Bell,
@@ -60,42 +61,41 @@ function Header({ onToggleChat }) {
     };
 
     return (
-        <header className="fixed top-0 left-0 h-[10vh] w-full z-50 bg-gradient-to-r from-white via-blue-300 to-purple-400 shadow-xl border-b border-white/30 backdrop-blur-md transition-all duration-300">
-            <div className="container mx-auto h-full flex justify-between items-center px-4">
+        <header className="fixed top-0 left-0 w-full h-[8vh] z-50 bg-gradient-to-r from-blue-100 via-blue-200 to-purple-200 backdrop-blur-xl shadow-md border-b border-blue-300">
+            <div className="w-full h-full flex items-center px-4 justify-start">
                 {/* Logo + Search */}
-                <div className="flex items-center gap-4">
-                    <Link to="/" className="size-10 transform hover:scale-110 transition duration-300">
+                <div className="flex items-center gap-4 mr-8">
+                    <Link to="/" className="size-15 hover:scale-110 transition-transform duration-300">
                         <img
                             src="/images/ico/logo.ico"
                             alt="logo"
-                            className="size-full object-cover rounded-xl" // Xóa shadow-md và border
+                            className="size-full object-cover rounded-xl"
                         />
                     </Link>
+
                     <div className="relative w-[18rem]">
-                        <Search className="absolute size-5 top-2.5 left-3 text-gray-600" />
+                        <Search className="absolute size-5 top-2.5 left-3 text-blue-700" />
                         <input
                             type="text"
                             placeholder="Tìm kiếm trên Bing Bong"
-                            className="text-gray-800 font-medium w-full py-2 pl-10 bg-white/70 rounded-full focus:outline-none shadow-sm focus:ring-2 focus:ring-blue-400 backdrop-blur-md"
+                            className="text-blue-800 font-medium w-full py-2 pl-10 bg-white/80 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-md transition-all duration-300"
                             onChange={(e) => debouncedSearch(e.target.value)}
                         />
                         {query.length > 0 && (
-                            <div className="absolute top-[110%] right-0 w-full max-h-96 overflow-y-auto shadow-xl bg-white/90 rounded-lg z-50 p-2 custom-scroll">
+                            <div className="absolute top-[110%] right-0 w-full max-h-96 overflow-y-auto shadow-xl bg-white rounded-lg z-50 p-2 custom-scroll">
                                 {loading ? (
                                     <SpinnerLoading />
                                 ) : listUser.length === 0 ? (
-                                    <div className="text-center text-gray-500 py-2 px-4">
-                                        Không tìm thấy người dùng
-                                    </div>
+                                    <div className="text-center text-gray-500 py-2 px-4">Không tìm thấy người dùng</div>
                                 ) : (
                                     listUser.map((user) => (
                                         <Link
                                             to={`/profile/${user._id}`}
                                             key={user._id}
-                                            className="w-full py-2 px-4 flex items-center justify-between gap-2 hover:bg-blue-100/40 rounded-md transition duration-200"
+                                            className="w-full py-2 px-4 flex items-center justify-between gap-2 hover:bg-blue-100 rounded-md transition duration-200"
                                         >
                                             <div className="flex items-center gap-2">
-                                                <div className="rounded-full bg-blue-100 p-2">
+                                                <div className="rounded-full bg-blue-200 p-2">
                                                     <Search className="size-5 text-blue-600" />
                                                 </div>
                                                 <span className="text-sm font-semibold text-gray-800">{user.fullName}</span>
@@ -119,15 +119,13 @@ function Header({ onToggleChat }) {
                         <Link
                             to={tab.link}
                             key={tab.id}
-                            className={`relative py-4 px-10 rounded-xl font-medium transition-all duration-300 group 
-                ${activeTab === tab.id
-                                    ? "bg-white/30 text-blue-700 shadow-md backdrop-blur-sm"
-                                    : "text-gray-700 hover:bg-white/20"
+                            className={`relative px-6 py-3 rounded-xl font-medium group transition-all duration-300 overflow-hidden
+                                ${activeTab === tab.id
+                                    ? "bg-blue-600 text-white shadow-md scale-105"
+                                    : "bg-white/30 text-blue-800 hover:bg-blue-200 hover:text-blue-900"
                                 }`}
                         >
-                            <div className="flex items-center justify-center gap-2">
-                                {tab.icon}
-                            </div>
+                            <div className="flex items-center justify-center gap-2">{tab.icon}</div>
                             <div className="absolute -bottom-10 left-1/2 transform -translate-x-1/2 bg-black/80 text-white text-xs px-3 py-1 rounded-full shadow-md hidden group-hover:block">
                                 {tab.label}
                             </div>
@@ -138,18 +136,19 @@ function Header({ onToggleChat }) {
                     ))}
                 </div>
 
-                {/* Right icons */}
+                {/* Right Icons */}
                 <div className="flex items-center gap-3">
-                    {/* Menu */}
-                    <div className="relative size-10 p-2 bg-white/60 rounded-full flex items-center justify-center shadow-md hover:scale-105 transition cursor-pointer group">
-                        <Grip className="text-gray-800" />
+                    {/* Menu Icon */}
+                    <div className="relative size-10 p-2 bg-white/70 rounded-full flex items-center justify-center shadow-md hover:scale-110 hover:ring-2 ring-blue-300 transition-all cursor-pointer group">
+                        <Grip className="text-blue-800" />
                         <div className="absolute -bottom-10 text-xs bg-black/80 text-white px-3 py-1 rounded shadow hidden group-hover:block">
                             Menu
                         </div>
                     </div>
-                    {/* Messenger */}
+
+                    {/* Messenger Icon */}
                     <div
-                        className="relative size-10 p-2 bg-white/60 rounded-full shadow-md hover:scale-105 transition cursor-pointer group"
+                        className="relative size-10 p-2 bg-white/70 rounded-full shadow-md hover:scale-110 hover:ring-2 ring-blue-300 transition-all cursor-pointer group"
                         onClick={() => toggleDropdown("chat")}
                     >
                         <img src="/messenger-icon.png" className="size-full object-contain" />
@@ -157,17 +156,19 @@ function Header({ onToggleChat }) {
                             Messenger
                         </div>
                     </div>
-                    {/* Notifications */}
-                    <div className="relative size-10 p-2 bg-white/60 rounded-full flex items-center justify-center shadow-md hover:scale-105 transition cursor-pointer group">
-                        <Bell className="text-gray-800" />
+
+                    {/* Bell Icon */}
+                    <div className="relative size-10 p-2 bg-white/70 rounded-full flex items-center justify-center shadow-md hover:scale-110 hover:ring-2 ring-blue-300 transition-all cursor-pointer group">
+                        <Bell className="text-blue-800" />
                         <div className="absolute -bottom-10 text-xs bg-black/80 text-white px-3 py-1 rounded shadow hidden group-hover:block">
-                            Notifications
+                            Thông báo
                         </div>
                     </div>
+
                     {/* User Dropdown */}
                     <div className="relative">
                         <div
-                            className="relative size-10 bg-white/60 rounded-full overflow-hidden shadow-md hover:scale-105 transition cursor-pointer group"
+                            className="relative size-10 bg-white/70 rounded-full overflow-hidden shadow-md hover:scale-110 hover:ring-2 ring-blue-300 transition-all cursor-pointer group"
                             onClick={() => toggleDropdown("user")}
                         >
                             <img
@@ -175,7 +176,7 @@ function Header({ onToggleChat }) {
                                 className="size-full object-cover"
                             />
                             <div className="absolute -bottom-10 left-1/2 transform -translate-x-1/2 text-xs bg-black/80 text-white px-3 py-1 rounded shadow hidden group-hover:block">
-                                Account
+                                Tài khoản
                             </div>
                             <div className="absolute -bottom-1 -right-1 bg-white size-4 rounded-full flex items-center justify-center">
                                 <ChevronDown className="size-3 text-black" />

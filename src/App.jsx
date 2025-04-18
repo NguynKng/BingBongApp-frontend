@@ -48,7 +48,11 @@ function App() {
                         <ProfilePage />
                     </ProtectedRoute>
                 } />
-                <Route path="/friends" element={<FriendPage />} />
+                <Route path="/friends" element={
+                    <ProtectedRoute>
+                        <FriendPage />
+                    </ProtectedRoute>
+                } />
                 
                 <Route path="/quiz" element={
                     <ProtectedRoute>
