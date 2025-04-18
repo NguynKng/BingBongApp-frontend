@@ -19,7 +19,7 @@ function QuizCard({ quiz }) {
       <p className="text-sm text-gray-400 mb-4">{quiz.questionCount} câu hỏi</p>
       <button
         onClick={handlePlayClick}
-        className="flex items-center gap-2 text-white bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg"
+        className="flex items-center gap-2 text-white bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg cursor-pointer"
       >
         <Gamepad2 size={18} />
         Chơi
