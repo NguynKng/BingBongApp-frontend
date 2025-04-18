@@ -1,121 +1,99 @@
-import React, { useState } from "react";
-import friendsData from "../data/friends";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
 import Header from "../components/Header";
+import useAuthStore from "../store/authStore";
+import { useGetProfile } from "../hooks/useProfile";
+import { userAPI } from "../services/api";
+import toast from "react-hot-toast";
+import Config from "../envVars";
+import { Link } from "react-router-dom";
 
 const FriendPage = () => {
-  const [friends, setFriends] = useState(friendsData);
+  const { user, updateUser } = useAuthStore();
+  const { profile } = useGetProfile(user._id);
+  const [friendRequests, setFriendRequests] = useState([]);
 
-  // Handle friend actions (add, remove, cancel)
-  const handleFriendAction = (friendId, action) => {
-    setFriends((prevFriends) =>
-      prevFriends.map((friend) => {
-        if (friend.id === friendId) {
-          if (action === "add") {
-            return { ...friend, status: "friend" };
-          }
-          if (action === "remove") {
-            // Change status back to not_friend when removed
-            return { ...friend, status: "not_friend" };
-          }
-        }
-        return friend;
-      })
-    );
-  };
+  useEffect(() => {
+    if (profile && profile.friendRequests) {
+      setFriendRequests(profile.friendRequests);
+    }
+  }, [profile]);
 
-  const handleDelete = (friendId) => {
-    setFriends((prevFriends) => prevFriends.filter((f) => f.id !== friendId));
+  const handleAcceptFriendRequest = async (requesterId) => {
+    try {
+      const response = await userAPI.acceptFriendRequest(requesterId);
+      updateUser({
+        friends: response.friends,
+        friendRequests: response.friendRequests,
+      });
+      setFriendRequests((prev) =>
+        prev.filter((req) => req._id !== requesterId)
+      );
+      toast.success("Đã chấp nhận lời mời kết bạn");
+    } catch (error) {
+      console.error("Error accepting friend request:", error);
+      toast.error("Không thể chấp nhận lời mời");
+    }
   };
 
   return (
     <>
-    <Header />
-    <div className="max-w-7xl mx-auto px-4 mt-[10vh] py-4">
-      <h2 className="text-2xl font-bold text-gray-800 mb-8">Lời mời kết bạn</h2>
+      <Header />
+      <div className="max-w-7xl mx-auto px-4 mt-[10vh] py-4">
+        <h2 className="text-2xl font-bold text-gray-800 mb-8">
+          Lời mời kết bạn ({friendRequests.length})
+        </h2>
 
-      {/* Section for friend requests */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 mb-8">
-        {friends
-          .filter((friend) => friend.status === "not_friend")
-          .map((friend) => (
-            <div
-              key={friend.id}
-              className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition duration-300 p-4 flex flex-col items-center text-center"
-            >
-              <img
-                src={friend.image}
-                alt={friend.name}
-                className="w-24 h-24 rounded-full object-cover mb-3"
-              />
-              <p className="text-sm font-semibold text-gray-900 mb-2">{friend.name}</p>
-
-              {/* Button to accept friend request */}
-              <button
-                onClick={() => handleFriendAction(friend.id, "add")}
-                className="text-sm font-medium bg-[#1b74e4] hover:bg-[#155fc3] text-white px-4 py-2 rounded-md w-full mb-2 transition"
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 mb-8">
+          {friendRequests.length === 0 ? (
+            <p className="text-gray-500 col-span-full">Không có lời mời nào</p>
+          ) : (
+            friendRequests.map((requester) => (
+              <div
+                key={requester._id}
+                className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition duration-300 p-4 flex flex-col items-center text-center"
               >
-                Xác nhận
-              </button>
+                {/* Link to profile */}
+                <Link to={`/profile/${requester._id}`} className="flex flex-col items-center">
+                  <img
+                    src={requester.avatar ? `${Config.BACKEND_URL}${requester.avatar}` : "/user.png"}
+                    alt={requester.fullName}
+                    className="w-24 h-24 rounded-full object-cover mb-3"
+                  />
+                  <p className="text-sm font-semibold text-gray-900 mb-2">
+                    {requester.fullName}
+                  </p>
+                </Link>
 
-              <button
-                onClick={() => handleDelete(friend.id)}
-                className="text-sm font-medium border border-gray-300 text-gray-800 hover:bg-gray-100 px-4 py-2 rounded-md w-full transition"
-              >
-                Xoá
-              </button>
-            </div>
-          ))}
-      </div>
-
-      <h2 className="text-2xl font-bold text-gray-800 mb-8">Những người bạn có thể biết</h2>
-
-      {/* Section for friend suggestions */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-        {friends
-          .filter((friend) => friend.status === "not_friend" || friend.status === "friend")
-          .map((friend) => (
-            <div
-              key={friend.id}
-              className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition duration-300 p-4 flex flex-col items-center text-center"
-            >
-              <img
-                src={friend.image}
-                alt={friend.name}
-                className="w-24 h-24 rounded-full object-cover mb-3"
-              />
-              <p className="text-sm font-semibold text-gray-900 mb-2">{friend.name}</p>
-
-              {/* If not friend, show "Add friend" or "Cancel" */}
-              {friend.status === "not_friend" && (
-                <>
-                  <button
-                    onClick={() => handleFriendAction(friend.id, "add")}
-                    className="text-sm font-medium bg-[#60a5fa] hover:bg-[#3b82f6] text-white px-4 py-2 rounded-md w-full mb-2 transition"
-                  >
-                    Thêm bạn bè
-                  </button>
-                  <button
-                    onClick={() => handleFriendAction(friend.id, "remove")}
-                    className="text-sm font-medium border border-gray-300 text-gray-800 hover:bg-gray-100 px-4 py-2 rounded-md w-full transition"
-                  >
-                    Gỡ
-                  </button>
-                </>
-              )}
-
-              {friend.status === "friend" && (
+                {/* Action buttons outside Link */}
                 <button
-                  onClick={() => handleFriendAction(friend.id, "remove")}
-                  className="text-sm font-medium border border-gray-300 text-gray-800 hover:bg-gray-100 px-4 py-2 rounded-md w-full transition"
+                  onClick={(e) => {
+                    e.stopPropagation(); // Prevent bubbling to Link
+                    handleAcceptFriendRequest(requester._id);
+                  }}
+                  className="text-sm font-medium bg-[#1b74e4] hover:bg-[#155fc3] text-white px-4 py-2 rounded-md w-full mb-2 transition cursor-pointer"
                 >
-                  Huỷ kết bạn
+                  Xác nhận
                 </button>
-              )}
-            </div>
-          ))}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    // Optional: remove from UI
+                    setFriendRequests((prev) => prev.filter((r) => r._id !== requester._id));
+                  }}
+                  className="text-sm font-medium border border-gray-300 text-gray-800 hover:bg-gray-100 px-4 py-2 rounded-md w-full transition cursor-pointer"
+                >
+                  Xoá
+                </button>
+              </div>
+            ))
+          )}
+        </div>
+
+        <h2 className="text-2xl font-bold text-gray-800 mb-8">
+          Những người bạn có thể biết
+        </h2>
+        <p className="text-gray-500">Tính năng đang phát triển...</p>
       </div>
-    </div>
     </>
   );
 };

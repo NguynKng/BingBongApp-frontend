@@ -367,7 +367,7 @@ export const postAPI = {
     try {
       const response = await api.post(
         `/posts/comments/${commentId}/replies`,
-        replyData
+        { content: replyData }
       );
 
       if (response.data.success === false) {

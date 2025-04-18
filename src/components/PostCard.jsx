@@ -7,14 +7,14 @@ import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { postAPI } from "../services/api";
 import SpinnerLoading from "./SpinnerLoading";
-import useAuthStore from "../store/authStore";
+import CommentItem from "./CommentItem";
+import CommentInput from "./CommentInput";
 
 function PostCard({ post }) {
   const [openComment, setOpenComment] = useState(false);
-  const [comment, setComment] = useState("");
   const [userComments, setUserComments] = useState([]);
   const [loadingComment, setLoadingComment] = useState(false);
-  const { user } = useAuthStore();
+
   useEffect(() => {
     if (!openComment) return;
 
@@ -46,26 +46,6 @@ function PostCard({ post }) {
     author, // author là object
   } = post;
 
-  const handleComment = async (e) => {
-    e.preventDefault();
-    if (!comment.trim()) return;
-
-    try {
-      const response = await postAPI.addComment(post._id, comment);
-      if (response.success) {
-        setComment(""); // clear input
-        const refreshed = await postAPI.getComments(post._id);
-        if (refreshed.success) {
-          setUserComments(refreshed.comments);
-        }
-      } else {
-        console.error("Failed to add comment:", response.message);
-      }
-    } catch (error) {
-      console.error("Error adding comment:", error);
-    }
-  };
-
   return (
     <div className="bg-white p-5 rounded-lg shadow-md mb-4">
       <div className="flex items-center space-x-2 mb-3">
@@ -74,9 +54,9 @@ function PostCard({ post }) {
             src={
               author?.avatar
                 ? `${Config.BACKEND_URL}${author.avatar}`
-                : "/user-none.webp"
+                : "/user.png"
             }
-            alt={author?.fullName}
+            alt={author.fullName}
             className="object-cover size-full rounded-full"
           />
         </Link>
@@ -85,7 +65,7 @@ function PostCard({ post }) {
             to={`/profile/${author._id}`}
             className="text-black font-semibold hover:underline underline-offset-2"
           >
-            {author?.fullName}
+            {author.fullName}
           </Link>
           <div className="flex items-center gap-1 text-gray-500 text-sm">
             <span>{formatTime(createdAt)}</span>
@@ -144,76 +124,29 @@ function PostCard({ post }) {
       {openComment && (
         <div className="py-2 px-4 border-t-2 mt-2 border-gray-200">
           <h1 className="text-lg">Tất cả bình luận</h1>
-          <form
-            className="flex gap-2 items-center mt-4"
-            onSubmit={handleComment}
-          >
-            <Link
-              to={`/profile/${user._id}`}
-              className="w-10 h-10 rounded-full"
-            >
-              <img
-                src={
-                  user?.avatar
-                    ? `${Config.BACKEND_URL}${user.avatar}`
-                    : "/user.png"
-                }
-                className="object-cover size-full rounded-full"
-              />
-            </Link>
-            <input
-              type="text"
-              placeholder={`Comment as ${user.fullName}`}
-              className="py-2 px-4 rounded-full flex-1 bg-gray-200"
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-            />
-            <button
-              type="submit"
-              className="p-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 cursor-pointer"
-            >
-              <Send className="size-4" />
-            </button>
-          </form>
+          <CommentInput
+            postId={post._id}
+            onSuccessRefresh={(updatedComments) =>
+              setUserComments(updatedComments)
+            }
+          />
           <div className="mt-6 space-y-2">
             {loadingComment ? (
               <SpinnerLoading />
             ) : (
               userComments.map((comment) => (
-                <div className="flex gap-2">
-                  <Link
-                    to={`/profile/${comment.user._id}`}
-                    className="size-10 rounded-full"
-                  >
-                    <img
-                      src={`${Config.BACKEND_URL}${comment.user.avatar}`}
-                      className="size-full object-cover rounded-full"
-                    />
-                  </Link>
-                  <div className="space-y-1">
-                    <div className="py-2 px-4 rounded-3xl bg-gray-200">
-                      <div className="flex items-center gap-2">
-                        <Link to={`/profile/${comment.user._id}`} className="text-[15px] font-semibold">
-                          {comment.user.fullName}
-                        </Link>
-                        {comment.user._id === author._id && (
-                          <span className="text-sm text-blue-500 font-medium">
-                            Tác giả
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-[15px]">{comment.content}</p>
-                    </div>
-                    <div className="flex items-center gap-2 px-3">
-                      <span className="text-[13px]">
-                        {formatTime(comment.createdAt)}
-                      </span>
-                      <button className="text-gray-500 hover:underline underline-offset-2 transition text-sm cursor-pointer">
-                        Trả lời
-                      </button>
-                    </div>
-                  </div>
-                </div>
+                <CommentItem
+                  key={comment._id}
+                  comment={comment}
+                  postAuthorId={author._id}
+                  postId={post._id}
+                  onRefresh={async () => {
+                    const refreshed = await postAPI.getComments(post._id);
+                    if (refreshed.success) {
+                      setUserComments(refreshed.comments);
+                    }
+                  }}
+                />
               ))
             )}
           </div>

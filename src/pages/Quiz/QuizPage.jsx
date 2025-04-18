@@ -16,13 +16,13 @@ export default function QuizPage() {
           <div className="flex gap-4">
             <button
               onClick={() => navigate("/quiz/create")}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 cursor-pointer"
             >
               ➕ Tạo Quiz mới
             </button>
             <button
               onClick={() => navigate("/quiz/leaderboard")}
-              className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700"
+              className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 cursor-pointer"
             >
               🏆 Bảng xếp hạng
             </button>
