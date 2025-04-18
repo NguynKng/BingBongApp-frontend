@@ -1,11 +1,34 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/Header";
-import QuizCard from "../../components/Quiz/QuizCard"; // Import đúng QuizCard
-import mockQuizzes from "../../data/quiz"; // Import mockQuizzes dữ liệu quiz
+import QuizCard from "../../components/Quiz/QuizCard";
+import axios from "axios";
 
 export default function QuizPage() {
   const navigate = useNavigate();
+  const [quizzes, setQuizzes] = useState([]); // Khởi tạo state quizzes với dữ liệu mock
+  useEffect(() => {
+      const fetchQuizzes = async () => {
+        try {
+          const response = await axios.get("http://localhost:8000/api/v1/quiz", {
+            withCredentials: true, // nếu có dùng cookie để xác thực
+          });
+  
+          const data = response.data;
+  
+          // Kiểm tra nếu data.quizzes là mảng thì set vào state
+          if (Array.isArray(data.quizzes)) {
+            setQuizzes(data.quizzes);
+          } else {
+            console.error("Dữ liệu trả về không phải là mảng:", data);
+          }
+        } catch (error) {
+          console.error("Lỗi khi lấy danh sách quiz:", error);
+        }
+      };
+  
+      fetchQuizzes();
+    }, []); // Chỉ gọi API khi component mount lần đầu
 
   return (
     <>
@@ -31,8 +54,8 @@ export default function QuizPage() {
 
         {/* Hiển thị danh sách quiz */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {mockQuizzes.map((quiz) => (
-            <QuizCard key={quiz.id} quiz={quiz} />
+          {quizzes.map((quiz) => (
+            <QuizCard key={quiz._id} quiz={quiz} />
           ))}
         </div>
       </div>

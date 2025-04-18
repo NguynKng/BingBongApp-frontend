@@ -1,3 +1,4 @@
+import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -53,16 +54,26 @@ function CreateQuizPage() {
     }));
   };
 
-  // Hàm xử lý form submit
-  const handleSubmit = (e) => {
+ // Hàm xử lý form submit
+ const handleSubmit = async (e) => {
     e.preventDefault();
+    try {
+      const response = await axios.post('http://localhost:8000/api/v1/quiz', quiz, {
+        withCredentials: true, // <--- BẮT BUỘC để gửi cookie chứa JWT
+        headers: {
+          "Content-Type": "application/json"
+        }
+      });
+      
 
-    // Gửi dữ liệu quiz lên backend hoặc lưu vào bộ nhớ
-    // Ví dụ: Gửi lên localStorage, API backend, hoặc chỉ lưu trong state của app
-    console.log("Quiz đã tạo:", quiz);
-
-    // Chuyển hướng người dùng sau khi tạo quiz
-    navigate("/quiz");
+      // Nếu tạo quiz thành công, chuyển hướng đến trang quiz
+      if (response.status === 201) {
+        console.log("Quiz đã tạo thành công:", response.data);
+        navigate("/quiz");
+      }
+    } catch (error) {
+      console.error("Có lỗi khi tạo quiz:", error);
+    }
   };
 
   return (

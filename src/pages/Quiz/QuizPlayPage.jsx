@@ -1,78 +1,90 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable react-hooks/rules-of-hooks */
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import quizData from "../../data/quizplay"; 
+import axios from "axios";
 
 function QuizPlayPage() {
-  const { quizId } = useParams(); // Lấy quizId từ URL
-  const quiz = quizData.find(q => q.id === parseInt(quizId, 10)); // Tìm quiz tương ứng
-  const navigate = useNavigate(); // Hook để điều hướng trang
+  const { quizId } = useParams();
+  const navigate = useNavigate();
 
-  // Kiểm tra xem quiz có tồn tại không
-  if (!quiz) {
-    return <div className="text-red-500">Quiz không tồn tại.</div>; // Nếu không tìm thấy quiz
-  }
+  const [quiz, setQuiz] = useState(null);
+  const [answers, setAnswers] = useState([]);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [score, setScore] = useState(0);
+  const [timeLeft, setTimeLeft] = useState(60);
+  const [isFinished, setIsFinished] = useState(false);
+  const [answered, setAnswered] = useState(false);
 
-  // State lưu trữ câu trả lời của người dùng
-  const [answers, setAnswers] = useState(Array(quiz.questions.length).fill(null)); // Lưu đáp án của người dùng
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0); // Chỉ số câu hỏi hiện tại
-  const [score, setScore] = useState(0); // Điểm số hiện tại
-  const [timeLeft, setTimeLeft] = useState(60); // Thời gian đếm ngược (giây)
-  const [isFinished, setIsFinished] = useState(false); // Kiểm tra đã hoàn thành quiz
-  const [answered, setAnswered] = useState(false); // Kiểm tra câu hỏi đã được trả lời hay chưa
+  // Gọi API để lấy quiz
+  useEffect(() => {
+    const fetchQuiz = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:8000/api/v1/quiz/${quizId}`
+        );
 
-  // Tính điểm mỗi khi câu trả lời thay đổi
-  const calculateScore = () => {
-    let currentScore = 0;
-    quiz.questions.forEach((question, index) => {
-      if (answers[index] === question.correctAnswer) {
-        currentScore++;
+        const quizData = response.data;
+
+        // Debug: Xem rõ dữ liệu trả về
+        console.log("Dữ liệu trả về từ API:", quizData);
+
+        // Nếu dữ liệu thực nằm trong quizData.quiz → gán lại quizData
+        const actualQuiz = quizData.questions ? quizData : quizData.quiz;
+
+        if (!Array.isArray(actualQuiz.questions)) {
+          throw new Error("Quiz không hợp lệ: questions phải là mảng");
+        }
+
+        setQuiz(actualQuiz);
+        setAnswers(Array(actualQuiz.questions.length).fill(null));
+      } catch (error) {
+        console.error("Lỗi khi lấy dữ liệu quiz:", error.message || error);
       }
-    });
-    setScore(currentScore);
-  };
+    };
 
-  // Xử lý thay đổi đáp án
+    fetchQuiz();
+  }, [quizId]);
+
+  // Xử lý chọn đáp án
   const handleAnswerChange = (e) => {
     const newAnswer = e.target.value;
-    setAnswers(prev => {
-      const updatedAnswers = [...prev];
-      updatedAnswers[currentQuestionIndex] = newAnswer;
-      return updatedAnswers;
+    setAnswers((prev) => {
+      const updated = [...prev];
+      updated[currentQuestionIndex] = newAnswer;
+      return updated;
     });
 
     // Kiểm tra câu trả lời đúng/sai
     if (newAnswer === quiz.questions[currentQuestionIndex].correctAnswer) {
-      setScore(prevScore => prevScore + 1);
+      setScore((prev) => prev + 1);
     }
+
     setAnswered(true);
   };
 
-  // Chuyển câu hỏi sau 5 giây tự động
+  // Tự động chuyển câu hỏi
   useEffect(() => {
     if (answered) {
       const timer = setTimeout(() => {
         if (currentQuestionIndex < quiz.questions.length - 1) {
-          setCurrentQuestionIndex(currentQuestionIndex + 1);
-          setAnswered(false); // Reset trạng thái trả lời
+          setCurrentQuestionIndex((prev) => prev + 1);
+          setAnswered(false);
         } else {
-          setIsFinished(true); // Kết thúc quiz nếu đã trả lời hết các câu hỏi
+          setIsFinished(true);
         }
-      }, 1000); // Chờ 5 giây trước khi chuyển câu hỏi
+      }, 1000);
 
-      return () => clearTimeout(timer); // Dọn dẹp timer khi component bị unmount hoặc câu hỏi đã thay đổi
+      return () => clearTimeout(timer);
     }
-  }, [answered, currentQuestionIndex, quiz.questions.length]);
+  }, [answered, currentQuestionIndex, quiz?.questions?.length]);
 
   // Đếm ngược thời gian
   useEffect(() => {
     if (timeLeft > 0 && !isFinished) {
       const timer = setInterval(() => {
-        setTimeLeft(prevTime => prevTime - 1);
+        setTimeLeft((prev) => prev - 1);
       }, 1000);
 
-      return () => clearInterval(timer); // Dọn dẹp timer khi component bị unmount hoặc thời gian hết
+      return () => clearInterval(timer);
     }
   }, [timeLeft, isFinished]);
 
@@ -90,35 +102,47 @@ function QuizPlayPage() {
 
   // Điều hướng chơi lại quiz
   const handlePlayAgain = () => {
-    setIsFinished(false); // Reset trạng thái hoàn thành quiz
-    setCurrentQuestionIndex(0); // Đặt lại câu hỏi đầu tiên
-    setAnswers(Array(quiz.questions.length).fill(null)); // Reset các đáp án đã chọn
-    setScore(0); // Reset điểm số
-    setTimeLeft(60); // Reset thời gian còn lại
-    setAnswered(false); // Reset trạng thái câu hỏi đã trả lời
+    setIsFinished(false);
+    setCurrentQuestionIndex(0);
+    setAnswers(Array(quiz.questions.length).fill(null));
+    setScore(0);
+    setTimeLeft(60);
+    setAnswered(false);
   };
-  
 
-  // Hiển thị câu hỏi và các lựa chọn
+  // Nếu quiz chưa tải hoặc không có questions
+  if (!quiz || !quiz.questions || quiz.questions.length === 0) {
+    return <div>Đang tải quiz hoặc quiz không hợp lệ...</div>;
+  }
+
+  const currentQuestion = quiz.questions[currentQuestionIndex];
+
   return (
     <div className="max-w-3xl mx-auto p-6">
       <h1 className="text-3xl font-bold text-gray-800">{quiz.title}</h1>
       <p className="text-lg text-gray-600 mb-4">{quiz.description}</p>
-
       <div className="mb-4">
         <span className="font-semibold text-lg">Thời gian còn lại: </span>
         <span className="text-red-500">{timeLeft} giây</span>
       </div>
-
-      {/* Hiển thị câu hỏi hiện tại */}
       <div className="question mb-6 p-4 border border-gray-300 rounded-lg shadow-md">
-        <h3 className="text-xl font-semibold mb-4">{quiz.questions[currentQuestionIndex].question}</h3>
+        <h3 className="text-xl font-semibold mb-4">
+          {currentQuestion.question}
+        </h3>
 
         <div className="grid grid-cols-2 gap-4">
-          {quiz.questions[currentQuestionIndex].options.map((option, i) => (
+          {currentQuestion.options.map((option, i) => (
             <label
               key={i}
-              className={`flex items-center justify-center p-4 border-2 border-gray-300 rounded-lg cursor-pointer transition ${answered && (option === quiz.questions[currentQuestionIndex].correctAnswer ? 'bg-green-100' : 'bg-red-100')}`}
+              className={`flex items-center justify-center p-4 border-2 border-gray-300 rounded-lg cursor-pointer transition 
+               ${
+                 answered &&
+                 (option === currentQuestion.correctAnswer
+                   ? "bg-green-100"
+                   : option === answers[currentQuestionIndex]
+                   ? "bg-red-100"
+                   : "")
+               }`}
             >
               <input
                 type="radio"
@@ -126,7 +150,7 @@ function QuizPlayPage() {
                 value={option}
                 checked={answers[currentQuestionIndex] === option}
                 onChange={handleAnswerChange}
-                disabled={answered} // Không cho phép chọn lại khi câu hỏi đã được trả lời
+                disabled={answered}
                 className="hidden"
               />
               <span className="text-lg">{option}</span>
@@ -139,9 +163,10 @@ function QuizPlayPage() {
       {isFinished && (
         <div className="mt-6 text-xl">
           <p className="font-semibold">Bạn đã hoàn thành Quiz!</p>
-          <p className="text-lg">Điểm của bạn là: {score}/{quiz.questions.length}</p>
+          <p className="text-lg">
+            Điểm của bạn là: {score}/{quiz.questions.length}
+          </p>
 
-          {/* Nút quay lại và chơi lại quiz */}
           <div className="flex space-x-4 mt-6">
             <button
               onClick={handleGoBack}
