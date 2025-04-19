@@ -29,7 +29,7 @@ function Navbar() {
     const visibleItems = showAll ? navbarData : navbarData.slice(0, 6);
 
     return (
-        <nav className="fixed top-[10vh] left-0 h-[90vh] lg:w-1/4 bg-white px-4 py-4 overflow-y-auto custom-scroll z-40 hidden lg:block">
+        <nav className="fixed top-[64px] left-0 h-[90vh] lg:w-[24rem] bg-white px-4 py-4 overflow-y-auto custom-scroll z-40 hidden lg:block">
             <div
                 className={`w-full px-2 py-2 rounded-2xl space-y-2 overflow-hidden transition-colors duration-300 ${
                     showAll

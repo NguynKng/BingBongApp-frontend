@@ -128,7 +128,7 @@ function ProfilePage() {
         <>
             <Meta title="BingBong" />
             <Header />
-            <section className="pt-[10vh] px-[15%]">
+            <div className="pt-[64px] px-[15%]">
                 <div className="relative h-[38rem]">
                     <div className="relative w-full h-[71%] rounded-b-md">
                         <img
@@ -274,7 +274,7 @@ function ProfilePage() {
                         </div>
                     </div>
                 </div>
-            </section>
+            </div>
 
             <section className="bg-gray-200 px-[17%] py-4">
                 <div className="flex gap-4">

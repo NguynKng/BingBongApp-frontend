@@ -1,5 +1,5 @@
 // [GIỮ NGUYÊN IMPORT GỐC]
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
 import {
     Bell,
     CircleUserRound,
@@ -27,7 +27,6 @@ function Header({ onToggleChat }) {
     const { listUser, loading } = useGetProfileByName(query, {
         enabled: isSearchingUser,
     });
-    const [activeTab, setActiveTab] = useState("home");
     const [dropdown, setDropdown] = useState({ user: false, chat: false });
     const { user } = useAuthStore();
     const location = useLocation();
@@ -36,13 +35,14 @@ function Header({ onToggleChat }) {
         setQuery(query);
     }, 500);
 
-    useEffect(() => {
+    const activeTab = useMemo(() => {
         const path = location.pathname;
-        if (path === "/") setActiveTab("home");
-        else if (path.startsWith("/friends")) setActiveTab("friends");
-        else if (path.startsWith("/watch")) setActiveTab("watch");
-        else if (path.startsWith("/quiz")) setActiveTab("quiz");
-        else if (path.startsWith("/profile")) setActiveTab("profile");
+        if (path.startsWith("/friends")) return "friends";
+        else if (path.startsWith("/watch")) return "watch";
+        else if (path.startsWith("/quiz")) return "quiz";
+        else if (path.startsWith("/profile")) return "profile";
+        else if (path === "/") return "home";
+        return "home"; // default case
     }, [location.pathname]);
 
     const tabs = [
@@ -61,7 +61,7 @@ function Header({ onToggleChat }) {
     };
 
     return (
-        <header className="fixed top-0 left-0 w-full h-[8vh] z-50 bg-gradient-to-r from-blue-100 via-blue-200 to-purple-200 backdrop-blur-xl shadow-md border-b border-blue-300">
+        <header className="fixed top-0 left-0 w-full h-[64px] z-50 bg-gradient-to-r from-blue-100 via-blue-200 to-purple-200 backdrop-blur-xl shadow-md border-b border-blue-300">
             <div className="w-full h-full flex items-center px-4 justify-start">
                 {/* Logo + Search */}
                 <div className="flex items-center gap-4 mr-8">
