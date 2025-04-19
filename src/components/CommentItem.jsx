@@ -29,13 +29,14 @@ function CommentItem({ comment, postAuthorId, onRefresh }) {
     }
   };
 
-  const toggleReplies = () => {
-    setOpenReplies((prev) => !prev);
-  };
+  const toggleReplies = () => setOpenReplies((prev) => !prev);
 
   return (
     <div className="flex gap-2">
-      <Link to={`/profile/${comment.user._id}`} className="size-10 rounded-full">
+      <Link
+        to={`/profile/${comment.user._id}`}
+        className="size-10 rounded-full transition-transform duration-200 active:scale-95 hover:brightness-105"
+      >
         <img
           src={
             comment.user?.avatar
@@ -45,12 +46,13 @@ function CommentItem({ comment, postAuthorId, onRefresh }) {
           className="size-full object-cover rounded-full"
         />
       </Link>
+
       <div className="space-y-1">
         <div className="py-2 px-4 rounded-3xl bg-gray-200">
           <div className="flex items-center gap-2">
             <Link
               to={`/profile/${comment.user._id}`}
-              className="text-[15px] font-semibold"
+              className="text-[16px] font-semibold hover:text-blue-600 transition-colors"
             >
               {comment.user.fullName}
             </Link>
@@ -60,11 +62,11 @@ function CommentItem({ comment, postAuthorId, onRefresh }) {
               </span>
             )}
           </div>
-          <p className="text-[15px]">{comment.content}</p>
+          <p className="text-base">{comment.content}</p>
         </div>
 
         <div className="flex items-center gap-2 px-3">
-          <span className="text-[13px]">{formatTime(comment.createdAt)}</span>
+          <span className="text-sm text-gray-500">{formatTime(comment.createdAt)}</span>
           <button
             className="text-gray-500 hover:underline underline-offset-2 transition text-sm cursor-pointer"
             onClick={() => setReplyingTo(comment._id)}
@@ -87,7 +89,10 @@ function CommentItem({ comment, postAuthorId, onRefresh }) {
         {openReplies &&
           comment.replies.map((reply) => (
             <div key={reply._id} className="flex gap-2 mt-2 ml-6">
-              <Link to={`/profile/${reply.user._id}`} className="size-9 rounded-full">
+              <Link
+                to={`/profile/${reply.user._id}`}
+                className="size-9 rounded-full transition-transform duration-200 active:scale-95 hover:brightness-105"
+              >
                 <img
                   src={
                     reply.user?.avatar
@@ -102,7 +107,7 @@ function CommentItem({ comment, postAuthorId, onRefresh }) {
                   <div className="flex items-center gap-2">
                     <Link
                       to={`/profile/${reply.user._id}`}
-                      className="text-[14px] font-semibold"
+                      className="text-[15px] font-semibold hover:text-blue-600 transition-colors"
                     >
                       {reply.user.fullName}
                     </Link>
@@ -112,9 +117,9 @@ function CommentItem({ comment, postAuthorId, onRefresh }) {
                       </span>
                     )}
                   </div>
-                  <p className="text-[14px]">{reply.content}</p>
+                  <p className="text-base">{reply.content}</p>
                 </div>
-                <span className="text-[12px] px-3 text-gray-500">
+                <span className="text-sm px-3 text-gray-500">
                   {formatTime(reply.createdAt)}
                 </span>
               </div>
@@ -122,11 +127,11 @@ function CommentItem({ comment, postAuthorId, onRefresh }) {
           ))}
 
         {replyingTo === comment._id && (
-          <form
-            className="flex gap-2 items-center"
-            onSubmit={handleReply}
-          >
-            <Link to={`/profile/${user._id}`} className="w-10 h-10 rounded-full">
+          <form className="flex gap-2 items-center" onSubmit={handleReply}>
+            <Link
+              to={`/profile/${user._id}`}
+              className="w-10 h-10 rounded-full transition-transform duration-200 active:scale-95 hover:brightness-105"
+            >
               <img
                 src={
                   user?.avatar
@@ -139,7 +144,7 @@ function CommentItem({ comment, postAuthorId, onRefresh }) {
             <input
               type="text"
               placeholder={`Reply to ${comment.user.fullName}`}
-              className="py-2 px-4 rounded-full flex-1 bg-gray-200"
+              className="py-2 px-4 rounded-full flex-1 bg-gray-200 text-base"
               value={responseComment}
               onChange={(e) => setResponseComment(e.target.value)}
             />

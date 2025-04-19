@@ -1,6 +1,17 @@
+// [GIỮ NGUYÊN IMPORT GỐC]
 import { useState, useEffect } from "react";
-import { Bell, CircleUserRound, Grip, House, MonitorPlay, Search, Store, ChevronDown, UsersRound, Gamepad2 } from "lucide-react";
-
+import {
+    Bell,
+    CircleUserRound,
+    Grip,
+    House,
+    MonitorPlay,
+    Search,
+    Store,
+    ChevronDown,
+    UsersRound,
+    Gamepad2,
+} from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import useAuthStore from "../store/authStore";
 import Config from "../envVars";
@@ -12,22 +23,19 @@ import SpinnerLoading from "./SpinnerLoading";
 
 function Header({ onToggleChat }) {
     const [query, setQuery] = useState("");
-    const isSearchingUser = query.length > 0; // Check if user is searching
-    const { listUser, loading } = useGetProfileByName(query, { enabled: isSearchingUser }); // Get users and loading state
-    const [activeTab, setActiveTab] = useState("home");
-    const [dropdown, setDropdown] = useState({
-        user: false,
-        chat: false,
+    const isSearchingUser = query.length > 0;
+    const { listUser, loading } = useGetProfileByName(query, {
+        enabled: isSearchingUser,
     });
+    const [activeTab, setActiveTab] = useState("home");
+    const [dropdown, setDropdown] = useState({ user: false, chat: false });
     const { user } = useAuthStore();
     const location = useLocation();
 
-    // Debounced function to delay fetch after user stops typing
     const debouncedSearch = debounce((query) => {
         setQuery(query);
-    }, 500); // 500ms debounce
+    }, 500);
 
-    // Update active tab based on location
     useEffect(() => {
         const path = location.pathname;
         if (path === "/") setActiveTab("home");
@@ -53,46 +61,49 @@ function Header({ onToggleChat }) {
     };
 
     return (
-        <header className="fixed top-0 left-0 h-[10vh] w-full z-50 bg-white border-b border-gray-200 shadow-md">
-            <div className="container h-full flex justify-between items-center px-4">
+        <header className="fixed top-0 left-0 w-full h-[8vh] z-50 bg-gradient-to-r from-blue-100 via-blue-200 to-purple-200 backdrop-blur-xl shadow-md border-b border-blue-300">
+            <div className="w-full h-full flex items-center px-4 justify-start">
                 {/* Logo + Search */}
-                <div className="flex items-center gap-2">
-                    <Link to="/" className="size-10">
-                        <img src="/images/ico/logo.ico" alt="facebook-logo" className="size-full object-cover" />
+                <div className="flex items-center gap-4 mr-8">
+                    <Link to="/" className="size-15 hover:scale-110 transition-transform duration-300">
+                        <img
+                            src="/images/ico/logo.ico"
+                            alt="logo"
+                            className="size-full object-cover rounded-xl"
+                        />
                     </Link>
-                    <div className="relative w-[16rem]">
-                        <Search className="absolute size-5 top-2.5 left-3 text-gray-500" />
+
+                    <div className="relative w-[18rem]">
+                        <Search className="absolute size-5 top-2.5 left-3 text-blue-700" />
                         <input
                             type="text"
-                            placeholder="Tìm kiếm trên Facebook"
-                            className="text-gray-700 w-full py-2 pl-10 bg-gray-100 rounded-full focus:outline-none"
-                            onChange={(e) => debouncedSearch(e.target.value)} // Search triggered on input change
+                            placeholder="Tìm kiếm trên Bing Bong"
+                            className="text-blue-800 font-medium w-full py-2 pl-10 bg-white/80 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-md transition-all duration-300"
+                            onChange={(e) => debouncedSearch(e.target.value)}
                         />
                         {query.length > 0 && (
-                            <div className="absolute top-[110%] right-0 w-full max-h-96 overflow-y-auto shadow-lg bg-white z-50 p-2 rounded-b-md custom-scroll">
+                            <div className="absolute top-[110%] right-0 w-full max-h-96 overflow-y-auto shadow-xl bg-white rounded-lg z-50 p-2 custom-scroll">
                                 {loading ? (
                                     <SpinnerLoading />
                                 ) : listUser.length === 0 ? (
-                                    <div className="text-center text-gray-500 py-2 px-4">
-                                        Không tìm thấy người dùng
-                                    </div>
+                                    <div className="text-center text-gray-500 py-2 px-4">Không tìm thấy người dùng</div>
                                 ) : (
                                     listUser.map((user) => (
                                         <Link
                                             to={`/profile/${user._id}`}
                                             key={user._id}
-                                            className="w-full py-2 px-4 flex items-center justify-between gap-2 hover:bg-gray-100 rounded-md cursor-pointer"
+                                            className="w-full py-2 px-4 flex items-center justify-between gap-2 hover:bg-blue-100 rounded-md transition duration-200"
                                         >
                                             <div className="flex items-center gap-2">
-                                                <div className="rounded-full bg-gray-200 p-2">
-                                                    <Search className="size-5 text-gray-500" />
+                                                <div className="rounded-full bg-blue-200 p-2">
+                                                    <Search className="size-5 text-blue-600" />
                                                 </div>
-                                                <span className="text-sm font-semibold">{user.fullName}</span>
+                                                <span className="text-sm font-semibold text-gray-800">{user.fullName}</span>
                                             </div>
                                             <img
                                                 src={user.avatar ? `${Config.BACKEND_URL}${user.avatar}` : "/user.png"}
                                                 alt={user.fullName}
-                                                className="size-8 object-cover rounded-lg"
+                                                className="size-8 object-cover rounded-lg shadow-sm"
                                             />
                                         </Link>
                                     ))
@@ -102,66 +113,77 @@ function Header({ onToggleChat }) {
                     </div>
                 </div>
 
-                {/* Tabs with Tooltip */}
-                <div className="hidden md:flex items-center justify-center flex-1 gap-1">
+                {/* Tabs */}
+                <div className="hidden md:flex items-center justify-center flex-1 gap-2">
                     {tabs.map((tab) => (
                         <Link
                             to={tab.link}
                             key={tab.id}
-                            className={`relative py-4 px-12 cursor-pointer border-b-4 transition group 
-                                ${activeTab === tab.id ? "border-blue-500 text-blue-500 bg-transparent" : "border-transparent text-gray-500 hover:bg-gray-200 rounded-md"}`}
+                            className={`relative px-6 py-3 rounded-xl font-medium group transition-all duration-300 overflow-hidden
+                                ${activeTab === tab.id
+                                    ? "bg-blue-600 text-white shadow-md scale-105"
+                                    : "bg-white/30 text-blue-800 hover:bg-blue-200 hover:text-blue-900"
+                                }`}
                         >
-                            {tab.icon}
-                            <div
-                                className={`absolute -bottom-10 left-1/2 transform -translate-x-1/2
-                                    bg-gray-700 text-white text-xs px-3 py-2 rounded-full shadow-lg whitespace-nowrap
-                                    transition-opacity duration-200 pointer-events-none hidden group-hover:block
-                                `}
-                            >
+                            <div className="flex items-center justify-center gap-2">{tab.icon}</div>
+                            <div className="absolute -bottom-10 left-1/2 transform -translate-x-1/2 bg-black/80 text-white text-xs px-3 py-1 rounded-full shadow-md hidden group-hover:block">
                                 {tab.label}
                             </div>
+                            {activeTab === tab.id && (
+                                <div className="absolute bottom-0 left-0 w-full h-[3px] bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 rounded-full animate-pulse" />
+                            )}
                         </Link>
                     ))}
                 </div>
 
-                {/* Right icons */}
-                <div className="flex items-center gap-2">
-                    <div className="relative bg-gray-200 hover:bg-gray-300 rounded-full size-10 p-2.5 flex items-center justify-center cursor-pointer group">
-                        <Grip />
-                        <div className="absolute -bottom-10 left-1/2 transform -translate-x-1/2 bg-gray-700 text-white text-xs px-3 py-2 rounded-xl shadow-lg whitespace-nowrap group-hover:block hidden transition-opacity duration-500 delay-300 z-50">
+                {/* Right Icons */}
+                <div className="flex items-center gap-3">
+                    {/* Menu Icon */}
+                    <div className="relative size-10 p-2 bg-white/70 rounded-full flex items-center justify-center shadow-md hover:scale-110 hover:ring-2 ring-blue-300 transition-all cursor-pointer group">
+                        <Grip className="text-blue-800" />
+                        <div className="absolute -bottom-10 text-xs bg-black/80 text-white px-3 py-1 rounded shadow hidden group-hover:block">
                             Menu
                         </div>
                     </div>
-                    <div className="relative bg-gray-200 hover:bg-gray-300 rounded-full size-10 p-2.5 cursor-pointer group" onClick={() => toggleDropdown("chat")}>
-                        <img src="/messenger-icon.png" className="size-full object-cover" />
-                        <div className="absolute -bottom-10 left-1/2 transform -translate-x-1/2 bg-gray-700 text-white text-xs px-3 py-2 rounded-xl shadow-lg whitespace-nowrap group-hover:block hidden transition-opacity duration-500 delay-300 z-50">
+
+                    {/* Messenger Icon */}
+                    <div
+                        className="relative size-10 p-2 bg-white/70 rounded-full shadow-md hover:scale-110 hover:ring-2 ring-blue-300 transition-all cursor-pointer group"
+                        onClick={() => toggleDropdown("chat")}
+                    >
+                        <img src="/messenger-icon.png" className="size-full object-contain" />
+                        <div className="absolute -bottom-10 text-xs bg-black/80 text-white px-3 py-1 rounded shadow hidden group-hover:block">
                             Messenger
                         </div>
                     </div>
-                    <div className="relative bg-gray-200 hover:bg-gray-300 rounded-full size-10 p-2.5 flex items-center justify-center cursor-pointer group">
-                        <Bell className="fill-black" />
-                        <div className="absolute -bottom-10 left-1/2 transform -translate-x-1/2 bg-gray-700 text-white text-xs px-3 py-2 rounded-xl shadow-lg whitespace-nowrap group-hover:block hidden transition-opacity duration-500 delay-300 z-50">
-                            Notifications
+
+                    {/* Bell Icon */}
+                    <div className="relative size-10 p-2 bg-white/70 rounded-full flex items-center justify-center shadow-md hover:scale-110 hover:ring-2 ring-blue-300 transition-all cursor-pointer group">
+                        <Bell className="text-blue-800" />
+                        <div className="absolute -bottom-10 text-xs bg-black/80 text-white px-3 py-1 rounded shadow hidden group-hover:block">
+                            Thông báo
                         </div>
                     </div>
+
+                    {/* User Dropdown */}
                     <div className="relative">
-                        <div className="bg-gray-200 hover:bg-gray-300 rounded-full size-10 flex items-center justify-center cursor-pointer group" onClick={() => toggleDropdown("user")}>
-                            <img src={user?.avatar ? `${Config.BACKEND_URL}${user.avatar}` : `/user.png`} className="size-full rounded-full object-cover" />
-                            <div className="absolute -bottom-10 left-1/2 transform -translate-x-1/2 bg-gray-700 text-white text-xs px-3 py-2 rounded-xl shadow-lg whitespace-nowrap hidden group-hover:block transition-opacity duration-500 delay-300 z-50">
-                                Account
+                        <div
+                            className="relative size-10 bg-white/70 rounded-full overflow-hidden shadow-md hover:scale-110 hover:ring-2 ring-blue-300 transition-all cursor-pointer group"
+                            onClick={() => toggleDropdown("user")}
+                        >
+                            <img
+                                src={user?.avatar ? `${Config.BACKEND_URL}${user.avatar}` : `/user.png`}
+                                className="size-full object-cover"
+                            />
+                            <div className="absolute -bottom-10 left-1/2 transform -translate-x-1/2 text-xs bg-black/80 text-white px-3 py-1 rounded shadow hidden group-hover:block">
+                                Tài khoản
                             </div>
-                            <div className="absolute rounded-full bottom-0 -right-0.5 bg-gray-100 size-4 flex items-center justify-center">
-                                <ChevronDown className="size-3.5 text-black" />
+                            <div className="absolute -bottom-1 -right-1 bg-white size-4 rounded-full flex items-center justify-center">
+                                <ChevronDown className="size-3 text-black" />
                             </div>
                         </div>
-                        {/* Dropdown User */}
-                        {dropdown.user && (
-                            <DropdownUser />
-                        )}
-                        {/* Dropdown Chat */}
-                        {dropdown.chat && (
-                            <DropdownChat onToggleChat={onToggleChat} />
-                        )}
+                        {dropdown.user && <DropdownUser />}
+                        {dropdown.chat && <DropdownChat onToggleChat={onToggleChat} />}
                     </div>
                 </div>
             </div>

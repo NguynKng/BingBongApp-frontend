@@ -14,20 +14,13 @@ function QuizPlayPage() {
   const [isFinished, setIsFinished] = useState(false);
   const [answered, setAnswered] = useState(false);
 
-  // Gọi API để lấy quiz
   useEffect(() => {
     const fetchQuiz = async () => {
       try {
         const response = await axios.get(
           `http://localhost:8000/api/v1/quiz/${quizId}`
         );
-
         const quizData = response.data;
-
-        // Debug: Xem rõ dữ liệu trả về
-        console.log("Dữ liệu trả về từ API:", quizData);
-
-        // Nếu dữ liệu thực nằm trong quizData.quiz → gán lại quizData
         const actualQuiz = quizData.questions ? quizData : quizData.quiz;
 
         if (!Array.isArray(actualQuiz.questions)) {
@@ -44,7 +37,6 @@ function QuizPlayPage() {
     fetchQuiz();
   }, [quizId]);
 
-  // Xử lý chọn đáp án
   const handleAnswerChange = (e) => {
     const newAnswer = e.target.value;
     setAnswers((prev) => {
@@ -53,7 +45,6 @@ function QuizPlayPage() {
       return updated;
     });
 
-    // Kiểm tra câu trả lời đúng/sai
     if (newAnswer === quiz.questions[currentQuestionIndex].correctAnswer) {
       setScore((prev) => prev + 1);
     }
@@ -61,7 +52,6 @@ function QuizPlayPage() {
     setAnswered(true);
   };
 
-  // Tự động chuyển câu hỏi
   useEffect(() => {
     if (answered) {
       const timer = setTimeout(() => {
@@ -71,36 +61,30 @@ function QuizPlayPage() {
         } else {
           setIsFinished(true);
         }
-      }, 1000);
-
+      }, 1500);
       return () => clearTimeout(timer);
     }
   }, [answered, currentQuestionIndex, quiz?.questions?.length]);
 
-  // Đếm ngược thời gian
   useEffect(() => {
     if (timeLeft > 0 && !isFinished) {
       const timer = setInterval(() => {
         setTimeLeft((prev) => prev - 1);
       }, 1000);
-
       return () => clearInterval(timer);
     }
   }, [timeLeft, isFinished]);
 
-  // Dừng lại khi hoàn thành quiz hoặc thời gian hết
   useEffect(() => {
     if (timeLeft === 0) {
       setIsFinished(true);
     }
   }, [timeLeft]);
 
-  // Điều hướng quay lại trang quiz danh sách
   const handleGoBack = () => {
     navigate("/quiz");
   };
 
-  // Điều hướng chơi lại quiz
   const handlePlayAgain = () => {
     setIsFinished(false);
     setCurrentQuestionIndex(0);
@@ -110,79 +94,98 @@ function QuizPlayPage() {
     setAnswered(false);
   };
 
-  // Nếu quiz chưa tải hoặc không có questions
   if (!quiz || !quiz.questions || quiz.questions.length === 0) {
-    return <div>Đang tải quiz hoặc quiz không hợp lệ...</div>;
+    return (
+      <div className="text-center mt-20 text-gray-500 text-xl">
+        Đang tải quiz hoặc quiz không hợp lệ...
+      </div>
+    );
   }
 
   const currentQuestion = quiz.questions[currentQuestionIndex];
 
   return (
-    <div className="max-w-3xl mx-auto p-6">
-      <h1 className="text-3xl font-bold text-gray-800">{quiz.title}</h1>
-      <p className="text-lg text-gray-600 mb-4">{quiz.description}</p>
-      <div className="mb-4">
-        <span className="font-semibold text-lg">Thời gian còn lại: </span>
-        <span className="text-red-500">{timeLeft} giây</span>
-      </div>
-      <div className="question mb-6 p-4 border border-gray-300 rounded-lg shadow-md">
-        <h3 className="text-xl font-semibold mb-4">
-          {currentQuestion.question}
-        </h3>
-
-        <div className="grid grid-cols-2 gap-4">
-          {currentQuestion.options.map((option, i) => (
-            <label
-              key={i}
-              className={`flex items-center justify-center p-4 border-2 border-gray-300 rounded-lg cursor-pointer transition 
-               ${
-                 answered &&
-                 (option === currentQuestion.correctAnswer
-                   ? "bg-green-100"
-                   : option === answers[currentQuestionIndex]
-                   ? "bg-red-100"
-                   : "")
-               }`}
-            >
-              <input
-                type="radio"
-                name={`question-${currentQuestionIndex}`}
-                value={option}
-                checked={answers[currentQuestionIndex] === option}
-                onChange={handleAnswerChange}
-                disabled={answered}
-                className="hidden"
-              />
-              <span className="text-lg">{option}</span>
-            </label>
-          ))}
+    <div className="min-h-screen flex flex-col justify-center items-center p-6 bg-gray-50">
+      <div className="w-full max-w-5xl">
+        <h1 className="text-4xl font-bold text-center text-indigo-700 mb-2">
+          {quiz.title}
+        </h1>
+        <p className="text-center text-xl text-gray-600 mb-6">
+          {quiz.description}
+        </p>
+        <div className="text-center mb-8">
+          <span className="font-medium text-xl">⏳ Thời gian còn lại: </span>
+          <span className="text-red-500 font-bold text-2xl">{timeLeft}s</span>
         </div>
-      </div>
 
-      {/* Hiển thị điểm số khi hoàn thành quiz */}
-      {isFinished && (
-        <div className="mt-6 text-xl">
-          <p className="font-semibold">Bạn đã hoàn thành Quiz!</p>
-          <p className="text-lg">
-            Điểm của bạn là: {score}/{quiz.questions.length}
-          </p>
+        {!isFinished && (
+          <div className="bg-white shadow-xl border border-gray-200 p-10 rounded-2xl">
+            <h3 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+              Câu {currentQuestionIndex + 1}: {currentQuestion.question}
+            </h3>
 
-          <div className="flex space-x-4 mt-6">
-            <button
-              onClick={handleGoBack}
-              className="px-6 py-2 bg-blue-500 text-white rounded-lg"
-            >
-              Quay lại
-            </button>
-            <button
-              onClick={handlePlayAgain}
-              className="px-6 py-2 bg-green-500 text-white rounded-lg"
-            >
-              Chơi lại
-            </button>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              {currentQuestion.options.map((option, i) => {
+                const isSelected = answers[currentQuestionIndex] === option;
+                const isCorrect = option === currentQuestion.correctAnswer;
+
+                return (
+                  <label
+                    key={i}
+                    className={`flex items-center justify-center text-xl p-6 rounded-2xl font-semibold cursor-pointer border-2 transition-all duration-300 text-center
+                      ${
+                        answered
+                          ? isCorrect
+                            ? "bg-green-500 text-white border-green-600"
+                            : isSelected
+                            ? "bg-red-500 text-white border-red-600"
+                            : "bg-white text-gray-800"
+                          : "bg-white text-gray-800 hover:bg-indigo-100 hover:shadow-md"
+                      }`}
+                  >
+                    <input
+                      type="radio"
+                      name={`question-${currentQuestionIndex}`}
+                      value={option}
+                      checked={isSelected}
+                      onChange={handleAnswerChange}
+                      disabled={answered}
+                      className="hidden"
+                    />
+                    <span>{option}</span>
+                  </label>
+                );
+              })}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+
+        {isFinished && (
+          <div className="bg-white border shadow-lg rounded-2xl p-10 text-center mt-8">
+            <h2 className="text-3xl font-bold text-green-600 mb-4">
+              🎉 Bạn đã hoàn thành quiz!
+            </h2>
+            <p className="text-xl text-gray-700 mb-2">Điểm số của bạn là:</p>
+            <p className="text-5xl font-bold text-indigo-700 mb-6">
+              {score} / {quiz.questions.length}
+            </p>
+            <div className="flex justify-center gap-6 mt-4 flex-wrap">
+              <button
+                onClick={handleGoBack}
+                className="px-8 py-3 text-lg bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300 transition"
+              >
+                🔙 Quay lại
+              </button>
+              <button
+                onClick={handlePlayAgain}
+                className="px-8 py-3 text-lg bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-300 transition"
+              >
+                🔄 Chơi lại
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

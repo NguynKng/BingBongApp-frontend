@@ -17,33 +17,38 @@ function ChatBox({ onClose }) {
     };
 
     return (
-        <div className="fixed right-20 bottom-0 w-80 bg-white border border-gray-300 rounded-t-md shadow-lg flex flex-col overflow-hidden z-50">
-            {/* Header */}
-            <div className="px-4 py-2 font-semibold flex justify-between items-center bg-gray-100">
-                <div className="flex items-center gap-2 text-black">
-                    <img src="/user.png" className="object-cover size-8" />
-                    <span className="text-base">{"User"}</span>
+        <div className="fixed right-20 bottom-0 w-80 z-50 transform transition-all duration-300 ease-out hover:scale-[1.01]">
+            <div className="rounded-t-xl shadow-xl overflow-hidden bg-white border border-gray-200">
+                {/* Header */}
+                <div className="px-4 py-2 font-semibold flex justify-between items-center 
+                    bg-gradient-to-r from-blue-500 to-purple-500 text-white">
+                    <div className="flex items-center gap-2">
+                        <img src="/user.png" className="object-cover size-8 rounded-full border" />
+                        <span className="text-base">{"User"}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <button
+                            className="p-1 rounded-full hover:bg-white/20 transition"
+                            onClick={handleMinimize}
+                        >
+                            <Minus />
+                        </button>
+                        <button
+                            className="p-1 rounded-full hover:bg-white/20 transition"
+                            onClick={onClose}
+                        >
+                            <X />
+                        </button>
+                    </div>
                 </div>
-                <div className="flex items-center gap-2 text-blue-500">
-                    <button
-                        className="p-1 rounded-full hover:bg-gray-200 transition duration-200 cursor-pointer"
-                        onClick={handleMinimize}
-                    >
-                        <Minus />
-                    </button>
-                    <button
-                        className="p-1 rounded-full hover:bg-gray-200 transition duration-200 cursor-pointer"
-                        onClick={onClose}
-                    >
-                        <X />
-                    </button>
-                </div>
-            </div>
 
-            {/* Chat content: only show if not minimized */}
-            {!isMinimized && (
-                <>
-                    <div className="flex-1 overflow-y-auto p-2 min-h-72 space-y-2 border-y-2 border-gray-200 text-sm">
+                {/* Chat content */}
+                <div
+                    className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                        isMinimized ? "max-h-0 opacity-0" : "max-h-[500px] opacity-100"
+                    }`}
+                >
+                    <div className="p-2 min-h-72 max-h-96 overflow-y-auto space-y-2 text-sm">
                         {messages.map((msg, idx) => (
                             <div
                                 key={idx}
@@ -58,11 +63,11 @@ function ChatBox({ onClose }) {
                         ))}
                     </div>
 
-                    <div className="p-2 flex items-center gap-2">
+                    <div className="p-2 flex items-center gap-2 border-t border-gray-200">
                         <input
                             type="text"
                             placeholder="Nhập tin nhắn..."
-                            className="flex-1 px-3 py-2 border rounded-full text-sm outline-none"
+                            className="flex-1 px-3 py-2 border border-gray-300 rounded-full text-sm outline-none focus:ring-2 focus:ring-blue-300"
                             value={message}
                             onChange={(e) => setMessage(e.target.value)}
                             onKeyDown={(e) => e.key === "Enter" && handleSend()}
@@ -74,8 +79,8 @@ function ChatBox({ onClose }) {
                             <Send className="size-4" />
                         </button>
                     </div>
-                </>
-            )}
+                </div>
+            </div>
         </div>
     );
 }
