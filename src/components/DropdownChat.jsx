@@ -107,7 +107,7 @@ function DropdownChat({ onToggleChat }) {
             </div>
 
             {/* Chat List */}
-            <div className="space-y-2 max-h-[30rem] overflow-y-auto pr-1 custom-scrollbar">
+            <div className="space-y-2 max-h-[28rem] custom-scroll overflow-y-auto pr-1 custom-scrollbar">
                 {chats.map((chat) => (
                     <div
                         key={chat.id}

@@ -14,8 +14,7 @@ function MainLayout({ Element }) {
             <Meta title={`BingBong`} />
             <Header onToggleChat={() => setShowChat(prev => !prev)} />
             <Navbar />
-
-            <div className="relative pt-[10vh] min-h-screen bg-gray-100 lg:ml-[25%]">
+            <div className="relative pt-[64px] bg-gray-100 lg:ml-[24rem]">
                 <div className="lg:w-[70%] w-full px-4 md:px-8 min-h-[90vh]">
                     <Element />
                     <Footer />
