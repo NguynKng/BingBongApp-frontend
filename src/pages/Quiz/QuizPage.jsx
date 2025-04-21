@@ -42,13 +42,13 @@ export default function QuizPage() {
           <div className="flex gap-4 mt-4 md:mt-0">
             <button
               onClick={() => navigate("/quiz/create")}
-              className="bg-gradient-to-r from-orange-400 to-orange-600 text-white px-6 py-3 rounded-lg shadow-lg transform hover:scale-105 hover:shadow-xl transition-all duration-300"
+              className="bg-gradient-to-r from-orange-400 to-orange-600 text-white px-6 py-3 rounded-lg shadow-lg transform hover:scale-105 hover:shadow-xl transition-all duration-300 cursor-pointer"
             >
               ➕ Tạo Quiz mới
             </button>
             <button
               onClick={() => navigate("/quiz/leaderboard")}
-              className="bg-gradient-to-r from-indigo-500 to-purple-700 text-white px-6 py-3 rounded-lg shadow-lg transform hover:scale-105 hover:shadow-xl transition-all duration-300"
+              className="bg-gradient-to-r from-indigo-500 to-purple-700 text-white px-6 py-3 rounded-lg shadow-lg transform hover:scale-105 hover:shadow-xl transition-all duration-300 cursor-pointer"
             >
               🏆 Bảng xếp hạng
             </button>
