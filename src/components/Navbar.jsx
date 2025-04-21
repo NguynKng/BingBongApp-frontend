@@ -55,7 +55,7 @@ function Navbar() {
                 {/* Toggle show more / less */}
                 <button
                     onClick={() => setShowAll(!showAll)}
-                    className="flex items-center gap-2 text-sm font-semibold text-blue-800 hover:text-blue-600 transition-all pl-3 pt-2"
+                    className="flex items-center gap-2 text-sm font-semibold text-blue-800 hover:text-blue-600 transition-all pl-3 pt-2 cursor-pointer"
                 >
                     {showAll ? (
                         <>

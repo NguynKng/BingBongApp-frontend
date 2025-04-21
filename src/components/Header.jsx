@@ -168,12 +168,12 @@ function Header({ onToggleChat }) {
                     {/* User Dropdown */}
                     <div className="relative">
                         <div
-                            className="relative size-10 bg-white/70 rounded-full overflow-hidden shadow-md hover:scale-110 hover:ring-2 ring-blue-300 transition-all cursor-pointer group"
+                            className="relative size-10 bg-white/70 rounded-full shadow-md hover:scale-110 hover:ring-2 ring-blue-300 transition-all cursor-pointer group"
                             onClick={() => toggleDropdown("user")}
                         >
                             <img
                                 src={user?.avatar ? `${Config.BACKEND_URL}${user.avatar}` : `/user.png`}
-                                className="size-full object-cover"
+                                className="size-full object-cover rounded-full"
                             />
                             <div className="absolute -bottom-10 left-1/2 transform -translate-x-1/2 text-xs bg-black/80 text-white px-3 py-1 rounded shadow hidden group-hover:block">
                                 Tài khoản
