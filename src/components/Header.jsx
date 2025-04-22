@@ -130,7 +130,7 @@ function Header({ onToggleChat }) {
                                 {tab.label}
                             </div>
                             {activeTab === tab.id && (
-                                <div className="absolute bottom-0 left-0 w-full h-[3px] bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 rounded-full animate-pulse" />
+                                <div className="absolute bottom-0 left-0 w-full h-[4px] bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 rounded-full animate-pulse" />
                             )}
                         </Link>
                     ))}
