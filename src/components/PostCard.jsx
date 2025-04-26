@@ -14,6 +14,8 @@ function PostCard({ post }) {
   const [openComment, setOpenComment] = useState(false);
   const [userComments, setUserComments] = useState([]);
   const [loadingComment, setLoadingComment] = useState(false);
+  const [userReaction, setUserReaction] = useState(null); // Lưu cảm xúc của người dùng
+  const [totalReactions, setTotalReactions] = useState(post.reactions.length); // Tổng số cảm xúc
 
   useEffect(() => {
     if (!openComment) return;
@@ -36,6 +38,13 @@ function PostCard({ post }) {
 
     fetchComments();
   }, [openComment, post._id]);
+
+  <EmotionBar
+    onReact={(emotion) => {
+      setUserReaction(emotion); // Cập nhật cảm xúc của người dùng
+      setTotalReactions((prev) => prev + 1); // Tăng tổng số cảm xúc
+    }}
+  />
 
   const {
     createdAt,
@@ -108,9 +117,27 @@ function PostCard({ post }) {
       <div className="flex items-center justify-between pt-3">
         <button className="flex items-center text-gray-600 hover:text-red-400 transition cursor-pointer relative group">
           <Heart className="w-5 h-5 mr-1" />
-          <span>{`${reactions.length} Thích`}</span>
+          <span>
+            {userReaction ? (
+              <div className="flex items-center gap-2">
+                <img
+                  src={userReaction.icon}
+                  alt={userReaction.name}
+                  className="w-5 h-5"
+                />
+                <span>{`Bạn đã thả ${userReaction.name}`}</span>
+              </div>
+            ) : (
+              `${totalReactions} Thích`
+            )}
+          </span>
           <div className="absolute bottom-[120%] left-0 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-all delay-300 z-30">
-            <EmotionBar />
+            <EmotionBar
+              onReact={(emotion) => {
+                setUserReaction(emotion);
+                setTotalReactions((prev) => prev + 1);
+              }}
+            />
           </div>
         </button>
         <button
