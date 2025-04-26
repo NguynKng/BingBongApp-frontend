@@ -17,6 +17,7 @@ import useAuthStore from "../store/authStore";
 import Config from "../envVars";
 import DropdownUser from "./DropdownUser";
 import DropdownChat from "./DropdownChat";
+import DropdownNotification from "./DropdownNotification";
 import { useGetProfileByName } from "../hooks/useProfile";
 import debounce from "lodash.debounce";
 import SpinnerLoading from "./SpinnerLoading";
@@ -27,7 +28,7 @@ function Header({ onToggleChat }) {
     const { listUser, loading } = useGetProfileByName(query, {
         enabled: isSearchingUser,
     });
-    const [dropdown, setDropdown] = useState({ user: false, chat: false });
+    const [dropdown, setDropdown] = useState({ user: false, chat: false, notification: false });
     const { user } = useAuthStore();
     const location = useLocation();
 
@@ -54,10 +55,15 @@ function Header({ onToggleChat }) {
     ];
 
     const toggleDropdown = (type) => {
-        setDropdown((prev) => ({
-            user: type === "user" ? !prev.user : false,
-            chat: type === "chat" ? !prev.chat : false,
-        }));
+        setDropdown((prev) => {
+            const newState = {
+                user: type === "user" ? !prev.user : false,
+                chat: type === "chat" ? !prev.chat : false,
+                notification: type === "notification" ? !prev.notification : false,
+            };
+            console.log("Dropdown state:", newState); // Kiểm tra trạng thái
+            return newState;
+        });
     };
 
     return (
@@ -130,7 +136,7 @@ function Header({ onToggleChat }) {
                                 {tab.label}
                             </div>
                             {activeTab === tab.id && (
-                                <div className="absolute bottom-0 left-0 w-full h-[3px] bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 rounded-full animate-pulse" />
+                                <div className="absolute bottom-0 left-0 w-full h-[4px] bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 rounded-full animate-pulse" />
                             )}
                         </Link>
                     ))}
@@ -158,11 +164,15 @@ function Header({ onToggleChat }) {
                     </div>
 
                     {/* Bell Icon */}
-                    <div className="relative size-10 p-2 bg-white/70 rounded-full flex items-center justify-center shadow-md hover:scale-110 hover:ring-2 ring-blue-300 transition-all cursor-pointer group">
+                    <div
+                        className="relative size-10 p-2 bg-white/70 rounded-full flex items-center justify-center shadow-md hover:scale-110 hover:ring-2 ring-blue-300 transition-all cursor-pointer group"
+                        onClick={() => toggleDropdown("notification")}
+                    >
                         <Bell className="text-blue-800" />
                         <div className="absolute -bottom-10 text-xs bg-black/80 text-white px-3 py-1 rounded shadow hidden group-hover:block">
                             Thông báo
                         </div>
+                        {dropdown.notification && <DropdownNotification />}
                     </div>
 
                     {/* User Dropdown */}
