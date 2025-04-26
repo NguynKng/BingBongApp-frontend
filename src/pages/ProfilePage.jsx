@@ -35,9 +35,6 @@ function ProfilePage() {
   const [hasSentFriendRequest, setHasSentFriendRequest] = useState(false);
   const [isReceivingFriendRequest, setIsReceivingFriendRequest] = useState(false);
 
-  console.log("isMyProfile", user);
-  console.log("displayedUser", displayedUser);
-
   useEffect(() => {
     if (!isMyProfile && displayedUser && user) {
       setIsFriend(user.friends?.includes(displayedUser._id));

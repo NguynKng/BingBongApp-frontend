@@ -46,6 +46,14 @@ function PostCard({ post }) {
     author, // author là object
   } = post;
 
+  if(!post){
+    return (
+        <div className="flex items-center justify-center">
+            <SpinnerLoading />
+        </div>
+    )
+  }
+
   return (
     <div className="bg-white p-5 rounded-lg shadow-md mb-4">
       <div className="flex items-center space-x-2 mb-3">
