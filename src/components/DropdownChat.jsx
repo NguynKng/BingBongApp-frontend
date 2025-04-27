@@ -1,71 +1,12 @@
 import { Ellipsis, Expand, Search, SquarePen } from "lucide-react";
+import { useGetChats } from "../hooks/useChats";
+import SpinnerLoading from "./SpinnerLoading";
+import Config from "../envVars";
+import { formatTime } from "../utils/timeUtils";
 
 function DropdownChat({ onToggleChat }) {
-    const chats = [
-        {
-            id: "1",
-            name: "Nguyễn Nguyện",
-            avatar: "/avatar/avatar-1.png",
-            message: "Hey, how are you?",
-            time: "2h ago",
-        },
-        {
-            id: "2",
-            name: "Long Quang Trương",
-            avatar: "/avatar/avatar-3.png",
-            message: "Let's meet tomorrow!",
-            time: "1d ago",
-        },
-        {
-            id: "3",
-            name: "Cristiano Ronaldo",
-            avatar: "/avatar/avatar-4.png",
-            message: "Check this out ⚽",
-            time: "Just now",
-        },
-        {
-            id: "4",
-            name: "Cristiano Ronaldo",
-            avatar: "/avatar/avatar-4.png",
-            message: "Check this out ⚽",
-            time: "Just now",
-        },
-        {
-            id: "5",
-            name: "Cristiano Ronaldo",
-            avatar: "/avatar/avatar-4.png",
-            message: "Check this out ⚽",
-            time: "Just now",
-        },
-        {
-            id: "6",
-            name: "Cristiano Ronaldo",
-            avatar: "/avatar/avatar-4.png",
-            message: "Check this out ⚽",
-            time: "Just now",
-        },
-        {
-            id: "7",
-            name: "Cristiano Ronaldo",
-            avatar: "/avatar/avatar-4.png",
-            message: "Check this out ⚽",
-            time: "Just now",
-        },
-        {
-            id: "8",
-            name: "Cristiano Ronaldo",
-            avatar: "/avatar/avatar-4.png",
-            message: "Check this out ⚽",
-            time: "Just now",
-        },
-        {
-            id: "9",
-            name: "Cristiano Ronaldo",
-            avatar: "/avatar/avatar-4.png",
-            message: "Check this out ⚽",
-            time: "Just now",
-        }
-    ];
+    const { messages, loading } = useGetChats();
+
     return (
         <div className="absolute top-[110%] right-0 min-w-96 rounded-xl shadow-2xl border border-gray-200 bg-white p-4 space-y-5 animate-fade-in transform transition-all duration-300 ease-in-out">
             {/* Header */}
@@ -107,25 +48,36 @@ function DropdownChat({ onToggleChat }) {
             </div>
 
             {/* Chat List */}
-            <div className="space-y-2 max-h-[28rem] custom-scroll overflow-y-auto pr-1 custom-scrollbar">
-                {chats.map((chat) => (
-                    <div
-                        key={chat.id}
-                        onClick={onToggleChat}
-                        className="flex items-center gap-3 hover:bg-gray-100 rounded-xl px-3 py-2 cursor-pointer transition-all duration-200 transform hover:scale-[1.02] hover:shadow-md"
-                    >
-                        <img
-                            src={chat.avatar}
-                            alt={chat.name}
-                            className="size-10 rounded-full object-cover border border-gray-300 shadow-sm"
-                        />
-                        <div className="flex-1">
-                            <h2 className="text-sm font-semibold text-gray-800">{chat.name}</h2>
-                            <p className="text-xs text-gray-500 truncate">{chat.message}</p>
-                        </div>
-                        <span className="text-xs text-gray-400">{chat.time}</span>
+            <div className="space-y-2 min-h-[28rem] custom-scroll overflow-y-auto pr-1 custom-scrollbar">
+                {loading ? (
+                    <div className="flex items-center justify-center">
+                        <SpinnerLoading />
                     </div>
-                ))}
+                ) : (
+                    messages.map((chat) => (
+                        <div
+                            key={chat.roomId}
+                            onClick={() => onToggleChat(chat.participant)}
+                            className="flex items-center gap-3 hover:bg-gray-100 rounded-xl px-3 py-2 cursor-pointer transition-all duration-200 transform hover:scale-[1.02] hover:shadow-md"
+                        >
+                            <img
+                                src={`${Config.BACKEND_URL}${chat.participant.avatar}`}
+                                alt={`${chat.participant.fullName}`}
+                                className="size-10 rounded-full object-cover border border-gray-300 shadow-sm"
+                            />
+                            <div className="flex-1">
+                                <h2 className="text-sm font-semibold text-gray-800">{chat.participant.fullName}</h2>
+                                <p className="text-xs text-gray-500 truncate">
+                                    {chat.lastMessage.isSentByMe ? "Bạn: " : ""}
+                                    {chat?.lastMessage.text.length > 30
+                                        ? `${chat.lastMessage.text.slice(0, 30)}...`
+                                        : chat.lastMessage.text}
+                                </p>
+                            </div>
+                            <span className="text-xs text-gray-400">{formatTime(chat.lastMessage.createdAt)}</span>
+                        </div>
+                    ))
+                )}
             </div>
         </div>
     );
