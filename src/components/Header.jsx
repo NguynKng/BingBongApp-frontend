@@ -61,7 +61,6 @@ function Header({ onToggleChat }) {
                 chat: type === "chat" ? !prev.chat : false,
                 notification: type === "notification" ? !prev.notification : false,
             };
-            console.log("Dropdown state:", newState); // Kiểm tra trạng thái
             return newState;
         });
     };
@@ -147,18 +146,17 @@ function Header({ onToggleChat }) {
                     {/* Menu Icon */}
                     <div className="relative size-10 p-2 bg-white/70 rounded-full flex items-center justify-center shadow-md hover:scale-110 hover:ring-2 ring-blue-300 transition-all cursor-pointer group">
                         <Grip className="text-blue-800" />
-                        <div className="absolute -bottom-10 text-xs bg-black/80 text-white px-3 py-1 rounded shadow hidden group-hover:block">
+                        <div className="absolute -bottom-8 text-xs bg-black/80 text-white px-3 py-1 rounded shadow hidden group-hover:block z-50 text-center">
                             Menu
                         </div>
                     </div>
 
                     {/* Messenger Icon */}
-                    <div
-                        className="relative size-10 p-2 bg-white/70 rounded-full shadow-md hover:scale-110 hover:ring-2 ring-blue-300 transition-all cursor-pointer group"
+                    <div className="relative size-10 p-2 bg-white/70 rounded-full shadow-md hover:scale-110 flex items-center justify-center hover:ring-2 ring-blue-300 transition-all cursor-pointer group"
                         onClick={() => toggleDropdown("chat")}
                     >
                         <img src="/messenger-icon.png" className="size-full object-contain" />
-                        <div className="absolute -bottom-10 text-xs bg-black/80 text-white px-3 py-1 rounded shadow hidden group-hover:block">
+                        <div className="absolute -bottom-8 text-xs bg-black/80 text-white px-3 py-1 rounded shadow hidden group-hover:block z-50 text-center">
                             Messenger
                         </div>
                     </div>
@@ -169,10 +167,9 @@ function Header({ onToggleChat }) {
                         onClick={() => toggleDropdown("notification")}
                     >
                         <Bell className="text-blue-800" />
-                        <div className="absolute -bottom-10 text-xs bg-black/80 text-white px-3 py-1 rounded shadow hidden group-hover:block">
+                        <div className="absolute -bottom-8 text-xs bg-black/80 text-white px-3 py-1 rounded shadow hidden group-hover:block z-50 text-center">
                             Thông báo
                         </div>
-                        {dropdown.notification && <DropdownNotification />}
                     </div>
 
                     {/* User Dropdown */}
@@ -185,7 +182,7 @@ function Header({ onToggleChat }) {
                                 src={user?.avatar ? `${Config.BACKEND_URL}${user.avatar}` : `/user.png`}
                                 className="size-full object-cover rounded-full"
                             />
-                            <div className="absolute -bottom-10 left-1/2 transform -translate-x-1/2 text-xs bg-black/80 text-white px-3 py-1 rounded shadow hidden group-hover:block">
+                            <div className="absolute -bottom-10 left-1/2 transform -translate-x-1/2 text-xs bg-black/80 text-white px-3 py-1 rounded shadow hidden group-hover:block text-center">
                                 Tài khoản
                             </div>
                             <div className="absolute -bottom-1 -right-1 bg-white size-4 rounded-full flex items-center justify-center">
@@ -194,6 +191,7 @@ function Header({ onToggleChat }) {
                         </div>
                         {dropdown.user && <DropdownUser />}
                         {dropdown.chat && <DropdownChat onToggleChat={onToggleChat} />}
+                        {dropdown.notification && <DropdownNotification />}
                     </div>
                 </div>
             </div>

@@ -347,7 +347,9 @@ export const postAPI = {
   },
   addComment: async (postId, commentData) => {
     try {
-      const response = await api.post(`/posts/${postId}/comments`, {content: commentData});
+      const response = await api.post(`/posts/${postId}/comments`, {
+        content: commentData,
+      });
 
       if (response.data.success === false) {
         throw new Error(response.data.message);
@@ -365,10 +367,9 @@ export const postAPI = {
   },
   addReply: async (commentId, replyData) => {
     try {
-      const response = await api.post(
-        `/posts/comments/${commentId}/replies`,
-        { content: replyData }
-      );
+      const response = await api.post(`/posts/comments/${commentId}/replies`, {
+        content: replyData,
+      });
 
       if (response.data.success === false) {
         throw new Error(response.data.message);
@@ -402,7 +403,27 @@ export const postAPI = {
       throw error;
     }
   },
-  // ...you can add other post-related APIs here
+};
+
+export const chatApi = {
+  getChatList: async () => {
+    try {
+      const response = await api.get("/messages");
+
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch chat list";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
 };
 
 // Export the axios instance for use in other API services
