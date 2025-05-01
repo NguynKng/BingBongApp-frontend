@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import Config from "../envVars";
 
 function ListFriend({ onToggleChat }) {
-    const { user } = useAuthStore();
+    const { user, onlineUsers } = useAuthStore();
     const { profile, loading } = useGetProfile(user?._id || '');
     const [friends, setFriends] = useState([]);
     useEffect(() => {
@@ -63,9 +63,11 @@ function ListFriend({ onToggleChat }) {
                                 <img
                                     src={friend.avatar ? `${Config.BACKEND_URL}${friend.avatar}` : "/user.png"}
                                     alt={friend.firstName}
-                                    className="size-full rounded-full object-cover border"
+                                    className="size-full rounded-full object-cover"
                                 />
-                                <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
+                                {onlineUsers.includes(friend._id) && (
+                                    <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
+                                )}
                             </div>
                             <h2 className="text-[15px] font-semibold">{`${friend.fullName}`}</h2>
                         </div>
