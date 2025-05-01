@@ -52,3 +52,16 @@ export const formatTime = (timestamp) => {
   const years = Math.floor(secondsAgo / 31536000);
   return `${years} năm`;
 };
+
+export const formatTimeToHourMinute = (
+    timestamp
+  ) => {
+    if (!timestamp) return "";
+  
+    const date = timestamp instanceof Date ? timestamp : new Date(timestamp);
+  
+    const hours = date.getHours().toString().padStart(2, "0");
+    const minutes = date.getMinutes().toString().padStart(2, "0");
+  
+    return `${hours}:${minutes}`;
+  };
