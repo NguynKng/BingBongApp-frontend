@@ -13,13 +13,35 @@ function QuizPlayPage() {
   const [timeLeft, setTimeLeft] = useState(60);
   const [isFinished, setIsFinished] = useState(false);
   const [answered, setAnswered] = useState(false);
+  const [user, setUser] = useState(null); // State lưu thông tin người dùng
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const userResponse = await axios.get("http://localhost:8000/api/v1/user/me", {
+          withCredentials: true, // Đảm bảo gửi cookie
+        });
+  
+        console.log("📌 Phản hồi API /me:", userResponse); // Kiểm tra toàn bộ phản hồi
+        console.log("✅ Dữ liệu người dùng:", userResponse.data); // Kiểm tra dữ liệu người dùng
+  
+        if (userResponse.status === 200 && userResponse.data) { 
+          setUser(userResponse.data); 
+        } else {
+          console.warn("⚠️ API không trả về dữ liệu hợp lệ.");
+        }
+      } catch (error) {
+        console.error("❌ Lỗi khi lấy thông tin người dùng:", error.response?.data || error.message);
+      }
+    };
+  
+    fetchUser();
+  }, []);
 
   useEffect(() => {
     const fetchQuiz = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:8000/api/v1/quiz/${quizId}`
-        );
+        const response = await axios.get(`http://localhost:8000/api/v1/quiz/${quizId}`);
         const quizData = response.data;
         const actualQuiz = quizData.questions ? quizData : quizData.quiz;
 
@@ -52,6 +74,32 @@ function QuizPlayPage() {
     setAnswered(true);
   };
 
+  // 👉 Hàm lưu điểm về backend
+  const saveScore = async () => {
+    if (!user) {
+      console.error("User chưa đăng nhập.");
+      return;
+    }
+
+    try {
+      const requestData = {
+        userId: user._id, // Lấy ID người dùng thực tế từ thông tin đã fetch
+        quizId,
+        score,
+      };
+
+      console.log("Sending data:", requestData); // Log the data being sent
+
+      await axios.post("http://localhost:8000/api/v1/rank/score", requestData, {
+        withCredentials: true, // required if you're using cookie authentication
+      });
+
+      console.log("✅ Điểm đã được lưu thành công.");
+    } catch (err) {
+      console.error("❌ Có lỗi khi lưu điểm.", err.response?.data || err.message);
+    }
+  };
+
   useEffect(() => {
     if (answered) {
       const timer = setTimeout(() => {
@@ -60,6 +108,7 @@ function QuizPlayPage() {
           setAnswered(false);
         } else {
           setIsFinished(true);
+          saveScore(); // 👉 Lưu điểm ngay khi kết thúc
         }
       }, 1500);
       return () => clearTimeout(timer);
@@ -78,6 +127,7 @@ function QuizPlayPage() {
   useEffect(() => {
     if (timeLeft === 0) {
       setIsFinished(true);
+      saveScore(); // 👉 Lưu điểm nếu hết thời gian
     }
   }, [timeLeft]);
 
@@ -133,8 +183,7 @@ function QuizPlayPage() {
                   <label
                     key={i}
                     className={`flex items-center justify-center text-xl p-6 rounded-2xl font-semibold cursor-pointer border-2 transition-all duration-300 text-center
-                      ${
-                        answered
+                      ${answered
                           ? isCorrect
                             ? "bg-green-500 text-white border-green-600"
                             : isSelected
