@@ -1,13 +1,46 @@
 import { useState, useEffect } from "react";
+import axios from "axios";
 
 function Leaderboard() {
   const [leaderboard, setLeaderboard] = useState([]);
+  const [error, setError] = useState(null); // Lưu thông báo lỗi
+  const [loading, setLoading] = useState(true); // Biến trạng thái loading
 
   useEffect(() => {
-    const storedLeaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
-    storedLeaderboard.sort((a, b) => b.score - a.score);
-    setLeaderboard(storedLeaderboard);
-  }, []);
+    const fetchLeaderboard = async () => {
+      try {
+        // Sửa lại endpoint theo route đúng của bạn
+        const response = await axios.get("http://localhost:8000/api/v1/rank/leaderboard", {
+          withCredentials: true, // Nếu có dùng cookie để xác thực
+        });
+        console.log("📌 Dữ liệu trả về từ API:", response.data);
+        const data = response.data;
+
+        // Kiểm tra nếu data.leaderboard là mảng thì set vào state
+        if (Array.isArray(data.leaderboard)) {
+          setLeaderboard(data.leaderboard);
+        } else {
+          console.error("Dữ liệu trả về không phải là mảng:", data);
+        }
+
+        setLoading(false); // Đã tải xong
+      } catch (error) {
+        console.error("Lỗi khi lấy bảng xếp hạng:", error);
+        setError("Lỗi khi tải bảng xếp hạng"); // Lưu thông báo lỗi
+        setLoading(false); // Đã tải xong dù có lỗi
+      }
+    };
+
+    fetchLeaderboard();
+  }, []); // Chạy 1 lần khi component mount
+
+  if (loading) {
+    return <div>Đang tải bảng xếp hạng...</div>;
+  }
+
+  if (error) {
+    return <div>{error}</div>;
+  }
 
   return (
     <div className="max-w-4xl mx-auto p-6 mt-10">
@@ -25,21 +58,14 @@ function Leaderboard() {
             </tr>
           </thead>
           <tbody>
-            {leaderboard.map((player, index) => (
-              <tr
-                key={index}
-                className={`transition duration-300 ${
-                  index % 2 === 0
-                    ? "bg-white hover:bg-blue-50"
-                    : "bg-blue-50 hover:bg-white"
-                }`}
-              >
-                <td className="px-6 py-4 text-gray-700 font-semibold">{index + 1}</td>
-                <td className="px-6 py-4 text-gray-700">{player.name}</td>
-                <td className="px-6 py-4 text-gray-700">{player.score}</td>
-              </tr>
-            ))}
-          </tbody>
+          {leaderboard.map((player, index) => (
+          <tr key={index} className={`...`}>
+            <td className="px-6 py-4 text-gray-700 font-semibold">{index + 1}</td>
+            <td className="px-6 py-4 text-gray-700">{player.user?.name || "Ẩn danh"}</td>
+            <td className="px-6 py-4 text-gray-700">{player.score}</td>
+          </tr>
+        ))}
+        </tbody>
         </table>
       </div>
     </div>
