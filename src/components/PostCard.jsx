@@ -1,25 +1,37 @@
 import PropTypes from "prop-types";
-import { Heart, MessageCircle, Send } from "lucide-react";
-import EmotionBar from "./EmotionBar";
+import { Heart, MessageCircle, Send, ThumbsUp } from "lucide-react";
 import Config from "../envVars";
 import { formatTime } from "../utils/timeUtils";
 import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { postAPI } from "../services/api";
 import SpinnerLoading from "./SpinnerLoading";
 import CommentItem from "./CommentItem";
 import CommentInput from "./CommentInput";
+import useAuthStore from "../store/authStore";
+import emotions from "../data/emotion";
 
 function PostCard({ post }) {
   const [openComment, setOpenComment] = useState(false);
+  const { user } = useAuthStore();
+  const { author, createdAt, content, media } = post;
   const [userComments, setUserComments] = useState([]);
   const [loadingComment, setLoadingComment] = useState(false);
-  const [userReaction, setUserReaction] = useState(null); // Lưu cảm xúc của người dùng
-  const [totalReactions, setTotalReactions] = useState(post.reactions.length); // Tổng số cảm xúc
+  const [hoveredEmotion, setHoveredEmotion] = useState(null);
+  const [hoveredEmotionUser, setHoveredEmotionUser] = useState(null);
+  const [reactions, setReactions] = useState(post.reactions);
 
+  const filteredReactions = hoveredEmotionUser
+    ? reactions.filter((r) => r.type === hoveredEmotionUser)
+    : [];
+
+  const myReaction = useMemo(
+    () => reactions.find((reaction) => reaction?.user?._id === user?._id),
+    [reactions, user]
+  );
+
+  const isReacted = useMemo(() => !!myReaction, [myReaction]);
   useEffect(() => {
-    if (!openComment) return;
-
     const fetchComments = async () => {
       setLoadingComment(true);
       try {
@@ -39,28 +51,47 @@ function PostCard({ post }) {
     fetchComments();
   }, [openComment, post._id]);
 
-  <EmotionBar
-    onReact={(emotion) => {
-      setUserReaction(emotion); // Cập nhật cảm xúc của người dùng
-      setTotalReactions((prev) => prev + 1); // Tăng tổng số cảm xúc
-    }}
-  />
+  const handleReactPost = useCallback(
+    async (type) => {
+      if (!user) return;
 
-  const {
-    createdAt,
-    content,
-    media,
-    reactions,
-    comments,
-    author, // author là object
-  } = post;
+      const prevReactions = [...reactions];
 
-  if(!post){
+      try {
+        const response = await postAPI.reactToPost(post._id, type);
+        if (!response.success) return;
+
+        const serverReaction = response.data;
+
+        if (myReaction?.type === type) {
+          // Nếu cùng loại → xóa
+          const updated = reactions.filter((r) => r.user._id !== user._id);
+          setReactions(updated);
+        } else if (myReaction) {
+          // Nếu đã từng react khác loại → cập nhật
+          const updated = reactions.map((r) =>
+            r.user._id === user._id ? serverReaction : r
+          );
+          console.log(updated)
+          setReactions(updated);
+        } else {
+          // Nếu chưa react → thêm mới
+          setReactions([...reactions, serverReaction]);
+        }
+      } catch (error) {
+        console.error("❌ Failed to react to post:", error);
+        setReactions(prevReactions); // rollback nếu lỗi
+      }
+    },
+    [post._id, user, reactions, myReaction]
+  );
+
+  if (!post) {
     return (
-        <div className="flex items-center justify-center">
-            <SpinnerLoading />
-        </div>
-    )
+      <div className="flex items-center justify-center">
+        <SpinnerLoading />
+      </div>
+    );
   }
 
   return (
@@ -122,38 +153,118 @@ function PostCard({ post }) {
           ))}
         </div>
       )}
-      <div className="flex items-center justify-between pt-3">
-        <button className="flex items-center text-gray-600 hover:text-red-400 transition cursor-pointer relative group">
-          <Heart className="w-5 h-5 mr-1" />
-          <span>
-            {userReaction ? (
-              <div className="flex items-center gap-2">
-                <img
-                  src={userReaction.icon}
-                  alt={userReaction.name}
-                  className="w-5 h-5"
-                />
-                <span>{`Bạn đã thả ${userReaction.name}`}</span>
-              </div>
-            ) : (
-              `${totalReactions} Thích`
-            )}
-          </span>
-          <div className="absolute bottom-[120%] left-0 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-all delay-300 z-30">
-            <EmotionBar
-              onReact={(emotion) => {
-                setUserReaction(emotion);
-                setTotalReactions((prev) => prev + 1);
-              }}
-            />
+      {reactions.length > 0 && (
+        <div className="flex items-center mt-2">
+          <div className="flex items-center relative group">
+            {emotions.reduce((acc, emotion) => {
+              if (reactions.some((r) => r.type === emotion.name)) {
+                const visibleIndex = acc.length;
+                acc.push(
+                  <div
+                    key={emotion.id}
+                    onMouseEnter={() => setHoveredEmotionUser(emotion.name)}
+                    onMouseLeave={() => setHoveredEmotionUser(null)}
+                    className="relative"
+                  >
+                    <img
+                      src={emotion.icon}
+                      className={`size-6 object-cover cursor-pointer ${
+                        visibleIndex !== 0 ? "-ml-2" : ""
+                      } relative z-[${10 - visibleIndex}]`}
+                    />
+                    {hoveredEmotionUser === emotion.name && (
+                      <div className="absolute -bottom-15 mb-2 left-0 -translate-x-1/2 px-2 py-1 bg-black text-white text-sm rounded shadow-lg whitespace-nowrap z-50">
+                        <h3 className="font-medium">{hoveredEmotionUser}</h3>
+                        <div className="flex flex-col mt-1">
+                          {filteredReactions.map((reaction) => (
+                            <span key={reaction._id}>{`${reaction?.user?.fullName}`}</span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              }
+              return acc;
+            }, [])}
           </div>
-        </button>
+          <span className="text-gray-600">{reactions.length}</span>
+        </div>
+      )}
+      <div className="flex items-center justify-between pt-3">
+        <div className="flex items-center text-gray-600 hover:text-red-400 transition cursor-pointer relative group">
+          {!isReacted ? (
+            <button
+              className="size-full flex items-center justify-center gap-1 text-gray-500 rounded-md cursor-pointer"
+              onClick={() => handleReactPost("Like")}
+            >
+              <ThumbsUp className={`size-5`} />
+              <span>Like</span>
+            </button>
+          ) : (
+            <div
+              className="size-full flex items-center justify-center gap-1 text-gray-500 rounded-md cursor-pointer"
+              onClick={() => handleReactPost(myReaction?.type)}
+            >
+              <img
+                src={
+                  emotions.find((emotion) => emotion.name === myReaction?.type)
+                    ?.icon
+                }
+                className="size-6 object-cover"
+              />
+              <span
+                className={`font-medium`}
+                style={{
+                  color: `${
+                    emotions.find(
+                      (emotion) => emotion.name === myReaction.type
+                    ).color
+                  }`,
+                }}
+              >
+                {
+                  emotions.find((emotion) => emotion.name === myReaction?.type)
+                    ?.name
+                }
+              </span>
+            </div>
+          )}
+
+          <div className="absolute bottom-[120%] left-0 z-50 invisible group-hover:visible transition-all delay-200">
+            <div className="flex bg-white rounded-full shadow-md border border-gray-200 relative z-50">
+              {emotions.map((emotion) => (
+                <div
+                  key={emotion.id}
+                  className="relative size-12 transition-transform transform hover:scale-125 cursor-pointer"
+                  onMouseEnter={() => setHoveredEmotion(emotion.name)} // Show tooltip on hover
+                  onMouseLeave={() => setHoveredEmotion(null)}
+                  onClick={() => handleReactPost(emotion.name)} // Handle click event
+                >
+                  <img
+                    src={emotion.icon}
+                    alt={emotion.name}
+                    className="w-full h-full object-contain"
+                  />
+                  {/* Tooltip */}
+
+                  {/* Tooltip */}
+                  {hoveredEmotion === emotion.name && (
+                    <div className="absolute -top-5 left-1/2 -translate-x-1/2 opacity-100 transition-all bg-black text-gray-300 text-xs px-2 py-1 rounded-md whitespace-nowrap pointer-events-none">
+                      {emotion.name}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
         <button
           className="flex items-center text-gray-600 cursor-pointer hover:text-blue-400 transition"
           onClick={() => setOpenComment(!openComment)}
         >
           <MessageCircle className="w-5 h-5 mr-1" />
-          <span>{`${comments.length} Bình luận`}</span>
+          <span>{`${userComments.length} Bình luận`}</span>
         </button>
       </div>
       {openComment && (
