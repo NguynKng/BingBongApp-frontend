@@ -64,7 +64,7 @@ function DropdownChat({ onToggleChat }) {
             >
               <div className="relative size-10 rounded-full">
                 <img
-                  src={`${Config.BACKEND_URL}${chat.participant.avatar}`}
+                  src={chat.participant.avatar ? `${Config.BACKEND_URL}${chat.participant.avatar}` : "/user.png"}
                   alt={`user avatar`}
                   className="size-full rounded-full object-cover"
                 />

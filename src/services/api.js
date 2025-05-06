@@ -304,6 +304,23 @@ export const userAPI = {
 };
 
 export const postAPI = {
+  reactToPost: async (postId, type) => {
+    try {
+      const response = await api.post(`/posts/react`, { postId, type });
+      return {
+        success: true,
+        message: response.data.message, // Thông điệp có thể tuỳ chỉnh
+        data: response.data.data || {}, // Dữ liệu thả cảm xúc
+      };
+    } catch (error) {
+      console.log(error);
+      return {
+        success: false,
+        message: "Đã có lỗi xảy ra khi thả cảm xúc",
+        data: {},
+      };
+    }
+  },
   // Get user feed (posts from user and their friends)
   getFeed: async (page = 1, limit = 10) => {
     try {
