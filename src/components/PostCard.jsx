@@ -49,7 +49,7 @@ function PostCard({ post }) {
     };
 
     fetchComments();
-  }, [openComment, post._id]);
+  }, [post._id]);
 
   const handleReactPost = useCallback(
     async (type) => {
@@ -72,7 +72,6 @@ function PostCard({ post }) {
           const updated = reactions.map((r) =>
             r.user._id === user._id ? serverReaction : r
           );
-          console.log(updated)
           setReactions(updated);
         } else {
           // Nếu chưa react → thêm mới

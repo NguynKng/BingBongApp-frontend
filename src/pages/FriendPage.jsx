@@ -10,6 +10,8 @@ import { Link } from "react-router-dom";
 const FriendPage = () => {
   const { user, updateUser } = useAuthStore();
   const { profile } = useGetProfile(user._id);
+  console.log(profile)
+
   const [friendRequests, setFriendRequests] = useState([]);
 
   useEffect(() => {

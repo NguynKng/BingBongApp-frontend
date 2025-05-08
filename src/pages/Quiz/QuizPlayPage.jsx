@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import axios from "axios"
+import useAuthStore from "../../store/authStore";
 
 function QuizPlayPage() {
   const { quizId } = useParams();
@@ -13,30 +14,8 @@ function QuizPlayPage() {
   const [timeLeft, setTimeLeft] = useState(60);
   const [isFinished, setIsFinished] = useState(false);
   const [answered, setAnswered] = useState(false);
-  const [user, setUser] = useState(null); // State lưu thông tin người dùng
+  const { user } = useAuthStore()
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const userResponse = await axios.get("http://localhost:8000/api/v1/user/me", {
-          withCredentials: true, // Đảm bảo gửi cookie
-        });
-  
-        console.log("📌 Phản hồi API /me:", userResponse); // Kiểm tra toàn bộ phản hồi
-        console.log("✅ Dữ liệu người dùng:", userResponse.data); // Kiểm tra dữ liệu người dùng
-  
-        if (userResponse.status === 200 && userResponse.data) { 
-          setUser(userResponse.data); 
-        } else {
-          console.warn("⚠️ API không trả về dữ liệu hợp lệ.");
-        }
-      } catch (error) {
-        console.error("❌ Lỗi khi lấy thông tin người dùng:", error.response?.data || error.message);
-      }
-    };
-  
-    fetchUser();
-  }, []);
 
   useEffect(() => {
     const fetchQuiz = async () => {
@@ -77,28 +56,32 @@ function QuizPlayPage() {
   // 👉 Hàm lưu điểm về backend
   const saveScore = async () => {
     if (!user) {
-      console.error("User chưa đăng nhập.");
+      console.error("❌ Không tìm thấy thông tin người dùng.");
       return;
     }
-
+  
     try {
-      const requestData = {
-        userId: user._id, // Lấy ID người dùng thực tế từ thông tin đã fetch
-        quizId,
-        score,
+      const payload = {
+        userId: user._id,  // ID người dùng lấy từ API /me
+        quizId: quizId,    // ID bài quiz hiện tại
+        score: score       // Số điểm đạt được
       };
-
-      console.log("Sending data:", requestData); // Log the data being sent
-
-      await axios.post("http://localhost:8000/api/v1/rank/score", requestData, {
-        withCredentials: true, // required if you're using cookie authentication
-      });
-
-      console.log("✅ Điểm đã được lưu thành công.");
-    } catch (err) {
-      console.error("❌ Có lỗi khi lưu điểm.", err.response?.data || err.message);
+  
+      console.log("📤 Gửi điểm đến backend:", payload);
+  
+      const response = await axios.post(
+        "http://localhost:8000/api/v1/quizScore/submit", // Đúng route bạn đã cấu hình
+        payload,
+        { withCredentials: true }
+      );
+  
+      console.log("✅ Điểm đã được lưu thành công:", response.data);
+    } catch (error) {
+      const msg = error.response?.data?.message || error.message || "Lỗi không xác định";
+      console.error("❌ Gửi điểm thất bại:", msg);
     }
   };
+  
 
   useEffect(() => {
     if (answered) {
