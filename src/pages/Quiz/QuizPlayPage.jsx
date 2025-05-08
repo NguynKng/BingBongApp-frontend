@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import axios from "axios"
+import useAuthStore from "../../store/authStore";
 
 function QuizPlayPage() {
   const { quizId } = useParams();
@@ -13,13 +14,13 @@ function QuizPlayPage() {
   const [timeLeft, setTimeLeft] = useState(60);
   const [isFinished, setIsFinished] = useState(false);
   const [answered, setAnswered] = useState(false);
+  const { user } = useAuthStore()
+
 
   useEffect(() => {
     const fetchQuiz = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:8000/api/v1/quiz/${quizId}`
-        );
+        const response = await axios.get(`http://localhost:8000/api/v1/quiz/${quizId}`);
         const quizData = response.data;
         const actualQuiz = quizData.questions ? quizData : quizData.quiz;
 
@@ -52,6 +53,36 @@ function QuizPlayPage() {
     setAnswered(true);
   };
 
+  // 👉 Hàm lưu điểm về backend
+  const saveScore = async () => {
+    if (!user) {
+      console.error("❌ Không tìm thấy thông tin người dùng.");
+      return;
+    }
+  
+    try {
+      const payload = {
+        userId: user._id,  // ID người dùng lấy từ API /me
+        quizId: quizId,    // ID bài quiz hiện tại
+        score: score       // Số điểm đạt được
+      };
+  
+      console.log("📤 Gửi điểm đến backend:", payload);
+  
+      const response = await axios.post(
+        "http://localhost:8000/api/v1/quizScore/submit", // Đúng route bạn đã cấu hình
+        payload,
+        { withCredentials: true }
+      );
+  
+      console.log("✅ Điểm đã được lưu thành công:", response.data);
+    } catch (error) {
+      const msg = error.response?.data?.message || error.message || "Lỗi không xác định";
+      console.error("❌ Gửi điểm thất bại:", msg);
+    }
+  };
+  
+
   useEffect(() => {
     if (answered) {
       const timer = setTimeout(() => {
@@ -60,6 +91,7 @@ function QuizPlayPage() {
           setAnswered(false);
         } else {
           setIsFinished(true);
+          saveScore(); // 👉 Lưu điểm ngay khi kết thúc
         }
       }, 1500);
       return () => clearTimeout(timer);
@@ -78,6 +110,7 @@ function QuizPlayPage() {
   useEffect(() => {
     if (timeLeft === 0) {
       setIsFinished(true);
+      saveScore(); // 👉 Lưu điểm nếu hết thời gian
     }
   }, [timeLeft]);
 
@@ -133,8 +166,7 @@ function QuizPlayPage() {
                   <label
                     key={i}
                     className={`flex items-center justify-center text-xl p-6 rounded-2xl font-semibold cursor-pointer border-2 transition-all duration-300 text-center
-                      ${
-                        answered
+                      ${answered
                           ? isCorrect
                             ? "bg-green-500 text-white border-green-600"
                             : isSelected

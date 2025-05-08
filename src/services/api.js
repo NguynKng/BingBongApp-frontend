@@ -304,6 +304,23 @@ export const userAPI = {
 };
 
 export const postAPI = {
+  reactToPost: async (postId, type) => {
+    try {
+      const response = await api.post(`/posts/react`, { postId, type });
+      return {
+        success: true,
+        message: response.data.message, // Thông điệp có thể tuỳ chỉnh
+        data: response.data.data || {}, // Dữ liệu thả cảm xúc
+      };
+    } catch (error) {
+      console.log(error);
+      return {
+        success: false,
+        message: "Đã có lỗi xảy ra khi thả cảm xúc",
+        data: {},
+      };
+    }
+  },
   // Get user feed (posts from user and their friends)
   getFeed: async (page = 1, limit = 10) => {
     try {
@@ -425,6 +442,66 @@ export const chatApi = {
     }
   },
 };
+
+export const quizAPI = {
+    // Create a new quiz
+    createQuiz: async (quizData) => {
+        try {
+        const response = await api.post("/quiz", quizData);
+    
+        if (response.data.success === false) {
+            throw new Error(response.data.message);
+        }
+    
+        return response.data;
+        } catch (error) {
+        if (error.response) {
+            const errorMessage =
+            error.response.data.message || "Failed to create quiz";
+            throw new Error(errorMessage);
+        }
+        throw error;
+        }
+    },
+    
+    // Get all quizzes
+    getAllQuizzes: async () => {
+        try {
+        const response = await api.get("/quiz");
+    
+        if (response.data.success === false) {
+            throw new Error(response.data.message);
+        }
+    
+        return response.data;
+        } catch (error) {
+        if (error.response) {
+            const errorMessage =
+            error.response.data.message || "Failed to fetch quizzes";
+            throw new Error(errorMessage);
+        }
+        throw error;
+        }
+    },
+    getQuizById: async (quizId) => {
+        try {
+            const response = await api.get(`/quiz/${quizId}`);
+    
+            if (response.data.success === false) {
+                throw new Error(response.data.message);
+            }
+    
+            return response.data;
+        } catch (error) {
+            if (error.response) {
+                const errorMessage =
+                    error.response.data.message || "Failed to fetch quiz";
+                throw new Error(errorMessage);
+            }
+            throw error;
+        }
+    }
+}
 
 // Export the axios instance for use in other API services
 export default api;
