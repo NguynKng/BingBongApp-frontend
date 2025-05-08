@@ -94,7 +94,7 @@ function PostCard({ post }) {
   }
 
   return (
-    <div className="bg-white p-5 rounded-lg shadow-md mb-4">
+    <div className="bg-white p-5 rounded-lg shadow-md mb-4 ml-19">
       <div className="flex items-center space-x-2 mb-3">
         <Link to={`/profile/${author._id}`} className="w-10 h-10 rounded-full">
           <img
