@@ -7,7 +7,7 @@ import useAuthStore from "../store/authStore";
 
 function DropdownChat({ onToggleChat }) {
   const { messages, loading } = useGetChats();
-  const { user, onlineUsers } = useAuthStore();
+  const { onlineUsers } = useAuthStore();
 
   return (
     <div className="absolute top-[110%] right-0 min-w-96 rounded-xl shadow-2xl border border-gray-200 bg-white p-4 space-y-5 animate-fade-in transform transition-all duration-300 ease-in-out">
