@@ -9,28 +9,23 @@ function QuizCard({ quiz }) {
   };
 
   return (
-    <div>
-      <div
-        key={quiz._id}
-        className="bg-gradient-to-tr from-purple-100 to-indigo-100 border border-purple-300 rounded-xl shadow-lg hover:shadow-xl transition p-4 mb-6 transform hover:scale-105"
-      >
-        {/* Tiêu đề có khung màu tím */}
-        <h3 className="text-2xl font-bold mb-3 text-center text-purple-800 border border-purple-500 rounded-lg px-3 py-2 bg-white shadow">
-          {quiz.title}
-        </h3>
+    <div className="flex flex-col h-full bg-gradient-to-tr from-purple-100 to-indigo-100 border border-purple-300 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 p-5 transform hover:scale-105">
+      {/* Tiêu đề */}
+      <h3 className="text-xl font-bold text-center text-purple-800 border border-purple-500 rounded-lg px-3 py-2 bg-white shadow mb-4">
+        {quiz.title}
+      </h3>
 
-        {/* Mô tả */}
-        <p className="text-lg text-gray-700 mb-2">{quiz.description}</p>
+      {/* Mô tả */}
+      <p className="text-gray-700 text-base mb-2 line-clamp-3">{quiz.description}</p>
 
-        {/* Số câu hỏi */}
-        <p className="text-xl text-gray-600 mb-4">
-          {quiz.questionCount} câu hỏi
-        </p>
+      {/* Số câu hỏi */}
+      <p className="text-gray-600 text-sm mb-4">{quiz.questionCount} câu hỏi</p>
 
-        {/* Nút chơi */}
+      {/* Nút chơi ở dưới cùng */}
+      <div className="mt-auto flex justify-end">
         <button
           onClick={() => handlePlayClick(quiz._id)}
-          className="flex items-center gap-2 text-white bg-gradient-to-r from-green-400 to-green-600 hover:bg-orange-500 active:bg-orange-700 px-4 py-2 rounded-lg cursor-pointer transition transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-opacity-50 shadow ml-auto"
+          className="flex items-center gap-2 text-white bg-gradient-to-r from-green-400 to-green-600 hover:from-green-500 hover:to-green-700 active:scale-95 px-4 py-2 rounded-lg transition transform focus:outline-none focus:ring-2 focus:ring-green-400 shadow"
         >
           <Gamepad2 size={18} />
           Chơi

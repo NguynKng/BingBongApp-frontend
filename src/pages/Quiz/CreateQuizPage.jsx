@@ -8,14 +8,14 @@ function CreateQuizPage() {
   const [quiz, setQuiz] = useState({
     title: "",
     description: "",
-    questions: []
+    questions: [],
   });
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setQuiz((prevQuiz) => ({
       ...prevQuiz,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -25,7 +25,7 @@ function CreateQuizPage() {
     updatedQuestions[index][name] = value;
     setQuiz((prevQuiz) => ({
       ...prevQuiz,
-      questions: updatedQuestions
+      questions: updatedQuestions,
     }));
   };
 
@@ -33,11 +33,11 @@ function CreateQuizPage() {
     const newQuestion = {
       question: "",
       options: ["", "", "", ""],
-      correctAnswer: ""
+      correctAnswer: "",
     };
     setQuiz((prevQuiz) => ({
       ...prevQuiz,
-      questions: [...prevQuiz.questions, newQuestion]
+      questions: [...prevQuiz.questions, newQuestion],
     }));
   };
 
@@ -45,7 +45,7 @@ function CreateQuizPage() {
     const updatedQuestions = quiz.questions.filter((_, i) => i !== index);
     setQuiz((prevQuiz) => ({
       ...prevQuiz,
-      questions: updatedQuestions
+      questions: updatedQuestions,
     }));
   };
 
@@ -55,8 +55,8 @@ function CreateQuizPage() {
       const response = await axios.post("http://localhost:8000/api/v1/quiz", quiz, {
         withCredentials: true,
         headers: {
-          "Content-Type": "application/json"
-        }
+          "Content-Type": "application/json",
+        },
       });
 
       if (response.status === 201) {
@@ -69,146 +69,160 @@ function CreateQuizPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-8 bg-gradient-to-tr from-indigo-300 to-purple-400 text-white rounded-xl shadow-2xl transform transition-all duration-500 hover:scale-[1.02]">
-      <h1 className="text-5xl font-extrabold text-center mb-10 drop-shadow-md">Tạo Quiz Mới</h1>
+    <div className="min-h-screen bg-gradient-to-tr from-indigo-300 to-purple-400 overflow-x-hidden">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <div className="bg-white/30 backdrop-blur-md rounded-xl p-6 sm:p-10 shadow-2xl">
+          <h1 className="text-4xl sm:text-5xl font-extrabold text-center text-white mb-8 drop-shadow">
+            Tạo Quiz Mới
+          </h1>
 
-      <form onSubmit={handleSubmit} className="space-y-10">
-        {/* Tiêu đề Quiz */}
-        <div className="space-y-3">
-          <label
-            htmlFor="title"
-            className="block text-xl font-bold transition transform hover:text-yellow-300 hover:scale-105"
-          >
-            🎯 Tiêu đề Quiz:
-          </label>
-          <input
-            type="text"
-            id="title"
-            name="title"
-            value={quiz.title}
-            onChange={handleInputChange}
-            className="w-full p-4 rounded-lg border border-gray-300 text-black focus:outline-none focus:ring-4 focus:ring-yellow-400 transition"
-            placeholder="Nhập tiêu đề quiz"
-            required
-          />
-        </div>
+          <form onSubmit={handleSubmit} className="space-y-10">
+            {/* Tiêu đề */}
+            <div>
+              <label
+                htmlFor="title"
+                className="block text-lg sm:text-xl font-bold text-white mb-2"
+              >
+                🎯 Tiêu đề Quiz:
+              </label>
+              <input
+                type="text"
+                id="title"
+                name="title"
+                value={quiz.title}
+                onChange={handleInputChange}
+                className="w-full p-4 rounded-lg border border-gray-300 text-black text-base sm:text-lg focus:outline-none focus:ring-4 focus:ring-yellow-400"
+                placeholder="Nhập tiêu đề quiz"
+                required
+              />
+            </div>
 
-        {/* Mô tả Quiz */}
-        <div className="space-y-3">
-          <label
-            htmlFor="description"
-            className="block text-xl font-bold transition transform hover:text-yellow-300 hover:scale-105"
-          >
-            📝 Mô tả Quiz:
-          </label>
-          <textarea
-            id="description"
-            name="description"
-            value={quiz.description}
-            onChange={handleInputChange}
-            className="w-full p-4 rounded-lg border border-gray-300 text-black focus:outline-none focus:ring-4 focus:ring-yellow-400 transition"
-            placeholder="Nhập mô tả quiz"
-            rows="4"
-          />
-        </div>
+            {/* Mô tả */}
+            <div>
+              <label
+                htmlFor="description"
+                className="block text-lg sm:text-xl font-bold text-white mb-2"
+              >
+                📝 Mô tả Quiz:
+              </label>
+              <textarea
+                id="description"
+                name="description"
+                value={quiz.description}
+                onChange={handleInputChange}
+                className="w-full p-4 rounded-lg border border-gray-300 text-black text-base sm:text-lg focus:outline-none focus:ring-4 focus:ring-yellow-400"
+                placeholder="Nhập mô tả quiz"
+                rows="4"
+              />
+            </div>
 
-        {/* Câu hỏi */}
-        <div className="space-y-8">
-          <h2 className="text-3xl font-bold text-yellow-200">📚 Câu hỏi:</h2>
-          {quiz.questions.map((question, index) => (
-            <div
-              key={index}
-              className="p-6 bg-gradient-to-br from-purple-300 via-pink-200 to-blue-200 rounded-xl shadow-xl hover:shadow-2xl transform transition-all duration-300 hover:scale-[1.02]"
-            >
-              {/* Câu hỏi */}
-              <div className="space-y-2 mb-4">
-                <label className="block text-xl font-semibold text-gray-900 transition hover:text-pink-500 hover:scale-105">
-                  Câu hỏi {index + 1}:
-                </label>
-                <input
-                  type="text"
-                  name="question"
-                  value={question.question}
-                  onChange={(e) => handleQuestionChange(index, e)}
-                  className="w-full p-4 rounded-lg border border-gray-300 text-black text-lg focus:outline-none focus:ring-4 focus:ring-pink-300"
-                  placeholder="Nhập câu hỏi"
-                  required
-                />
-              </div>
-
-              {/* Đáp án */}
-              <div className="space-y-2 mb-4">
-                <label className="block text-xl font-semibold text-gray-900 transition hover:text-pink-500 hover:scale-105">
-                  Đáp án:
-                </label>
-                {question.options.map((option, i) => (
-                  <div key={i} className="mb-2">
+            {/* Câu hỏi */}
+            <div className="space-y-8">
+              <h2 className="text-2xl sm:text-3xl font-bold text-yellow-200">
+                📚 Câu hỏi:
+              </h2>
+              {quiz.questions.map((question, index) => (
+                <div
+                  key={index}
+                  className="bg-white/70 p-6 rounded-xl shadow-lg space-y-4"
+                >
+                  {/* Câu hỏi */}
+                  <div>
+                    <label className="block text-lg font-semibold text-gray-800 mb-1">
+                      Câu hỏi {index + 1}:
+                    </label>
                     <input
                       type="text"
-                      name="options"
-                      value={option}
-                      onChange={(e) => {
-                        const newOptions = [...question.options];
-                        newOptions[i] = e.target.value;
-                        setQuiz((prevQuiz) => {
-                          const updatedQuestions = [...prevQuiz.questions];
-                          updatedQuestions[index].options = newOptions;
-                          return { ...prevQuiz, questions: updatedQuestions };
-                        });
-                      }}
-                      className="w-full p-4 rounded-lg border border-gray-300 text-black text-lg focus:outline-none focus:ring-4 focus:ring-pink-300"
-                      placeholder={`Đáp án ${i + 1}`}
+                      name="question"
+                      value={question.question}
+                      onChange={(e) => handleQuestionChange(index, e)}
+                      className="w-full p-3 rounded-lg border border-gray-300 text-black focus:outline-none focus:ring-4 focus:ring-pink-300"
+                      placeholder="Nhập câu hỏi"
                       required
                     />
                   </div>
-                ))}
-              </div>
 
-              {/* Đáp án đúng */}
-              <div className="space-y-2 mb-4">
-                <label className="block text-xl font-semibold text-gray-900 transition hover:text-pink-500 hover:scale-105">
-                  ✅ Đáp án đúng:
-                </label>
-                <input
-                  type="text"
-                  name="correctAnswer"
-                  value={question.correctAnswer}
-                  onChange={(e) => handleQuestionChange(index, e)}
-                  className="w-full p-4 rounded-lg border border-gray-300 text-black text-lg focus:outline-none focus:ring-4 focus:ring-pink-300"
-                  placeholder="Nhập đáp án đúng"
-                  required
-                />
-              </div>
+                  {/* Các đáp án */}
+                  <div>
+                    <label className="block text-lg font-semibold text-gray-800 mb-1">
+                      Đáp án:
+                    </label>
+                    <div className="space-y-2">
+                      {question.options.map((option, i) => (
+                        <input
+                          key={i}
+                          type="text"
+                          value={option}
+                          onChange={(e) => {
+                            const newOptions = [...question.options];
+                            newOptions[i] = e.target.value;
+                            setQuiz((prevQuiz) => {
+                              const updatedQuestions = [...prevQuiz.questions];
+                              updatedQuestions[index].options = newOptions;
+                              return { ...prevQuiz, questions: updatedQuestions };
+                            });
+                          }}
+                          className="w-full p-3 rounded-lg border border-gray-300 text-black focus:outline-none focus:ring-4 focus:ring-pink-300"
+                          placeholder={`Đáp án ${i + 1}`}
+                          required
+                        />
+                      ))}
+                    </div>
+                  </div>
 
-              {/* Xóa câu hỏi */}
+                  {/* Đáp án đúng */}
+                  <div>
+                    <label className="block text-lg font-semibold text-gray-800 mb-1">
+                      ✅ Đáp án đúng:
+                    </label>
+                    <input
+                      type="text"
+                      name="correctAnswer"
+                      value={question.correctAnswer}
+                      onChange={(e) => handleQuestionChange(index, e)}
+                      className="w-full p-3 rounded-lg border border-gray-300 text-black focus:outline-none focus:ring-4 focus:ring-pink-300"
+                      placeholder="Nhập đáp án đúng"
+                      required
+                    />
+                  </div>
+
+                  {/* Nút xóa */}
+                  <div className="text-right">
+                    <button
+                      type="button"
+                      onClick={() => deleteQuestion(index)}
+                      className="px-5 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg shadow-md transition"
+                    >
+                      ❌ Xóa câu hỏi
+                    </button>
+                  </div>
+                </div>
+              ))}
+
+              {/* Nút thêm câu hỏi */}
+              <div className="text-center">
+                <button
+                  type="button"
+                  onClick={addQuestion}
+                  className="px-6 py-3 bg-white/30 text-white font-semibold rounded-lg shadow-lg backdrop-blur hover:bg-white/50 transition"
+                >
+                  ➕ Thêm câu hỏi
+                </button>
+              </div>
+            </div>
+
+            {/* Nút tạo quiz */}
+            <div>
               <button
-                type="button"
-                onClick={() => deleteQuestion(index)}
-                className="mt-2 px-6 py-2 bg-red-700 text-white rounded-lg shadow-md hover:bg-red-800 transition hover:scale-105"
+                type="submit"
+                className="w-full px-6 py-4 bg-green-500 text-white text-lg sm:text-xl font-semibold rounded-lg shadow-lg hover:bg-green-600 transition"
               >
-                ❌ Xóa câu hỏi
+                🚀 Tạo Quiz
               </button>
             </div>
-          ))}
-
-          {/* Nút thêm câu hỏi */}
-          <button
-            type="button"
-            onClick={addQuestion}
-            className="px-6 py-3 bg-white/30 text-white font-bold rounded-lg shadow-lg backdrop-blur-md hover:bg-white/50 focus:outline-none transition transform hover:scale-105"
-          >
-            ➕ Thêm câu hỏi
-          </button>
+          </form>
         </div>
-
-        {/* Nút tạo quiz */}
-        <button
-          type="submit"
-          className="w-full px-6 py-3 bg-green-500 text-white text-xl font-semibold rounded-lg shadow-lg hover:bg-green-600 focus:outline-none transition transform hover:scale-105"
-        >
-          🚀 Tạo Quiz
-        </button>
-      </form>
+      </div>
     </div>
   );
 }

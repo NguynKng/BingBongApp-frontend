@@ -10,8 +10,6 @@ import { Link } from "react-router-dom";
 const FriendPage = () => {
   const { user, updateUser } = useAuthStore();
   const { profile } = useGetProfile(user._id);
-  console.log(profile)
-
   const [friendRequests, setFriendRequests] = useState([]);
 
   useEffect(() => {
@@ -37,52 +35,77 @@ const FriendPage = () => {
     }
   };
 
+  const cardBlinkStyle = `
+    @media (min-width: 768px) {
+      @keyframes card-blink {
+        0%, 100% { box-shadow: 0 8px 20px rgba(0,0,0,0.08), 0 0 0 0 #93c5fd44; }
+        50% { box-shadow: 0 8px 20px rgba(0,0,0,0.08), 0 0 0 4px #93c5fd88; }
+      }
+      .card-blink {
+        animation: card-blink 1.2s infinite;
+      }
+    }
+  `;
+
   return (
     <>
+      <style>{cardBlinkStyle}</style>
       <Header />
-      <div className="max-w-7xl mx-auto px-4 mt-[10vh] py-4">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-[10vh] py-4 overflow-x-hidden">
         <h2 className="text-2xl font-bold text-gray-800 mb-8">
           Lời mời kết bạn ({friendRequests.length})
         </h2>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 mb-8">
+        <div
+          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 mb-8"
+          style={{ perspective: "1000px" }}
+        >
           {friendRequests.length === 0 ? (
             <p className="text-gray-500 col-span-full">Không có lời mời nào</p>
           ) : (
             friendRequests.map((requester) => (
               <div
                 key={requester._id}
-                className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition duration-300 p-4 flex flex-col items-center text-center"
+                className="bg-white rounded-2xl border border-gray-200 shadow-lg transition-transform duration-300 p-4 flex flex-col items-center text-center card-blink w-full max-w-xs mx-auto"
+                style={{
+                  transformStyle: "preserve-3d",
+                }}
               >
-                {/* Link to profile */}
-                <Link to={`/profile/${requester._id}`} className="flex flex-col items-center">
+                <Link
+                  to={`/profile/${requester._id}`}
+                  className="flex flex-col items-center"
+                >
                   <img
-                    src={requester.avatar ? `${Config.BACKEND_URL}${requester.avatar}` : "/user.png"}
+                    src={
+                      requester.avatar
+                        ? `${Config.BACKEND_URL}${requester.avatar}`
+                        : "/user.png"
+                    }
                     alt={requester.fullName}
-                    className="w-24 h-24 rounded-full object-cover mb-3"
+                    className="w-24 h-24 aspect-square rounded-full object-cover mb-3 shadow-md"
                   />
-                  <p className="text-sm font-semibold text-gray-900 mb-2">
+                  <p className="text-sm font-semibold text-gray-900 mb-2 truncate w-full">
                     {requester.fullName}
                   </p>
                 </Link>
 
-                {/* Action buttons outside Link */}
                 <button
                   onClick={(e) => {
-                    e.stopPropagation(); // Prevent bubbling to Link
+                    e.stopPropagation();
                     handleAcceptFriendRequest(requester._id);
                   }}
-                  className="text-sm font-medium bg-[#1b74e4] hover:bg-[#155fc3] text-white px-4 py-2 rounded-md w-full mb-2 transition cursor-pointer"
+                  className="text-sm font-medium bg-[#1b74e4] hover:bg-[#155fc3] text-white px-4 py-2 rounded-md w-full mb-2 transition shadow"
                 >
                   Xác nhận
                 </button>
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    // Optional: remove from UI
-                    setFriendRequests((prev) => prev.filter((r) => r._id !== requester._id));
+                    setFriendRequests((prev) =>
+                      prev.filter((r) => r._id !== requester._id)
+                    );
                   }}
-                  className="text-sm font-medium border border-gray-300 text-gray-800 hover:bg-gray-100 px-4 py-2 rounded-md w-full transition cursor-pointer"
+                  className="text-sm font-medium border border-gray-300 text-gray-800 hover:bg-gray-100 px-4 py-2 rounded-md w-full transition shadow"
                 >
                   Xoá
                 </button>

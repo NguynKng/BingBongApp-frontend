@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import useAuthStore from "../store/authStore";
+import Footer from "../components/Footer";
 
 export default function RegisterPage() {
     const [email, setEmail] = useState("");
@@ -11,7 +12,7 @@ export default function RegisterPage() {
     const [birthYear, setBirthYear] = useState("");
     const [password, setPassword] = useState("");
     const [gender, setGender] = useState("");
-    const [showPassword, setShowPassword] = useState(false); // Thêm state showPassword
+    const [showPassword, setShowPassword] = useState(false);
 
     const navigate = useNavigate();
     const { signup, isLoading, resetError } = useAuthStore();
@@ -56,39 +57,39 @@ export default function RegisterPage() {
         <>
             <style>{keyframes}</style>
 
-            <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-[#f0f4f8] via-[#dfe9f3] to-[#ffffff]">
+            <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-[#f0f4f8] via-[#dfe9f3] to-[#ffffff] px-4 py-8">
                 <div
-                    className="flex bg-white bg-opacity-90 backdrop-blur-md rounded-2xl shadow-2xl overflow-hidden w-[60rem]"
+                    className="flex flex-col md:flex-row bg-white bg-opacity-90 backdrop-blur-md rounded-2xl shadow-2xl overflow-hidden w-full max-w-5xl"
                     style={fadeInUpStyle}
                 >
-                    {/* Left Side */}
-                    <div className="hidden md:flex flex-col items-center justify-center w-1/2 bg-gradient-to-tr from-[#a18cd1] to-[#fbc2eb] text-white p-10 relative">
+                    {/* Left Side - Introduction */}
+                    <div className="flex md:w-1/2 w-full flex-col items-center justify-center bg-gradient-to-tr from-[#a18cd1] to-[#fbc2eb] text-white p-10">
                         <img
                             src="/images/ico/logo.ico"
                             alt="Logo"
-                            className="w-32 h-32 mb-6 drop-shadow-lg hover:scale-110 transition-transform duration-300"
+                            className="w-24 h-24 mb-4 drop-shadow-lg hover:scale-110 transition-transform duration-300"
                         />
-                        <h2 className="text-3xl font-bold">Chào mừng!</h2>
-                        <p className="text-center mt-4 text-white text-lg w-3/4 leading-relaxed">
+                        <h2 className="text-2xl md:text-3xl font-bold text-center">Chào mừng!</h2>
+                        <p className="text-center mt-3 text-white text-base md:text-lg w-4/5 leading-relaxed">
                             Chỉ mất vài giây để bắt đầu hành trình khám phá cùng chúng tôi!
                         </p>
-                        <div className="absolute bottom-6 text-sm text-white opacity-80">
+                        <div className="mt-6 text-xs text-white opacity-80">
                             🚀 Công nghệ mở rộng tương lai
                         </div>
                     </div>
 
                     {/* Right Side - Register Form */}
-                    <div className="w-full md:w-1/2 p-10 bg-white text-gray-800 overflow-y-auto max-h-[90vh]">
-                        <h2 className="text-3xl font-extrabold text-center mb-6 tracking-wide">Đăng ký</h2>
+                    <div className="w-full md:w-1/2 p-6 md:p-10 bg-white text-gray-800 max-h-[90vh] overflow-y-auto">
+                        <h2 className="text-2xl md:text-3xl font-extrabold text-center mb-6">Đăng ký</h2>
                         <form onSubmit={handleSubmit} className="space-y-5">
-                            <div className="flex gap-3">
+                            <div className="flex flex-col sm:flex-row gap-3">
                                 <input
                                     type="text"
                                     value={fullName}
                                     onChange={(e) => setFullName(e.target.value)}
                                     required
                                     autoFocus
-                                    className="w-1/2 px-4 py-2 border border-gray-300 rounded-xl bg-gray-100 text-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-400"
+                                    className="w-full sm:w-1/2 px-4 py-2 border border-gray-300 rounded-xl bg-gray-100 text-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-400"
                                     placeholder="Họ tên"
                                 />
                                 <input
@@ -96,7 +97,7 @@ export default function RegisterPage() {
                                     value={phoneNumber}
                                     onChange={(e) => setPhoneNumber(e.target.value)}
                                     required
-                                    className="w-1/2 px-4 py-2 border border-gray-300 rounded-xl bg-gray-100 text-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-400"
+                                    className="w-full sm:w-1/2 px-4 py-2 border border-gray-300 rounded-xl bg-gray-100 text-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-400"
                                     placeholder="Số điện thoại"
                                 />
                             </div>
@@ -148,7 +149,7 @@ export default function RegisterPage() {
                             </div>
                             <div className="relative">
                                 <input
-                                    type={showPassword ? "text" : "password"} // Thay đổi giữa 'password' và 'text'
+                                    type={showPassword ? "text" : "password"}
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     required
@@ -157,12 +158,12 @@ export default function RegisterPage() {
                                 />
                                 <span
                                     className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer"
-                                    onClick={() => setShowPassword(!showPassword)} // Thay đổi trạng thái showPassword
+                                    onClick={() => setShowPassword(!showPassword)}
                                 >
                                     {showPassword ? (
-                                        <span className="text-gray-600">🙈</span> // Biểu tượng mắt đóng
+                                        <span className="text-gray-600">🙈</span>
                                     ) : (
-                                        <span className="text-gray-600">👁️</span> // Biểu tượng mắt mở
+                                        <span className="text-gray-600">👁️</span>
                                     )}
                                 </span>
                             </div>
@@ -181,11 +182,10 @@ export default function RegisterPage() {
                             <button
                                 type="submit"
                                 disabled={isLoading}
-                                className={`w-full py-3 rounded-xl text-white font-bold tracking-wide transition-transform duration-300 transform hover:scale-105 focus:scale-95 ${
-                                    isLoading
+                                className={`w-full py-3 rounded-xl text-white font-bold tracking-wide transition-transform duration-300 transform hover:scale-105 focus:scale-95 ${isLoading
                                         ? "bg-gradient-to-r from-gray-400 to-gray-500 cursor-not-allowed"
                                         : "bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 shadow-lg"
-                                }`}
+                                    }`}
                             >
                                 {isLoading ? (
                                     <div className="flex items-center justify-center space-x-2">
@@ -209,6 +209,7 @@ export default function RegisterPage() {
                     </div>
                 </div>
             </div>
+            <Footer />
         </>
     );
 }

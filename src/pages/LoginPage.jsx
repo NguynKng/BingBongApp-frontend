@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import useAuthStore from "../store/authStore";
+import Footer from "../components/Footer";
 
 export default function LoginPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [showPassword, setShowPassword] = useState(false); // State để kiểm soát ẩn/hiện mật khẩu
+    const [showPassword, setShowPassword] = useState(false);
 
     const navigate = useNavigate();
     const { login, isLoading, isAuthenticated, resetError } = useAuthStore();
@@ -22,7 +23,6 @@ export default function LoginPage() {
         await login({ email, password });
     };
 
-    // 👇 Custom animation bằng inline style
     const fadeInUpStyle = {
         animation: "fadeInUp 0.8s ease-out",
     };
@@ -44,31 +44,33 @@ export default function LoginPage() {
         <>
             <style>{keyframes}</style>
 
-            <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-[#f0f4f8] via-[#dfe9f3] to-[#ffffff]">
+            <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-[#f0f4f8] via-[#dfe9f3] to-[#ffffff] px-4">
                 <div
-                    className="flex bg-white bg-opacity-90 backdrop-blur-md rounded-2xl shadow-2xl overflow-hidden w-[55rem]"
+                    className="flex flex-col md:flex-row bg-white bg-opacity-90 backdrop-blur-md rounded-2xl shadow-2xl overflow-hidden w-full max-w-4xl"
                     style={fadeInUpStyle}
                 >
                     {/* Left Side */}
-                    <div className="hidden md:flex flex-col items-center justify-center w-1/2 bg-gradient-to-tr from-[#a18cd1] to-[#fbc2eb] text-white p-10 relative">
+                    <div className="w-full md:w-1/2 flex flex-col items-center justify-center bg-gradient-to-tr from-[#a18cd1] to-[#fbc2eb] text-white p-8">
                         <img
                             src="/images/ico/logo.ico"
                             alt="Logo"
-                            className="w-32 h-32 mb-6 drop-shadow-lg hover:scale-110 transition-transform duration-300"
+                            className="w-24 h-24 mb-4 drop-shadow-lg hover:scale-110 transition-transform duration-300"
                         />
-                        <h2 className="text-3xl font-bold">Welcome!</h2>
-                        <p className="text-center mt-4 text-white text-lg w-3/4 leading-relaxed">
+                        <h2 className="text-2xl font-bold">Welcome!</h2>
+                        <p className="text-center mt-4 text-white text-base leading-relaxed">
                             Tham gia ngay để kết nối với cộng đồng đam mê công nghệ!
                         </p>
-                        <div className="absolute bottom-6 text-sm text-white opacity-80">
+                        <div className="mt-6 text-sm text-white opacity-80">
                             🚀 Công nghệ mở rộng tương lai
                         </div>
                     </div>
 
                     {/* Right Side - Login Form */}
-                    <div className="w-full md:w-1/2 p-10 bg-white text-gray-800">
-                        <h2 className="text-3xl font-extrabold text-center mb-8 tracking-wide">Đăng nhập</h2>
-                        <form onSubmit={handleSubmit} className="space-y-6">
+                    <div className="w-full md:w-1/2 p-6 sm:p-10 bg-white text-gray-800">
+                        <h2 className="text-2xl sm:text-3xl font-extrabold text-center mb-6 sm:mb-8 tracking-wide">
+                            Đăng nhập
+                        </h2>
+                        <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
                             <div>
                                 <label className="block text-gray-700 font-medium">Email</label>
                                 <input
@@ -84,21 +86,20 @@ export default function LoginPage() {
                                 <label className="block text-gray-700 font-medium">Mật khẩu</label>
                                 <div className="relative">
                                     <input
-                                        type={showPassword ? "text" : "password"} // Dựa trên state `showPassword` để xác định kiểu input
+                                        type={showPassword ? "text" : "password"}
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                         required
                                         className="w-full px-4 py-2 border border-gray-300 rounded-xl bg-gray-100 text-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-400 transition-all duration-200 shadow-inner"
                                     />
-                                    {/* Icon để ẩn/hiện mật khẩu */}
                                     <span
                                         className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer"
-                                        onClick={() => setShowPassword(!showPassword)} // Thay đổi trạng thái `showPassword` khi nhấn
+                                        onClick={() => setShowPassword(!showPassword)}
                                     >
                                         {showPassword ? (
-                                            <span className="text-gray-600">🙈</span> // Biểu tượng mắt đóng
+                                            <span className="text-gray-600">🙈</span>
                                         ) : (
-                                            <span className="text-gray-600">👁️</span> // Biểu tượng mắt mở
+                                            <span className="text-gray-600">👁️</span>
                                         )}
                                     </span>
                                 </div>
@@ -106,11 +107,10 @@ export default function LoginPage() {
                             <button
                                 type="submit"
                                 disabled={isLoading}
-                                className={`w-full py-3 rounded-xl text-white font-bold tracking-wide transition-transform duration-300 transform hover:scale-105 focus:scale-95 ${
-                                    isLoading
-                                        ? "bg-gradient-to-r from-gray-400 to-gray-500 cursor-not-allowed"
-                                        : "bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 shadow-lg"
-                                }`}
+                                className={`w-full py-3 rounded-xl text-white font-bold tracking-wide transition-transform duration-300 transform hover:scale-105 focus:scale-95 ${isLoading
+                                    ? "bg-gradient-to-r from-gray-400 to-gray-500 cursor-not-allowed"
+                                    : "bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 shadow-lg"
+                                    }`}
                             >
                                 {isLoading ? (
                                     <div className="flex items-center justify-center space-x-2">
@@ -134,6 +134,7 @@ export default function LoginPage() {
                     </div>
                 </div>
             </div>
+            <Footer />
         </>
     );
 }
