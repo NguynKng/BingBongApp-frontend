@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios"
+import axios from "axios";
 import useAuthStore from "../../store/authStore";
 
 function QuizPlayPage() {
@@ -14,8 +14,7 @@ function QuizPlayPage() {
   const [timeLeft, setTimeLeft] = useState(60);
   const [isFinished, setIsFinished] = useState(false);
   const [answered, setAnswered] = useState(false);
-  const { user } = useAuthStore()
-
+  const { user } = useAuthStore();
 
   useEffect(() => {
     const fetchQuiz = async () => {
@@ -53,35 +52,31 @@ function QuizPlayPage() {
     setAnswered(true);
   };
 
-  // 👉 Hàm lưu điểm về backend
   const saveScore = async () => {
     if (!user) {
       console.error("❌ Không tìm thấy thông tin người dùng.");
       return;
     }
-  
+
     try {
       const payload = {
-        userId: user._id,  // ID người dùng lấy từ API /me
-        quizId: quizId,    // ID bài quiz hiện tại
-        score: score       // Số điểm đạt được
+        userId: user._id,
+        quizId: quizId,
+        score: score,
       };
-  
-      console.log("📤 Gửi điểm đến backend:", payload);
-  
+
       const response = await axios.post(
-        "http://localhost:8000/api/v1/quizScore/submit", // Đúng route bạn đã cấu hình
+        "http://localhost:8000/api/v1/quizScore/submit",
         payload,
         { withCredentials: true }
       );
-  
+
       console.log("✅ Điểm đã được lưu thành công:", response.data);
     } catch (error) {
       const msg = error.response?.data?.message || error.message || "Lỗi không xác định";
       console.error("❌ Gửi điểm thất bại:", msg);
     }
   };
-  
 
   useEffect(() => {
     if (answered) {
@@ -91,7 +86,7 @@ function QuizPlayPage() {
           setAnswered(false);
         } else {
           setIsFinished(true);
-          saveScore(); // 👉 Lưu điểm ngay khi kết thúc
+          saveScore();
         }
       }, 1500);
       return () => clearTimeout(timer);
@@ -110,7 +105,7 @@ function QuizPlayPage() {
   useEffect(() => {
     if (timeLeft === 0) {
       setIsFinished(true);
-      saveScore(); // 👉 Lưu điểm nếu hết thời gian
+      saveScore();
     }
   }, [timeLeft]);
 
@@ -138,26 +133,29 @@ function QuizPlayPage() {
   const currentQuestion = quiz.questions[currentQuestionIndex];
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center p-6 bg-gray-50">
-      <div className="w-full max-w-5xl">
-        <h1 className="text-4xl font-bold text-center text-indigo-700 mb-2">
-          {quiz.title}
-        </h1>
-        <p className="text-center text-xl text-gray-600 mb-6">
-          {quiz.description}
-        </p>
-        <div className="text-center mb-8">
-          <span className="font-medium text-xl">⏳ Thời gian còn lại: </span>
-          <span className="text-red-500 font-bold text-2xl">{timeLeft}s</span>
+    <div className="min-h-screen flex justify-center items-center p-4 sm:p-6 bg-gray-50 overflow-auto">
+      <div className="w-full max-w-5xl space-y-6">
+        <div className="text-center">
+          <h1 className="text-2xl sm:text-4xl font-bold text-indigo-700">
+            {quiz.title}
+          </h1>
+          <p className="text-base sm:text-xl text-gray-600 mt-2">
+            {quiz.description}
+          </p>
+        </div>
+
+        <div className="text-center">
+          <span className="font-medium text-lg sm:text-xl">⏳ Thời gian còn lại: </span>
+          <span className="text-red-500 font-bold text-xl sm:text-2xl">{timeLeft}s</span>
         </div>
 
         {!isFinished && (
-          <div className="bg-white shadow-xl border border-gray-200 p-10 rounded-2xl">
-            <h3 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+          <div className="bg-white shadow-xl border border-gray-200 p-6 sm:p-10 rounded-2xl overflow-hidden">
+            <h3 className="text-lg sm:text-2xl font-bold text-gray-800 mb-4 sm:mb-6 text-center">
               Câu {currentQuestionIndex + 1}: {currentQuestion.question}
             </h3>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               {currentQuestion.options.map((option, i) => {
                 const isSelected = answers[currentQuestionIndex] === option;
                 const isCorrect = option === currentQuestion.correctAnswer;
@@ -165,15 +163,16 @@ function QuizPlayPage() {
                 return (
                   <label
                     key={i}
-                    className={`flex items-center justify-center text-xl p-6 rounded-2xl font-semibold cursor-pointer border-2 transition-all duration-300 text-center
-                      ${answered
-                          ? isCorrect
-                            ? "bg-green-500 text-white border-green-600"
-                            : isSelected
-                            ? "bg-red-500 text-white border-red-600"
-                            : "bg-white text-gray-800"
-                          : "bg-white text-gray-800 hover:bg-indigo-100 hover:shadow-md"
-                      }`}
+                    className={`flex items-center justify-center text-base sm:text-xl p-4 sm:p-6 rounded-xl sm:rounded-2xl font-semibold cursor-pointer border-2 transition-all duration-300 text-center break-words
+                    ${
+                      answered
+                        ? isCorrect
+                          ? "bg-green-500 text-white border-green-600"
+                          : isSelected
+                          ? "bg-red-500 text-white border-red-600"
+                          : "bg-white text-gray-800"
+                        : "bg-white text-gray-800 hover:bg-indigo-100 hover:shadow-md"
+                    }`}
                   >
                     <input
                       type="radio"
@@ -193,24 +192,24 @@ function QuizPlayPage() {
         )}
 
         {isFinished && (
-          <div className="bg-white border shadow-lg rounded-2xl p-10 text-center mt-8">
-            <h2 className="text-3xl font-bold text-green-600 mb-4">
+          <div className="bg-white border shadow-lg rounded-2xl p-6 sm:p-10 text-center mt-6">
+            <h2 className="text-2xl sm:text-3xl font-bold text-green-600 mb-4">
               🎉 Bạn đã hoàn thành quiz!
             </h2>
-            <p className="text-xl text-gray-700 mb-2">Điểm số của bạn là:</p>
-            <p className="text-5xl font-bold text-indigo-700 mb-6">
+            <p className="text-base sm:text-xl text-gray-700 mb-2">Điểm số của bạn là:</p>
+            <p className="text-4xl sm:text-5xl font-bold text-indigo-700 mb-6">
               {score} / {quiz.questions.length}
             </p>
-            <div className="flex justify-center gap-6 mt-4 flex-wrap">
+            <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mt-4 flex-wrap">
               <button
                 onClick={handleGoBack}
-                className="px-8 py-3 text-lg bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300 transition"
+                className="w-full sm:w-auto px-6 py-3 text-lg bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300 transition"
               >
                 🔙 Quay lại
               </button>
               <button
                 onClick={handlePlayAgain}
-                className="px-8 py-3 text-lg bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-300 transition"
+                className="w-full sm:w-auto px-6 py-3 text-lg bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-300 transition"
               >
                 🔄 Chơi lại
               </button>
