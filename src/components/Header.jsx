@@ -70,7 +70,7 @@ function Header({ onToggleChat }) {
             <div className="w-full h-full flex items-center px-4 justify-start">
                 {/* Logo + Search */}
                 <div className="flex items-center gap-4 mr-8">
-                    <Link to="/" className="size-15 hover:scale-110 transition-transform duration-300">
+                    <Link to="/" className="size-14 hover:scale-110 transition-transform duration-300">
                         <img
                             src="/images/ico/logo.ico"
                             alt="logo"
@@ -119,7 +119,7 @@ function Header({ onToggleChat }) {
                 </div>
 
                 {/* Tabs */}
-                <div className="hidden md:flex items-center justify-center flex-1 gap-2">
+                <div className="hidden md:flex items-center justify-center flex-1 gap-2 mr-58">
                     {tabs.map((tab) => (
                         <Link
                             to={tab.link}
@@ -144,7 +144,7 @@ function Header({ onToggleChat }) {
                 {/* Right Icons */}
                 <div className="flex items-center gap-3">
                     {/* Menu Icon */}
-                    <div className="relative size-10 p-2 bg-white/70 rounded-full flex items-center justify-center shadow-md hover:scale-110 hover:ring-2 ring-blue-300 transition-all cursor-pointer group">
+                    <div className="relative size-11 p-2 bg-white/70 rounded-full flex items-center justify-center shadow-md hover:scale-110 hover:ring-2 ring-blue-300 transition-all cursor-pointer group">
                         <Grip className="text-blue-800" />
                         <div className="absolute -bottom-8 text-xs bg-black/80 text-white px-3 py-1 rounded shadow hidden group-hover:block z-50 text-center">
                             Menu
@@ -152,7 +152,7 @@ function Header({ onToggleChat }) {
                     </div>
 
                     {/* Messenger Icon */}
-                    <div className="relative size-10 p-2 bg-white/70 rounded-full shadow-md hover:scale-110 flex items-center justify-center hover:ring-2 ring-blue-300 transition-all cursor-pointer group"
+                    <div className="relative size-11 p-2 bg-white/70 rounded-full shadow-md hover:scale-110 flex items-center justify-center hover:ring-2 ring-blue-300 transition-all cursor-pointer group"
                         onClick={() => toggleDropdown("chat")}
                     >
                         <img src="/messenger-icon.png" className="size-full object-contain" />
@@ -163,7 +163,7 @@ function Header({ onToggleChat }) {
 
                     {/* Bell Icon */}
                     <div
-                        className="relative size-10 p-2 bg-white/70 rounded-full flex items-center justify-center shadow-md hover:scale-110 hover:ring-2 ring-blue-300 transition-all cursor-pointer group"
+                        className="relative size-11 p-2 bg-white/70 rounded-full flex items-center justify-center shadow-md hover:scale-110 hover:ring-2 ring-blue-300 transition-all cursor-pointer group"
                         onClick={() => toggleDropdown("notification")}
                     >
                         <Bell className="text-blue-800" />
@@ -175,7 +175,7 @@ function Header({ onToggleChat }) {
                     {/* User Dropdown */}
                     <div className="relative">
                         <div
-                            className="relative size-10 bg-white/70 rounded-full shadow-md hover:scale-110 hover:ring-2 ring-blue-300 transition-all cursor-pointer group"
+                            className="relative size-11 bg-white/70 rounded-full shadow-md hover:scale-110 hover:ring-2 ring-blue-300 transition-all cursor-pointer group"
                             onClick={() => toggleDropdown("user")}
                         >
                             <img

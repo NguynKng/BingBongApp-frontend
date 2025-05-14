@@ -35,39 +35,56 @@ function Leaderboard() {
   if (loading) return <div className="text-center mt-10 text-xl">⏳ Đang tải bảng xếp hạng...</div>;
   if (error) return <div className="text-center mt-10 text-red-600">{error}</div>;
 
+  const getRowColor = (index) => {
+    if (index === 0) return "bg-gradient-to-r from-yellow-400 to-yellow-300 hover:from-yellow-500 hover:to-yellow-400 text-gray-800 font-bold"; // 🥇 Top 1 vàng rực
+    if (index === 1) return "bg-gradient-to-r from-gray-400 to-gray-300 hover:from-gray-500 hover:to-gray-400 text-gray-800 font-bold"; // 🥈 Top 2 bạc sáng
+    if (index === 2) return "bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-600 hover:to-amber-500 text-gray-800 font-bold"; // 🥉 Top 3 đồng ánh kim
+    return index % 2 === 0 ? "bg-gray-50 hover:bg-blue-50" : "bg-white hover:bg-blue-50"; // Các dòng còn lại
+  };
+
+  const getMedalIcon = (index) => {
+    if (index === 0) return "🥇";
+    if (index === 1) return "🥈";
+    if (index === 2) return "🥉";
+    return null;
+  };
+
   return (
-    <div className="max-w-4xl mx-auto p-6 mt-10">
-      <h1 className="text-4xl font-extrabold text-center text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-pink-500 to-red-500 mb-8 animate-pulse drop-shadow-lg">
+    <div className="max-w-4xl mx-auto px-4 md:px-6 py-6 mt-10 overflow-visible">
+      <h1 className="text-4xl md:text-5xl leading-tight font-extrabold text-center text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-pink-500 to-red-500 mb-6 animate-pulse drop-shadow-lg break-words overflow-visible">
         🌟 Bảng Xếp Hạng Tổng 🌟
       </h1>
 
       <div className="overflow-x-auto rounded-xl shadow-lg hover:shadow-2xl transition duration-300">
-        <table className="min-w-full bg-white border border-gray-200 rounded-xl">
+        <table className="min-w-full bg-white border border-gray-200 rounded-xl text-center">
           <thead className="bg-gradient-to-r from-purple-500 to-pink-500 text-white">
             <tr>
-              <th className="px-6 py-3 text-left font-bold">Hạng</th>
-              <th className="px-6 py-3 text-left font-bold">Người Chơi</th>
-              <th className="px-6 py-3 text-left font-bold">Tổng Điểm</th>
+              <th className="px-6 py-3 font-bold">Hạng</th>
+              <th className="px-6 py-3 font-bold">Người Chơi</th>
+              <th className="px-6 py-3 font-bold">Tổng Điểm</th>
             </tr>
           </thead>
           <tbody>
             {leaderboard.map((player, index) => (
               <tr
                 key={player.user?._id || index}
-                className={`${
-                  index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                } hover:bg-blue-50 transition`}
+                className={`transition ${getRowColor(index)}`}
               >
                 <td className="px-6 py-4 font-semibold text-gray-700">{index + 1}</td>
-                <td className="px-6 py-4 flex items-center gap-2 text-gray-700">
-                  {player.user?.avatar && (
-                    <img
-                      src={`${Config.BACKEND_URL}${player.user.avatar}`}
-                      alt="avatar"
-                      className="w-8 h-8 rounded-full object-cover"
-                    />
-                  )}
-                  <span>{player.user?.fullName || "Ẩn danh"}</span>
+                <td className="px-6 py-4 text-gray-700">
+                  <div className="flex items-center justify-center gap-2">
+                    {player.user?.avatar && (
+                      <img
+                        src={`${Config.BACKEND_URL}${player.user.avatar}`}
+                        alt="avatar"
+                        className="w-8 h-8 rounded-full object-cover"
+                      />
+                    )}
+                    <span className="flex items-center gap-1">
+                      {getMedalIcon(index) && <span>{getMedalIcon(index)}</span>}
+                      {player.user?.fullName || "Ẩn danh"}
+                    </span>
+                  </div>
                 </td>
                 <td className="px-6 py-4 text-gray-700 font-medium">{player.totalScore}</td>
               </tr>

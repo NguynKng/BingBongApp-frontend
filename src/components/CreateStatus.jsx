@@ -10,7 +10,7 @@ function CreateStatus() {
 
   return (
     <>
-      <div className="px-4 bg-white rounded-lg">
+      <div className="px-4 bg-white rounded-lg ml-18">
         {/* Dòng tạo status */}
         <div className="flex items-center gap-2 py-4 border-b-2 border-gray-200">
           <Link to={`/profile/${user._id}`} className="size-12 rounded-full border-2 border-gray-300 cursor-pointer hover:opacity-[70%]">
