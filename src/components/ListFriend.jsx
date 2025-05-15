@@ -25,13 +25,13 @@ function ListFriend({ onToggleChat }) {
     }
 
     return (
-        <div className="fixed top-0 right-0 px-4 overflow-y-auto max-h-[92vh] custom-scroll pt-16">
+        <div className="fixed px-4 overflow-y-auto min-h-[92vh] max-h-[92vh] custom-scroll">
             {/* Sponsored Section */}
             <div className="py-4 border-b-2 border-gray-300">
                 <h1 className="text-lg text-gray-600">Sponsored</h1>
-                <div className="mt-4 space-y-4">
+                <div className="mt-1 space-y-2">
                     {[1, 2].map((ad, idx) => (
-                        <div key={idx} className="flex items-center gap-3 bg-white/70 p-2 rounded-lg shadow hover:shadow-md transition-all">
+                        <div key={idx} className="flex items-center gap-2 p-2 hover:bg-gray-200 rounded-lg transition-all cursor-pointer">
                             <img
                                 src={`/ads/ads-${ad}.jpg`}
                                 className="size-[8rem] rounded-lg object-cover"

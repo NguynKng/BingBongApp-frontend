@@ -97,7 +97,7 @@ function ChatBox({ onClose, userChat }) {
   };
 
   return (
-    <div className="fixed right-20 bottom-0 w-88 z-50 transform transition-all duration-300 ease-out hover:scale-[1.01]">
+    <div className="fixed right-10 bottom-0 w-88 z-50 transform transition-all duration-300 ease-out hover:scale-[1.01]">
       <div className="rounded-t-xl shadow-xl overflow-hidden bg-white border border-gray-200">
         {/* Header */}
         <div

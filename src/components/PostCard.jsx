@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { Heart, MessageCircle, Send, ThumbsUp } from "lucide-react";
+import { Ellipsis, Heart, MessageCircle, Send, ThumbsUp, Trash2 } from "lucide-react";
 import Config from "../envVars";
 import { formatTime } from "../utils/timeUtils";
 import { Link } from "react-router-dom";
@@ -10,9 +10,11 @@ import CommentItem from "./CommentItem";
 import CommentInput from "./CommentInput";
 import useAuthStore from "../store/authStore";
 import emotions from "../data/emotion";
+import { toast } from "react-hot-toast";
 
-function PostCard({ post }) {
+function PostCard({ post, onDeletePost }) {
   const [openComment, setOpenComment] = useState(false);
+  const [isOpenPostDropdown, setIsOpenPostDropdown] = useState(false);
   const { user } = useAuthStore();
   const { author, createdAt, content, media } = post;
   const [userComments, setUserComments] = useState([]);
@@ -50,6 +52,26 @@ function PostCard({ post }) {
 
     fetchComments();
   }, [post._id]);
+
+  const handleDeletePost = async () => {
+    if (!user) return;
+
+    try {
+      const response = await postAPI.deletePost(post._id);
+        if (response.success) {
+            if (onDeletePost) {
+                onDeletePost(post._id);
+            }
+            // Xử lý sau khi xóa thành công, ví dụ: thông báo cho người dùng
+            toast.success("Post deleted successfully");
+        } else {
+            // Xử lý nếu có lỗi xảy ra
+            toast.error("Failed to delete post");
+        }
+    } catch (error) {
+      console.error("❌ Failed to delete post:", error);
+    }
+  };
 
   const handleReactPost = useCallback(
     async (type) => {
@@ -94,32 +116,60 @@ function PostCard({ post }) {
   }
 
   return (
-    <div className="bg-white p-5 rounded-lg shadow-md mb-4 ml-19">
-      <div className="flex items-center space-x-2 mb-3">
-        <Link to={`/profile/${author._id}`} className="w-10 h-10 rounded-full">
-          <img
-            src={
-              author?.avatar
-                ? `${Config.BACKEND_URL}${author.avatar}`
-                : "/user.png"
-            }
-            alt={author.fullName}
-            className="object-cover size-full rounded-full"
-          />
-        </Link>
-        <div>
+    <div className="bg-white p-5 rounded-lg shadow-md mb-4">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-2 mb-3">
           <Link
             to={`/profile/${author._id}`}
-            className="text-black font-semibold hover:underline underline-offset-2"
+            className="w-10 h-10 rounded-full"
           >
-            {author.fullName}
+            <img
+              src={
+                author?.avatar
+                  ? `${Config.BACKEND_URL}${author.avatar}`
+                  : "/user.png"
+              }
+              alt={author.fullName}
+              className="object-cover size-full rounded-full"
+            />
           </Link>
-          <div className="flex items-center gap-1 text-gray-500 text-sm">
-            <span>{formatTime(createdAt)}</span>
-            <span className="text-gray-400">•</span>
-            <img src="/globe.png" className="size-4 object-cover" />
+          <div>
+            <Link
+              to={`/profile/${author._id}`}
+              className="text-black font-semibold hover:underline underline-offset-2"
+            >
+              {author.fullName}
+            </Link>
+            <div className="flex items-center gap-1 text-gray-500 text-sm">
+              <span>{formatTime(createdAt)}</span>
+              <span className="text-gray-400">•</span>
+              <img src="/globe.png" className="size-4 object-cover" />
+            </div>
           </div>
         </div>
+        {author._id === user?._id && (
+          <div
+            className="relative rounded-full text-black hover:bg-gray-100 cursor-pointer p-2"
+            onClick={() => setIsOpenPostDropdown(!isOpenPostDropdown)}
+          >
+            <Ellipsis className="size-5" />
+            {isOpenPostDropdown && (
+              <div className="absolute right-0 top-full w-72 bg-white rounded-lg shadow-xl z-50 border border-gray-200">
+                <ul className="p-2">
+                  <li
+                    className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 cursor-pointer rounded-md"
+                    onClick={handleDeletePost}
+                  >
+                    <Trash2 />
+                    <span className="font-medium">
+                      Xoá bài viết
+                    </span>
+                  </li>
+                </ul>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       <p className="text-gray-800 mb-3">{content}</p>
@@ -176,7 +226,9 @@ function PostCard({ post }) {
                         <h3 className="font-medium">{hoveredEmotionUser}</h3>
                         <div className="flex flex-col mt-1">
                           {filteredReactions.map((reaction) => (
-                            <span key={reaction._id}>{`${reaction?.user?.fullName}`}</span>
+                            <span
+                              key={reaction._id}
+                            >{`${reaction.user.fullName}`}</span>
                           ))}
                         </div>
                       </div>
@@ -216,9 +268,8 @@ function PostCard({ post }) {
                 className={`font-medium`}
                 style={{
                   color: `${
-                    emotions.find(
-                      (emotion) => emotion.name === myReaction.type
-                    ).color
+                    emotions.find((emotion) => emotion.name === myReaction.type)
+                      .color
                   }`,
                 }}
               >
