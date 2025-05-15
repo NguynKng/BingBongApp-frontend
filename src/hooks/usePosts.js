@@ -25,7 +25,7 @@ export const useGetUserPosts = (userId) => {
         fetchPosts();
     }, [userId]);
 
-    return { posts, loading, error };
+    return { posts, setPosts, loading, error };
 }
 
 // Add a new hook for fetching the feed
@@ -89,7 +89,8 @@ export const useGetFeed = (initialPage = 1, initialLimit = 10) => {
     }, []);
 
     return { 
-        feed, 
+        feed,
+        setFeed,
         loading, 
         error, 
         pagination, 

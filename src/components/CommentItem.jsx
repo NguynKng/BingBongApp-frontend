@@ -32,7 +32,7 @@ function CommentItem({ comment, postAuthorId, onRefresh }) {
   const toggleReplies = () => setOpenReplies((prev) => !prev);
 
   return (
-    <div className="flex gap-2">
+    <div className="flex items-start gap-2 w-full max-w-full">
       <Link
         to={`/profile/${comment.user._id}`}
         className="size-10 rounded-full transition-transform duration-200 active:scale-95 hover:brightness-105"
@@ -48,8 +48,8 @@ function CommentItem({ comment, postAuthorId, onRefresh }) {
       </Link>
 
       <div className="space-y-1">
-        <div className="py-2 px-4 rounded-3xl bg-gray-200">
-          <div className="flex items-center gap-2">
+        <div className="py-2 px-4 rounded-3xl bg-gray-200 w-fit max-w-full">
+          <div className="flex items-center gap-2 flex-wrap">
             <Link
               to={`/profile/${comment.user._id}`}
               className="text-[16px] font-semibold hover:text-blue-600 transition-colors"
@@ -62,10 +62,10 @@ function CommentItem({ comment, postAuthorId, onRefresh }) {
               </span>
             )}
           </div>
-          <p className="text-base">{comment.content}</p>
+          <p className="text-base break-words">{comment.content}</p>
         </div>
 
-        <div className="flex items-center gap-2 px-3">
+        <div className="flex items-center gap-2 px-3 text-sm flex-wrap">
           <span className="text-sm text-gray-500">{formatTime(comment.createdAt)}</span>
           <button
             className="text-gray-500 hover:underline underline-offset-2 transition text-sm cursor-pointer"
@@ -88,10 +88,10 @@ function CommentItem({ comment, postAuthorId, onRefresh }) {
 
         {openReplies &&
           comment.replies.map((reply) => (
-            <div key={reply._id} className="flex gap-2 mt-2 ml-6">
+            <div key={reply._id} className="flex gap-2 mt-2 ml-4 sm:ml-6 w-full">
               <Link
                 to={`/profile/${reply.user._id}`}
-                className="size-9 rounded-full transition-transform duration-200 active:scale-95 hover:brightness-105"
+                className="size-9 rounded-full transition-transform duration-200 active:scale-95 hover:brightness-105 min-w-[36px]"
               >
                 <img
                   src={
@@ -102,9 +102,9 @@ function CommentItem({ comment, postAuthorId, onRefresh }) {
                   className="size-full object-cover rounded-full"
                 />
               </Link>
-              <div className="space-y-1">
-                <div className="py-2 px-4 rounded-3xl bg-gray-100">
-                  <div className="flex items-center gap-2">
+              <div className="space-y-1 w-full">
+                <div className="py-2 px-4 rounded-3xl bg-gray-100 w-fit max-w-full">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <Link
                       to={`/profile/${reply.user._id}`}
                       className="text-[15px] font-semibold hover:text-blue-600 transition-colors"
@@ -117,7 +117,7 @@ function CommentItem({ comment, postAuthorId, onRefresh }) {
                       </span>
                     )}
                   </div>
-                  <p className="text-base">{reply.content}</p>
+                  <p className="text-base break-words">{reply.content}</p>
                 </div>
                 <span className="text-sm px-3 text-gray-500">
                   {formatTime(reply.createdAt)}

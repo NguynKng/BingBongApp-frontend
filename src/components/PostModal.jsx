@@ -1,9 +1,11 @@
 import { useState } from "react";
-import axios from "axios";
 import Config from "../envVars.js";
 import { toast } from "react-hot-toast";
+import { postAPI } from "../services/api.js";
+import useAuthStore from "../store/authStore.js";
 
-function PostModal({ user, onClose }) {
+function PostModal({ onClose, onPostCreated }) {
+    const { user } = useAuthStore();
   const [content, setContent] = useState("");
   const [images, setImages] = useState([]);
   const [imagesPreview, setImagesPreview] = useState([]);
@@ -22,20 +24,14 @@ function PostModal({ user, onClose }) {
     });
 
     try {
-      const response = await axios.post(
-        `${Config.BACKEND_URL}/api/v1/posts`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-          withCredentials: true,
-        }
-      );
-      console.log(response.data);
-      if (response.data.success === true){
-        toast.success(response.data.message);
+      const response = await postAPI.createPost(formData);
+      if (response.success === true) {
+        toast.success(response.message);
       }
+       if (onPostCreated) {
+        onPostCreated(response.post); // Send it back to HomePage
+      }
+      
 
       setContent("");
       setImages([]);

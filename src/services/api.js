@@ -286,6 +286,24 @@ export const userAPI = {
     }
   },
 
+  declineFriendRequest: async (userId) => {
+    try {
+      const response = await api.delete(
+        `/user/friend-request/decline/${userId}`
+      );
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || "Failed to decline friend request";
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
+    }
+  },
+
   removeFriend: async (userId) => {
     try {
       const response = await api.delete(`/user/friend/${userId}`);
@@ -304,6 +322,27 @@ export const userAPI = {
 };
 
 export const postAPI = {
+  createPost: async (postData) => {
+    try {
+      const response = await api.post("/posts", postData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      console.log(error);
+      return {
+        success: false,
+        message: "Đã có lỗi xảy ra khi đăng post",
+        data: {},
+      };
+    }
+  },
   reactToPost: async (postId, type) => {
     try {
       const response = await api.post(`/posts/react`, { postId, type });
@@ -420,6 +459,24 @@ export const postAPI = {
       throw error;
     }
   },
+  deletePost: async (postId) => {
+    try {
+      const response = await api.delete(`/posts/${postId}`);
+
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to delete post";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  }
 };
 
 export const chatApi = {
@@ -444,64 +501,64 @@ export const chatApi = {
 };
 
 export const quizAPI = {
-    // Create a new quiz
-    createQuiz: async (quizData) => {
-        try {
-        const response = await api.post("/quiz", quizData);
-    
-        if (response.data.success === false) {
-            throw new Error(response.data.message);
-        }
-    
-        return response.data;
-        } catch (error) {
-        if (error.response) {
-            const errorMessage =
-            error.response.data.message || "Failed to create quiz";
-            throw new Error(errorMessage);
-        }
-        throw error;
-        }
-    },
-    
-    // Get all quizzes
-    getAllQuizzes: async () => {
-        try {
-        const response = await api.get("/quiz");
-    
-        if (response.data.success === false) {
-            throw new Error(response.data.message);
-        }
-    
-        return response.data;
-        } catch (error) {
-        if (error.response) {
-            const errorMessage =
-            error.response.data.message || "Failed to fetch quizzes";
-            throw new Error(errorMessage);
-        }
-        throw error;
-        }
-    },
-    getQuizById: async (quizId) => {
-        try {
-            const response = await api.get(`/quiz/${quizId}`);
-    
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
-    
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to fetch quiz";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
+  // Create a new quiz
+  createQuiz: async (quizData) => {
+    try {
+      const response = await api.post("/quiz", quizData);
+
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to create quiz";
+        throw new Error(errorMessage);
+      }
+      throw error;
     }
-}
+  },
+
+  // Get all quizzes
+  getAllQuizzes: async () => {
+    try {
+      const response = await api.get("/quiz");
+
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch quizzes";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getQuizById: async (quizId) => {
+    try {
+      const response = await api.get(`/quiz/${quizId}`);
+
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch quiz";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+};
 
 // Export the axios instance for use in other API services
 export default api;

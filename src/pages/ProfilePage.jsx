@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import Header from "../components/Header";
 import Meta from "../components/Meta";
-import { ChevronDown, Ellipsis, Plus, UserCheck, UserPlus } from "lucide-react";
+import { ChevronDown, Ellipsis, Plus, UserCheck, UserPlus, UserX } from "lucide-react";
 import CreateStatus from "../components/CreateStatus";
 import PostCard from "../components/PostCard";
 import test_posts from "../data/posts";
@@ -15,6 +15,7 @@ import { useGetProfile } from "../hooks/useProfile";
 import SpinnerLoading from "../components/SpinnerLoading";
 
 function ProfilePage() {
+    const [isOpenFriendsDropdown, setIsOpenFriendsDropdown] = useState(false);
   const { userId } = useParams();
   const [activeTab, setActiveTab] = useState("Bài viết");
   const [isUploading, setIsUploading] = useState({
@@ -24,7 +25,8 @@ function ProfilePage() {
   const { user, updateUser } = useAuthStore();
   const avatarInputRef = useRef(null);
   const coverPhotoInputRef = useRef(null);
-  const { posts, loading } = useGetUserPosts(userId);
+  const { posts, setPosts, loading } = useGetUserPosts(userId);
+
   const isMyProfile = userId === user?._id;
 
   const { profile } = useGetProfile(userId);
@@ -57,10 +59,16 @@ function ProfilePage() {
     { name: "Bài viết" },
     { name: "Giới thiệu" },
     { name: "Bạn bè" },
-    { name: "Ảnh" },
-    { name: "Video" },
-    { name: "Check in" },
+    { name: "Ảnh" }
   ];
+
+  const handleAddPost = (newPost) => {
+    setPosts((prev) => [newPost, ...prev]);
+  };
+
+  const handleRemovePost = (postId) => {
+    setPosts((prev) => prev.filter((post) => post._id !== postId));
+  };
 
   const handleAvatarUpload = async (event) => {
     const file = event.target.files[0];
@@ -94,6 +102,24 @@ function ProfilePage() {
     }
   };
 
+  const handleDeleteFriend = async () => {
+    try {
+      const response = await userAPI.removeFriend(userId);
+      if (!response.success) {
+        toast.error("Failed to delete friend.");
+        return;
+      }
+      updateUser({
+        friends: response?.user?.friends,
+      });
+      setIsFriend(false);
+      toast.success("Friend deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting friend:", error);
+      toast.error("Failed to delete friend.");
+    }
+  }
+
   const handleAddFriendRequest = async () => {
     try {
       await userAPI.sendFriendRequest(userId);
@@ -116,12 +142,28 @@ function ProfilePage() {
     }
   };
 
+  const handleDeclineFriendRequest = async () => {
+    try {
+      const response = await userAPI.declineFriendRequest(userId);
+      if (!response.success) {
+        toast.error("Failed to decline friend request.");
+        return;
+      }
+      updateUser({ friendRequests: response?.user?.friendRequests });
+      setIsReceivingFriendRequest(false);
+      toast.success("Friend request declined successfully!");
+    } catch (error) {
+      console.error("Error declining friend request:", error);
+      toast.error("Failed to decline friend request.");
+    }
+  }
+
   const handleAcceptFriendRequest = async () => {
     try {
       const response = await userAPI.acceptFriendRequest(userId);
       updateUser({
-        friends: response.friends,
-        friendRequests: response.friendRequests,
+        friends: response.user.friends,
+        friendRequests: response.user.friendRequests
       });
       setIsFriend(true);
       setIsReceivingFriendRequest(false);
@@ -136,8 +178,8 @@ function ProfilePage() {
     <>
       <Meta title="BingBong" />
       <Header />
-      <div className="pt-[64px] px-[15%]">
-        <div className="relative h-[38rem]">
+      <div className="pt-[64px] lg:px-[15%]">
+        <div className="relative w-full lg:h-[38rem] h-[30rem]">
           <div className="relative w-full h-[71%] rounded-b-md">
             <img
               src={
@@ -171,8 +213,8 @@ function ProfilePage() {
             <div className="relative w-full">
               <div className="absolute top-0 w-full bg-gradient-to-t from-black/50 to-transparent h-[30%] rounded-md"></div>
               <div className="px-8">
-                <div className="flex justify-between border-b-2 border-gray-200 pb-4">
-                  <div className="flex gap-2">
+                <div className="flex lg:flex-row flex-col lg:justify-between justify-center lg:items-end items-center border-b-2 border-gray-200 pb-4">
+                  <div className="flex lg:flex-row flex-col gap-2 justify-center items-center">
                     <div className="relative bg-gray-200 hover:bg-gray-300 rounded-full size-46 flex border-4 border-white items-center justify-center">
                       <img
                         src={
@@ -208,11 +250,11 @@ function ProfilePage() {
                         </div>
                       )}
                     </div>
-                    <div className="flex flex-col justify-center self-end py-4 px-2">
-                      <h1 className="text-3xl font-bold">
+                    <div className="flex flex-col justify-center lg:items-start items-center self-end py-4 px-2">
+                      <h1 className="text-3xl font-bold text-center bg-white/80 lg:bg-transparent px-2 rounded">
                         {displayedUser?.fullName || "Loading..."}
                       </h1>
-                      <p className="text-gray-500">{`${
+                      <p className="text-gray-500 text-center dark:text-gray-400 bg-white/80 lg:bg-transparent px-2 rounded">{`${
                         displayedUser.friends.length || 0
                       } người bạn`}</p>
                     </div>
@@ -221,11 +263,11 @@ function ProfilePage() {
                     <div className="flex gap-2 items-center">
                       {isMyProfile ? (
                         <>
-                          <button className="flex gap-2 bg-blue-500 hover:bg-blue-600 cursor-pointer rounded-md py-2 px-4 text-white items-center justify-center">
+                          <button className="flex lg:gap-2 gap-1 bg-blue-500 hover:bg-blue-600 cursor-pointer rounded-md py-2 lg:px-4 px-2 text-white items-center justify-center">
                             <Plus className="size-5" />
                             <span>Thêm vào tin</span>
                           </button>
-                          <button className="flex gap-2 items-center justify-center bg-gray-200 hover:bg-gray-300 cursor-pointer rounded-md py-2 px-4 text-black font-medium">
+                          <button className="flex lg:gap-2 gap-1 items-center justify-center bg-gray-200 hover:bg-gray-300 cursor-pointer rounded-md py-2 lg:px-4 px-2 text-black font-medium">
                             <img
                               src="/pen.png"
                               className="size-5 object-cover"
@@ -235,9 +277,25 @@ function ProfilePage() {
                         </>
                       ) : isFriend ? (
                         <>
-                          <button className="flex gap-2 bg-gray-200 text-black rounded-md py-2 px-4 font-medium items-center cursor-default">
+                          <button className="relative flex gap-2 bg-gray-200 text-black rounded-md py-2 px-4 font-medium items-center hover:bg-gray-300 cursor-pointer" onClick={() =>
+                              setIsOpenFriendsDropdown(!isOpenFriendsDropdown)
+                            }>
                             <UserCheck />
                             <span>Bạn bè</span>
+                            {isOpenFriendsDropdown && (
+                              <div className="absolute right-0 top-full w-72 bg-white rounded-lg shadow-xl z-50 border border-gray-200">
+                                <ul className="p-2">
+                                  <li
+                                    className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 cursor-pointer rounded-md" onClick={handleDeleteFriend}
+                                  >
+                                    <UserX />
+                                    <span className="font-medium">
+                                      Xoá kết bạn
+                                    </span>
+                                  </li>
+                                </ul>
+                              </div>
+                            )}
                           </button>
                           <button className="flex gap-2 items-center justify-center bg-gray-200 hover:bg-gray-300 cursor-pointer rounded-md py-2 px-4 text-black font-medium">
                             <img
@@ -255,7 +313,7 @@ function ProfilePage() {
                           >
                             <span>Chấp nhận lời mời</span>
                           </button>
-                          <button className="flex gap-2 bg-gray-200 hover:bg-gray-300 text-black rounded-md py-2 px-4 font-medium items-center cursor-pointer">
+                          <button className="flex gap-2 bg-gray-200 hover:bg-gray-300 text-black rounded-md py-2 px-4 font-medium items-center cursor-pointer" onClick={handleDeclineFriendRequest}>
                             <span>Xoá lời mời</span>
                           </button>
                           <button className="flex gap-2 items-center justify-center bg-gray-200 hover:bg-gray-300 cursor-pointer rounded-md py-2 px-4 text-black font-medium">
@@ -300,11 +358,11 @@ function ProfilePage() {
                   </div>
                 </div>
                 <div className="flex justify-between items-center">
-                  <div className="flex py-1">
+                  <div className="flex flex-wrap py-1">
                     {tabs.map((tab, index) => (
                       <div
                         key={index}
-                        className={`cursor-pointer border-b-4 font-medium py-3 px-4 ${
+                        className={`cursor-pointer border-b-4 font-medium py-1 px-2 lg:py-3 lg:px-4 ${
                           activeTab === tab.name
                             ? "border-blue-500 text-blue-500 bg-transparent"
                             : "border-transparent text-gray-500 hover:bg-gray-200 rounded-md"
@@ -314,14 +372,12 @@ function ProfilePage() {
                         {tab.name}
                       </div>
                     ))}
-                    <div className="flex gap-2 items-center justify-center hover:bg-gray-200 cursor-pointer rounded-md py-3 px-4 text-gray-500 font-medium">
+                    <div className="flex gap-2 items-center justify-center hover:bg-gray-200 cursor-pointer rounded-md py-1 px-2 lg:py-3 lg:px-4 text-gray-500 font-medium">
                       <span>Xem thêm</span>
                       <ChevronDown className="size-5" />
                     </div>
                   </div>
-                  <div className="rounded-md text-black bg-gray-200 hover:bg-gray-300 cursor-pointer py-2 px-4">
-                    <Ellipsis className="size-5" />
-                  </div>
+
                 </div>
               </div>
             </div>
@@ -329,9 +385,9 @@ function ProfilePage() {
         </div>
       </div>
 
-      <section className="bg-gray-200 px-[17%] py-4">
-        <div className="flex gap-4">
-          <div className="w-[40%] space-y-4 sticky top-[8.5vh] h-fit">
+      <section className="bg-gray-200 lg:px-[17%] md:px-[10%] py-4">
+        <div className="flex lg:flex-row flex-col gap-4">
+          <div className="lg:w-[40%] w-full space-y-4 lg:sticky top-[8.5vh] h-fit">
             <div className="rounded-md bg-white border-2 border-gray-200 p-4 space-y-4">
               <h1 className="text-xl font-bold">Giới thiệu</h1>
               <button className="py-2 px-4 text-center w-full rounded-md bg-gray-200 font-medium  cursor-pointer hover:bg-gray-300">
@@ -414,8 +470,8 @@ function ProfilePage() {
             </div>
           </div>
 
-          <div className="w-[60%] space-y-4">
-            {isMyProfile && <CreateStatus />}
+          <div className="lg:w-[60%] w-full space-y-4">
+            {isMyProfile && <CreateStatus onPostCreated={handleAddPost} />}
             <div className="py-2 px-4 bg-white rounded-lg">
               <h1 className="text-xl font-bold">Bài viết</h1>
             </div>
@@ -424,7 +480,7 @@ function ProfilePage() {
             ) : (
               <>
                 {posts && posts.length > 0 ? (
-                  posts.map((post) => <PostCard key={post._id} post={post} />)
+                  posts.map((post) => <PostCard key={post._id} post={post} onDeletePost={handleRemovePost} />)
                 ) : (
                   <p className="text-center text-2xl">Không có bài viết nào</p>
                 )}
