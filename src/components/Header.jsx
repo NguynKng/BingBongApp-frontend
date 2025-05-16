@@ -22,6 +22,7 @@ import DropdownNotification from "./DropdownNotification";
 import { useGetProfileByName } from "../hooks/useProfile";
 import debounce from "lodash.debounce";
 import SpinnerLoading from "./SpinnerLoading";
+import DropdownMenu from "./DropdownMenu";
 
 function Header({ onToggleChat }) {
     const [query, setQuery] = useState("");
@@ -33,6 +34,7 @@ function Header({ onToggleChat }) {
         user: false,
         chat: false,
         notification: false,
+        menu: false
     });
     const [showMobileMenu, setShowMobileMenu] = useState(false);
     const [showSearch, setShowSearch] = useState(false); // State to control search toggle
@@ -66,14 +68,15 @@ function Header({ onToggleChat }) {
             user: type === "user" ? !prev.user : false,
             chat: type === "chat" ? !prev.chat : false,
             notification: type === "notification" ? !prev.notification : false,
+            menu: type === "menu" ? !prev.menu : false,
         }));
     };
 
     return (
         <header className="fixed top-0 left-0 w-full h-[64px] z-50 bg-gradient-to-r from-blue-100 via-blue-200 to-purple-200 backdrop-blur-xl shadow-md border-b border-blue-300">
-            <div className="w-full h-full flex items-center px-4 justify-between gap-4">
+            <div className="w-full h-full flex items-center px-4 justify-between gap-2">
                 {/* Logo + Search */}
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
                     <Link to="/" className="size-12 sm:size-14 hover:scale-110 transition-transform duration-300">
                         <img src="/images/ico/logo.ico" alt="logo" className="size-full object-cover rounded-xl" />
                     </Link>
@@ -194,12 +197,12 @@ function Header({ onToggleChat }) {
                 </div>
 
                 {/* Tabs - Desktop */}
-                <div className="hidden md:flex items-center justify-center flex-1 gap-2">
+                <div className="hidden md:flex items-center justify-center flex-1 gap-1">
                     {tabs.map((tab) => (
                         <Link
                             to={tab.link}
                             key={tab.id}
-                            className={`relative px-6 py-3 rounded-xl font-medium group transition-all duration-300 overflow-hidden
+                            className={`relative px-4 lg:px-6 py-3 rounded-xl font-medium group transition-all duration-300 overflow-hidden
                                 ${activeTab === tab.id
                                     ? "bg-blue-600 text-white shadow-md scale-105"
                                     : "bg-white/30 text-blue-800 hover:bg-blue-200 hover:text-blue-900"
@@ -216,23 +219,25 @@ function Header({ onToggleChat }) {
                     ))}
                 </div>
 
-                {/* Mobile Menu Toggle */}
-                <button
-                    className="block md:hidden p-2 bg-white/80 rounded-full shadow hover:scale-110 transition"
-                    onClick={() => setShowMobileMenu(!showMobileMenu)}
-                >
-                    {showMobileMenu ? <X className="text-blue-800" /> : <Menu className="text-blue-800" />}
-                </button>
-
                 {/* Right Icons */}
                 <div className="flex items-center gap-2 sm:gap-3">
+                    {/* Menu Icon */}
+                    <div
+                        className="relative size-11 p-2 bg-white/70 rounded-full flex items-center justify-center shadow-md hover:scale-110 hover:ring-2 ring-blue-300 transition-all cursor-pointer group"
+                        onClick={() => toggleDropdown("menu")}
+                    >
+                        <Grip className="text-blue-800" />
+                        <div className="absolute -bottom-8 text-xs bg-black/80 text-white px-3 py-1 rounded shadow hidden group-hover:block z-50 text-center whitespace-nowrap">
+                            Menu
+                        </div>
+                    </div>
                     {/* Messenger Icon */}
                     <div
                         className="relative size-11 p-2 bg-white/70 rounded-full shadow-md hover:scale-110 flex items-center justify-center hover:ring-2 ring-blue-300 transition-all cursor-pointer group"
                         onClick={() => toggleDropdown("chat")}
                     >
                         <img src="/messenger-icon.png" className="size-full object-contain" />
-                        <div className="absolute -bottom-8 text-xs bg-black/80 text-white px-3 py-1 rounded shadow hidden group-hover:block z-50 text-center">
+                        <div className="absolute -bottom-8 text-xs bg-black/80 text-white px-3 py-1 rounded shadow hidden group-hover:block z-50 text-center whitespace-nowrap">
                             Messenger
                         </div>
                     </div>
@@ -243,7 +248,7 @@ function Header({ onToggleChat }) {
                         onClick={() => toggleDropdown("notification")}
                     >
                         <Bell className="text-blue-800" />
-                        <div className="absolute -bottom-8 text-xs bg-black/80 text-white px-3 py-1 rounded shadow hidden group-hover:block z-50 text-center">
+                        <div className="absolute -bottom-8 text-xs bg-black/80 text-white px-3 py-1 rounded shadow hidden group-hover:block z-50 text-center whitespace-nowrap">
                             Thông báo
                         </div>
                     </div>
@@ -258,7 +263,7 @@ function Header({ onToggleChat }) {
                                 src={user?.avatar ? `${Config.BACKEND_URL}${user.avatar}` : `/user.png`}
                                 className="size-full object-cover rounded-full"
                             />
-                            <div className="absolute -bottom-10 left-1/2 transform -translate-x-1/2 text-xs bg-black/80 text-white px-3 py-1 rounded shadow hidden group-hover:block text-center">
+                            <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-xs bg-black/80 text-white px-3 py-1 rounded shadow hidden group-hover:block text-center whitespace-nowrap">
                                 Tài khoản
                             </div>
                             <div className="absolute -bottom-1 -right-1 bg-white size-4 rounded-full flex items-center justify-center">
@@ -268,6 +273,9 @@ function Header({ onToggleChat }) {
                         {dropdown.user && <DropdownUser />}
                         {dropdown.chat && <DropdownChat onToggleChat={onToggleChat} />}
                         {dropdown.notification && <DropdownNotification />}
+                        {dropdown.menu && (
+                            <DropdownMenu />
+                        )}
                     </div>
                 </div>
             </div>

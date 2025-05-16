@@ -26,10 +26,10 @@ function MainLayout({ Element }) {
             <Header onToggleChat={handleToggleChat} />
             <Navbar />
             <div className="relative pt-[64px] bg-gray-100 lg:ml-[24rem] flex">
-                <div className="lg:w-[65%] w-full px-4 md:px-8 min-h-[90vh]">
+                <div className="lg:w-[60%] w-full px-4 md:px-8 min-h-[90vh]">
                     <Element />
                 </div>
-                <div className="lg:w-[35%]">
+                <div className="md:w-[40%] md:block hidden">
                     <ListFriend onToggleChat={handleToggleChat} />
                 </div>
                 {showChat && (
