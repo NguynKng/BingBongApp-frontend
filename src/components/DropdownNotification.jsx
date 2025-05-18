@@ -1,67 +1,40 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { io } from "socket.io-client";
+import useAuthStore from "../store/authStore";
 
-const notifications = [
-  {
-    id: 1,
-    content: "Người dùng Nguyễn Văn A vừa theo dõi bạn.",
-    time: "2 phút trước",
-    avatar: "/user.png",
-  },
-  {
-    id: 2,
-    content: "Bạn có lời mời kết bạn mới.",
-    time: "10 phút trước",
-    avatar: "/user.png",
-  },
-  {
-    id: 3,
-    content: "Bài viết của bạn vừa nhận được 5 lượt thích.",
-    time: "1 giờ trước",
-    avatar: "/user.png",
-  },
-  {
-    id: 4,
-    content: "Người dùng Trần Thị B bình luận về bài viết của bạn.",
-    time: "2 giờ trước",
-    avatar: "/user.png",
-  },
-  {
-    id: 5,
-    content: "Tài khoản của bạn đã được cập nhật thành công.",
-    time: "3 giờ trước",
-    avatar: "/user.png",
-  },
-  {
-    id: 6,
-    content: "Bình luận của bạn vừa nhận được phản hồi.",
-    time: "4 giờ trước",
-    avatar: "/user.png",
-  },
-  {
-    id: 7,
-    content: "Hôm nay là sinh nhật của bạn. Chúc mừng sinh nhật 🎉",
-    time: "5 giờ trước",
-    avatar: "/user.png",
-  },
-  {
-    id: 8,
-    content: "Có người đã đề cập đến bạn trong một bài viết.",
-    time: "6 giờ trước",
-    avatar: "/user.png",
-  },
-];
+const socket = io("http://localhost:8000", { withCredentials: true });
 
 function DropdownNotification() {
+  const [notifications, setNotifications] = useState([]);
+  const { user } = useAuthStore();
+
+  useEffect(() => {
+    if (!user?._id) return;
+
+    // Tham gia room riêng theo userId
+    socket.emit("setup", user._id);
+
+    // Lắng nghe thông báo mới
+    socket.on("notification", (noti) => {
+      setNotifications((prev) => [noti, ...prev]);
+    });
+
+    return () => {
+      socket.off("notification");
+    };
+  }, [user?._id]);
+
   return (
     <div className="absolute right-0 top-[110%] w-96 bg-white rounded-xl shadow-xl z-50 p-4 border border-blue-300 custom-scroll max-h-96 overflow-y-auto">
       <div className="font-semibold text-lg text-blue-800 mb-3">Thông báo</div>
       {notifications.length === 0 ? (
         <div className="text-center text-gray-500 py-4">Không có thông báo mới</div>
       ) : (
-        notifications.map((noti) => (
+        notifications.map((noti, idx) => (
           <Link
             to="#"
-            key={noti.id}
+            key={noti.id || idx}
             className={`
               flex items-start gap-3 py-3 border-b border-gray-100 last:border-none rounded-xl
               transition-all duration-300 ease-out transform
@@ -70,7 +43,7 @@ function DropdownNotification() {
             `}
           >
             <img
-              src={noti.avatar}
+              src={noti.avatar || "/user.png"}
               alt="avatar"
               className="size-11 rounded-full object-cover shadow-sm border border-blue-100"
             />
