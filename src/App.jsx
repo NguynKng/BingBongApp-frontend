@@ -15,70 +15,104 @@ import useAuthStore from "./store/authStore";
 import { ProtectedRoute, AuthRoute } from "./middleware/auth";
 
 function App() {
-    const { checkAuth } = useAuthStore();
-    
-    useEffect(() => {
-        // Check authentication when app loads
-        checkAuth();
-    }, [checkAuth]);
-    
-    return (
-        <>
-            <Routes>
-                <Route path="/" element={
-                    <ProtectedRoute>
-                        <MainLayout Element={HomePage} />
-                    </ProtectedRoute>
-                } />
-                
-                <Route path="/login" element={
-                    <AuthRoute>
-                        <LoginPage />
-                    </AuthRoute>
-                } />
-                
-                <Route path="/register" element={
-                    <AuthRoute>
-                        <RegisterPage />
-                    </AuthRoute>
-                } />
-                
-                <Route path="/profile/:userId" element={
-                    <ProtectedRoute>
-                        <ProfilePage />
-                    </ProtectedRoute>
-                } />
-                <Route path="/friends" element={
-                    <ProtectedRoute>
-                        <FriendPage />
-                    </ProtectedRoute>
-                } />
-                
-                <Route path="/quiz" element={
-                    <ProtectedRoute>
-                        <QuizPage />
-                    </ProtectedRoute>
-                } />
-                <Route path="/quiz/play/:quizId" element={
-                    <ProtectedRoute>
-                        <QuizPlayPage />
-                    </ProtectedRoute>
-                } />
-                <Route path="/quiz/create" element={
-                    <ProtectedRoute>
-                        <CreateQuizPage />
-                    </ProtectedRoute>
-                } />
-                <Route path="/quiz/leaderboard" element={
-                    <ProtectedRoute>
-                        <Leaderboard />
-                    </ProtectedRoute>
-                } />
-                {/* Other routes */}
-            </Routes>
-            <Toaster />
-        </>
-    );
+  const { checkAuth, theme } = useAuthStore();
+
+  useEffect(() => {
+    if (theme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [theme]);
+
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
+
+  return (
+    <>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <MainLayout Element={HomePage} />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/login"
+          element={
+            <AuthRoute>
+              <LoginPage />
+            </AuthRoute>
+          }
+        />
+
+        <Route
+          path="/register"
+          element={
+            <AuthRoute>
+              <RegisterPage />
+            </AuthRoute>
+          }
+        />
+
+        <Route
+          path="/profile/:userId"
+          element={
+            <ProtectedRoute>
+              <ProfilePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/friends"
+          element={
+            <ProtectedRoute>
+              <FriendPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/quiz"
+          element={
+            <ProtectedRoute>
+              <QuizPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/quiz/play/:quizId"
+          element={
+            <ProtectedRoute>
+              <QuizPlayPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/quiz/create"
+          element={
+            <ProtectedRoute>
+              <CreateQuizPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/quiz/leaderboard"
+          element={
+            <ProtectedRoute>
+              <Leaderboard />
+            </ProtectedRoute>
+          }
+        />
+        {/* Other routes */}
+      </Routes>
+      <Toaster />
+    </>
+  );
 }
 
 export default App;

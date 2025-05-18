@@ -15,7 +15,7 @@ function HomePage() {
   }
   
   return (
-    <div className="p-4 space-y-4">
+    <div className="md:p-4 p-1 space-y-4">
       <CreateStatus onPostCreated={handleAddPost} />
 
       {/* Spinner when loading */}

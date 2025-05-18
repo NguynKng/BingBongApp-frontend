@@ -38,7 +38,7 @@ function Header({ onToggleChat }) {
     });
     const [showMobileMenu, setShowMobileMenu] = useState(false);
     const [showSearch, setShowSearch] = useState(false); // State to control search toggle
-    const { user } = useAuthStore();
+    const { user, theme } = useAuthStore();
     const location = useLocation();
 
     const debouncedSearch = debounce((query) => {
@@ -73,8 +73,8 @@ function Header({ onToggleChat }) {
     };
 
     return (
-        <header className="fixed top-0 left-0 w-full h-[64px] z-50 bg-gradient-to-r from-blue-100 via-blue-200 to-purple-200 backdrop-blur-xl shadow-md border-b border-blue-300">
-            <div className="w-full h-full flex items-center px-4 justify-between gap-2">
+        <header className="fixed top-0 left-0 w-full h-[64px] z-50 bg-gradient-to-r from-[#f0f4ff] via-[#e0eaff] to-[#f5eaff] dark:from-[#1a1c2c] dark:via-[#23263b] dark:to-[#2e3047] backdrop-blur-xl shadow-md  dark:border-gray-700">
+            <div className="w-full h-full flex items-center md:px-2 justify-between gap-2">
                 {/* Logo + Search */}
                 <div className="flex items-center gap-2">
                     <Link to="/" className="size-12 sm:size-14 hover:scale-110 transition-transform duration-300">
@@ -87,7 +87,7 @@ function Header({ onToggleChat }) {
                         <input
                             type="text"
                             placeholder="Tìm kiếm trên Bing Bong"
-                            className="text-blue-800 font-medium w-full py-2 pl-10 bg-white/80 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-md transition-all duration-300"
+                            className="text-blue-900 dark:text-gray-200 font-medium w-full py-2 pl-10 bg-white/90 dark:bg-[#1f2233] rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-purple-400 shadow-md transition-all duration-300"
                             onChange={(e) => debouncedSearch(e.target.value)}
                             value={query}
                         />
@@ -205,7 +205,7 @@ function Header({ onToggleChat }) {
                             className={`relative px-4 lg:px-6 py-3 rounded-xl font-medium group transition-all duration-300 overflow-hidden
                                 ${activeTab === tab.id
                                     ? "bg-blue-600 text-white shadow-md scale-105"
-                                    : "bg-white/30 text-blue-800 hover:bg-blue-200 hover:text-blue-900"
+                                    : "bg-white/30 dark:bg-[#2a2e3d] text-blue-800 dark:text-gray-100 hover:bg-blue-200 dark:hover:bg-[#3a3f5a]"
                                 }`}
                         >
                             <div className="flex items-center justify-center gap-2">{tab.icon}</div>
@@ -223,20 +223,20 @@ function Header({ onToggleChat }) {
                 <div className="flex items-center gap-2 sm:gap-3">
                     {/* Menu Icon */}
                     <div
-                        className="relative size-11 p-2 bg-white/70 rounded-full flex items-center justify-center shadow-md hover:scale-110 hover:ring-2 ring-blue-300 transition-all cursor-pointer group"
+                        className="relative size-11 p-2 bg-white/70 dark:bg-[#2a2e3d] rounded-full flex items-center justify-center shadow-md hover:scale-110 hover:ring-2 ring-blue-300 dark:ring-purple-400 hover:bg-blue-100 dark:hover:bg-[#394056] transition-all cursor-pointer group"
                         onClick={() => toggleDropdown("menu")}
                     >
-                        <Grip className="text-blue-800" />
+                        <Grip className="text-blue-800 dark:text-white" />
                         <div className="absolute -bottom-8 text-xs bg-black/80 text-white px-3 py-1 rounded shadow hidden group-hover:block z-50 text-center whitespace-nowrap">
                             Menu
                         </div>
                     </div>
                     {/* Messenger Icon */}
                     <div
-                        className="relative size-11 p-2 bg-white/70 rounded-full shadow-md hover:scale-110 flex items-center justify-center hover:ring-2 ring-blue-300 transition-all cursor-pointer group"
+                        className="relative size-11 p-2 bg-white/70 dark:bg-[#2a2e3d] rounded-full flex items-center justify-center shadow-md hover:scale-110 hover:ring-2 ring-blue-300 dark:ring-purple-400 hover:bg-blue-100 dark:hover:bg-[#394056] transition-all cursor-pointer group"
                         onClick={() => toggleDropdown("chat")}
                     >
-                        <img src="/messenger-icon.png" className="size-full object-contain" />
+                        <img src={theme === "light" ? "/messenger-icon.png" : "/messenger-icon-white.png"} className="size-full object-contain" />
                         <div className="absolute -bottom-8 text-xs bg-black/80 text-white px-3 py-1 rounded shadow hidden group-hover:block z-50 text-center whitespace-nowrap">
                             Messenger
                         </div>
@@ -244,10 +244,10 @@ function Header({ onToggleChat }) {
 
                     {/* Bell Icon */}
                     <div
-                        className="relative size-11 p-2 bg-white/70 rounded-full flex items-center justify-center shadow-md hover:scale-110 hover:ring-2 ring-blue-300 transition-all cursor-pointer group"
+                        className="relative size-11 p-2 bg-white/70 dark:bg-[#2a2e3d] rounded-full flex items-center justify-center shadow-md hover:scale-110 hover:ring-2 ring-blue-300 dark:ring-purple-400 hover:bg-blue-100 dark:hover:bg-[#394056] transition-all cursor-pointer group"
                         onClick={() => toggleDropdown("notification")}
                     >
-                        <Bell className="text-blue-800" />
+                        <Bell className="text-blue-800 dark:text-white" />
                         <div className="absolute -bottom-8 text-xs bg-black/80 text-white px-3 py-1 rounded shadow hidden group-hover:block z-50 text-center whitespace-nowrap">
                             Thông báo
                         </div>

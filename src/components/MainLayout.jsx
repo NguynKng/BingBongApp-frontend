@@ -25,8 +25,8 @@ function MainLayout({ Element }) {
             <Meta title={`BingBong`} />
             <Header onToggleChat={handleToggleChat} />
             <Navbar />
-            <div className="relative pt-[64px] bg-gray-100 lg:ml-[24rem] flex">
-                <div className="lg:w-[60%] w-full px-4 md:px-8 min-h-[90vh]">
+            <div className="relative pt-[64px] lg:ml-[24rem] flex bg-gradient-to-br from-[#f0f4ff] to-[#fff1f7] dark:from-[#1c1f2a] dark:to-[#2a2e3d]">
+                <div className="lg:w-[60%] w-full px-2 md:px-8 min-h-[90vh]">
                     <Element />
                 </div>
                 <div className="md:w-[40%] md:block hidden">

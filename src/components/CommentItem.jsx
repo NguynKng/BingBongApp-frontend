@@ -48,11 +48,11 @@ function CommentItem({ comment, postAuthorId, onRefresh }) {
       </Link>
 
       <div className="space-y-1">
-        <div className="py-2 px-4 rounded-3xl bg-gray-200 w-fit max-w-full">
+        <div className="py-2 px-4 rounded-3xl bg-gray-200 w-fit max-w-full dark:bg-[rgb(52,52,53)]">
           <div className="flex items-center gap-2 flex-wrap">
             <Link
               to={`/profile/${comment.user._id}`}
-              className="text-[16px] font-semibold hover:text-blue-600 transition-colors"
+              className="text-[16px] font-semibold hover:text-blue-600 transition-colors dark:text-white"
             >
               {comment.user.fullName}
             </Link>
@@ -62,11 +62,11 @@ function CommentItem({ comment, postAuthorId, onRefresh }) {
               </span>
             )}
           </div>
-          <p className="text-base break-words">{comment.content}</p>
+          <p className="text-base break-words dark:text-white">{comment.content}</p>
         </div>
 
         <div className="flex items-center gap-2 px-3 text-sm flex-wrap">
-          <span className="text-sm text-gray-500">{formatTime(comment.createdAt)}</span>
+          <span className="text-sm text-gray-500 dark:text-gray-400">{formatTime(comment.createdAt)}</span>
           <button
             className="text-gray-500 hover:underline underline-offset-2 transition text-sm cursor-pointer"
             onClick={() => setReplyingTo(comment._id)}

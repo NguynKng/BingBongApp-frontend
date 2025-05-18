@@ -116,7 +116,7 @@ function PostCard({ post, onDeletePost }) {
   }
 
   return (
-    <div className="bg-white p-5 rounded-lg shadow-md mb-4">
+    <div className="bg-white p-5 rounded-lg shadow-md mb-4 dark:bg-[#1e1e2f] dark:border dark:border-[#2b2b3d]">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2 mb-3">
           <Link
@@ -136,7 +136,7 @@ function PostCard({ post, onDeletePost }) {
           <div>
             <Link
               to={`/profile/${author._id}`}
-              className="text-black font-semibold hover:underline underline-offset-2"
+              className="text-black font-semibold hover:underline underline-offset-2 dark:text-white"
             >
               {author.fullName}
             </Link>
@@ -149,10 +149,10 @@ function PostCard({ post, onDeletePost }) {
         </div>
         {author._id === user?._id && (
           <div
-            className="relative rounded-full text-black hover:bg-gray-100 cursor-pointer p-2"
+            className="relative rounded-full text-black hover:bg-gray-100 cursor-pointer p-2 dark:hover:bg-[rgb(56,56,56)]"
             onClick={() => setIsOpenPostDropdown(!isOpenPostDropdown)}
           >
-            <Ellipsis className="size-5" />
+            <Ellipsis className="size-5 dark:text-gray-500" />
             {isOpenPostDropdown && (
               <div className="absolute right-0 top-full w-72 bg-white rounded-lg shadow-xl z-50 border border-gray-200">
                 <ul className="p-2">
@@ -172,7 +172,7 @@ function PostCard({ post, onDeletePost }) {
         )}
       </div>
 
-      <p className="text-gray-800 mb-3">{content}</p>
+      <p className="text-gray-800 mb-3 dark:text-white">{content}</p>
 
       {media && media.length > 0 && (
         <div className="flex flex-wrap gap-2 mt-3">
@@ -239,14 +239,14 @@ function PostCard({ post, onDeletePost }) {
               return acc;
             }, [])}
           </div>
-          <span className="text-gray-600">{reactions.length}</span>
+          <span className="text-gray-600 dark:text-gray-400">{reactions.length}</span>
         </div>
       )}
       <div className="flex items-center justify-between pt-3">
         <div className="flex items-center text-gray-600 hover:text-red-400 transition cursor-pointer relative group">
           {!isReacted ? (
             <button
-              className="size-full flex items-center justify-center gap-1 text-gray-500 rounded-md cursor-pointer"
+              className="size-full flex items-center justify-center gap-1 text-gray-500 rounded-md cursor-pointer dark:text-gray-400"
               onClick={() => handleReactPost("Like")}
             >
               <ThumbsUp className={`size-5`} />
@@ -282,7 +282,7 @@ function PostCard({ post, onDeletePost }) {
           )}
 
           <div className="absolute bottom-[120%] left-0 z-50 invisible group-hover:visible transition-all delay-200">
-            <div className="flex bg-white rounded-full shadow-md border border-gray-200 relative z-50">
+            <div className="flex bg-white rounded-full shadow-md border dark:bg-[rgb(35,35,35)] border-gray-200 relative z-50">
               {emotions.map((emotion) => (
                 <div
                   key={emotion.id}
@@ -310,7 +310,7 @@ function PostCard({ post, onDeletePost }) {
           </div>
         </div>
         <button
-          className="flex items-center text-gray-600 cursor-pointer hover:text-blue-400 transition"
+          className="flex items-center text-gray-600 cursor-pointer hover:text-blue-400 transition dark:text-gray-400"
           onClick={() => setOpenComment(!openComment)}
         >
           <MessageCircle className="w-5 h-5 mr-1" />
@@ -318,8 +318,8 @@ function PostCard({ post, onDeletePost }) {
         </button>
       </div>
       {openComment && (
-        <div className="py-2 px-4 border-t-2 mt-2 border-gray-200">
-          <h1 className="text-lg">Tất cả bình luận</h1>
+        <div className="py-2 px-4 border-t-2 mt-2 border-gray-200 dark:border-gray-500">
+          <h1 className="text-lg dark:text-gray-400">Tất cả bình luận</h1>
           <CommentInput
             postId={post._id}
             onSuccessRefresh={(updatedComments) =>
