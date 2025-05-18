@@ -14,6 +14,13 @@ const useAuthStore = create(
       error: null,
       onlineUsers: [],
       socket: null,
+      theme: "light", // Default theme
+      toggleTheme: () => {
+        const currentTheme = get().theme;
+        const newTheme = currentTheme === "light" ? "dark" : "light";
+        set({ theme: newTheme });
+        document.documentElement.classList.toggle("dark", newTheme === "dark");
+      },
 
       // Reset the error state
       resetError: () => set({ error: null }),
@@ -146,6 +153,7 @@ const useAuthStore = create(
       partialize: (state) => ({
         user: state.user,
         isAuthenticated: state.isAuthenticated,
+        theme: state.theme,
       }),
     }
   )

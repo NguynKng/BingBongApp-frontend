@@ -25,7 +25,7 @@ function QuizCard({ quiz }) {
       <div className="mt-auto flex justify-end">
         <button
           onClick={() => handlePlayClick(quiz._id)}
-          className="flex items-center gap-2 text-white bg-gradient-to-r from-green-400 to-green-600 hover:from-green-500 hover:to-green-700 active:scale-95 px-4 py-2 rounded-lg transition transform focus:outline-none focus:ring-2 focus:ring-green-400 shadow"
+          className="flex items-center gap-2 text-white bg-gradient-to-r from-green-400 to-green-600 hover:from-green-500 hover:to-green-700 active:scale-95 px-4 py-2 rounded-lg transition transform focus:outline-none focus:ring-2 focus:ring-green-400 shadow cursor-pointer"
         >
           <Gamepad2 size={18} />
           Chơi
