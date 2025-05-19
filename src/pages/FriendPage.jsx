@@ -51,73 +51,75 @@ const FriendPage = () => {
     <>
       <style>{cardBlinkStyle}</style>
       <Header />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-[10vh] py-4 overflow-x-hidden">
-        <h2 className="text-2xl font-bold text-gray-800 mb-8">
-          Lời mời kết bạn ({friendRequests.length})
-        </h2>
+      <div className="dark:bg-[#181826] min-h-screen">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-[10vh] py-4 overflow-x-hidden dark:bg-[#181826]">
+          <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-8">
+            Lời mời kết bạn ({friendRequests.length})
+          </h2>
 
-        <div
-          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 mb-8"
-          style={{ perspective: "1000px" }}
-        >
-          {friendRequests.length === 0 ? (
-            <p className="text-gray-500 col-span-full">Không có lời mời nào</p>
-          ) : (
-            friendRequests.map((requester) => (
-              <div
-                key={requester._id}
-                className="bg-white rounded-2xl border border-gray-200 shadow-lg transition-transform duration-300 p-4 flex flex-col items-center text-center card-blink w-full max-w-xs mx-auto"
-                style={{
-                  transformStyle: "preserve-3d",
-                }}
-              >
-                <Link
-                  to={`/profile/${requester._id}`}
-                  className="flex flex-col items-center"
+          <div
+            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 mb-8"
+            style={{ perspective: "1000px" }}
+          >
+            {friendRequests.length === 0 ? (
+              <p className="text-gray-500 dark:text-gray-400 col-span-full">Không có lời mời nào</p>
+            ) : (
+              friendRequests.map((requester) => (
+                <div
+                  key={requester._id}
+                  className="bg-white dark:bg-[#1e1e2f] rounded-2xl border border-gray-200 dark:border-[#2b2b3d] shadow-lg transition-transform duration-300 p-4 flex flex-col items-center text-center card-blink w-full max-w-xs mx-auto"
+                  style={{
+                    transformStyle: "preserve-3d",
+                  }}
                 >
-                  <img
-                    src={
-                      requester.avatar
-                        ? `${Config.BACKEND_URL}${requester.avatar}`
-                        : "/user.png"
-                    }
-                    alt={requester.fullName}
-                    className="w-24 h-24 aspect-square rounded-full object-cover mb-3 shadow-md"
-                  />
-                  <p className="text-sm font-semibold text-gray-900 mb-2 truncate w-full">
-                    {requester.fullName}
-                  </p>
-                </Link>
+                  <Link
+                    to={`/profile/${requester._id}`}
+                    className="flex flex-col items-center"
+                  >
+                    <img
+                      src={
+                        requester.avatar
+                          ? `${Config.BACKEND_URL}${requester.avatar}`
+                          : "/user.png"
+                      }
+                      alt={requester.fullName}
+                      className="w-24 h-24 aspect-square rounded-full object-cover mb-3 shadow-md"
+                    />
+                    <p className="text-sm font-semibold text-gray-900 dark:text-white mb-2 truncate w-full">
+                      {requester.fullName}
+                    </p>
+                  </Link>
 
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleAcceptFriendRequest(requester._id);
-                  }}
-                  className="text-sm font-medium bg-[#1b74e4] hover:bg-[#155fc3] text-white px-4 py-2 rounded-md w-full mb-2 transition shadow"
-                >
-                  Xác nhận
-                </button>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setFriendRequests((prev) =>
-                      prev.filter((r) => r._id !== requester._id)
-                    );
-                  }}
-                  className="text-sm font-medium border border-gray-300 text-gray-800 hover:bg-gray-100 px-4 py-2 rounded-md w-full transition shadow"
-                >
-                  Xoá
-                </button>
-              </div>
-            ))
-          )}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleAcceptFriendRequest(requester._id);
+                    }}
+                    className="text-sm font-medium bg-[#1b74e4] hover:bg-[#155fc3] text-white px-4 py-2 rounded-md w-full mb-2 transition shadow"
+                  >
+                    Xác nhận
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setFriendRequests((prev) =>
+                        prev.filter((r) => r._id !== requester._id)
+                      );
+                    }}
+                    className="text-sm font-medium border border-gray-300 dark:border-gray-500 text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-[#23233b] px-4 py-2 rounded-md w-full transition shadow"
+                  >
+                    Xoá
+                  </button>
+                </div>
+              ))
+            )}
+          </div>
+
+          <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-8">
+            Những người bạn có thể biết
+          </h2>
+          <p className="text-gray-500 dark:text-gray-400">Tính năng đang phát triển...</p>
         </div>
-
-        <h2 className="text-2xl font-bold text-gray-800 mb-8">
-          Những người bạn có thể biết
-        </h2>
-        <p className="text-gray-500">Tính năng đang phát triển...</p>
       </div>
     </>
   );

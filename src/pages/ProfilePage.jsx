@@ -15,7 +15,7 @@ import { useGetProfile } from "../hooks/useProfile";
 import SpinnerLoading from "../components/SpinnerLoading";
 
 function ProfilePage() {
-    const [isOpenFriendsDropdown, setIsOpenFriendsDropdown] = useState(false);
+  const [isOpenFriendsDropdown, setIsOpenFriendsDropdown] = useState(false);
   const { userId } = useParams();
   const [activeTab, setActiveTab] = useState("Bài viết");
   const [isUploading, setIsUploading] = useState({
@@ -178,7 +178,7 @@ function ProfilePage() {
     <>
       <Meta title="BingBong" />
       <Header />
-      <div className="pt-[64px] lg:px-[15%]">
+      <div className="pt-[64px] lg:px-[15%] bg-gray-100 dark:bg-[#181826]">
         <div className="relative w-full lg:h-[38rem] h-[30rem]">
           <div className="relative w-full h-[71%] rounded-b-md">
             <img
@@ -213,9 +213,9 @@ function ProfilePage() {
             <div className="relative w-full">
               <div className="absolute top-0 w-full bg-gradient-to-t from-black/50 to-transparent h-[30%] rounded-md"></div>
               <div className="px-8">
-                <div className="flex lg:flex-row flex-col lg:justify-between justify-center lg:items-end items-center border-b-2 border-gray-200 pb-4">
+                <div className="flex lg:flex-row flex-col lg:justify-between justify-center lg:items-end items-center border-b-2 border-gray-200 dark:border-[#2b2b3d] pb-4">
                   <div className="flex lg:flex-row flex-col gap-2 justify-center items-center">
-                    <div className="relative bg-gray-200 hover:bg-gray-300 rounded-full size-46 flex border-4 border-white items-center justify-center">
+                    <div className="relative bg-gray-200 dark:bg-[#23233b] hover:bg-gray-300 dark:hover:bg-[#23233b] rounded-full size-46 flex border-4 border-white items-center justify-center">
                       <img
                         src={
                           displayedUser?.avatar
@@ -234,7 +234,7 @@ function ProfilePage() {
                       />
                       {isMyProfile && (
                         <div
-                          className="absolute bottom-4 right-0 p-2 size-9 rounded-full bg-gray-200 hover:bg-gray-300 cursor-pointer"
+                          className="absolute bottom-4 right-0 p-2 size-9 rounded-full bg-gray-200 dark:bg-[#23233b] hover:bg-gray-300 dark:hover:bg-[#23233b] cursor-pointer"
                           onClick={() => avatarInputRef.current.click()}
                         >
                           {isUploading.avatar ? (
@@ -251,12 +251,11 @@ function ProfilePage() {
                       )}
                     </div>
                     <div className="flex flex-col justify-center lg:items-start items-center self-end py-4 px-2">
-                      <h1 className="text-3xl font-bold text-center bg-white/80 lg:bg-transparent px-2 rounded">
+                      <h1 className="text-3xl font-bold text-center bg-white/80 dark:bg-[#23233b]/80 lg:bg-transparent px-2 rounded dark:text-white">
                         {displayedUser?.fullName || "Loading..."}
                       </h1>
-                      <p className="text-gray-500 text-center dark:text-gray-400 bg-white/80 lg:bg-transparent px-2 rounded">{`${
-                        displayedUser.friends.length || 0
-                      } người bạn`}</p>
+                      <p className="text-gray-500 text-center dark:text-gray-400 bg-white/80 dark:bg-[#23233b]/80 lg:bg-transparent px-2 rounded">{`${displayedUser.friends.length || 0
+                        } người bạn`}</p>
                     </div>
                   </div>
                   <div className="flex flex-col justify-end items-end py-4 z-30">
@@ -267,7 +266,7 @@ function ProfilePage() {
                             <Plus className="size-5" />
                             <span>Thêm vào tin</span>
                           </button>
-                          <button className="flex lg:gap-2 gap-1 items-center justify-center bg-gray-200 hover:bg-gray-300 cursor-pointer rounded-md py-2 lg:px-4 px-2 text-black font-medium">
+                          <button className="flex lg:gap-2 gap-1 items-center justify-center bg-gray-200 dark:bg-[#23233b] hover:bg-gray-300 dark:hover:bg-[#23233b] cursor-pointer rounded-md py-2 lg:px-4 px-2 text-black dark:text-white font-medium">
                             <img
                               src="/pen.png"
                               className="size-5 object-cover"
@@ -277,16 +276,16 @@ function ProfilePage() {
                         </>
                       ) : isFriend ? (
                         <>
-                          <button className="relative flex gap-2 bg-gray-200 text-black rounded-md py-2 px-4 font-medium items-center hover:bg-gray-300 cursor-pointer" onClick={() =>
-                              setIsOpenFriendsDropdown(!isOpenFriendsDropdown)
-                            }>
+                          <button className="relative flex gap-2 bg-gray-200 dark:bg-[#23233b] text-black dark:text-white rounded-md py-2 px-4 font-medium items-center hover:bg-gray-300 dark:hover:bg-[#23233b] cursor-pointer" onClick={() =>
+                            setIsOpenFriendsDropdown(!isOpenFriendsDropdown)
+                          }>
                             <UserCheck />
                             <span>Bạn bè</span>
                             {isOpenFriendsDropdown && (
-                              <div className="absolute right-0 top-full w-72 bg-white rounded-lg shadow-xl z-50 border border-gray-200">
+                              <div className="absolute right-0 top-full w-72 bg-white dark:bg-[#1e1e2f] rounded-lg shadow-xl z-50 border border-gray-200 dark:border-[#2b2b3d]">
                                 <ul className="p-2">
                                   <li
-                                    className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 cursor-pointer rounded-md" onClick={handleDeleteFriend}
+                                    className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 dark:hover:bg-[#23233b] cursor-pointer rounded-md" onClick={handleDeleteFriend}
                                   >
                                     <UserX />
                                     <span className="font-medium">
@@ -297,7 +296,7 @@ function ProfilePage() {
                               </div>
                             )}
                           </button>
-                          <button className="flex gap-2 items-center justify-center bg-gray-200 hover:bg-gray-300 cursor-pointer rounded-md py-2 px-4 text-black font-medium">
+                          <button className="flex gap-2 items-center justify-center bg-gray-200 dark:bg-[#23233b] hover:bg-gray-300 dark:hover:bg-[#23233b] cursor-pointer rounded-md py-2 px-4 text-black dark:text-white font-medium">
                             <img
                               src="/messenger-icon.png"
                               className="size-5 object-cover"
@@ -313,10 +312,10 @@ function ProfilePage() {
                           >
                             <span>Chấp nhận lời mời</span>
                           </button>
-                          <button className="flex gap-2 bg-gray-200 hover:bg-gray-300 text-black rounded-md py-2 px-4 font-medium items-center cursor-pointer" onClick={handleDeclineFriendRequest}>
+                          <button className="flex gap-2 bg-gray-200 dark:bg-[#23233b] hover:bg-gray-300 dark:hover:bg-[#23233b] text-black dark:text-white rounded-md py-2 px-4 font-medium items-center cursor-pointer" onClick={handleDeclineFriendRequest}>
                             <span>Xoá lời mời</span>
                           </button>
-                          <button className="flex gap-2 items-center justify-center bg-gray-200 hover:bg-gray-300 cursor-pointer rounded-md py-2 px-4 text-black font-medium">
+                          <button className="flex gap-2 items-center justify-center bg-gray-200 dark:bg-[#23233b] hover:bg-gray-300 dark:hover:bg-[#23233b] cursor-pointer rounded-md py-2 px-4 text-black dark:text-white font-medium">
                             <img
                               src="/messenger-icon.png"
                               className="size-5 object-cover"
@@ -327,11 +326,10 @@ function ProfilePage() {
                       ) : (
                         <>
                           <button
-                            className={`flex gap-2 font-medium cursor-pointer ${
-                              hasSentFriendRequest
-                                ? "bg-gray-200 hover:bg-gray-300 text-black"
-                                : "bg-blue-500 hover:bg-blue-600 text-white"
-                            } rounded-md py-2 px-4 items-center justify-center`}
+                            className={`flex gap-2 font-medium cursor-pointer ${hasSentFriendRequest
+                              ? "bg-gray-200 dark:bg-[#23233b] hover:bg-gray-300 dark:hover:bg-[#23233b] text-black dark:text-white"
+                              : "bg-blue-500 hover:bg-blue-600 text-white"
+                              } rounded-md py-2 px-4 items-center justify-center`}
                             onClick={
                               hasSentFriendRequest
                                 ? handleRemoveFriendRequest
@@ -345,7 +343,7 @@ function ProfilePage() {
                                 : "Thêm bạn bè"}
                             </span>
                           </button>
-                          <button className="flex gap-2 items-center justify-center bg-gray-200 hover:bg-gray-300 cursor-pointer rounded-md py-2 px-4 text-black font-medium">
+                          <button className="flex gap-2 items-center justify-center bg-gray-200 dark:bg-[#23233b] hover:bg-gray-300 dark:hover:bg-[#23233b] cursor-pointer rounded-md py-2 px-4 text-black dark:text-white font-medium">
                             <img
                               src="/messenger-icon.png"
                               className="size-5 object-cover"
@@ -362,11 +360,10 @@ function ProfilePage() {
                     {tabs.map((tab, index) => (
                       <div
                         key={index}
-                        className={`cursor-pointer border-b-4 font-medium py-1 px-2 lg:py-3 lg:px-4 ${
-                          activeTab === tab.name
-                            ? "border-blue-500 text-blue-500 bg-transparent"
-                            : "border-transparent text-gray-500 hover:bg-gray-200 rounded-md"
-                        }`}
+                        className={`cursor-pointer border-b-4 font-medium py-1 px-2 lg:py-3 lg:px-4 ${activeTab === tab.name
+                          ? "border-blue-500 text-blue-500 bg-transparent"
+                          : "border-transparent text-gray-500 hover:bg-gray-200 rounded-md"
+                          }`}
                         onClick={() => setActiveTab(tab.name)}
                       >
                         {tab.name}
@@ -385,38 +382,38 @@ function ProfilePage() {
         </div>
       </div>
 
-      <section className="bg-gray-200 lg:px-[17%] md:px-[10%] py-4">
+      <section className="bg-gray-200 dark:bg-[#181826] lg:px-[17%] md:px-[10%] py-4 min-h-screen">
         <div className="flex lg:flex-row flex-col gap-4">
           <div className="lg:w-[40%] w-full space-y-4 lg:sticky top-[8.5vh] h-fit">
-            <div className="rounded-md bg-white border-2 border-gray-200 p-4 space-y-4">
-              <h1 className="text-xl font-bold">Giới thiệu</h1>
-              <button className="py-2 px-4 text-center w-full rounded-md bg-gray-200 font-medium  cursor-pointer hover:bg-gray-300">
+            <div className="rounded-md bg-white dark:bg-[#1e1e2f] border-2 border-gray-200 dark:border-[#2b2b3d] p-4 space-y-4">
+              <h1 className="text-xl font-bold text-gray-900 dark:text-white">Giới thiệu</h1>
+              <button className="py-2 px-4 text-center w-full rounded-md bg-gray-200 dark:bg-[#23233b] dark:text-white font-medium cursor-pointer hover:bg-gray-300 dark:hover:bg-[#23233b]">
                 Thêm tiểu sử
               </button>
               <div className="flex gap-2 items-center">
                 <img src="/graduate.png" className="size-5" />
-                <span className="text-gray-600">
+                <span className="text-gray-600 dark:text-gray-400">
                   Went to THPT Trần khai Nguyên
                 </span>
               </div>
               <div className="flex gap-2 items-center">
                 <img src="/location-pin.png" className="size-5" />
-                <span className="text-gray-600">
+                <span className="text-gray-600 dark:text-gray-400">
                   From Ho Chi Minh City, Vietnam
                 </span>
               </div>
-              <button className="py-2 px-4 text-center w-full rounded-md bg-gray-200 font-medium  cursor-pointer hover:bg-gray-300">
+              <button className="py-2 px-4 text-center w-full rounded-md bg-gray-200 dark:bg-[#23233b] dark:text-white font-medium cursor-pointer hover:bg-gray-300 dark:hover:bg-[#23233b]">
                 Chỉnh sửa chi tiết
               </button>
-              <button className="py-2 px-4 text-center w-full rounded-md bg-gray-200 font-medium cursor-pointer hover:bg-gray-300">
+              <button className="py-2 px-4 text-center w-full rounded-md bg-gray-200 dark:bg-[#23233b] dark:text-white font-medium cursor-pointer hover:bg-gray-300 dark:hover:bg-[#23233b]">
                 Thêm nội dung đáng chú ý
               </button>
             </div>
 
-            <div className="rounded-md bg-white border-2 border-gray-200 p-4 space-y-2">
+            <div className="rounded-md bg-white dark:bg-[#1e1e2f] border-2 border-gray-200 dark:border-[#2b2b3d] p-4 space-y-2">
               <div className="flex items-center justify-between gap-2">
-                <h1 className="text-xl font-bold">Ảnh</h1>
-                <h1 className="text-blue-500 rounded-md py-2 px-4 cursor-pointer hover:bg-gray-200">
+                <h1 className="text-xl font-bold text-gray-900 dark:text-white">Ảnh</h1>
+                <h1 className="text-blue-500 rounded-md py-2 px-4 cursor-pointer hover:bg-gray-200 dark:hover:bg-[#23233b] dark:hover:bg-[#23233b]">
                   Xem tất cả ảnh
                 </h1>
               </div>
@@ -436,14 +433,14 @@ function ProfilePage() {
               </div>
             </div>
 
-            <div className="rounded-md bg-white border-2 border-gray-200 p-4 space-y-2">
+            <div className="rounded-md bg-white dark:bg-[#1e1e2f] border-2 border-gray-200 dark:border-[#2b2b3d] p-4 space-y-2">
               <div className="flex items-center justify-between gap-2">
-                <h1 className="text-xl font-bold">Bạn bè</h1>
-                <h1 className="text-blue-500 rounded-md py-2 px-4 cursor-pointer hover:bg-gray-200">
+                <h1 className="text-xl font-bold text-gray-900 dark:text-white">Bạn bè</h1>
+                <h1 className="text-blue-500 rounded-md py-2 px-4 cursor-pointer hover:bg-gray-200 dark:hover:bg-[#23233b] dark:hover:bg-[#23233b]">
                   Xem tất cả bạn bè
                 </h1>
               </div>
-              <h1 className="text-gray-500 text-lg">{`${profile.friends.length} người bạn`}</h1>
+              <h1 className="text-gray-500 dark:text-gray-400 text-lg">{`${profile.friends.length} người bạn`}</h1>
               <div className="grid grid-cols-3 gap-2">
                 {profile.friends.map((friend) => (
                   <div key={friend._id} className="w-full rounded-md">
@@ -455,12 +452,12 @@ function ProfilePage() {
                             : "/user.png"
                         }
                         alt="avatar"
-                        className="w-32 h-30 object-cover rounded-md border-2 border-gray-200"
+                        className="w-32 h-30 object-cover rounded-md border-2 border-gray-200 dark:border-[#2b2b3d]"
                       />
                     </Link>
                     <Link
                       to={`/profile/${friend._id}`}
-                      className="font-medium text-[13px] hover:underline-offset-2 hover:underline"
+                      className="font-medium dark:text-white text-base hover:underline-offset-2 hover:underline"
                     >
                       {friend.fullName}
                     </Link>
@@ -472,8 +469,8 @@ function ProfilePage() {
 
           <div className="lg:w-[60%] w-full space-y-4">
             {isMyProfile && <CreateStatus onPostCreated={handleAddPost} />}
-            <div className="py-2 px-4 bg-white rounded-lg">
-              <h1 className="text-xl font-bold">Bài viết</h1>
+            <div className="py-2 px-4 bg-white dark:bg-[#1e1e2f] rounded-lg">
+              <h1 className="text-xl font-bold text-gray-900 dark:text-white">Bài viết</h1>
             </div>
             {loading ? (
               <SpinnerLoading />
@@ -482,7 +479,7 @@ function ProfilePage() {
                 {posts && posts.length > 0 ? (
                   posts.map((post) => <PostCard key={post._id} post={post} onDeletePost={handleRemovePost} />)
                 ) : (
-                  <p className="text-center text-2xl">Không có bài viết nào</p>
+                  <p className="text-center text-2xl dark:text-white">Không có bài viết nào</p>
                 )}
               </>
             )}

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Config from "../../envVars";
 
@@ -6,6 +7,7 @@ function Leaderboard({ currentUserId }) {
   const [leaderboard, setLeaderboard] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchLeaderboard = async () => {
@@ -58,68 +60,87 @@ function Leaderboard({ currentUserId }) {
   const others = leaderboard.filter((entry) => entry.user?._id !== currentUserId);
 
   return (
-    <div className="max-w-4xl mx-auto px-4 md:px-6 py-6 mt-10 overflow-visible">
-      <h1 className="text-4xl md:text-5xl leading-tight font-extrabold text-center text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-pink-500 to-red-500 mb-6 animate-pulse drop-shadow-lg break-words">
-        🌟 Bảng Xếp Hạng Tổng 🌟
-      </h1>
+    <div className="dark:bg-[#181826] min-h-screen">
+      <div className="max-w-4xl mx-auto px-4 md:px-6 py-6 mt-10 overflow-visible">
+        <button
+          type="button"
+          onClick={() => navigate(-1)}
+          className="group inline-flex items-center gap-2 mb-6 px-5 py-2.5 rounded-full bg-white dark:bg-white/10 text-blue-700 dark:text-white font-semibold shadow-md hover:bg-blue-100 dark:hover:bg-white/20 transition duration-300"
+        >
+          <svg
+            className="w-5 h-5 text-blue-700 dark:text-white group-hover:-translate-x-1 transition-transform duration-300"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+          </svg>
+          <span>Quay lại</span>
+        </button>
+        <h1 className="text-4xl md:text-5xl leading-tight font-extrabold text-center text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-pink-500 to-red-500 mb-6 animate-pulse drop-shadow-lg break-words">
+          🌟 Bảng Xếp Hạng Tổng 🌟
+        </h1>
 
-      <div className="overflow-x-auto rounded-xl shadow-lg hover:shadow-2xl transition duration-300 w-full">
-        <table className="min-w-full table-auto bg-white border border-gray-200 rounded-xl text-center">
-          <thead className="bg-gradient-to-r from-purple-500 to-pink-500 text-white">
-            <tr>
-              <th className="px-6 py-3 font-bold">Hạng</th>
-              <th className="px-6 py-3 font-bold">Người Chơi</th>
-              <th className="px-6 py-3 font-bold">Tổng Điểm</th>
-            </tr>
-          </thead>
-          <tbody>
-            {others.map((player, index) => (
-              <tr
-                key={player.user?._id || index}
-                className={`transition ${getRowColor(index)}`}
-              >
-                <td className="px-6 py-4 font-semibold text-gray-700">{index + 1}</td>
-                <td className="px-6 py-4 text-gray-700">
-                  <div className="flex items-center justify-center gap-2 min-h-[3rem]">
-                    {player.user?.avatar && (
-                      <img
-                        src={`${Config.BACKEND_URL}${player.user.avatar}`}
-                        alt="avatar"
-                        className="w-8 h-8 md:w-10 md:h-10 rounded-full object-cover"
-                      />
-                    )}
-                    <span className="flex items-center gap-1 truncate max-w-[10rem] md:max-w-none">
-                      {getMedalIcon(index) && <span>{getMedalIcon(index)}</span>}
-                      {player.user?.fullName || "Ẩn danh"}
-                    </span>
-                  </div>
-                </td>
-                <td className="px-6 py-4 text-gray-700 font-medium">{player.totalScore}</td>
+        <div className="overflow-x-auto rounded-xl shadow-lg hover:shadow-2xl transition duration-300 w-full">
+          <table className="min-w-full table-auto bg-white border border-gray-200 rounded-xl text-center">
+            <thead className="bg-gradient-to-r from-purple-500 to-pink-500 text-white">
+              <tr>
+                <th className="px-6 py-3 font-bold">Hạng</th>
+                <th className="px-6 py-3 font-bold">Người Chơi</th>
+                <th className="px-6 py-3 font-bold">Tổng Điểm</th>
               </tr>
-            ))}
+            </thead>
+            <tbody>
+              {others.map((player, index) => (
+                <tr
+                  key={player.user?._id || index}
+                  className={`transition ${getRowColor(index)}`}
+                >
+                  <td className="px-6 py-4 font-semibold text-gray-700">{index + 1}</td>
+                  <td className="px-6 py-4 text-gray-700">
+                    <div className="flex items-center justify-center gap-2 min-h-[3rem]">
+                      {player.user?.avatar && (
+                        <img
+                          src={`${Config.BACKEND_URL}${player.user.avatar}`}
+                          alt="avatar"
+                          className="w-8 h-8 md:w-10 md:h-10 rounded-full object-cover"
+                        />
+                      )}
+                      <span className="flex items-center gap-1 truncate max-w-[10rem] md:max-w-none">
+                        {getMedalIcon(index) && <span>{getMedalIcon(index)}</span>}
+                        {player.user?.fullName || "Ẩn danh"}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 text-gray-700 font-medium">{player.totalScore}</td>
+                </tr>
+              ))}
 
-            {currentUserEntry && (
-              <tr className="bg-blue-50 border-t-2 border-blue-300 font-semibold">
-                <td className="px-6 py-4 text-blue-700">Bạn</td>
-                <td className="px-6 py-4 text-blue-700">
-                  <div className="flex items-center justify-center gap-2 min-h-[3rem]">
-                    {currentUserEntry.user?.avatar && (
-                      <img
-                        src={`${Config.BACKEND_URL}${currentUserEntry.user.avatar}`}
-                        alt="avatar"
-                        className="w-8 h-8 md:w-10 md:h-10 rounded-full object-cover"
-                      />
-                    )}
-                    <span className="truncate max-w-[10rem] md:max-w-none">
-                      {currentUserEntry.user?.fullName || "Bạn"}
-                    </span>
-                  </div>
-                </td>
-                <td className="px-6 py-4 text-blue-700">{currentUserEntry.totalScore}</td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+              {currentUserEntry && (
+                <tr className="bg-blue-50 border-t-2 border-blue-300 font-semibold">
+                  <td className="px-6 py-4 text-blue-700">Bạn</td>
+                  <td className="px-6 py-4 text-blue-700">
+                    <div className="flex items-center justify-center gap-2 min-h-[3rem]">
+                      {currentUserEntry.user?.avatar && (
+                        <img
+                          src={`${Config.BACKEND_URL}${currentUserEntry.user.avatar}`}
+                          alt="avatar"
+                          className="w-8 h-8 md:w-10 md:h-10 rounded-full object-cover"
+                        />
+                      )}
+                      <span className="truncate max-w-[10rem] md:max-w-none">
+                        {currentUserEntry.user?.fullName || "Bạn"}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 text-blue-700">{currentUserEntry.totalScore}</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

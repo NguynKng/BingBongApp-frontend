@@ -1,11 +1,5 @@
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { io } from "socket.io-client";
-import useAuthStore from "../store/authStore";
 
-<<<<<<< HEAD
-const socket = io("http://localhost:8000", { withCredentials: true });
-=======
 const notifications = [
   {
     id: 1,
@@ -68,38 +62,18 @@ const notifications = [
     avatar: "/user.png",
   },
 ];
->>>>>>> e1d16cf706aa7e3d08bbdceefee6838cafc448df
 
 function DropdownNotification() {
-  const [notifications, setNotifications] = useState([]);
-  const { user } = useAuthStore();
-
-  useEffect(() => {
-    if (!user?._id) return;
-
-    // Tham gia room riêng theo userId
-    socket.emit("setup", user._id);
-
-    // Lắng nghe thông báo mới
-    socket.on("notification", (noti) => {
-      setNotifications((prev) => [noti, ...prev]);
-    });
-
-    return () => {
-      socket.off("notification");
-    };
-  }, [user?._id]);
-
   return (
     <div className="absolute right-0 top-[110%] w-96 bg-white rounded-xl shadow-xl z-50 p-4 custom-scroll overflow-y-auto h-[42rem] min-h-0 dark:bg-[rgb(35,35,35)]">
       <div className="font-semibold text-lg text-blue-800 mb-3 dark:text-white">Thông báo</div>
       {notifications.length === 0 ? (
         <div className="text-center text-gray-500 py-4 dark:text-white">Không có thông báo mới</div>
       ) : (
-        notifications.map((noti, idx) => (
+        notifications.map((noti) => (
           <Link
             to="#"
-            key={noti.id || idx}
+            key={noti.id}
             className={`
               flex items-start gap-3 py-3 border-b border-gray-100 last:border-none rounded-xl
               transition-all duration-300 ease-out transform
@@ -107,7 +81,7 @@ function DropdownNotification() {
             `}
           >
             <img
-              src={noti.avatar || "/user.png"}
+              src={noti.avatar}
               alt="avatar"
               className="size-11 rounded-full object-cover shadow-sm border border-blue-100"
             />
