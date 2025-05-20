@@ -6,7 +6,6 @@ import useAuthStore from "../../store/authStore";
 function QuizPlayPage() {
   const { quizId } = useParams();
   const navigate = useNavigate();
-
   const [quiz, setQuiz] = useState(null);
   const [answers, setAnswers] = useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -19,7 +18,9 @@ function QuizPlayPage() {
   useEffect(() => {
     const fetchQuiz = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/api/v1/quiz/${quizId}`);
+        const response = await axios.get(
+          `http://localhost:8000/api/v1/quiz/${quizId}`
+        );
         const quizData = response.data;
         const actualQuiz = quizData.questions ? quizData : quizData.quiz;
 
@@ -73,7 +74,8 @@ function QuizPlayPage() {
 
       console.log("✅ Điểm đã được lưu thành công:", response.data);
     } catch (error) {
-      const msg = error.response?.data?.message || error.message || "Lỗi không xác định";
+      const msg =
+        error.response?.data?.message || error.message || "Lỗi không xác định";
       console.error("❌ Gửi điểm thất bại:", msg);
     }
   };
@@ -145,8 +147,12 @@ function QuizPlayPage() {
         </div>
 
         <div className="text-center">
-          <span className="font-medium text-lg sm:text-xl">⏳ Thời gian còn lại: </span>
-          <span className="text-red-500 font-bold text-xl sm:text-2xl">{timeLeft}s</span>
+          <span className="font-medium text-lg sm:text-xl">
+            ⏳ Thời gian còn lại:{" "}
+          </span>
+          <span className="text-red-500 font-bold text-xl sm:text-2xl">
+            {timeLeft}s
+          </span>
         </div>
 
         {!isFinished && (
@@ -196,7 +202,9 @@ function QuizPlayPage() {
             <h2 className="text-2xl sm:text-3xl font-bold text-green-600 mb-4">
               🎉 Bạn đã hoàn thành quiz!
             </h2>
-            <p className="text-base sm:text-xl text-gray-700 mb-2">Điểm số của bạn là:</p>
+            <p className="text-base sm:text-xl text-gray-700 mb-2">
+              Điểm số của bạn là:
+            </p>
             <p className="text-4xl sm:text-5xl font-bold text-indigo-700 mb-6">
               {score} / {quiz.questions.length}
             </p>

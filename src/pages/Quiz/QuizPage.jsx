@@ -60,7 +60,24 @@ export default function QuizPage() {
         <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
           {quizzes.length > 0 ? (
             quizzes.map((quiz) => (
-              <QuizCard key={quiz._id} quiz={quiz} />
+              <QuizCard
+                key={quiz._id}
+                quiz={quiz}
+                onDelete={async () => {
+                  try {
+                    if (
+                      window.confirm("Bạn có chắc muốn xóa quiz này không?")
+                    ) {
+                      await quizAPI.deleteQuiz(quiz._id);
+                      setQuizzes((prev) =>
+                        prev.filter((q) => q._id !== quiz._id)
+                      );
+                    }
+                  } catch (err) {
+                    alert("❌ Xóa thất bại: " + err.message);
+                  }
+                }}
+              />
             ))
           ) : (
             <div className="col-span-full text-center text-gray-500 py-8">

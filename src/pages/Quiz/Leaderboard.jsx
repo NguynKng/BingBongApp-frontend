@@ -33,7 +33,11 @@ function Leaderboard({ currentUserId }) {
   }, []);
 
   if (loading)
-    return <div className="text-center mt-10 text-xl">⏳ Đang tải bảng xếp hạng...</div>;
+    return (
+      <div className="text-center mt-10 text-xl">
+        ⏳ Đang tải bảng xếp hạng...
+      </div>
+    );
   if (error)
     return <div className="text-center mt-10 text-red-600">{error}</div>;
 
@@ -44,7 +48,9 @@ function Leaderboard({ currentUserId }) {
       return "bg-gradient-to-r from-gray-400 to-gray-300 hover:from-gray-500 hover:to-gray-400 text-gray-800 font-bold";
     if (index === 2)
       return "bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-600 hover:to-amber-500 text-gray-800 font-bold";
-    return index % 2 === 0 ? "bg-gray-50 hover:bg-blue-50" : "bg-white hover:bg-blue-50";
+    return index % 2 === 0
+      ? "bg-gray-50 hover:bg-blue-50"
+      : "bg-white hover:bg-blue-50";
   };
 
   const getMedalIcon = (index) => {
@@ -54,8 +60,12 @@ function Leaderboard({ currentUserId }) {
     return null;
   };
 
-  const currentUserEntry = leaderboard.find((entry) => entry.user?._id === currentUserId);
-  const others = leaderboard.filter((entry) => entry.user?._id !== currentUserId);
+  const currentUserEntry = leaderboard.find(
+    (entry) => entry.user?._id === currentUserId
+  );
+  const others = leaderboard.filter(
+    (entry) => entry.user?._id !== currentUserId
+  );
 
   return (
     <div className="max-w-4xl mx-auto px-4 md:px-6 py-6 mt-10 overflow-visible">
@@ -78,7 +88,9 @@ function Leaderboard({ currentUserId }) {
                 key={player.user?._id || index}
                 className={`transition ${getRowColor(index)}`}
               >
-                <td className="px-6 py-4 font-semibold text-gray-700">{index + 1}</td>
+                <td className="px-6 py-4 font-semibold text-gray-700">
+                  {index + 1}
+                </td>
                 <td className="px-6 py-4 text-gray-700">
                   <div className="flex items-center justify-center gap-2 min-h-[3rem]">
                     {player.user?.avatar && (
@@ -89,12 +101,16 @@ function Leaderboard({ currentUserId }) {
                       />
                     )}
                     <span className="flex items-center gap-1 truncate max-w-[10rem] md:max-w-none">
-                      {getMedalIcon(index) && <span>{getMedalIcon(index)}</span>}
+                      {getMedalIcon(index) && (
+                        <span>{getMedalIcon(index)}</span>
+                      )}
                       {player.user?.fullName || "Ẩn danh"}
                     </span>
                   </div>
                 </td>
-                <td className="px-6 py-4 text-gray-700 font-medium">{player.totalScore}</td>
+                <td className="px-6 py-4 text-gray-700 font-medium">
+                  {player.totalScore}
+                </td>
               </tr>
             ))}
 
@@ -115,7 +131,9 @@ function Leaderboard({ currentUserId }) {
                     </span>
                   </div>
                 </td>
-                <td className="px-6 py-4 text-blue-700">{currentUserEntry.totalScore}</td>
+                <td className="px-6 py-4 text-blue-700">
+                  {currentUserEntry.totalScore}
+                </td>
               </tr>
             )}
           </tbody>

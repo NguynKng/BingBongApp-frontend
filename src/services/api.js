@@ -476,7 +476,7 @@ export const postAPI = {
       }
       throw error;
     }
-  }
+  },
 };
 
 export const chatApi = {
@@ -553,6 +553,60 @@ export const quizAPI = {
       if (error.response) {
         const errorMessage =
           error.response.data.message || "Failed to fetch quiz";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  deleteQuiz: async (quizId) => {
+    try {
+      const response = await api.delete(`/quiz/${quizId}`);
+
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to delete quiz";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getLeaderboard: async () => {
+    try {
+      const response = await api.get("/quiz/leaderboard");
+
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch leaderboard";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  submitScore: async (scoreData) => {
+    try {
+      const response = await api.post("/quizScore/submit", scoreData);
+
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to submit score";
         throw new Error(errorMessage);
       }
       throw error;

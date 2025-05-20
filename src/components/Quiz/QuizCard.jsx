@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import { Gamepad2 } from "lucide-react";
+import { Gamepad2, Trash2 } from "lucide-react";
 
-function QuizCard({ quiz }) {
+function QuizCard({ quiz, onDelete }) {
   const navigate = useNavigate();
 
   const handlePlayClick = (id) => {
@@ -9,14 +9,27 @@ function QuizCard({ quiz }) {
   };
 
   return (
-    <div className="flex flex-col h-full bg-gradient-to-tr from-purple-100 to-indigo-100 border border-purple-300 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 p-5 transform hover:scale-105">
+    <div className="relative flex flex-col h-full bg-gradient-to-tr from-purple-100 to-indigo-100 border border-purple-300 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 p-5 transform hover:scale-105">
+      {/* Nút xóa ở góc trên phải */}
+      {onDelete && (
+        <button
+          onClick={onDelete}
+          className="absolute top-3 right-3 text-red-500 hover:text-red-700 transition"
+          title="Xóa quiz"
+        >
+          <Trash2 size={20} />
+        </button>
+      )}
+
       {/* Tiêu đề */}
       <h3 className="text-xl font-bold text-center text-purple-800 border border-purple-500 rounded-lg px-3 py-2 bg-white shadow mb-4">
         {quiz.title}
       </h3>
 
       {/* Mô tả */}
-      <p className="text-gray-700 text-base mb-2 line-clamp-3">{quiz.description}</p>
+      <p className="text-gray-700 text-base mb-2 line-clamp-3">
+        {quiz.description}
+      </p>
 
       {/* Số câu hỏi */}
       <p className="text-gray-600 text-sm mb-4">{quiz.questionCount} câu hỏi</p>
