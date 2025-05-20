@@ -73,7 +73,7 @@ function Header({ onToggleChat }) {
     };
 
     return (
-        <header className="fixed top-0 left-0 w-full h-[64px] z-50 bg-gradient-to-r from-[#f0f4ff] via-[#e0eaff] to-[#f5eaff] dark:from-[#1a1c2c] dark:via-[#23263b] dark:to-[#2e3047] backdrop-blur-xl shadow-md  dark:border-gray-700">
+        <header className="fixed top-0 left-0 w-full h-[64px] z-50 bg-gradient-to-r from-[#f0f4ff] via-[#e0eaff] to-[#f5eaff] dark:from-[#1a1c2c] dark:via-[#23263b] dark:to-[#2e3047] backdrop-blur-xl shadow-md dark:border-gray-700">
             <div className="w-full h-full flex items-center md:px-2 justify-between gap-2">
                 {/* Logo + Search */}
                 <div className="flex items-center gap-2">

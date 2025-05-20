@@ -69,10 +69,28 @@ function CreateQuizPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-tr from-indigo-300 to-purple-400 overflow-x-hidden">
+    <div className="min-h-screen bg-gradient-to-tr from-indigo-300 to-purple-400 dark:from-[#23233b] dark:to-[#181826] dark:bg-[#181826] overflow-x-hidden">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <div className="bg-white/30 backdrop-blur-md rounded-xl p-6 sm:p-10 shadow-2xl">
-          <h1 className="text-4xl sm:text-5xl font-extrabold text-center text-white mb-8 drop-shadow">
+        <div className="bg-white/30 dark:bg-[#23233b]/80 backdrop-blur-md rounded-xl p-6 sm:p-10 shadow-2xl">
+          {/* Nút back */}
+          <button
+            type="button"
+            onClick={() => navigate(-1)}
+            className="group inline-flex items-center gap-2 mb-6 px-5 py-2.5 rounded-full bg-white/20 dark:bg-white/10 text-white font-semibold shadow-md hover:bg-white/40 dark:hover:bg-white/20 transition duration-300"
+          >
+            <svg
+              className="w-5 h-5 text-white group-hover:-translate-x-1 transition-transform duration-300"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+            <span>Quay lại</span>
+          </button>
+          <h1 className="text-4xl sm:text-5xl font-extrabold text-center text-white dark:text-white mb-8 drop-shadow">
             Tạo Quiz Mới
           </h1>
 
@@ -91,7 +109,7 @@ function CreateQuizPage() {
                 name="title"
                 value={quiz.title}
                 onChange={handleInputChange}
-                className="w-full p-4 rounded-lg border border-gray-300 text-black text-base sm:text-lg focus:outline-none focus:ring-4 focus:ring-yellow-400"
+                className="w-full p-4 rounded-lg border border-gray-300 text-black text-base sm:text-lg dark:text-white focus:outline-none focus:ring-4 focus:ring-yellow-400"
                 placeholder="Nhập tiêu đề quiz"
                 required
               />
@@ -110,7 +128,7 @@ function CreateQuizPage() {
                 name="description"
                 value={quiz.description}
                 onChange={handleInputChange}
-                className="w-full p-4 rounded-lg border border-gray-300 text-black text-base sm:text-lg focus:outline-none focus:ring-4 focus:ring-yellow-400"
+                className="w-full p-4 rounded-lg border border-gray-300 text-black text-base sm:text-lg dark:text-white focus:outline-none focus:ring-4 focus:ring-yellow-400"
                 placeholder="Nhập mô tả quiz"
                 rows="4"
               />
@@ -118,17 +136,17 @@ function CreateQuizPage() {
 
             {/* Câu hỏi */}
             <div className="space-y-8">
-              <h2 className="text-2xl sm:text-3xl font-bold text-yellow-200">
+              <h2 className="text-2xl sm:text-3xl font-bold text-yellow-200 dark:text-yellow-300">
                 📚 Câu hỏi:
               </h2>
               {quiz.questions.map((question, index) => (
                 <div
                   key={index}
-                  className="bg-white/70 p-6 rounded-xl shadow-lg space-y-4"
+                  className="bg-white/70 dark:bg-white/10 p-6 rounded-xl shadow-lg space-y-4"
                 >
                   {/* Câu hỏi */}
                   <div>
-                    <label className="block text-lg font-semibold text-gray-800 mb-1">
+                    <label className="block text-lg font-semibold text-gray-800 dark:text-white mb-1">
                       Câu hỏi {index + 1}:
                     </label>
                     <input
@@ -136,7 +154,7 @@ function CreateQuizPage() {
                       name="question"
                       value={question.question}
                       onChange={(e) => handleQuestionChange(index, e)}
-                      className="w-full p-3 rounded-lg border border-gray-300 text-black focus:outline-none focus:ring-4 focus:ring-pink-300"
+                      className="w-full p-3 rounded-lg border border-gray-300 dark:border-[#2b2b3d] text-black dark:text-white bg-white dark:bg-[#23233b] focus:outline-none focus:ring-4 focus:ring-pink-300"
                       placeholder="Nhập câu hỏi"
                       required
                     />
@@ -144,7 +162,7 @@ function CreateQuizPage() {
 
                   {/* Các đáp án */}
                   <div>
-                    <label className="block text-lg font-semibold text-gray-800 mb-1">
+                    <label className="block text-lg font-semibold text-gray-800 dark:text-white mb-1">
                       Đáp án:
                     </label>
                     <div className="space-y-2">
@@ -162,7 +180,7 @@ function CreateQuizPage() {
                               return { ...prevQuiz, questions: updatedQuestions };
                             });
                           }}
-                          className="w-full p-3 rounded-lg border border-gray-300 text-black focus:outline-none focus:ring-4 focus:ring-pink-300"
+                          className="w-full p-3 rounded-lg border border-gray-300 dark:border-[#2b2b3d] text-black dark:text-white bg-white dark:bg-[#23233b] focus:outline-none focus:ring-4 focus:ring-pink-300"
                           placeholder={`Đáp án ${i + 1}`}
                           required
                         />
@@ -172,7 +190,7 @@ function CreateQuizPage() {
 
                   {/* Đáp án đúng */}
                   <div>
-                    <label className="block text-lg font-semibold text-gray-800 mb-1">
+                    <label className="block text-lg font-semibold text-gray-800 dark:text-white mb-1">
                       ✅ Đáp án đúng:
                     </label>
                     <input
@@ -180,7 +198,7 @@ function CreateQuizPage() {
                       name="correctAnswer"
                       value={question.correctAnswer}
                       onChange={(e) => handleQuestionChange(index, e)}
-                      className="w-full p-3 rounded-lg border border-gray-300 text-black focus:outline-none focus:ring-4 focus:ring-pink-300"
+                      className="w-full p-3 rounded-lg border border-gray-300 dark:border-[#2b2b3d] text-black dark:text-white bg-white dark:bg-[#23233b] focus:outline-none focus:ring-4 focus:ring-pink-300"
                       placeholder="Nhập đáp án đúng"
                       required
                     />
@@ -204,7 +222,7 @@ function CreateQuizPage() {
                 <button
                   type="button"
                   onClick={addQuestion}
-                  className="px-6 py-3 bg-white/30 text-white font-semibold rounded-lg shadow-lg backdrop-blur hover:bg-white/50 transition"
+                  className="px-6 py-3 bg-white/30 dark:bg-white/10 text-white font-semibold rounded-lg shadow-lg backdrop-blur hover:bg-white/50 dark:hover:bg-white/20 transition"
                 >
                   ➕ Thêm câu hỏi
                 </button>

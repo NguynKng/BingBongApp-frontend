@@ -133,25 +133,25 @@ function QuizPlayPage() {
   const currentQuestion = quiz.questions[currentQuestionIndex];
 
   return (
-    <div className="min-h-screen flex justify-center items-center p-4 sm:p-6 bg-gray-50 overflow-auto">
+    <div className="min-h-screen flex justify-center items-center p-4 sm:p-6 bg-gray-50 dark:bg-[#181826] overflow-auto">
       <div className="w-full max-w-5xl space-y-6">
         <div className="text-center">
-          <h1 className="text-2xl sm:text-4xl font-bold text-indigo-700">
+          <h1 className="text-2xl sm:text-4xl font-bold text-indigo-700 dark:text-indigo-300">
             {quiz.title}
           </h1>
-          <p className="text-base sm:text-xl text-gray-600 mt-2">
+          <p className="text-base sm:text-xl text-gray-600 dark:text-gray-300 mt-2">
             {quiz.description}
           </p>
         </div>
 
         <div className="text-center">
-          <span className="font-medium text-lg sm:text-xl">⏳ Thời gian còn lại: </span>
+          <span className="font-medium text-lg sm:text-xl dark:text-white">⏳ Thời gian còn lại: </span>
           <span className="text-red-500 font-bold text-xl sm:text-2xl">{timeLeft}s</span>
         </div>
 
         {!isFinished && (
-          <div className="bg-white shadow-xl border border-gray-200 p-6 sm:p-10 rounded-2xl overflow-hidden">
-            <h3 className="text-lg sm:text-2xl font-bold text-gray-800 mb-4 sm:mb-6 text-center">
+          <div className="bg-white dark:bg-[#23233b] shadow-xl border border-gray-200 dark:border-[#2b2b3d] p-6 sm:p-10 rounded-2xl overflow-hidden">
+            <h3 className="text-lg sm:text-2xl font-bold text-gray-800 dark:text-white mb-4 sm:mb-6 text-center">
               Câu {currentQuestionIndex + 1}: {currentQuestion.question}
             </h3>
 
@@ -164,15 +164,14 @@ function QuizPlayPage() {
                   <label
                     key={i}
                     className={`flex items-center justify-center text-base sm:text-xl p-4 sm:p-6 rounded-xl sm:rounded-2xl font-semibold cursor-pointer border-2 transition-all duration-300 text-center break-words
-                    ${
-                      answered
+                    ${answered
                         ? isCorrect
                           ? "bg-green-500 text-white border-green-600"
                           : isSelected
-                          ? "bg-red-500 text-white border-red-600"
-                          : "bg-white text-gray-800"
-                        : "bg-white text-gray-800 hover:bg-indigo-100 hover:shadow-md"
-                    }`}
+                            ? "bg-red-500 text-white border-red-600"
+                            : "bg-white dark:bg-[#23233b] text-gray-800 dark:text-white border-gray-200 dark:border-[#2b2b3d]"
+                        : "bg-white dark:bg-[#23233b] text-gray-800 dark:text-white hover:bg-indigo-100 dark:hover:bg-[#23234b] hover:shadow-md border-gray-200 dark:border-[#2b2b3d]"
+                      }`}
                   >
                     <input
                       type="radio"
@@ -192,12 +191,12 @@ function QuizPlayPage() {
         )}
 
         {isFinished && (
-          <div className="bg-white border shadow-lg rounded-2xl p-6 sm:p-10 text-center mt-6">
-            <h2 className="text-2xl sm:text-3xl font-bold text-green-600 mb-4">
+          <div className="bg-white dark:bg-[#23233b] border shadow-lg rounded-2xl p-6 sm:p-10 text-center mt-6 border-gray-200 dark:border-[#2b2b3d]">
+            <h2 className="text-2xl sm:text-3xl font-bold text-green-600 dark:text-green-400 mb-4">
               🎉 Bạn đã hoàn thành quiz!
             </h2>
-            <p className="text-base sm:text-xl text-gray-700 mb-2">Điểm số của bạn là:</p>
-            <p className="text-4xl sm:text-5xl font-bold text-indigo-700 mb-6">
+            <p className="text-base sm:text-xl text-gray-700 dark:text-gray-200 mb-2">Điểm số của bạn là:</p>
+            <p className="text-4xl sm:text-5xl font-bold text-indigo-700 dark:text-indigo-300 mb-6">
               {score} / {quiz.questions.length}
             </p>
             <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mt-4 flex-wrap">
