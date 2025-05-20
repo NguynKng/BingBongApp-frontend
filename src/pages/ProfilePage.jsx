@@ -234,7 +234,7 @@ function ProfilePage() {
                       />
                       {isMyProfile && (
                         <div
-                          className="absolute bottom-4 right-0 p-2 size-9 rounded-full bg-gray-200 dark:bg-[#23233b] hover:bg-gray-300 dark:hover:bg-[#23233b] cursor-pointer"
+                          className="absolute bottom-4 right-0 p-2 size-9 rounded-full bg-gray-200 hover:bg-gray-300 cursor-pointer"
                           onClick={() => avatarInputRef.current.click()}
                         >
                           {isUploading.avatar ? (

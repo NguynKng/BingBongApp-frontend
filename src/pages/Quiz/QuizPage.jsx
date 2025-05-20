@@ -33,8 +33,8 @@ export default function QuizPage() {
   return (
     <>
       <Header />
-      <div className="dark:bg-[#181826] min-h-screen">
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 mt-[10vh]">
+      <div className="dark:bg-[#181826] min-h-[92vh] mt-[64px] pt-10">
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
           {/* Header */}
           <div className="mb-10 flex flex-col md:flex-row items-center justify-between gap-6">
             <h2 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-pink-500 to-red-500 text-center drop-shadow-lg animate-pulse dark:drop-shadow-[0_2px_12px_rgba(80,80,255,0.3)]">

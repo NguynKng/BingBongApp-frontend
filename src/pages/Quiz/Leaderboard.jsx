@@ -66,7 +66,7 @@ function Leaderboard() {
   return (
 
     <div className="dark:bg-[#181826] min-h-screen">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 mt-10">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6">
         {/* Back Button */}
         <button
           type="button"
