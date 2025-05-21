@@ -12,6 +12,7 @@ import {
     Gamepad2,
     Menu,
     X,
+    Newspaper,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import useAuthStore from "../store/authStore";
@@ -23,8 +24,10 @@ import { useGetProfileByName } from "../hooks/useProfile";
 import debounce from "lodash.debounce";
 import SpinnerLoading from "./SpinnerLoading";
 import DropdownMenu from "./DropdownMenu";
+import { useGetNotifications } from "../hooks/useNotifications";
 
 function Header({ onToggleChat }) {
+    const { unreadCount } = useGetNotifications();
     const [query, setQuery] = useState("");
     const isSearchingUser = query.length > 0;
     const { listUser, loading } = useGetProfileByName(query, {
@@ -51,6 +54,7 @@ function Header({ onToggleChat }) {
         else if (path.startsWith("/watch")) return "watch";
         else if (path.startsWith("/quiz")) return "quiz";
         else if (path.startsWith("/profile")) return "profile";
+        else if (path.startsWith("/news")) return "news";
         else if (path === "/") return "home";
         return "home";
     }, [location.pathname]);
@@ -58,7 +62,7 @@ function Header({ onToggleChat }) {
     const tabs = [
         { id: "home", icon: <House />, label: "Trang chủ", link: "/" },
         { id: "friends", icon: <UsersRound />, label: "Bạn bè", link: "/friends" },
-        { id: "watch", icon: <MonitorPlay />, label: "Video", link: "#" },
+        { id: "news", icon: <Newspaper />, label: "Video", link: "/news" },
         { id: "quiz", icon: <Gamepad2 />, label: "Quizz", link: "/quiz" },
         { id: "profile", icon: <CircleUserRound />, label: "Cá nhân", link: `/profile/${user._id}` },
     ];
@@ -89,7 +93,6 @@ function Header({ onToggleChat }) {
                             placeholder="Tìm kiếm trên Bing Bong"
                             className="text-blue-900 dark:text-gray-200 font-medium w-full py-2 pl-10 bg-white/90 dark:bg-[#1f2233] rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-purple-400 shadow-md transition-all duration-300"
                             onChange={(e) => debouncedSearch(e.target.value)}
-                            value={query}
                         />
                         {query.length > 0 && (
                             <div className="absolute top-[110%] right-0 w-full max-h-96 overflow-y-auto shadow-xl bg-white rounded-lg z-50 p-2 custom-scroll">
@@ -251,6 +254,12 @@ function Header({ onToggleChat }) {
                         <div className="absolute -bottom-8 text-xs bg-black/80 text-white px-3 py-1 rounded shadow hidden group-hover:block z-50 text-center whitespace-nowrap">
                             Thông báo
                         </div>
+                        {/* Unread Count */}
+                        {unreadCount > 0 && (
+                            <div className="absolute -top-1.5 -right-0.5 bg-red-500 size-5 flex items-center justify-center rounded-full">
+                                <span className="text-white text-xs font-semibold">{unreadCount}</span>
+                            </div>
+                        )}
                     </div>
 
                     {/* User Dropdown */}

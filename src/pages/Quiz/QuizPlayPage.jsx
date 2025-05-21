@@ -19,7 +19,10 @@ function QuizPlayPage() {
   useEffect(() => {
     const fetchQuiz = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/api/v1/quiz/${quizId}`);
+        const response = await axios.get(
+          `http://localhost:8000/api/v1/quiz/${quizId}`,
+          { withCredentials: true }
+        );
         const quizData = response.data;
         const actualQuiz = quizData.questions ? quizData : quizData.quiz;
 
@@ -73,7 +76,8 @@ function QuizPlayPage() {
 
       console.log("✅ Điểm đã được lưu thành công:", response.data);
     } catch (error) {
-      const msg = error.response?.data?.message || error.message || "Lỗi không xác định";
+      const msg =
+        error.response?.data?.message || error.message || "Lỗi không xác định";
       console.error("❌ Gửi điểm thất bại:", msg);
     }
   };
@@ -145,8 +149,12 @@ function QuizPlayPage() {
         </div>
 
         <div className="text-center">
-          <span className="font-medium text-lg sm:text-xl dark:text-white">⏳ Thời gian còn lại: </span>
-          <span className="text-red-500 font-bold text-xl sm:text-2xl">{timeLeft}s</span>
+          <span className="font-medium text-lg sm:text-xl dark:text-white">
+            ⏳ Thời gian còn lại:{" "}
+          </span>
+          <span className="text-red-500 font-bold text-xl sm:text-2xl">
+            {timeLeft}s
+          </span>
         </div>
 
         {!isFinished && (
@@ -164,14 +172,15 @@ function QuizPlayPage() {
                   <label
                     key={i}
                     className={`flex items-center justify-center text-base sm:text-xl p-4 sm:p-6 rounded-xl sm:rounded-2xl font-semibold cursor-pointer border-2 transition-all duration-300 text-center break-words
-                    ${answered
+                    ${
+                      answered
                         ? isCorrect
                           ? "bg-green-500 text-white border-green-600"
                           : isSelected
-                            ? "bg-red-500 text-white border-red-600"
-                            : "bg-white dark:bg-[#23233b] text-gray-800 dark:text-white border-gray-200 dark:border-[#2b2b3d]"
+                          ? "bg-red-500 text-white border-red-600"
+                          : "bg-white dark:bg-[#23233b] text-gray-800 dark:text-white border-gray-200 dark:border-[#2b2b3d]"
                         : "bg-white dark:bg-[#23233b] text-gray-800 dark:text-white hover:bg-indigo-100 dark:hover:bg-[#23234b] hover:shadow-md border-gray-200 dark:border-[#2b2b3d]"
-                      }`}
+                    }`}
                   >
                     <input
                       type="radio"
@@ -195,7 +204,9 @@ function QuizPlayPage() {
             <h2 className="text-2xl sm:text-3xl font-bold text-green-600 dark:text-green-400 mb-4">
               🎉 Bạn đã hoàn thành quiz!
             </h2>
-            <p className="text-base sm:text-xl text-gray-700 dark:text-gray-200 mb-2">Điểm số của bạn là:</p>
+            <p className="text-base sm:text-xl text-gray-700 dark:text-gray-200 mb-2">
+              Điểm số của bạn là:
+            </p>
             <p className="text-4xl sm:text-5xl font-bold text-indigo-700 dark:text-indigo-300 mb-6">
               {score} / {quiz.questions.length}
             </p>

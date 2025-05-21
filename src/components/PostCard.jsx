@@ -1,5 +1,12 @@
 import PropTypes from "prop-types";
-import { Ellipsis, Heart, MessageCircle, Send, ThumbsUp, Trash2 } from "lucide-react";
+import {
+  Ellipsis,
+  Heart,
+  MessageCircle,
+  Send,
+  ThumbsUp,
+  Trash2,
+} from "lucide-react";
 import Config from "../envVars";
 import { formatTime } from "../utils/timeUtils";
 import { Link } from "react-router-dom";
@@ -58,16 +65,16 @@ function PostCard({ post, onDeletePost }) {
 
     try {
       const response = await postAPI.deletePost(post._id);
-        if (response.success) {
-            if (onDeletePost) {
-                onDeletePost(post._id);
-            }
-            // Xử lý sau khi xóa thành công, ví dụ: thông báo cho người dùng
-            toast.success("Post deleted successfully");
-        } else {
-            // Xử lý nếu có lỗi xảy ra
-            toast.error("Failed to delete post");
+      if (response.success) {
+        if (onDeletePost) {
+          onDeletePost(post._id);
         }
+        // Xử lý sau khi xóa thành công, ví dụ: thông báo cho người dùng
+        toast.success("Post deleted successfully");
+      } else {
+        // Xử lý nếu có lỗi xảy ra
+        toast.error("Failed to delete post");
+      }
     } catch (error) {
       console.error("❌ Failed to delete post:", error);
     }
@@ -161,9 +168,7 @@ function PostCard({ post, onDeletePost }) {
                     onClick={handleDeletePost}
                   >
                     <Trash2 />
-                    <span className="font-medium">
-                      Xoá bài viết
-                    </span>
+                    <span className="font-medium">Xoá bài viết</span>
                   </li>
                 </ul>
               </div>
@@ -239,7 +244,9 @@ function PostCard({ post, onDeletePost }) {
               return acc;
             }, [])}
           </div>
-          <span className="text-gray-600 dark:text-gray-400">{reactions.length}</span>
+          <span className="text-gray-600 dark:text-gray-400">
+            {reactions.length}
+          </span>
         </div>
       )}
       <div className="flex items-center justify-between pt-3">
@@ -310,11 +317,14 @@ function PostCard({ post, onDeletePost }) {
           </div>
         </div>
         <button
-          className="flex items-center text-gray-600 cursor-pointer hover:text-blue-400 transition dark:text-gray-400"
+          className="flex items-center gap-1 text-gray-600 cursor-pointer hover:text-blue-400 transition dark:text-gray-400"
           onClick={() => setOpenComment(!openComment)}
         >
-          <MessageCircle className="w-5 h-5 mr-1" />
-          <span>{`${userComments.length} Bình luận`}</span>
+          <MessageCircle className="w-5 h-5" />
+          {userComments.length > 0 && (
+            <span>{`${userComments.length}`}</span>
+          )}
+          <span>Bình luận</span>
         </button>
       </div>
       {openComment && (

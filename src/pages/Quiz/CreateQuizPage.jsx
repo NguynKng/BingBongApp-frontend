@@ -1,6 +1,6 @@
-import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { quizAPI } from "../../services/api";
 
 function CreateQuizPage() {
   const navigate = useNavigate();
@@ -52,19 +52,11 @@ function CreateQuizPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:8000/api/v1/quiz", quiz, {
-        withCredentials: true,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (response.status === 201) {
-        console.log("Quiz đã tạo thành công:", response.data);
-        navigate("/quiz");
-      }
+      const response = await quizAPI.createQuiz(quiz);
+      console.log("Quiz đã tạo thành công:", response);
+      navigate("/quiz");
     } catch (error) {
-      console.error("Có lỗi khi tạo quiz:", error);
+      console.error("Có lỗi khi tạo quiz:", error.message);
     }
   };
 
@@ -193,15 +185,21 @@ function CreateQuizPage() {
                     <label className="block text-lg font-semibold text-gray-800 dark:text-white mb-1">
                       ✅ Đáp án đúng:
                     </label>
-                    <input
-                      type="text"
+                    <select
                       name="correctAnswer"
                       value={question.correctAnswer}
                       onChange={(e) => handleQuestionChange(index, e)}
-                      className="w-full p-3 rounded-lg border border-gray-300 dark:border-[#2b2b3d] text-black dark:text-white bg-white dark:bg-[#23233b] focus:outline-none focus:ring-4 focus:ring-pink-300"
+                      className="w-full p-3 rounded-lg border border-gray-300 text-black dark:text-white focus:outline-none focus:ring-4 focus:ring-pink-300"
                       placeholder="Nhập đáp án đúng"
                       required
-                    />
+                    >
+                      <option className="text-black" value="">-- Chọn đáp án đúng --</option>
+                      {question.options.map((opt, i) => (
+                        <option className="text-black" key={i} value={opt}>
+                          Đáp án {i + 1}: {opt}
+                        </option>
+                      ))}
+                    </select>
                   </div>
 
                   {/* Nút xóa */}

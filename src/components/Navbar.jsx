@@ -41,7 +41,7 @@ function Navbar() {
 
   return (
     <nav
-      className={`fixed top-[64px] left-0 h-[90vh] lg:w-[24rem] px-4 py-4 overflow-y-auto custom-scroll z-40 hidden lg:block transition-colors duration-300
+      className={`fixed top-[64px] left-0 h-[92vh] lg:w-[24rem] px-4 py-4 overflow-y-auto custom-scroll z-40 hidden lg:block transition-colors duration-300
       ${showAll
           ? "bg-gradient-to-br from-[#f0f4ff] to-[#fff1f7] dark:from-[#1c1f2a] dark:to-[#2a2e3d]"
           : "bg-gradient-to-br from-[#f6f9ff] to-[#fef7ff] dark:from-[#1c1f2a] dark:to-[#2a2e3d]"

@@ -14,12 +14,46 @@ const useAuthStore = create(
       error: null,
       onlineUsers: [],
       socket: null,
+      sse: null,
       theme: "light", // Default theme
       toggleTheme: () => {
         const currentTheme = get().theme;
         const newTheme = currentTheme === "light" ? "dark" : "light";
         set({ theme: newTheme });
         document.documentElement.classList.toggle("dark", newTheme === "dark");
+      },
+      connectSSE: () => {
+        const userId = get().user?._id;
+        const sse = new EventSource(
+          `${Config.BACKEND_URL}/api/v1/events/${userId}`,
+          {
+            withCredentials: true,
+          }
+        );
+
+        sse.onopen = () => {
+          console.log(`[SSE OPENED for ${userId}]`);
+        };
+
+        sse.onerror = (err) => {
+          console.error("[SSE ERROR]", err);
+          sse.close(); // auto-reconnect logic có thể thêm sau
+        };
+
+        sse.onmessage = (event) => {
+          const data = JSON.parse(event.data);
+          console.log("[SSE MESSAGE]", data.message);
+          console.log("[SSE MESSAGE]", data.clients);
+        };
+        set({ sse });
+      },
+      disconnectSSE: () => {
+        const sse = get().sse;
+        if (sse) {
+          sse.close();
+          set({ sse: null });
+          console.log("[SSE DISCONNECTED]");
+        }
       },
 
       // Reset the error state
@@ -59,6 +93,7 @@ const useAuthStore = create(
           });
           toast.success("Login successful!");
           get().connectSocket(); // Connect socket after successful login
+          get().connectSSE(); // Connect SSE after successful login
           return response;
         } catch (error) {
           set({
@@ -83,6 +118,7 @@ const useAuthStore = create(
           });
           toast.success("Logged out successfully!");
           get().disconnectSocket(); // Disconnect socket on logout
+          get().disconnectSSE(); // Disconnect SSE on logout
         } catch (error) {
           set({
             isLoading: false,
@@ -107,6 +143,9 @@ const useAuthStore = create(
           if (!get().socket) {
             get().connectSocket();
           }
+          if (!get().sse) {
+            get().connectSSE();
+          }
           return response;
         } catch (error) {
           set({
@@ -122,20 +161,20 @@ const useAuthStore = create(
         if (!user || get().socket?.connected) return;
 
         const socket = io(Config.BACKEND_URL, {
-            withCredentials: true,
-            transports: ["websocket"],
+          withCredentials: true,
+          transports: ["websocket"],
         });
         socket.on("connect", () => {
-            console.log("[SOCKET CONNECTED]", socket.id);
-            const userId = get().user?._id;
-            if (userId) {
-              socket.emit("setup", userId);
-            }
-            socket.on("getOnlineUsers", (onlineUsers) => {
-              set({ onlineUsers });
-            });
+          console.log("[SOCKET CONNECTED]", socket.id);
+          const userId = get().user?._id;
+          if (userId) {
+            socket.emit("setup", userId);
+          }
+          socket.on("getOnlineUsers", (onlineUsers) => {
+            set({ onlineUsers });
           });
-          set({ socket });
+        });
+        set({ socket });
       },
       disconnectSocket: () => {
         if (get().socket?.connected) get().socket.disconnect();
