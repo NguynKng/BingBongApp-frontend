@@ -1,10 +1,16 @@
 import { useState, useRef, useEffect } from "react";
 import Header from "../components/Header";
 import Meta from "../components/Meta";
-import { ChevronDown, Ellipsis, Plus, UserCheck, UserPlus, UserX } from "lucide-react";
+import {
+  ChevronDown,
+  Ellipsis,
+  Plus,
+  UserCheck,
+  UserPlus,
+  UserX,
+} from "lucide-react";
 import CreateStatus from "../components/CreateStatus";
 import PostCard from "../components/PostCard";
-import test_posts from "../data/posts";
 import { Link, useParams } from "react-router-dom";
 import useAuthStore from "../store/authStore";
 import Config from "../envVars";
@@ -35,12 +41,15 @@ function ProfilePage() {
 
   const [isFriend, setIsFriend] = useState(false);
   const [hasSentFriendRequest, setHasSentFriendRequest] = useState(false);
-  const [isReceivingFriendRequest, setIsReceivingFriendRequest] = useState(false);
+  const [isReceivingFriendRequest, setIsReceivingFriendRequest] =
+    useState(false);
 
   useEffect(() => {
     if (!isMyProfile && displayedUser && user) {
       setIsFriend(user.friends?.includes(displayedUser._id));
-      setHasSentFriendRequest(displayedUser.friendRequests?.some((r) => r._id === user._id));
+      setHasSentFriendRequest(
+        displayedUser.friendRequests?.some((r) => r._id === user._id)
+      );
       setIsReceivingFriendRequest(
         user.friendRequests?.includes(displayedUser._id)
       );
@@ -59,7 +68,7 @@ function ProfilePage() {
     { name: "Bài viết" },
     { name: "Giới thiệu" },
     { name: "Bạn bè" },
-    { name: "Ảnh" }
+    { name: "Ảnh" },
   ];
 
   const handleAddPost = (newPost) => {
@@ -118,7 +127,7 @@ function ProfilePage() {
       console.error("Error deleting friend:", error);
       toast.error("Failed to delete friend.");
     }
-  }
+  };
 
   const handleAddFriendRequest = async () => {
     try {
@@ -156,14 +165,14 @@ function ProfilePage() {
       console.error("Error declining friend request:", error);
       toast.error("Failed to decline friend request.");
     }
-  }
+  };
 
   const handleAcceptFriendRequest = async () => {
     try {
       const response = await userAPI.acceptFriendRequest(userId);
       updateUser({
         friends: response.user.friends,
-        friendRequests: response.user.friendRequests
+        friendRequests: response.user.friendRequests,
       });
       setIsFriend(true);
       setIsReceivingFriendRequest(false);
@@ -254,8 +263,9 @@ function ProfilePage() {
                       <h1 className="text-3xl font-bold text-center bg-white/80 dark:bg-[#23233b]/80 lg:bg-transparent px-2 rounded dark:text-white">
                         {displayedUser?.fullName || "Loading..."}
                       </h1>
-                      <p className="text-gray-500 text-center dark:text-gray-400 bg-white/80 dark:bg-[#23233b]/80 lg:bg-transparent px-2 rounded">{`${displayedUser.friends.length || 0
-                        } người bạn`}</p>
+                      <p className="text-gray-500 text-center dark:text-gray-400 bg-white/80 dark:bg-[#23233b]/80 lg:bg-transparent px-2 rounded">{`${
+                        displayedUser.friends.length || 0
+                      } người bạn`}</p>
                     </div>
                   </div>
                   <div className="flex flex-col justify-end items-end py-4 z-30">
@@ -276,16 +286,20 @@ function ProfilePage() {
                         </>
                       ) : isFriend ? (
                         <>
-                          <button className="relative flex gap-2 bg-gray-200 dark:bg-[#23233b] text-black dark:text-white rounded-md py-2 px-4 font-medium items-center hover:bg-gray-300 dark:hover:bg-[#23233b] cursor-pointer" onClick={() =>
-                            setIsOpenFriendsDropdown(!isOpenFriendsDropdown)
-                          }>
+                          <button
+                            className="relative flex gap-2 bg-gray-200 dark:bg-[#23233b] text-black dark:text-white rounded-md py-2 px-4 font-medium items-center hover:bg-gray-300 dark:hover:bg-[#23233b] cursor-pointer"
+                            onClick={() =>
+                              setIsOpenFriendsDropdown(!isOpenFriendsDropdown)
+                            }
+                          >
                             <UserCheck />
                             <span>Bạn bè</span>
                             {isOpenFriendsDropdown && (
                               <div className="absolute right-0 top-full w-72 bg-white dark:bg-[#1e1e2f] rounded-lg shadow-xl z-50 border border-gray-200 dark:border-[#2b2b3d]">
                                 <ul className="p-2">
                                   <li
-                                    className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 dark:hover:bg-[#23233b] cursor-pointer rounded-md" onClick={handleDeleteFriend}
+                                    className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 dark:hover:bg-[#23233b] cursor-pointer rounded-md"
+                                    onClick={handleDeleteFriend}
                                   >
                                     <UserX />
                                     <span className="font-medium">
@@ -312,7 +326,10 @@ function ProfilePage() {
                           >
                             <span>Chấp nhận lời mời</span>
                           </button>
-                          <button className="flex gap-2 bg-gray-200 dark:bg-[#23233b] hover:bg-gray-300 dark:hover:bg-[#23233b] text-black dark:text-white rounded-md py-2 px-4 font-medium items-center cursor-pointer" onClick={handleDeclineFriendRequest}>
+                          <button
+                            className="flex gap-2 bg-gray-200 dark:bg-[#23233b] hover:bg-gray-300 dark:hover:bg-[#23233b] text-black dark:text-white rounded-md py-2 px-4 font-medium items-center cursor-pointer"
+                            onClick={handleDeclineFriendRequest}
+                          >
                             <span>Xoá lời mời</span>
                           </button>
                           <button className="flex gap-2 items-center justify-center bg-gray-200 dark:bg-[#23233b] hover:bg-gray-300 dark:hover:bg-[#23233b] cursor-pointer rounded-md py-2 px-4 text-black dark:text-white font-medium">
@@ -326,10 +343,11 @@ function ProfilePage() {
                       ) : (
                         <>
                           <button
-                            className={`flex gap-2 font-medium cursor-pointer ${hasSentFriendRequest
-                              ? "bg-gray-200 dark:bg-[#23233b] hover:bg-gray-300 dark:hover:bg-[#23233b] text-black dark:text-white"
-                              : "bg-blue-500 hover:bg-blue-600 text-white"
-                              } rounded-md py-2 px-4 items-center justify-center`}
+                            className={`flex gap-2 font-medium cursor-pointer ${
+                              hasSentFriendRequest
+                                ? "bg-gray-200 dark:bg-[#23233b] hover:bg-gray-300 dark:hover:bg-[#23233b] text-black dark:text-white"
+                                : "bg-blue-500 hover:bg-blue-600 text-white"
+                            } rounded-md py-2 px-4 items-center justify-center`}
                             onClick={
                               hasSentFriendRequest
                                 ? handleRemoveFriendRequest
@@ -360,10 +378,11 @@ function ProfilePage() {
                     {tabs.map((tab, index) => (
                       <div
                         key={index}
-                        className={`cursor-pointer border-b-4 font-medium py-1 px-2 lg:py-3 lg:px-4 ${activeTab === tab.name
-                          ? "border-blue-500 text-blue-500 bg-transparent"
-                          : "border-transparent text-gray-500 hover:bg-gray-200 rounded-md"
-                          }`}
+                        className={`cursor-pointer border-b-4 font-medium py-1 px-2 lg:py-3 lg:px-4 ${
+                          activeTab === tab.name
+                            ? "border-blue-500 text-blue-500 bg-transparent"
+                            : "border-transparent text-gray-500 hover:bg-gray-200 rounded-md"
+                        }`}
                         onClick={() => setActiveTab(tab.name)}
                       >
                         {tab.name}
@@ -374,7 +393,6 @@ function ProfilePage() {
                       <ChevronDown className="size-5" />
                     </div>
                   </div>
-
                 </div>
               </div>
             </div>
@@ -386,7 +404,9 @@ function ProfilePage() {
         <div className="flex lg:flex-row flex-col gap-4">
           <div className="lg:w-[40%] w-full space-y-4 lg:sticky top-[8.5vh] h-fit">
             <div className="rounded-md bg-white dark:bg-[#1e1e2f] border-2 border-gray-200 dark:border-[#2b2b3d] p-4 space-y-4">
-              <h1 className="text-xl font-bold text-gray-900 dark:text-white">Giới thiệu</h1>
+              <h1 className="text-xl font-bold text-gray-900 dark:text-white">
+                Giới thiệu
+              </h1>
               <button className="py-2 px-4 text-center w-full rounded-md bg-gray-200 dark:bg-[#23233b] dark:text-white font-medium cursor-pointer hover:bg-gray-300 dark:hover:bg-[#23233b]">
                 Thêm tiểu sử
               </button>
@@ -412,31 +432,39 @@ function ProfilePage() {
 
             <div className="rounded-md bg-white dark:bg-[#1e1e2f] border-2 border-gray-200 dark:border-[#2b2b3d] p-4 space-y-2">
               <div className="flex items-center justify-between gap-2">
-                <h1 className="text-xl font-bold text-gray-900 dark:text-white">Ảnh</h1>
-                <h1 className="text-blue-500 rounded-md py-2 px-4 cursor-pointer hover:bg-gray-200 dark:hover:bg-[#23233b] dark:hover:bg-[#23233b]">
+                <h1 className="text-xl font-bold text-gray-900 dark:text-white">
+                  Ảnh
+                </h1>
+                <h1 className="text-blue-500 rounded-md py-2 px-4 cursor-pointer hover:bg-gray-200 dark:hover:bg-[#23233b]">
                   Xem tất cả ảnh
                 </h1>
               </div>
               <div className="grid grid-cols-3 gap-2">
-                {test_posts.map((post) => (
-                  <div
-                    key={post.id}
-                    className="relative w-full h-32 overflow-hidden rounded-md cursor-pointer hover:scale-105 transition-transform duration-300"
-                  >
-                    <img
-                      src={post.image}
-                      alt="Post"
-                      className="w-full h-full object-cover rounded-md"
-                    />
-                  </div>
-                ))}
+                {posts.map(
+                  (post) =>
+                    post.media &&
+                    post.media.length > 0 && (
+                      <div
+                        key={post._id}
+                        className="relative w-full lg:h-32 h-56 overflow-hidden rounded-md cursor-pointer hover:scale-105 transition-transform duration-300 border-2 border-gray-200"
+                      >
+                        <img
+                          src={`${Config.BACKEND_URL}${post.media[0]}`}
+                          alt="Post"
+                          className="w-full h-full object-cover rounded-md"
+                        />
+                      </div>
+                    )
+                )}
               </div>
             </div>
 
             <div className="rounded-md bg-white dark:bg-[#1e1e2f] border-2 border-gray-200 dark:border-[#2b2b3d] p-4 space-y-2">
               <div className="flex items-center justify-between gap-2">
-                <h1 className="text-xl font-bold text-gray-900 dark:text-white">Bạn bè</h1>
-                <h1 className="text-blue-500 rounded-md py-2 px-4 cursor-pointer hover:bg-gray-200 dark:hover:bg-[#23233b] dark:hover:bg-[#23233b]">
+                <h1 className="text-xl font-bold text-gray-900 dark:text-white">
+                  Bạn bè
+                </h1>
+                <h1 className="text-blue-500 rounded-md py-2 px-4 cursor-pointer hover:bg-gray-200 dark:hover:bg-[#23233b]">
                   Xem tất cả bạn bè
                 </h1>
               </div>
@@ -457,7 +485,7 @@ function ProfilePage() {
                     </Link>
                     <Link
                       to={`/profile/${friend._id}`}
-                      className="font-medium dark:text-white text-base hover:underline-offset-2 hover:underline"
+                      className="font-medium dark:text-white text-sm hover:underline-offset-2 hover:underline"
                     >
                       {friend.fullName}
                     </Link>
@@ -470,16 +498,26 @@ function ProfilePage() {
           <div className="lg:w-[60%] w-full space-y-4">
             {isMyProfile && <CreateStatus onPostCreated={handleAddPost} />}
             <div className="py-2 px-4 bg-white dark:bg-[#1e1e2f] rounded-lg">
-              <h1 className="text-xl font-bold text-gray-900 dark:text-white">Bài viết</h1>
+              <h1 className="text-xl font-bold text-gray-900 dark:text-white">
+                Bài viết
+              </h1>
             </div>
             {loading ? (
               <SpinnerLoading />
             ) : (
               <>
                 {posts && posts.length > 0 ? (
-                  posts.map((post) => <PostCard key={post._id} post={post} onDeletePost={handleRemovePost} />)
+                  posts.map((post) => (
+                    <PostCard
+                      key={post._id}
+                      post={post}
+                      onDeletePost={handleRemovePost}
+                    />
+                  ))
                 ) : (
-                  <p className="text-center text-2xl dark:text-white">Không có bài viết nào</p>
+                  <p className="text-center text-2xl dark:text-white">
+                    Không có bài viết nào
+                  </p>
                 )}
               </>
             )}

@@ -9,6 +9,7 @@ import ProfilePage from "./pages/ProfilePage";
 import QuizPage from "./pages/Quiz/QuizPage";
 import QuizPlayPage from "./pages/Quiz/QuizPlayPage";
 import CreateQuizPage from "./pages/Quiz/CreateQuizPage";
+import NewsPage from "./pages/newsPage";
 import Leaderboard from "./pages/Quiz/Leaderboard";
 import { Toaster } from "react-hot-toast";
 import useAuthStore from "./store/authStore";
@@ -72,6 +73,22 @@ function App() {
           element={
             <ProtectedRoute>
               <FriendPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/news"
+          element={
+            <ProtectedRoute>
+              <NewsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/news/page/:pageNumber"
+          element={
+            <ProtectedRoute>
+              <NewsPage />
             </ProtectedRoute>
           }
         />

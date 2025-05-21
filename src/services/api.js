@@ -476,7 +476,7 @@ export const postAPI = {
       }
       throw error;
     }
-  }
+  },
 };
 
 export const chatApi = {
@@ -522,9 +522,10 @@ export const quizAPI = {
   },
 
   // Get all quizzes
-  getAllQuizzes: async () => {
+  getAllQuizzes: async (name) => {
     try {
-      const response = await api.get("/quiz");
+        const url = name ? `/quiz?name=${name}` : "/quiz";
+      const response = await api.get(url);
 
       if (response.data.success === false) {
         throw new Error(response.data.message);
@@ -553,6 +554,99 @@ export const quizAPI = {
       if (error.response) {
         const errorMessage =
           error.response.data.message || "Failed to fetch quiz";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  deleteQuiz: async (quizId) => {
+    try {
+      const response = await api.delete(`/quiz/${quizId}`);
+
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to delete quiz";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getLeaderboard: async () => {
+    try {
+      const response = await api.get("/quiz/leaderboard");
+
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch leaderboard";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  submitScore: async (scoreData) => {
+    try {
+      const response = await api.post("/quizScore/submit", scoreData);
+
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to submit score";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+};
+
+export const notificationAPI = {
+  getNotifications: async () => {
+    try {
+      const response = await api.get("/notifications");
+
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch notifications";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  markAllAsRead: async () => {
+    try {
+      const response = await api.put("/notifications/mark-as-all-read");
+
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to mark notifications as read";
         throw new Error(errorMessage);
       }
       throw error;

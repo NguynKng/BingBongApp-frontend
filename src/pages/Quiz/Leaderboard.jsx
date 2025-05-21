@@ -37,7 +37,11 @@ function Leaderboard() {
   }, []);
 
   if (loading)
-    return <div className="text-center mt-10 text-xl">⏳ Đang tải bảng xếp hạng...</div>;
+    return (
+      <div className="text-center mt-10 text-xl">
+        ⏳ Đang tải bảng xếp hạng...
+      </div>
+    );
   if (error)
     return <div className="text-center mt-10 text-red-600">{error}</div>;
 
@@ -48,7 +52,9 @@ function Leaderboard() {
       return "bg-gradient-to-r from-gray-400 to-gray-300 hover:from-gray-500 hover:to-gray-400 text-gray-800 font-bold";
     if (index === 2)
       return "bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-600 hover:to-amber-500 text-gray-800 font-bold";
-    return index % 2 === 0 ? "bg-gray-50 hover:bg-blue-50" : "bg-white hover:bg-blue-50";
+    return index % 2 === 0
+      ? "bg-gray-50 hover:bg-blue-50"
+      : "bg-white hover:bg-blue-50";
   };
 
   const getMedalIcon = (index) => {
@@ -58,13 +64,16 @@ function Leaderboard() {
     return null;
   };
 
-  const currentUserEntry = leaderboard.find((entry) => entry.user?._id === user?._id);
-  const currentUserIndex = leaderboard.findIndex((entry) => entry.user?._id === user?._id);
+  const currentUserEntry = leaderboard.find(
+    (entry) => entry.user?._id === user?._id
+  );
+  const currentUserIndex = leaderboard.findIndex(
+    (entry) => entry.user?._id === user?._id
+  );
   const isUserInLeaderboard = currentUserIndex !== -1;
-  console.log(currentUserEntry)
+  console.log(currentUserEntry);
 
   return (
-
     <div className="dark:bg-[#181826] min-h-screen">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6">
         {/* Back Button */}
@@ -80,7 +89,11 @@ function Leaderboard() {
             strokeWidth="2"
             viewBox="0 0 24 24"
           >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M15 19l-7-7 7-7"
+            />
           </svg>
           <span className="hidden sm:inline">Quay lại</span>
         </button>
@@ -102,17 +115,30 @@ function Leaderboard() {
             </thead>
             <tbody>
               {leaderboard.map((player, index) => (
-                <tr key={player.user?._id || index} className={`transition ${getRowColor(index)}`}>
-                  <td className="px-3 sm:px-6 py-3 font-semibold text-gray-700">{index + 1}</td>
+                <tr
+                  key={player.user?._id || index}
+                  className={`transition ${getRowColor(index)}`}
+                >
+                  <td className="px-3 sm:px-6 py-3 font-semibold text-gray-700">
+                    {index + 1}
+                  </td>
                   <td className="px-3 sm:px-6 py-3 text-gray-700 flex items-center justify-center">
                     <div className="flex items-center gap-2 min-w-[10rem] sm:min-w-[15rem] max-w-xs mx-auto">
                       <img
-                        src={player.user?.avatar ? `${Config.BACKEND_URL}${player.user.avatar}` : "/user.png"}
+                        src={
+                          player.user?.avatar
+                            ? `${Config.BACKEND_URL}${player.user.avatar}`
+                            : "/user.png"
+                        }
                         alt="avatar"
                         className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover"
                       />
                       <span className="flex items-center gap-1 truncate text-sm sm:text-base">
-                        {getMedalIcon(index) && <span className="text-2xl">{getMedalIcon(index)}</span>}
+                        {getMedalIcon(index) && (
+                          <span className="text-2xl">
+                            {getMedalIcon(index)}
+                          </span>
+                        )}
                         {player.user?.fullName || "Ẩn danh"}
                       </span>
                     </div>
@@ -128,30 +154,45 @@ function Leaderboard() {
 
         {/* Current User Highlight */}
         {isUserInLeaderboard && (
-          <div className="overflow-x-auto shadow-lg hover:shadow-2xl transition duration-300 w-full mt-10 rounded-xl">
-            <table className="w-full min-w-[500px] table-auto bg-white border border-gray-200 text-center">
-              <tbody>
-                <tr className={`transition ${getRowColor(currentUserIndex)}`}>
-                  <td className="px-3 sm:px-6 py-3 text-blue-700 font-semibold">{currentUserIndex + 1}</td>
-                  <td className="px-3 sm:px-6 py-3 text-gray-700 flex items-center justify-center">
-                    <div className="flex items-center gap-2 min-w-[10rem] sm:min-w-[15rem] max-w-xs mx-auto">
-                      <img
-                        src={currentUserEntry.user?.avatar ? `${Config.BACKEND_URL}${currentUserEntry.user.avatar}` : "/user.png"}
-                        alt="avatar"
-                        className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover"
-                      />
-                      <span className="flex items-center gap-1 truncate text-sm sm:text-base">
-                        {getMedalIcon(currentUserIndex) && <span className="text-2xl">{getMedalIcon(currentUserIndex)}</span>}
-                        {currentUserEntry.user?.fullName || "Ẩn danh"}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-3 sm:px-6 py-3 text-blue-700 font-medium text-sm sm:text-base">
-                    {currentUserEntry.totalScore}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+          <div className="mt-10">
+            <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 text-center mb-4">
+              🏅 Hạng của bạn
+            </h1>
+            <div className="overflow-x-auto shadow-lg hover:shadow-2xl transition duration-300 w-full rounded-xl">
+              <table className="w-full min-w-[500px] table-auto bg-white border border-gray-200 text-center">
+                <tbody>
+                  <tr className={`transition ${getRowColor(currentUserIndex)}`}>
+                    <td className="px-3 sm:px-6 py-3 text-blue-700 font-semibold">
+                      {currentUserIndex + 1}
+                    </td>
+                    <td className="px-3 sm:px-6 py-3 text-gray-700 flex items-center justify-center">
+                      <div className="flex items-center gap-2 min-w-[10rem] sm:min-w-[15rem] max-w-xs mx-auto">
+                        <img
+                          src={
+                            currentUserEntry.user?.avatar
+                              ? `${Config.BACKEND_URL}${currentUserEntry.user.avatar}`
+                              : "/user.png"
+                          }
+                          alt="avatar"
+                          className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover"
+                        />
+                        <span className="flex items-center gap-1 truncate text-sm sm:text-base">
+                          {getMedalIcon(currentUserIndex) && (
+                            <span className="text-2xl">
+                              {getMedalIcon(currentUserIndex)}
+                            </span>
+                          )}
+                          {currentUserEntry.user?.fullName || "Ẩn danh"}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-3 sm:px-6 py-3 text-blue-700 font-medium text-sm sm:text-base">
+                      {currentUserEntry.totalScore}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </div>

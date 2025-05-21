@@ -166,7 +166,7 @@ function ChatBox({ onClose, userChat }) {
                 >
                   {!isMyMessage && (
                     <img
-                      src={`${Config.BACKEND_URL}${userChat.avatar}`}
+                      src={userChat.avatar ? `${Config.BACKEND_URL}${userChat.avatar}` : "/user.png"}
                       alt={`${userChat.fullName}`}
                       className="w-8 h-8 rounded-full object-cover self-end"
                     />
