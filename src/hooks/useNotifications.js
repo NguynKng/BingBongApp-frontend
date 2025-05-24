@@ -1,38 +1,42 @@
+// hooks/useNotifications.ts
 import { useEffect, useState } from "react";
 import { notificationAPI } from "../services/api";
 import useNotificationStore from "../store/notificationStore";
 
-export const useGetNotifications = () => {
-  const { notifications, setNotifications, unreadCount } = useNotificationStore();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+export function useGetNotifications() {
+  const { setNotifications, appendNotifications } = useNotificationStore();
+  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+
+  const fetchNotifications = async (currentPage = 1) => {
+    try {
+      setLoading(true);
+      const res = await notificationAPI.getNotifications(currentPage);
+      if (currentPage === 1) {
+        setNotifications(res.data);
+      } else {
+        appendNotifications(res.data);
+      }
+      setHasMore(res.pagination.hasMore);
+    } catch (err) {
+      console.error("Failed to load notifications", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadMore = () => {
+    if (hasMore) {
+      const nextPage = page + 1;
+      setPage(nextPage);
+      fetchNotifications(nextPage);
+    }
+  };
 
   useEffect(() => {
-    const fetchNotifications = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const response = await notificationAPI.getNotifications();
+    fetchNotifications(1);
+  }, []);
 
-        if (response.success) {
-          setNotifications(response.data);
-        } else {
-          setError(response.message || "Không thể tải thông báo");
-        }
-      } catch (err) {
-        setError(err?.message || "Có lỗi xảy ra khi tải thông báo");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchNotifications();
-  }, [setNotifications]);
-
-  return {
-    notifications,
-    loading,
-    error,
-    unreadCount,
-  };
-};
+  return { loading, loadMore, hasMore };
+}

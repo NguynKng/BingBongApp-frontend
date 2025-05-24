@@ -1,3 +1,4 @@
+import { useState, useMemo } from "react";
 import { Ellipsis, Expand, Search, SquarePen } from "lucide-react";
 import { useGetChats } from "../hooks/useChats";
 import SpinnerLoading from "./SpinnerLoading";
@@ -8,6 +9,13 @@ import useAuthStore from "../store/authStore";
 function DropdownChat({ onToggleChat }) {
   const { messages, loading } = useGetChats();
   const { onlineUsers } = useAuthStore();
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filteredMessages = useMemo(() => {
+    return messages.filter((chat) =>
+      chat.participant.fullName.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [messages, searchTerm]);
 
   return (
     <div className="absolute top-[110%] right-0 min-w-96 rounded-xl shadow-2xl bg-white p-4 space-y-5 animate-fade-in transform transition-all duration-300 ease-in-out dark:bg-[rgb(35,35,35)]">
@@ -35,7 +43,9 @@ function DropdownChat({ onToggleChat }) {
         <input
           type="text"
           placeholder="Tìm kiếm trên messenger"
-          className="text-gray-900 w-full py-2 pl-10 bg-gray-100 rounded-full focus:outline-none dark:bg-[rgb(52,52,53)] text-sm shadow-inner dark:placeholder:text-gray-300"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="text-gray-900 w-full py-2 pl-10 bg-gray-100 rounded-full focus:outline-none dark:bg-[rgb(52,52,53)] text-sm shadow-inner dark:placeholder:text-gray-300 dark:text-gray-300"
         />
       </div>
 
@@ -55,8 +65,8 @@ function DropdownChat({ onToggleChat }) {
           <div className="flex items-center justify-center">
             <SpinnerLoading />
           </div>
-        ) : (
-          messages.map((chat) => (
+        ) : filteredMessages.length > 0 ? (
+          filteredMessages.map((chat) => (
             <div
               key={chat.participant._id}
               onClick={() => onToggleChat(chat.participant)}
@@ -65,7 +75,7 @@ function DropdownChat({ onToggleChat }) {
               <div className="relative size-10 rounded-full">
                 <img
                   src={chat.participant.avatar ? `${Config.BACKEND_URL}${chat.participant.avatar}` : "/user.png"}
-                  alt={`user avatar`}
+                  alt="user avatar"
                   className="size-full rounded-full object-cover"
                 />
                 {onlineUsers.includes(chat.participant._id) && (
@@ -88,6 +98,8 @@ function DropdownChat({ onToggleChat }) {
               </span>
             </div>
           ))
+        ) : (
+          <p className="text-center text-gray-500 text-sm dark:text-gray-300">Không tìm thấy đoạn chat nào.</p>
         )}
       </div>
     </div>

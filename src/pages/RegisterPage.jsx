@@ -184,7 +184,7 @@ export default function RegisterPage() {
                                 disabled={isLoading}
                                 className={`w-full py-3 rounded-xl text-white font-bold tracking-wide transition-transform duration-300 transform hover:scale-105 focus:scale-95 ${isLoading
                                         ? "bg-gradient-to-r from-gray-400 to-gray-500 cursor-not-allowed"
-                                        : "bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 shadow-lg"
+                                        : "bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 shadow-lg cursor-pointer"
                                     }`}
                             >
                                 {isLoading ? (

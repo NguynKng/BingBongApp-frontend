@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { quizAPI } from "../../services/api";
+import quizTopics from "../../data/quizTopic";
 
 function CreateQuizPage() {
   const navigate = useNavigate();
@@ -8,6 +9,7 @@ function CreateQuizPage() {
   const [quiz, setQuiz] = useState({
     title: "",
     description: "",
+    topics: [],
     questions: [],
   });
 
@@ -27,6 +29,19 @@ function CreateQuizPage() {
       ...prevQuiz,
       questions: updatedQuestions,
     }));
+  };
+
+  const handleTopicChange = (e) => {
+    const { value, checked } = e.target;
+    setQuiz((prevQuiz) => {
+      const updatedTopics = checked
+        ? [...prevQuiz.topics, value]
+        : prevQuiz.topics.filter((topic) => topic !== value);
+      return {
+        ...prevQuiz,
+        topics: updatedTopics,
+      };
+    });
   };
 
   const addQuestion = () => {
@@ -78,7 +93,11 @@ function CreateQuizPage() {
               viewBox="0 0 24 24"
               xmlns="http://www.w3.org/2000/svg"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M15 19l-7-7 7-7"
+              />
             </svg>
             <span>Quay lại</span>
           </button>
@@ -93,7 +112,7 @@ function CreateQuizPage() {
                 htmlFor="title"
                 className="block text-lg sm:text-xl font-bold text-white mb-2"
               >
-                🎯 Tiêu đề Quiz:
+                🎯 Tiêu đề Quiz
               </label>
               <input
                 type="text"
@@ -106,6 +125,29 @@ function CreateQuizPage() {
                 required
               />
             </div>
+            {/* Chủ đề */}
+            <div>
+              <label className="block text-lg sm:text-xl font-bold text-white mb-2">
+                🧩 Chủ đề liên quan
+              </label>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {quizTopics.map((topic) => (
+                  <label
+                    key={topic.id}
+                    className="inline-flex items-center gap-2 text-white"
+                  >
+                    <input
+                      type="checkbox"
+                      value={topic.name}
+                      checked={quiz.topics.includes(topic.name)}
+                      onChange={handleTopicChange}
+                      className="form-checkbox h-5 w-5 text-yellow-400 border-gray-300 focus:ring-yellow-400 cursor-pointer"
+                    />
+                    {topic.name}
+                  </label>
+                ))}
+              </div>
+            </div>
 
             {/* Mô tả */}
             <div>
@@ -113,7 +155,7 @@ function CreateQuizPage() {
                 htmlFor="description"
                 className="block text-lg sm:text-xl font-bold text-white mb-2"
               >
-                📝 Mô tả Quiz:
+                📝 Mô tả Quiz
               </label>
               <textarea
                 id="description"
@@ -141,13 +183,13 @@ function CreateQuizPage() {
                     <label className="block text-lg font-semibold text-gray-800 dark:text-white mb-1">
                       Câu hỏi {index + 1}:
                     </label>
-                    <input
-                      type="text"
+                    <textarea
                       name="question"
                       value={question.question}
                       onChange={(e) => handleQuestionChange(index, e)}
+                      rows="3"
                       className="w-full p-3 rounded-lg border border-gray-300 dark:border-[#2b2b3d] text-black dark:text-white bg-white dark:bg-[#23233b] focus:outline-none focus:ring-4 focus:ring-pink-300"
-                      placeholder="Nhập câu hỏi"
+                      placeholder="Nhập nội dung câu hỏi"
                       required
                     />
                   </div>
@@ -169,7 +211,10 @@ function CreateQuizPage() {
                             setQuiz((prevQuiz) => {
                               const updatedQuestions = [...prevQuiz.questions];
                               updatedQuestions[index].options = newOptions;
-                              return { ...prevQuiz, questions: updatedQuestions };
+                              return {
+                                ...prevQuiz,
+                                questions: updatedQuestions,
+                              };
                             });
                           }}
                           className="w-full p-3 rounded-lg border border-gray-300 dark:border-[#2b2b3d] text-black dark:text-white bg-white dark:bg-[#23233b] focus:outline-none focus:ring-4 focus:ring-pink-300"
@@ -193,7 +238,9 @@ function CreateQuizPage() {
                       placeholder="Nhập đáp án đúng"
                       required
                     >
-                      <option className="text-black" value="">-- Chọn đáp án đúng --</option>
+                      <option className="text-black" value="">
+                        -- Chọn đáp án đúng --
+                      </option>
                       {question.options.map((opt, i) => (
                         <option className="text-black" key={i} value={opt}>
                           Đáp án {i + 1}: {opt}

@@ -343,6 +343,24 @@ export const postAPI = {
       };
     }
   },
+  getPostById : async (postId) => {
+    try {
+      const response = await api.get(`/posts/${postId}`);
+
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch post";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
   reactToPost: async (postId, type) => {
     try {
       const response = await api.post(`/posts/react`, { postId, type });
@@ -361,9 +379,9 @@ export const postAPI = {
     }
   },
   // Get user feed (posts from user and their friends)
-  getFeed: async (page = 1, limit = 10) => {
+  getFeed: async () => {
     try {
-      const response = await api.get(`/posts/feed?page=${page}&limit=${limit}`);
+      const response = await api.get(`/posts/feed`);
 
       if (response.data.success === false) {
         throw new Error(response.data.message);
@@ -616,9 +634,9 @@ export const quizAPI = {
 };
 
 export const notificationAPI = {
-  getNotifications: async () => {
+  getNotifications: async (page = 1) => {
     try {
-      const response = await api.get("/notifications");
+      const response = await api.get(`/notifications?page=${page}`);
 
       if (response.data.success === false) {
         throw new Error(response.data.message);

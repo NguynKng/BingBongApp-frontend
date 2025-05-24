@@ -159,9 +159,12 @@ function QuizPlayPage() {
 
         {!isFinished && (
           <div className="bg-white dark:bg-[#23233b] shadow-xl border border-gray-200 dark:border-[#2b2b3d] p-6 sm:p-10 rounded-2xl overflow-hidden">
-            <h3 className="text-lg sm:text-2xl font-bold text-gray-800 dark:text-white mb-4 sm:mb-6 text-center">
-              Câu {currentQuestionIndex + 1}: {currentQuestion.question}
-            </h3>
+            <textarea
+              value={`Câu ${currentQuestionIndex + 1}: ${
+                currentQuestion.question
+              }`}
+              className="text-lg sm:text-2xl w-full  font-bold text-gray-800 dark:text-white mb-4 sm:mb-6 text-center"
+            />
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               {currentQuestion.options.map((option, i) => {

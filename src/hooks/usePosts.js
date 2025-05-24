@@ -28,75 +28,36 @@ export const useGetUserPosts = (userId) => {
     return { posts, setPosts, loading, error };
 }
 
-// Add a new hook for fetching the feed
-export const useGetFeed = (initialPage = 1, initialLimit = 10) => {
-    const [feed, setFeed] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [pagination, setPagination] = useState({
-        page: initialPage,
-        limit: initialLimit,
-        total: 0,
-        pages: 0
-    });
-    const [hasMore, setHasMore] = useState(true);
+export const useGetFeed = () => {
+  const [feed, setFeed] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-    // Function to load initial feed
-    const loadFeed = async (page = initialPage, limit = initialLimit) => {
-        setLoading(true);
-        try {
-            const response = await postAPI.getFeed(page, limit);
-            if (response.success) {
-                setFeed(response.posts);
-                setPagination(response.pagination);
-                setHasMore(response.pagination.page < response.pagination.pages);
-            } else {
-                setError(response.message);
-            }
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setLoading(false);
-        }
-    };
+  const loadFeed = async () => {
+    setLoading(true);
+    try {
+      const response = await postAPI.getFeed(); // không truyền page/limit
+      if (response.success) {
+        setFeed(response.posts); // lấy tất cả
+      } else {
+        setError(response.message);
+      }
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    // Function to load more posts (for infinite scrolling)
-    const loadMore = async () => {
-        if (loading || !hasMore) return;
-        
-        const nextPage = pagination.page + 1;
-        setLoading(true);
-        
-        try {
-            const response = await postAPI.getFeed(nextPage, pagination.limit);
-            if (response.success) {
-                setFeed(prevFeed => [...prevFeed, ...response.posts]);
-                setPagination(response.pagination);
-                setHasMore(response.pagination.page < response.pagination.pages);
-            } else {
-                setError(response.message);
-            }
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setLoading(false);
-        }
-    };
+  useEffect(() => {
+    loadFeed();
+  }, []);
 
-    // Load initial feed when component mounts
-    useEffect(() => {
-        loadFeed();
-    }, []);
-
-    return { 
-        feed,
-        setFeed,
-        loading, 
-        error, 
-        pagination, 
-        hasMore, 
-        loadMore,
-        refresh: () => loadFeed(1, pagination.limit) 
-    };
-}
-
+  return {
+    feed,
+    setFeed,
+    loading,
+    error,
+    refresh: loadFeed
+  };
+};

@@ -15,6 +15,12 @@ const useNotificationStore = create((set, get) => ({
     const unread = updatedNotifications.filter((n) => !n.isRead).length;
     set({ notifications: updatedNotifications, unreadCount: unread });
   },
+  appendNotifications: (newNotifications) => {
+    const currentNotifications = get().notifications;
+    const updatedNotifications = [...currentNotifications, ...newNotifications];
+    const unread = updatedNotifications.filter((n) => !n.isRead).length;
+    set({ notifications: updatedNotifications, unreadCount: unread });
+  },
   markAsAllRead: async () => {
     const response = await notificationAPI.markAllAsRead();
     if (response.success) {
