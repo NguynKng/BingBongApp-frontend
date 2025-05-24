@@ -24,10 +24,10 @@ import { useGetProfileByName } from "../hooks/useProfile";
 import debounce from "lodash.debounce";
 import SpinnerLoading from "./SpinnerLoading";
 import DropdownMenu from "./DropdownMenu";
-import { useGetNotifications } from "../hooks/useNotifications";
+import useNotificationStore from "../store/notificationStore";
 
 function Header({ onToggleChat }) {
-    const { unreadCount } = useGetNotifications();
+    const { unreadCount } = useNotificationStore();
     const [query, setQuery] = useState("");
     const isSearchingUser = query.length > 0;
     const { listUser, loading } = useGetProfileByName(query, {
@@ -95,11 +95,11 @@ function Header({ onToggleChat }) {
                             onChange={(e) => debouncedSearch(e.target.value)}
                         />
                         {query.length > 0 && (
-                            <div className="absolute top-[110%] right-0 w-full max-h-96 overflow-y-auto shadow-xl bg-white rounded-lg z-50 p-2 custom-scroll">
+                            <div className="absolute top-[110%] right-0 w-full max-h-96 overflow-y-auto shadow-xl bg-white rounded-lg z-50 p-2 custom-scroll dark:bg-[#1f2233]">
                                 {loading ? (
                                     <SpinnerLoading />
                                 ) : listUser.length === 0 ? (
-                                    <div className="text-center text-gray-500 py-2 px-4">Không tìm thấy người dùng</div>
+                                    <div className="text-center text-gray-500 py-2 px-4 dark:text-white">Không tìm thấy người dùng</div>
                                 ) : (
                                     listUser.map((user) => (
                                         <Link
@@ -108,13 +108,13 @@ function Header({ onToggleChat }) {
                                             onClick={() => {
                                                 setQuery("");
                                             }}
-                                            className="w-full py-2 px-4 flex items-center justify-between gap-2 hover:bg-blue-100 rounded-md transition duration-200"
+                                            className="w-full py-2 px-4 flex items-center justify-between gap-2 hover:bg-blue-100 rounded-md transition duration-200 dark:hover:bg-[#394056]"
                                         >
                                             <div className="flex items-center gap-2">
                                                 <div className="rounded-full bg-blue-200 p-2">
                                                     <Search className="size-5 text-blue-600" />
                                                 </div>
-                                                <span className="text-sm font-semibold text-gray-800">{user.fullName}</span>
+                                                <span className="text-sm font-semibold text-gray-800 dark:text-white">{user.fullName}</span>
                                             </div>
                                             <img
                                                 src={user.avatar ? `${Config.BACKEND_URL}${user.avatar}` : "/user.png"}
@@ -250,7 +250,7 @@ function Header({ onToggleChat }) {
                         className="relative size-11 p-2 bg-white/70 dark:bg-[#2a2e3d] rounded-full flex items-center justify-center shadow-md hover:scale-110 hover:ring-2 ring-blue-300 dark:ring-purple-400 hover:bg-blue-100 dark:hover:bg-[#394056] transition-all cursor-pointer group"
                         onClick={() => toggleDropdown("notification")}
                     >
-                        <Bell className="text-blue-800 dark:text-white" />
+                        <Bell className="text-blue-800 dark:text-white dark:fill-white" />
                         <div className="absolute -bottom-8 text-xs bg-black/80 text-white px-3 py-1 rounded shadow hidden group-hover:block z-50 text-center whitespace-nowrap">
                             Thông báo
                         </div>

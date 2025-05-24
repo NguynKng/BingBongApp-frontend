@@ -19,8 +19,8 @@ import useAuthStore from "../store/authStore";
 import emotions from "../data/emotion";
 import { toast } from "react-hot-toast";
 
-function PostCard({ post, onDeletePost }) {
-  const [openComment, setOpenComment] = useState(false);
+function PostCard({ post, onDeletePost, showComment = false }) {
+  const [openComment, setOpenComment] = useState(showComment);
   const [isOpenPostDropdown, setIsOpenPostDropdown] = useState(false);
   const { user } = useAuthStore();
   const { author, createdAt, content, media } = post;
@@ -289,7 +289,7 @@ function PostCard({ post, onDeletePost }) {
           )}
 
           <div className="absolute bottom-[120%] left-0 z-50 invisible group-hover:visible transition-all delay-200">
-            <div className="flex bg-white rounded-full shadow-md border dark:bg-[rgb(35,35,35)] border-gray-200 relative z-50">
+            <div className="flex bg-white rounded-full shadow-md border dark:bg-[rgb(35,35,35)] dark:border-gray-600 border-gray-200 relative z-50">
               {emotions.map((emotion) => (
                 <div
                   key={emotion.id}

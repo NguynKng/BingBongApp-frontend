@@ -64,21 +64,21 @@ function PostModal({ onClose, onPostCreated }) {
 
   return (
     <div className="fixed inset-0 min-h-screen z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-white opacity-90 backdrop-blur-sm"></div>
+      <div className="absolute inset-0 bg-white dark:bg-gray-900 opacity-90 backdrop-blur-sm"></div>
 
       <form
         onSubmit={handleSubmit}
-        className="relative bg-white rounded-lg w-full max-w-xl p-4 shadow-xl z-10"
+        className="relative bg-white dark:bg-gray-800 text-black dark:text-white rounded-lg w-full max-w-xl p-4 shadow-xl z-10"
       >
         <button
           type="button"
-          className="absolute p-2 rounded-full size-10 bg-gray-200 hover:bg-gray-300 top-2 right-2 text-black cursor-pointer"
+          className="absolute p-2 rounded-full size-10 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 top-2 right-2 text-black dark:text-white cursor-pointer"
           onClick={onClose}
         >
           ✕
         </button>
 
-        <h2 className="text-2xl font-bold text-center mb-4 pb-2 border-b-2 border-gray-200">
+        <h2 className="text-2xl font-bold text-center mb-4 pb-2 border-b-2 dark:border-gray-600 border-gray-200">
           Tạo bài viết
         </h2>
 
@@ -91,7 +91,7 @@ function PostModal({ onClose, onPostCreated }) {
           />
           <div>
             <p className="font-medium">{user.fullName}</p>
-            <select className="text-sm text-gray-500 bg-gray-100 rounded px-2 py-1">
+            <select className="text-sm text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded px-2 py-1">
               <option>Bạn bè</option>
               <option>Công khai</option>
               <option>Chỉ mình tôi</option>
@@ -100,7 +100,7 @@ function PostModal({ onClose, onPostCreated }) {
         </div>
 
         <textarea
-          className="w-full h-40 resize-none p-2 border border-gray-300 rounded focus:outline-none"
+          className="w-full h-40 resize-none p-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded focus:outline-none"
           placeholder={`${user.fullName} ơi, bạn đang nghĩ gì thế?`}
           value={content}
           onChange={(e) => setContent(e.target.value)}
@@ -109,11 +109,11 @@ function PostModal({ onClose, onPostCreated }) {
         {imagesPreview.length > 0 && (
           <div className="mt-2 grid grid-cols-3 gap-2">
             {imagesPreview.map((preview, index) => (
-              <div key={index} className="relative group">
+              <div key={index} className="relative group w-32 h-32">
                 <img
                   src={preview}
                   alt={`Preview ${index}`}
-                  className="h-32 object-cover rounded"
+                  className="w-full h-full object-cover rounded"
                 />
                 <button
                   type="button"
@@ -133,7 +133,7 @@ function PostModal({ onClose, onPostCreated }) {
             className="flex items-center gap-2 text-purple-600 cursor-pointer hover:text-purple-800"
           >
             <img src="/photos.png" className="w-6 h-6" alt="upload" />
-            <span>Ảnh</span>
+            <span className="dark:text-white">Ảnh</span>
           </label>
           <input
             id="uploadImage"

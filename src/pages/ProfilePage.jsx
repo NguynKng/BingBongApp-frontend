@@ -28,7 +28,7 @@ function ProfilePage() {
     avatar: false,
     coverPhoto: false,
   });
-  const { user, updateUser } = useAuthStore();
+  const { user, updateUser, theme } = useAuthStore();
   const avatarInputRef = useRef(null);
   const coverPhotoInputRef = useRef(null);
   const { posts, setPosts, loading } = useGetUserPosts(userId);
@@ -186,8 +186,7 @@ function ProfilePage() {
   return (
     <>
       <Meta title="BingBong" />
-      <Header />
-      <div className="pt-[64px] lg:px-[15%] bg-gray-100 dark:bg-[#181826]">
+      <div className="lg:px-[15%] bg-gray-100 dark:bg-[#181826]">
         <div className="relative w-full lg:h-[38rem] h-[30rem]">
           <div className="relative w-full h-[71%] rounded-b-md">
             <img
@@ -312,8 +311,12 @@ function ProfilePage() {
                           </button>
                           <button className="flex gap-2 items-center justify-center bg-gray-200 dark:bg-[#23233b] hover:bg-gray-300 dark:hover:bg-[#23233b] cursor-pointer rounded-md py-2 px-4 text-black dark:text-white font-medium">
                             <img
-                              src="/messenger-icon.png"
-                              className="size-5 object-cover"
+                              src={
+                                theme === "light"
+                                  ? "/messenger-icon.png"
+                                  : "/messenger-icon-white.png"
+                              }
+                              className="object-cover size-5"
                             />
                             <span>Nhắn tin</span>
                           </button>
@@ -334,8 +337,12 @@ function ProfilePage() {
                           </button>
                           <button className="flex gap-2 items-center justify-center bg-gray-200 dark:bg-[#23233b] hover:bg-gray-300 dark:hover:bg-[#23233b] cursor-pointer rounded-md py-2 px-4 text-black dark:text-white font-medium">
                             <img
-                              src="/messenger-icon.png"
-                              className="size-5 object-cover"
+                              src={
+                                theme === "light"
+                                  ? "/messenger-icon.png"
+                                  : "/messenger-icon-white.png"
+                              }
+                              className="object-cover size-5"
                             />
                             <span>Nhắn tin</span>
                           </button>
@@ -363,8 +370,12 @@ function ProfilePage() {
                           </button>
                           <button className="flex gap-2 items-center justify-center bg-gray-200 dark:bg-[#23233b] hover:bg-gray-300 dark:hover:bg-[#23233b] cursor-pointer rounded-md py-2 px-4 text-black dark:text-white font-medium">
                             <img
-                              src="/messenger-icon.png"
-                              className="size-5 object-cover"
+                              src={
+                                theme === "light"
+                                  ? "/messenger-icon.png"
+                                  : "/messenger-icon-white.png"
+                              }
+                              className="object-cover size-5"
                             />
                             <span>Nhắn tin</span>
                           </button>
@@ -400,7 +411,7 @@ function ProfilePage() {
         </div>
       </div>
 
-      <section className="bg-gray-200 dark:bg-[#181826] lg:px-[17%] md:px-[10%] py-4 min-h-screen">
+      <section className="bg-gray-200 dark:bg-[#181826] lg:px-[17%] md:px-[10%] px-2 py-4 min-h-screen">
         <div className="flex lg:flex-row flex-col gap-4">
           <div className="lg:w-[40%] w-full space-y-4 lg:sticky top-[8.5vh] h-fit">
             <div className="rounded-md bg-white dark:bg-[#1e1e2f] border-2 border-gray-200 dark:border-[#2b2b3d] p-4 space-y-4">

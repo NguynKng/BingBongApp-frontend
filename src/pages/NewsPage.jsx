@@ -4,7 +4,6 @@ import axios from "axios";
 import NewsCard from "../components/NewsCard";
 import SpinnerLoading from "../components/SpinnerLoading";
 import { motion } from "framer-motion";
-import Header from "../components/Header";
 import Navbar from "../components/Navbar";
 import Meta from "../components/Meta";
 
@@ -51,12 +50,27 @@ const NewsPage = () => {
   return (
     <>
       <Meta title="Tin tức công nghệ" />
-      <Header />
       <Navbar />
-      <div className="relative pt-[64px] lg:ml-[24rem] flex bg-gradient-to-br from-[#f0f4ff] to-[#fff1f7] dark:from-[#1c1f2a] dark:to-[#2a2e3d]">
-        <div className="lg:w-[80%] w-full px-2 md:px-8 min-h-[92vh] py-6">
+      <div className="lg:p-4 p-1 lg:ml-[24rem]">
+        <div className="lg:w-[80%] w-full px-2 md:px-8 py-6">
+          <h1 className="text-2xl text-green-500 font-bold">
+            Tin tức công nghệ mới nhất
+          </h1>
           {loading ? (
-            <SpinnerLoading />
+            <div className="flex flex-col justify-center items-center h-[50vh] gap-4 text-center">
+              <SpinnerLoading />
+              <motion.h2
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.2 }}
+                className="text-lg font-semibold text-gray-600 dark:text-gray-300"
+              >
+                Đang tải dữ liệu bài viết...
+              </motion.h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Vui lòng chờ trong giây lát
+              </p>
+            </div>
           ) : (
             <div className="flex flex-col gap-4">
               {news.slice(0, visibleCount).map((item, index) => (
