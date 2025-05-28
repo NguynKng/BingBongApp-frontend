@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import Config from "../../envVars";
 import useAuthStore from "../../store/authStore";
+import { quizAPI } from "../../services/api";
 
 function Leaderboard() {
   const { user } = useAuthStore();
@@ -14,11 +14,8 @@ function Leaderboard() {
   useEffect(() => {
     const fetchLeaderboard = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:8000/api/v1/userScore/leaderboard",
-          { withCredentials: true }
-        );
-        const data = response.data;
+        const response = await quizAPI.getLeaderboard();
+        const data = response;
 
         if (Array.isArray(data.leaderboard)) {
           setLeaderboard(data.leaderboard);
@@ -103,97 +100,109 @@ function Leaderboard() {
           🌟 Bảng Xếp Hạng Tổng 🌟
         </h1>
 
-        {/* Leaderboard Table */}
-        <div className="overflow-x-auto shadow-lg hover:shadow-2xl transition duration-300 rounded-xl">
-          <table className="w-full min-w-[500px] table-auto bg-white border border-gray-200 text-center">
-            <thead className="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-sm sm:text-base">
-              <tr>
-                <th className="px-3 sm:px-6 py-3 font-bold">Hạng</th>
-                <th className="px-3 sm:px-6 py-3 font-bold">Người Chơi</th>
-                <th className="px-3 sm:px-6 py-3 font-bold">Tổng Điểm</th>
-              </tr>
-            </thead>
-            <tbody>
-              {leaderboard.map((player, index) => (
-                <tr
-                  key={player.user?._id || index}
-                  className={`transition ${getRowColor(index)}`}
-                >
-                  <td className="px-3 sm:px-6 py-3 font-semibold text-gray-700">
-                    {index + 1}
-                  </td>
-                  <td className="px-3 sm:px-6 py-3 text-gray-700 flex items-center justify-center">
-                    <div className="flex items-center gap-2 min-w-[10rem] sm:min-w-[15rem] max-w-xs mx-auto">
-                      <img
-                        src={
-                          player.user?.avatar
-                            ? `${Config.BACKEND_URL}${player.user.avatar}`
-                            : "/user.png"
-                        }
-                        alt="avatar"
-                        className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover"
-                      />
-                      <span className="flex items-center gap-1 truncate text-sm sm:text-base">
-                        {getMedalIcon(index) && (
-                          <span className="text-2xl">
-                            {getMedalIcon(index)}
-                          </span>
-                        )}
-                        {player.user?.fullName || "Ẩn danh"}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-3 sm:px-6 py-3 font-medium text-gray-700 text-sm sm:text-base">
-                    {player.totalScore}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Current User Highlight */}
-        {isUserInLeaderboard && (
-          <div className="mt-10">
-            <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 text-center mb-4">
-              🏅 Hạng của bạn
-            </h1>
-            <div className="overflow-x-auto shadow-lg hover:shadow-2xl transition duration-300 w-full rounded-xl">
+        {loading ? (
+          <div className="text-center mt-10 text-xl">
+            ⏳ Đang tải bảng xếp hạng...
+          </div>
+        ) : (
+          <>
+            {/* Leaderboard Table */}
+            <div className="overflow-x-auto shadow-lg hover:shadow-2xl transition duration-300 rounded-xl">
               <table className="w-full min-w-[500px] table-auto bg-white border border-gray-200 text-center">
-                <tbody>
-                  <tr className={`transition ${getRowColor(currentUserIndex)}`}>
-                    <td className="px-3 sm:px-6 py-3 text-blue-700 font-semibold">
-                      {currentUserIndex + 1}
-                    </td>
-                    <td className="px-3 sm:px-6 py-3 text-gray-700 flex items-center justify-center">
-                      <div className="flex items-center gap-2 min-w-[10rem] sm:min-w-[15rem] max-w-xs mx-auto">
-                        <img
-                          src={
-                            currentUserEntry.user?.avatar
-                              ? `${Config.BACKEND_URL}${currentUserEntry.user.avatar}`
-                              : "/user.png"
-                          }
-                          alt="avatar"
-                          className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover"
-                        />
-                        <span className="flex items-center gap-1 truncate text-sm sm:text-base">
-                          {getMedalIcon(currentUserIndex) && (
-                            <span className="text-2xl">
-                              {getMedalIcon(currentUserIndex)}
-                            </span>
-                          )}
-                          {currentUserEntry.user?.fullName || "Ẩn danh"}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-3 sm:px-6 py-3 text-blue-700 font-medium text-sm sm:text-base">
-                      {currentUserEntry.totalScore}
-                    </td>
+                <thead className="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-sm sm:text-base">
+                  <tr>
+                    <th className="px-3 sm:px-6 py-3 font-bold">Hạng</th>
+                    <th className="px-3 sm:px-6 py-3 font-bold">Người Chơi</th>
+                    <th className="px-3 sm:px-6 py-3 font-bold">Tổng Điểm</th>
                   </tr>
+                </thead>
+                <tbody>
+                  {leaderboard.map((player, index) => (
+                    <tr
+                      key={player.user?._id || index}
+                      className={`transition ${getRowColor(index)}`}
+                    >
+                      <td className="px-3 sm:px-6 py-3 font-semibold text-gray-700">
+                        {index + 1}
+                      </td>
+                      <td className="px-3 sm:px-6 py-3 text-gray-700 flex items-center justify-center">
+                        <div className="flex items-center gap-2 min-w-[10rem] sm:min-w-[15rem] max-w-xs mx-auto">
+                          <img
+                            src={
+                              player.user?.avatar
+                                ? `${Config.BACKEND_URL}${player.user.avatar}`
+                                : "/user.png"
+                            }
+                            alt="avatar"
+                            className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover"
+                          />
+                          <span className="flex items-center gap-1 truncate text-sm sm:text-base">
+                            {getMedalIcon(index) && (
+                              <span className="text-2xl">
+                                {getMedalIcon(index)}
+                              </span>
+                            )}
+                            {player.user?.fullName || "Ẩn danh"}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-3 sm:px-6 py-3 font-medium text-gray-700 text-sm sm:text-base">
+                        {player.totalScore}
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
-          </div>
+
+            {/* Current User Highlight */}
+            {isUserInLeaderboard && (
+              <div className="mt-10">
+                <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 text-center mb-4">
+                  🏅 Hạng của bạn
+                </h1>
+                <div className="overflow-x-auto shadow-lg hover:shadow-2xl transition duration-300 w-full rounded-xl">
+                  <table className="w-full min-w-[500px] table-auto bg-white border border-gray-200 text-center">
+                    <tbody>
+                      <tr
+                        className={`transition ${getRowColor(
+                          currentUserIndex
+                        )}`}
+                      >
+                        <td className="px-3 sm:px-6 py-3 text-blue-700 font-semibold">
+                          {currentUserIndex + 1}
+                        </td>
+                        <td className="px-3 sm:px-6 py-3 text-gray-700 flex items-center justify-center">
+                          <div className="flex items-center gap-2 min-w-[10rem] sm:min-w-[15rem] max-w-xs mx-auto">
+                            <img
+                              src={
+                                currentUserEntry.user?.avatar
+                                  ? `${Config.BACKEND_URL}${currentUserEntry.user.avatar}`
+                                  : "/user.png"
+                              }
+                              alt="avatar"
+                              className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover"
+                            />
+                            <span className="flex items-center gap-1 truncate text-sm sm:text-base">
+                              {getMedalIcon(currentUserIndex) && (
+                                <span className="text-2xl">
+                                  {getMedalIcon(currentUserIndex)}
+                                </span>
+                              )}
+                              {currentUserEntry.user?.fullName || "Ẩn danh"}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="px-3 sm:px-6 py-3 text-blue-700 font-medium text-sm sm:text-base">
+                          {currentUserEntry.totalScore}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

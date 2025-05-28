@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
 import NewsCard from "../components/NewsCard";
 import SpinnerLoading from "../components/SpinnerLoading";
 import { motion } from "framer-motion";
 import Navbar from "../components/Navbar";
 import Meta from "../components/Meta";
+import { newsApi } from "../services/api";
 
 const NewsPage = () => {
   const { pageNumber } = useParams();
@@ -20,10 +20,8 @@ const NewsPage = () => {
     const fetchNews = async () => {
       setLoading(true);
       try {
-        const res = await axios.get(
-          `http://localhost:8000/api/v1/crawlblog?pageNumber=${currentPage}`
-        );
-        setNews(res.data.articles);
+        const res = await newsApi.getNews(currentPage);
+        setNews(res.articles);
         setVisibleCount(10);
       } catch (err) {
         console.error(err);

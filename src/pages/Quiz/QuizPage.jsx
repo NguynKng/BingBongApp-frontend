@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import Header from "../../components/Header";
 import QuizCard from "../../components/Quiz/QuizCard";
 import { quizAPI } from "../../services/api";
 import debounce from "lodash.debounce";
@@ -62,7 +61,18 @@ export default function QuizPage() {
 
   return (
     <div className="dark:bg-[#181826] min-h-[92vh]">
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-6">
+        <h2
+          className="text-4xl font-extrabold text-transparent bg-clip-text 
+  bg-gradient-to-r from-yellow-500 via-orange-500 to-pink-500 
+  dark:from-blue-400 dark:via-purple-500 dark:to-pink-500 
+  text-center drop-shadow-lg 
+  dark:drop-shadow-[0_2px_12px_rgba(80,80,255,0.3)] 
+  animate-pulse"
+        >
+          Quiz nhanh như chớp – 30 giây để toả sáng!
+        </h2>
+
         {/* Header: search & buttons */}
         <section className="bg-white dark:bg-[#1f2233] rounded-xl shadow-lg p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
           <div className="w-full md:w-1/2 relative">
@@ -92,10 +102,10 @@ export default function QuizPage() {
         </section>
 
         {/* Topic selector */}
-        <h2 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-pink-500 to-red-500 text-center drop-shadow-lg animate-pulse dark:drop-shadow-[0_2px_12px_rgba(80,80,255,0.3)]">
+        <h2 className="md:text-3xl text-xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-pink-500 to-red-500 text-center drop-shadow-lg animate-pulse dark:drop-shadow-[0_2px_12px_rgba(80,80,255,0.3)]">
           🎮 Danh sách Quiz
         </h2>
-        <div className="grid lg:grid-cols-7 md:grid-cols-5 sm:grid-cols-4 grid-cols-2 gap-2">
+        <div className="flex flex-wrap gap-2">
           <button
             onClick={() => setSelectedTopics([])}
             className={`px-4 py-2 cursor-pointer rounded-lg text-sm font-medium transition-colors duration-300 ${
