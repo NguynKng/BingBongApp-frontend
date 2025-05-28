@@ -11,16 +11,14 @@ function DropdownNotification() {
   const { loading, loadMore, hasMore } = useGetNotifications();
 
   const getLink = (noti) => {
-    switch (noti.type) {
-      case "new_post":
-      case "comment_post":
-      case "react_post":
-        return noti.post ? `/posts/${noti.post._id}` : "#";
-      case "friend_request":
-      case "accepted_request":
+    const enumPostType = ["new_post", "comment_post", "react_post"];
+    const enumFriendType = ["friend_request", "accepted_request"];
+    if (enumPostType.includes(noti.type) && noti.post) {
+        return `/posts/${noti.post._id}`;
+    } else if (enumFriendType.includes(noti.type) && noti.actor) {
         return `/profile/${noti.actor._id}`;
-      default:
-        return "#";
+    } else {
+        return "#"
     }
   };
 
@@ -34,7 +32,7 @@ function DropdownNotification() {
         Thông báo
       </div>
 
-      {loading && notifications.length === 0 ? (
+      {loading ? (
         <SpinnerLoading />
       ) : notifications.length === 0 ? (
         <div className="text-center text-gray-500 py-4 dark:text-white">

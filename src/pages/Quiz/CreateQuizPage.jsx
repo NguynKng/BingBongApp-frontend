@@ -83,7 +83,7 @@ function CreateQuizPage() {
           <button
             type="button"
             onClick={() => navigate(-1)}
-            className="group inline-flex items-center gap-2 mb-6 px-5 py-2.5 rounded-full bg-white/20 dark:bg-white/10 text-white font-semibold shadow-md hover:bg-white/40 dark:hover:bg-white/20 transition duration-300"
+            className="cursor-pointer group inline-flex items-center gap-2 mb-6 px-5 py-2.5 rounded-full bg-white/20 dark:bg-white/10 text-white font-semibold shadow-md hover:bg-white/40 dark:hover:bg-white/20 transition duration-300"
           >
             <svg
               className="w-5 h-5 text-white group-hover:-translate-x-1 transition-transform duration-300"
@@ -254,7 +254,7 @@ function CreateQuizPage() {
                     <button
                       type="button"
                       onClick={() => deleteQuestion(index)}
-                      className="px-5 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg shadow-md transition"
+                      className="px-5 py-2 bg-red-600 hover:bg-red-700 text-white cursor-pointer rounded-lg shadow-md transition"
                     >
                       ❌ Xóa câu hỏi
                     </button>
@@ -267,7 +267,7 @@ function CreateQuizPage() {
                 <button
                   type="button"
                   onClick={addQuestion}
-                  className="px-6 py-3 bg-white/30 dark:bg-white/10 text-white font-semibold rounded-lg shadow-lg backdrop-blur hover:bg-white/50 dark:hover:bg-white/20 transition"
+                  className="px-6 py-3 bg-white/30 dark:bg-white/10 dark:text-white text-gray-500 font-semibold rounded-lg shadow-lg backdrop-blur hover:bg-white/50 dark:hover:bg-white/20 transition cursor-pointer"
                 >
                   ➕ Thêm câu hỏi
                 </button>
@@ -278,7 +278,7 @@ function CreateQuizPage() {
             <div>
               <button
                 type="submit"
-                className="w-full px-6 py-4 bg-green-500 text-white text-lg sm:text-xl font-semibold rounded-lg shadow-lg hover:bg-green-600 transition"
+                className="w-full px-6 py-4 bg-green-500 text-white text-lg sm:text-xl font-semibold rounded-lg shadow-lg hover:bg-green-600 transition cursor-pointer"
               >
                 🚀 Tạo Quiz
               </button>

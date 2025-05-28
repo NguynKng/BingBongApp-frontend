@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
 import useAuthStore from "../../store/authStore";
+import { quizAPI } from "../../services/api";
 
 function QuizPlayPage() {
   const { quizId } = useParams();
@@ -11,7 +11,7 @@ function QuizPlayPage() {
   const [answers, setAnswers] = useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [score, setScore] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(60);
+  const [timeLeft, setTimeLeft] = useState(30);
   const [isFinished, setIsFinished] = useState(false);
   const [answered, setAnswered] = useState(false);
   const { user } = useAuthStore();
@@ -19,11 +19,8 @@ function QuizPlayPage() {
   useEffect(() => {
     const fetchQuiz = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:8000/api/v1/quiz/${quizId}`,
-          { withCredentials: true }
-        );
-        const quizData = response.data;
+        const response = await quizAPI.getQuizById(quizId);
+        const quizData = response;
         const actualQuiz = quizData.questions ? quizData : quizData.quiz;
 
         if (!Array.isArray(actualQuiz.questions)) {
@@ -68,13 +65,9 @@ function QuizPlayPage() {
         score: score,
       };
 
-      const response = await axios.post(
-        "http://localhost:8000/api/v1/quizScore/submit",
-        payload,
-        { withCredentials: true }
-      );
+      await quizAPI.submitScore(payload);
 
-      console.log("✅ Điểm đã được lưu thành công:", response.data);
+      //console.log("✅ Điểm đã được lưu thành công:", response.data);
     } catch (error) {
       const msg =
         error.response?.data?.message || error.message || "Lỗi không xác định";
@@ -122,7 +115,7 @@ function QuizPlayPage() {
     setCurrentQuestionIndex(0);
     setAnswers(Array(quiz.questions.length).fill(null));
     setScore(0);
-    setTimeLeft(60);
+    setTimeLeft(30);
     setAnswered(false);
   };
 

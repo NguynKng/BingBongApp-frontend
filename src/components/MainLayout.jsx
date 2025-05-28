@@ -6,8 +6,14 @@ import { useEffect, useState } from "react";
 import useAuthStore from "../store/authStore";
 import useNotificationStore from "../store/notificationStore";
 import NotificationPopup from "./NotificationPopup";
+import { useCallback } from "react";
 
 function MainLayout({ Element }) {
+  const { addNotification } = useNotificationStore();
+  const { sse } = useAuthStore();
+  const [showChat, setShowChat] = useState(false);
+  const [activeChatUser, setActiveChatUser] = useState();
+
   const [popup, setPopup] = useState({
     isPopup: false,
     content: {
@@ -16,10 +22,41 @@ function MainLayout({ Element }) {
       author_img: "",
     },
   });
-  const { addNotification } = useNotificationStore();
-  const { sse } = useAuthStore();
-  const [showChat, setShowChat] = useState(false);
-  const [activeChatUser, setActiveChatUser] = useState();
+
+  const handleGetNewMessage = useCallback(
+    (sender) => {
+      setShowChat(true);
+      setActiveChatUser(sender);
+    },
+    [setShowChat, setActiveChatUser]
+  );
+
+  const handleGetNotificationsAndPopup = useCallback(
+    (notification) => {
+      addNotification(notification);
+      setPopup({
+        isPopup: true,
+        content: {
+          title: notification.content,
+          author_img: notification.actor.avatar,
+          author_name: notification.actor.fullName,
+        },
+      });
+      const timer = setTimeout(() => {
+        setPopup({
+          isPopup: false,
+          content: {
+            title: "",
+            author_img: "",
+            author_name: "",
+          },
+        });
+      }, 10000);
+
+      return () => clearTimeout(timer);
+    },
+    [addNotification, setPopup]
+  ); // include dependencies if needed
   const handleToggleChat = (friend) => {
     setActiveChatUser(friend);
     setShowChat(true); // ensure ChatBox shows when a friend is clicked
@@ -45,32 +82,18 @@ function MainLayout({ Element }) {
     if (sse) {
       sse.onmessage = (event) => {
         const data = JSON.parse(event.data);
-        console.log("[SSE NEW NOTIFICATION]", data);
         if (data.type) {
-          addNotification(data.notification);
-          setPopup({
-            isPopup: true,
-            content: {
-              title: data.notification.content,
-              author_img: data.notification.actor.avatar,
-              author_name: data.notification.actor.fullName,
-            },
-          });
-          // Auto close popup after 3 seconds
-          setTimeout(() => {
-            setPopup({
-              isPopup: false,
-              content: {
-                title: "",
-                author_img: "",
-                author_name: "",
-              },
-            });
-          }, 10000);
+          if (data.type === "new_message") {
+            console.log("[SSE NEW MESSAGE]", data);
+            handleGetNewMessage(data.sender);
+          } else {
+            console.log("[SSE NEW NOTIFICATION]", data);
+            handleGetNotificationsAndPopup(data.notification);
+          }
         }
       };
     }
-  }, [sse, addNotification]);
+  }, [sse, handleGetNotificationsAndPopup, handleGetNewMessage]);
 
   return (
     <>

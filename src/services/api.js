@@ -597,7 +597,7 @@ export const quizAPI = {
   },
   getLeaderboard: async () => {
     try {
-      const response = await api.get("/quiz/leaderboard");
+      const response = await api.get("/userScore/leaderboard");
 
       if (response.data.success === false) {
         throw new Error(response.data.message);
@@ -665,6 +665,27 @@ export const notificationAPI = {
       if (error.response) {
         const errorMessage =
           error.response.data.message || "Failed to mark notifications as read";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+};
+
+export const newsApi = {
+  getNews: async (page) => {
+    try {
+      const response = await api.get(`/crawlblog?pageNumber=${page}`);
+
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch news";
         throw new Error(errorMessage);
       }
       throw error;
