@@ -14,7 +14,6 @@ const useAuthStore = create(
       error: null,
       onlineUsers: [],
       socket: null,
-      sse: null,
       theme: "light", // Default theme
       toggleTheme: () => {
         const currentTheme = get().theme;
@@ -22,40 +21,6 @@ const useAuthStore = create(
         set({ theme: newTheme });
         document.documentElement.classList.toggle("dark", newTheme === "dark");
       },
-      connectSSE: () => {
-        const userId = get().user?._id;
-        const sse = new EventSource(
-          `${Config.BACKEND_URL}/api/v1/events/${userId}`,
-          {
-            withCredentials: true,
-          }
-        );
-
-        sse.onopen = () => {
-          console.log(`[SSE OPENED for ${userId}]`);
-        };
-
-        sse.onerror = (err) => {
-          console.error("[SSE ERROR]", err);
-          sse.close(); // auto-reconnect logic có thể thêm sau
-        };
-
-        sse.onmessage = (event) => {
-          const data = JSON.parse(event.data);
-          console.log("[SSE MESSAGE]", data.message);
-          console.log("[SSE MESSAGE]", data.clients);
-        };
-        set({ sse });
-      },
-      disconnectSSE: () => {
-        const sse = get().sse;
-        if (sse) {
-          sse.close();
-          set({ sse: null });
-          console.log("[SSE DISCONNECTED]");
-        }
-      },
-
       // Reset the error state
       resetError: () => set({ error: null }),
 
@@ -93,7 +58,6 @@ const useAuthStore = create(
           });
           toast.success("Login successful!");
           get().connectSocket(); // Connect socket after successful login
-          get().connectSSE(); // Connect SSE after successful login
           return response;
         } catch (error) {
           set({
@@ -142,9 +106,6 @@ const useAuthStore = create(
           });
           if (!get().socket) {
             get().connectSocket();
-          }
-          if (!get().sse) {
-            get().connectSSE();
           }
           return response;
         } catch (error) {

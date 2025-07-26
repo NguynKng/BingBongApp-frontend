@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import useAuthStore from "../store/authStore";
 import Footer from "../components/Footer";
+import toast from "react-hot-toast";
 
 export default function RegisterPage() {
     const [email, setEmail] = useState("");
@@ -23,6 +24,12 @@ export default function RegisterPage() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        let currentDate = new Date();
+        let currentYear = currentDate.getFullYear();
+        if(currentYear - birthYear < 18){
+            toast.error("Bạn cần phải đủ 18 tuổi để đăng ki tài khoản!")
+            return;
+        }
         const dateOfBirth = `${birthDay}/${birthMonth}/${birthYear}`;
         const userData = {
             email,
