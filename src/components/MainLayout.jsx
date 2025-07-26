@@ -10,7 +10,7 @@ import { useCallback } from "react";
 
 function MainLayout({ Element }) {
   const { addNotification } = useNotificationStore();
-  const { sse } = useAuthStore();
+  const { socket } = useAuthStore();
   const [showChat, setShowChat] = useState(false);
   const [activeChatUser, setActiveChatUser] = useState();
 
@@ -32,7 +32,9 @@ function MainLayout({ Element }) {
   );
 
   const handleGetNotificationsAndPopup = useCallback(
-    (notification) => {
+    (notification1) => {
+      const { notification } = notification1;
+      console.log("[NEW NOTIFICATION]", notification);
       addNotification(notification);
       setPopup({
         isPopup: true,
@@ -79,21 +81,16 @@ function MainLayout({ Element }) {
   };
 
   useEffect(() => {
-    if (sse) {
-      sse.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-        if (data.type) {
-          if (data.type === "new_message") {
-            console.log("[SSE NEW MESSAGE]", data);
-            handleGetNewMessage(data.sender);
-          } else {
-            console.log("[SSE NEW NOTIFICATION]", data);
-            handleGetNotificationsAndPopup(data.notification);
-          }
-        }
-      };
-    }
-  }, [sse, handleGetNotificationsAndPopup, handleGetNewMessage]);
+    if (!socket) return;
+
+    socket.on("getNewMessage", handleGetNewMessage);
+    socket.on("new_notification", handleGetNotificationsAndPopup);
+
+    return () => {
+      socket.off("getNewMessage", handleGetNewMessage);
+      socket.off("new_notification", handleGetNotificationsAndPopup);
+    };
+  }, [socket, handleGetNewMessage, handleGetNotificationsAndPopup]);
 
   return (
     <>

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { quizAPI } from "../../services/api";
+import { toast } from "react-hot-toast";
 import quizTopics from "../../data/quizTopic";
 
 function CreateQuizPage() {
@@ -67,6 +68,10 @@ function CreateQuizPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+        if (quiz.topics.length === 0) {
+            toast.error("Vui lòng chọn ít nhất một chủ đề cho quiz.");
+            return;
+        }
       const response = await quizAPI.createQuiz(quiz);
       console.log("Quiz đã tạo thành công:", response);
       navigate("/quiz");

@@ -197,6 +197,7 @@ function ProfilePage() {
               }
               className="size-full rounded-b-md object-cover"
               alt="Cover photo"
+              loading="lazy"
             />
             <input
               type="file"

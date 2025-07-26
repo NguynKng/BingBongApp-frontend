@@ -7,14 +7,14 @@ import Config from "../envVars";
 import { formatTime } from "../utils/timeUtils";
 
 function DropdownNotification() {
-  const { notifications, markAsAllRead } = useNotificationStore();
-  const { loading, loadMore, hasMore } = useGetNotifications();
+  const { markAsAllRead } = useNotificationStore();
+  const { loading, loadMore, hasMore, notifications } = useGetNotifications();
 
   const getLink = (noti) => {
     const enumPostType = ["new_post", "comment_post", "react_post"];
     const enumFriendType = ["friend_request", "accepted_request"];
-    if (enumPostType.includes(noti.type) && noti.post) {
-        return `/posts/${noti.post._id}`;
+    if (enumPostType.includes(noti.type)) {
+        return `/posts/${noti.post}`;
     } else if (enumFriendType.includes(noti.type) && noti.actor) {
         return `/profile/${noti.actor._id}`;
     } else {
