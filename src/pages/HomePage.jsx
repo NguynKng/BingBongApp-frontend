@@ -10,7 +10,6 @@ import ChatBox from "../components/ChatBox";
 
 function HomePage() {
   const { feed, setFeed, loading } = useGetFeed();
-  const { sse } = useAuthStore();
   const [showChat, setShowChat] = useState(false);
   const [activeChatUser, setActiveChatUser] = useState();
   const handleToggleChat = (friend) => {
@@ -22,18 +21,6 @@ function HomePage() {
     setShowChat(false);
     setActiveChatUser(undefined);
   }; // giữ nguyên qua các route
-
-  useEffect(() => {
-    if (sse) {
-      sse.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-        if (data.type === "new_post") {
-          console.log("[SSE NEW NOTIFICATION]", data);
-          setFeed((prev) => [data.post, ...prev]);
-        }
-      };
-    }
-  }, [sse, setFeed]);
 
   const handleAddPost = (newPost) => {
     setFeed((prev) => [newPost, ...prev]);
