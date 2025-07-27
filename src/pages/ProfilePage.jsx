@@ -19,6 +19,7 @@ import { toast } from "react-hot-toast";
 import { useGetUserPosts } from "../hooks/usePosts";
 import { useGetProfile } from "../hooks/useProfile";
 import SpinnerLoading from "../components/SpinnerLoading";
+import ChatBox from "../components/ChatBox";
 
 function ProfilePage() {
   const [isOpenFriendsDropdown, setIsOpenFriendsDropdown] = useState(false);
@@ -43,6 +44,8 @@ function ProfilePage() {
   const [hasSentFriendRequest, setHasSentFriendRequest] = useState(false);
   const [isReceivingFriendRequest, setIsReceivingFriendRequest] =
     useState(false);
+  const [showChat, setShowChat] = useState(false);
+  const [activeChatUser, setActiveChatUser] = useState();
 
   useEffect(() => {
     if (!isMyProfile && displayedUser && user) {
@@ -70,6 +73,16 @@ function ProfilePage() {
     { name: "Bạn bè" },
     { name: "Ảnh" },
   ];
+
+  const handleToggleChat = (friend) => {
+    setActiveChatUser(friend);
+    setShowChat(true); // ensure ChatBox shows when a friend is clicked
+  };
+
+  const handleCloseChat = () => {
+    setShowChat(false);
+    setActiveChatUser(undefined);
+  }; // giữ nguyên qua các route
 
   const handleAddPost = (newPost) => {
     setPosts((prev) => [newPost, ...prev]);
@@ -310,7 +323,7 @@ function ProfilePage() {
                               </div>
                             )}
                           </button>
-                          <button className="flex gap-2 items-center justify-center bg-gray-200 dark:bg-[#23233b] hover:bg-gray-300 dark:hover:bg-[#23233b] cursor-pointer rounded-md py-2 px-4 text-black dark:text-white font-medium">
+                          <button className="flex gap-2 items-center justify-center bg-gray-200 dark:bg-[#23233b] hover:bg-gray-300 dark:hover:bg-[#23233b] cursor-pointer rounded-md py-2 px-4 text-black dark:text-white font-medium" onClick={() => handleToggleChat(displayedUser)}>
                             <img
                               src={
                                 theme === "light"
@@ -336,7 +349,7 @@ function ProfilePage() {
                           >
                             <span>Xoá lời mời</span>
                           </button>
-                          <button className="flex gap-2 items-center justify-center bg-gray-200 dark:bg-[#23233b] hover:bg-gray-300 dark:hover:bg-[#23233b] cursor-pointer rounded-md py-2 px-4 text-black dark:text-white font-medium">
+                          <button className="flex gap-2 items-center justify-center bg-gray-200 dark:bg-[#23233b] hover:bg-gray-300 dark:hover:bg-[#23233b] cursor-pointer rounded-md py-2 px-4 text-black dark:text-white font-medium" onClick={() => handleToggleChat(displayedUser)}>
                             <img
                               src={
                                 theme === "light"
@@ -536,6 +549,9 @@ function ProfilePage() {
           </div>
         </div>
       </section>
+      {showChat && (
+        <ChatBox userChat={activeChatUser} onClose={handleCloseChat} />
+      )}
     </>
   );
 }

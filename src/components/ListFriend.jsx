@@ -4,6 +4,8 @@ import useAuthStore from "../store/authStore";
 import SpinnerLoading from "../components/SpinnerLoading";
 import { useEffect, useMemo, useState } from "react";
 import Config from "../envVars";
+import ads from "../data/ads";
+import { Link } from "react-router-dom";
 
 function ListFriend({ onToggleChat }) {
   const { user, onlineUsers } = useAuthStore();
@@ -11,6 +13,16 @@ function ListFriend({ onToggleChat }) {
   const [friends, setFriends] = useState([]);
   const [search, setSearch] = useState("");
   const [showSearch, setShowSearch] = useState(false);
+  const [currentAdIndex, setCurrentAdIndex] = useState(0);
+  const currentAds = ads.slice(currentAdIndex, currentAdIndex + 2);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentAdIndex((prevIndex) => (prevIndex + 2) % ads.length);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     if (profile?.friends) {
@@ -38,28 +50,26 @@ function ListFriend({ onToggleChat }) {
       {/* Sponsored Section */}
       <div className="py-4 border-b-2 border-gray-300 dark:border-gray-500">
         <h1 className="text-lg text-gray-600 dark:text-gray-400">Sponsored</h1>
-        <div className="mt-1 space-y-2">
-          {[1, 2].map((ad, idx) => (
-            <div
-              key={idx}
+        <div className="mt-1 space-y-2 transition-all duration-700 ease-in-out animate-fade">
+          {currentAds.map((ad) => (
+            <Link to={ad.link}
+              key={ad.id}
               className="flex items-center gap-2 p-2 hover:bg-gray-200 rounded-lg transition-all cursor-pointer dark:hover:bg-[rgb(56,56,56)]"
             >
               <img
-                src={`/ads/ads-${ad}.jpg`}
+                src={ad.imageUrl}
                 className="size-[8rem] rounded-lg object-cover"
-                alt={`Ad ${ad}`}
+                alt={`Ad ${ad.id}`}
               />
               <div className="flex flex-col">
                 <h2 className="text-[15px] font-semibold leading-5 dark:text-white">
-                  {ad === 1
-                    ? "Ajinomoto Việt Nam"
-                    : "Get reward for your academic excellence!"}
+                  {ad.title}
                 </h2>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
                   zalo.me
                 </p>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>

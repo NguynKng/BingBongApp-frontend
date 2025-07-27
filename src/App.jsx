@@ -15,6 +15,9 @@ import Leaderboard from "./pages/Quiz/Leaderboard";
 import { Toaster } from "react-hot-toast";
 import useAuthStore from "./store/authStore";
 import { ProtectedRoute, AuthRoute } from "./middleware/auth";
+import VerifyEmailPage from "./pages/VerifyEmailPage";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import ChangePasswordPage from "./pages/ChangePasswordPage";
 
 function App() {
   const { checkAuth, theme } = useAuthStore();
@@ -28,7 +31,7 @@ function App() {
   }, [theme]);
 
   useEffect(() => {
-    checkAuth()
+    checkAuth();
   }, [checkAuth]);
 
   return (
@@ -42,7 +45,30 @@ function App() {
             </ProtectedRoute>
           }
         />
-
+        <Route
+          path="/verify-code"
+          element={
+            <AuthRoute>
+              <VerifyEmailPage />
+            </AuthRoute>
+          }
+        />
+        <Route
+          path="/forgot-password"
+          element={
+            <AuthRoute>
+              <ForgotPasswordPage />
+            </AuthRoute>
+          }
+        />
+        <Route
+          path="/change-password"
+          element={
+            <AuthRoute>
+              <ChangePasswordPage />
+            </AuthRoute>
+          }
+        />
         <Route
           path="/login"
           element={

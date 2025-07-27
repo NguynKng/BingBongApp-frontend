@@ -112,6 +112,88 @@ export const authAPI = {
       throw error;
     }
   },
+  verifyCode: async (email, code, action) => {
+    try {
+      const response = await api.post("/auth/verify-code", {
+        email,
+        code,
+        action,
+      });
+
+      // Check if response indicates failure
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      // Handle axios error
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Verification failed";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+
+      // Handle other errors
+      toast.error(error.message || "Verification failed");
+      throw error;
+    }
+  },
+  forgotPassword: async (email) => {
+    try {
+      const response = await api.post("/auth/forgot-password", { email });
+
+      // Check if response indicates failure
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      // Handle axios error
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Forgot password failed";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+
+      // Handle other errors
+      toast.error(error.message || "Forgot password failed");
+      throw error;
+    }
+  },
+  resetPassword: async (email, newPassword) => {
+    try {
+      const response = await api.post("/auth/reset-password", {
+        email,
+        newPassword,
+      });
+
+      // Check if response indicates failure
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      // Handle axios error
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Reset password failed";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+
+      // Handle other errors
+      toast.error(error.message || "Reset password failed");
+      throw error;
+    }
+  },
 };
 
 // User services
@@ -343,7 +425,7 @@ export const postAPI = {
       };
     }
   },
-  getPostById : async (postId) => {
+  getPostById: async (postId) => {
     try {
       const response = await api.get(`/posts/${postId}`);
 
@@ -542,7 +624,7 @@ export const quizAPI = {
   // Get all quizzes
   getAllQuizzes: async (name) => {
     try {
-        const url = name ? `/quiz?name=${name}` : "/quiz";
+      const url = name ? `/quiz?name=${name}` : "/quiz";
       const response = await api.get(url);
 
       if (response.data.success === false) {

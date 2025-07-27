@@ -250,7 +250,7 @@ function Header({ onToggleChat }) {
                         className="relative size-11 p-2 bg-white/70 dark:bg-[#2a2e3d] rounded-full flex items-center justify-center shadow-md hover:scale-110 hover:ring-2 ring-blue-300 dark:ring-purple-400 hover:bg-blue-100 dark:hover:bg-[#394056] transition-all cursor-pointer group"
                         onClick={() => toggleDropdown("notification")}
                     >
-                        <Bell className="text-blue-800 dark:text-white dark:fill-white" />
+                        <Bell className="text-black fill-black dark:text-white dark:fill-white" />
                         <div className="absolute -bottom-8 text-xs bg-black/80 text-white px-3 py-1 rounded shadow hidden group-hover:block z-50 text-center whitespace-nowrap">
                             Thông báo
                         </div>
