@@ -39,8 +39,10 @@ export default function RegisterPage() {
             password,
             gender: gender === "Nam" ? "Male" : gender === "Nữ" ? "Female" : "Other"
         };
-        await signup(userData);
-        navigate("/login");
+        const success = await signup(userData);
+        if (success) {
+            navigate(`/verify-code?email=${email}&action=verifyAccount`);
+        }
     };
 
     const fadeInUpStyle = {
