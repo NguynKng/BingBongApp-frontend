@@ -3,7 +3,7 @@ import { Ellipsis, Expand, Search, SquarePen } from "lucide-react";
 import { useGetChats } from "../hooks/useChats";
 import SpinnerLoading from "./SpinnerLoading";
 import Config from "../envVars";
-import { formatTime } from "../utils/timeUtils";
+import { formatTimeToDateOrHour } from "../utils/timeUtils";
 import useAuthStore from "../store/authStore";
 
 function DropdownChat({ onToggleChat }) {
@@ -94,7 +94,7 @@ function DropdownChat({ onToggleChat }) {
                 </p>
               </div>
               <span className="text-xs text-gray-400">
-                {formatTime(chat.lastMessage.createdAt)}
+                {formatTimeToDateOrHour(chat.lastMessage.createdAt)}
               </span>
             </div>
           ))

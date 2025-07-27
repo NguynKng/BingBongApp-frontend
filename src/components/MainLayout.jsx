@@ -10,7 +10,7 @@ import { useCallback } from "react";
 
 function MainLayout({ Element }) {
   const { addNotification } = useNotificationStore();
-  const { socket } = useAuthStore();
+  const { socket, updateUser, user } = useAuthStore();
   const [showChat, setShowChat] = useState(false);
   const [activeChatUser, setActiveChatUser] = useState();
 
@@ -35,6 +35,22 @@ function MainLayout({ Element }) {
     (notification1) => {
       const { notification } = notification1;
       console.log("[NEW NOTIFICATION]", notification);
+      if (notification.type === "friend_request") {
+        const newFriendRequests = [
+          ...user.friendRequests,
+          notification.actor._id,
+        ];
+        updateUser({
+          friendRequests: newFriendRequests,
+        });
+      }
+
+      if(notification.type === "accepted_request") {
+        const newFriends = [...user.friends, notification.actor._id];
+        updateUser({
+          friends: newFriends
+        });
+      }
       addNotification(notification);
       setPopup({
         isPopup: true,
@@ -57,7 +73,7 @@ function MainLayout({ Element }) {
 
       return () => clearTimeout(timer);
     },
-    [addNotification, setPopup]
+    [addNotification, setPopup, updateUser, user]
   ); // include dependencies if needed
   const handleToggleChat = (friend) => {
     setActiveChatUser(friend);

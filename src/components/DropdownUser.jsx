@@ -29,9 +29,9 @@ function DropdownUser() {
             src={
               user?.avatar ? `${Config.BACKEND_URL}${user.avatar}` : "/user.png"
             }
-            className="size-9 object-cover rounded-full"
+            className="size-9 object-cover rounded-full border border-gray-200"
           />
-          <span className="text-[17px] dark:text-white">{`${user.fullName}`}</span>
+          <span className="text-[17px] font-medium dark:text-white">{`${user.fullName}`}</span>
         </Link>
         <div className="w-full py-1 px-2">
           <div className="w-full border-1 border-gray-300 dark:border-gray-500"></div>

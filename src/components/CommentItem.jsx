@@ -103,11 +103,11 @@ function CommentItem({ comment, postAuthorId, onRefresh }) {
                 />
               </Link>
               <div className="space-y-1 w-full">
-                <div className="py-2 px-4 rounded-3xl bg-gray-100 w-fit max-w-full">
+                <div className="py-2 px-4 rounded-3xl bg-gray-100 dark:bg-[rgb(52,52,53)] w-fit max-w-full">
                   <div className="flex items-center gap-2 flex-wrap">
                     <Link
                       to={`/profile/${reply.user._id}`}
-                      className="text-[15px] font-semibold hover:text-blue-600 transition-colors"
+                      className="text-[15px] font-semibold hover:text-blue-600 transition-colors dark:text-white"
                     >
                       {reply.user.fullName}
                     </Link>
@@ -117,7 +117,7 @@ function CommentItem({ comment, postAuthorId, onRefresh }) {
                       </span>
                     )}
                   </div>
-                  <p className="text-base break-words">{reply.content}</p>
+                  <p className="text-base break-words dark:text-white">{reply.content}</p>
                 </div>
                 <span className="text-sm px-3 text-gray-500">
                   {formatTime(reply.createdAt)}
