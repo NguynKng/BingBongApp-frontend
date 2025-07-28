@@ -1,14 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import Header from "../components/Header";
-import Meta from "../components/Meta";
-import {
-  ChevronDown,
-  Ellipsis,
-  Plus,
-  UserCheck,
-  UserPlus,
-  UserX,
-} from "lucide-react";
+import { ChevronDown, Plus, UserCheck, UserPlus, UserX } from "lucide-react";
 import CreateStatus from "../components/CreateStatus";
 import PostCard from "../components/PostCard";
 import { Link, useParams } from "react-router-dom";
@@ -20,6 +11,7 @@ import { useGetUserPosts } from "../hooks/usePosts";
 import { useGetProfile } from "../hooks/useProfile";
 import SpinnerLoading from "../components/SpinnerLoading";
 import ChatBox from "../components/ChatBox";
+import WarningDeleteFriend from "../components/WarningDeleteFriend";
 
 function ProfilePage() {
   const [isOpenFriendsDropdown, setIsOpenFriendsDropdown] = useState(false);
@@ -29,6 +21,7 @@ function ProfilePage() {
     avatar: false,
     coverPhoto: false,
   });
+  const [isWarningDeleteFriend, setIsWarningDeleteFriend] = useState(false);
   const { user, updateUser, theme } = useAuthStore();
   const avatarInputRef = useRef(null);
   const coverPhotoInputRef = useRef(null);
@@ -131,6 +124,7 @@ function ProfilePage() {
         toast.error("Failed to delete friend.");
         return;
       }
+      setIsWarningDeleteFriend(false);
       updateUser({
         friends: response?.user?.friends,
       });
@@ -198,7 +192,6 @@ function ProfilePage() {
 
   return (
     <>
-      <Meta title="BingBong" />
       <div className="lg:px-[15%] bg-gray-100 dark:bg-[#181826]">
         <div className="relative w-full lg:h-[38rem] h-[30rem]">
           <div className="relative w-full h-[71%] rounded-b-md">
@@ -312,7 +305,9 @@ function ProfilePage() {
                                 <ul className="p-2">
                                   <li
                                     className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 dark:hover:bg-[#23233b] cursor-pointer rounded-md"
-                                    onClick={handleDeleteFriend}
+                                    onClick={() =>
+                                      setIsWarningDeleteFriend(true)
+                                    }
                                   >
                                     <UserX />
                                     <span className="font-medium">
@@ -323,7 +318,10 @@ function ProfilePage() {
                               </div>
                             )}
                           </button>
-                          <button className="flex gap-2 items-center justify-center bg-gray-200 dark:bg-[#23233b] hover:bg-gray-300 dark:hover:bg-[#23233b] cursor-pointer rounded-md py-2 px-4 text-black dark:text-white font-medium" onClick={() => handleToggleChat(displayedUser)}>
+                          <button
+                            className="flex gap-2 items-center justify-center bg-gray-200 dark:bg-[#23233b] hover:bg-gray-300 dark:hover:bg-[#23233b] cursor-pointer rounded-md py-2 px-4 text-black dark:text-white font-medium"
+                            onClick={() => handleToggleChat(displayedUser)}
+                          >
                             <img
                               src={
                                 theme === "light"
@@ -349,7 +347,10 @@ function ProfilePage() {
                           >
                             <span>Xoá lời mời</span>
                           </button>
-                          <button className="flex gap-2 items-center justify-center bg-gray-200 dark:bg-[#23233b] hover:bg-gray-300 dark:hover:bg-[#23233b] cursor-pointer rounded-md py-2 px-4 text-black dark:text-white font-medium" onClick={() => handleToggleChat(displayedUser)}>
+                          <button
+                            className="flex gap-2 items-center justify-center bg-gray-200 dark:bg-[#23233b] hover:bg-gray-300 dark:hover:bg-[#23233b] cursor-pointer rounded-md py-2 px-4 text-black dark:text-white font-medium"
+                            onClick={() => handleToggleChat(displayedUser)}
+                          >
                             <img
                               src={
                                 theme === "light"
@@ -549,6 +550,13 @@ function ProfilePage() {
           </div>
         </div>
       </section>
+      {isWarningDeleteFriend && (
+        <WarningDeleteFriend
+          onConfirm={handleDeleteFriend}
+          onCancel={() => setIsWarningDeleteFriend(false)}
+          displayedUser={displayedUser}
+        />
+      )}
       {showChat && (
         <ChatBox userChat={activeChatUser} onClose={handleCloseChat} />
       )}

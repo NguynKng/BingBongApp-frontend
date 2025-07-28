@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { Link } from "react-router-dom";
 import useAuthStore from "../store/authStore";
 import Footer from "../components/Footer";
 
@@ -7,16 +7,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-
-  const navigate = useNavigate();
-  const { login, isLoading, isAuthenticated, resetError } = useAuthStore();
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate("/");
-    }
-    return () => resetError();
-  }, [isAuthenticated, navigate, resetError]);
+  const { login, isLoading } = useAuthStore();
 
   const handleSubmit = async (e) => {
     e.preventDefault();

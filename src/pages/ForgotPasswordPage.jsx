@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { authAPI } from "../services/api";
-import toast from "react-hot-toast";
 
 function ForgotPasswordPage() {
   const [email, setEmail] = useState("");

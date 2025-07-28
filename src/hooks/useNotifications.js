@@ -1,10 +1,10 @@
-// hooks/useNotifications.ts
 import { useEffect, useState } from "react";
 import { notificationAPI } from "../services/api";
 import useNotificationStore from "../store/notificationStore";
 
 export function useGetNotifications() {
-  const { setNotifications, appendNotifications, notifications } = useNotificationStore();
+  const { setNotifications, appendNotifications, notifications, unreadCount } =
+    useNotificationStore();
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
@@ -38,17 +38,17 @@ export function useGetNotifications() {
   };
 
   useEffect(() => {
-    // Nếu đã có notifications, không gọi lại
-    if (!initialized && notifications.length === 0) {
+    if (!initialized) {
       fetchNotifications(1);
       setInitialized(true);
     }
-  }, [notifications, initialized]);
+  }, [initialized]);
 
   return {
     loading,
     loadMore,
     hasMore,
     notifications,
+    unreadCount,
   };
 }
