@@ -82,7 +82,6 @@ const useAuthStore = create(
           });
           toast.success("Logged out successfully!");
           get().disconnectSocket(); // Disconnect socket on logout
-          get().disconnectSSE(); // Disconnect SSE on logout
         } catch (error) {
           set({
             isLoading: false,

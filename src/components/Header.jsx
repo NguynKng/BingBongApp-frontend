@@ -24,10 +24,10 @@ import { useGetProfileByName } from "../hooks/useProfile";
 import debounce from "lodash.debounce";
 import SpinnerLoading from "./SpinnerLoading";
 import DropdownMenu from "./DropdownMenu";
-import useNotificationStore from "../store/notificationStore";
+import { useGetNotifications } from "../hooks/useNotifications";
 
 function Header({ onToggleChat }) {
-    const { unreadCount } = useNotificationStore();
+    const { notifications, unreadCount } = useGetNotifications();
     const [query, setQuery] = useState("");
     const isSearchingUser = query.length > 0;
     const { listUser, loading } = useGetProfileByName(query, {
@@ -281,7 +281,7 @@ function Header({ onToggleChat }) {
                         </div>
                         {dropdown.user && <DropdownUser />}
                         {dropdown.chat && <DropdownChat onToggleChat={onToggleChat} />}
-                        {dropdown.notification && <DropdownNotification />}
+                        {dropdown.notification && <DropdownNotification notifications={notifications} />}
                         {dropdown.menu && (
                             <DropdownMenu />
                         )}

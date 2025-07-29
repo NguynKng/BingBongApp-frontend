@@ -18,6 +18,7 @@ import CommentInput from "./CommentInput";
 import useAuthStore from "../store/authStore";
 import emotions from "../data/emotion";
 import { toast } from "react-hot-toast";
+import { useImagePreview } from "../hooks/useImagePreview";
 
 function PostCard({ post, onDeletePost, showComment = false }) {
   const [openComment, setOpenComment] = useState(showComment);
@@ -29,6 +30,7 @@ function PostCard({ post, onDeletePost, showComment = false }) {
   const [hoveredEmotion, setHoveredEmotion] = useState(null);
   const [hoveredEmotionUser, setHoveredEmotionUser] = useState(null);
   const [reactions, setReactions] = useState(post.reactions);
+  const { openImagePreview, ImagePreviewModal } = useImagePreview();
 
   const filteredReactions = hoveredEmotionUser
     ? reactions.filter((r) => r.type === hoveredEmotionUser)
@@ -124,6 +126,7 @@ function PostCard({ post, onDeletePost, showComment = false }) {
 
   return (
     <div className="bg-white p-5 rounded-lg shadow-md mb-4 dark:bg-[#1e1e2f] dark:border dark:border-[#2b2b3d]">
+        <ImagePreviewModal />
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2 mb-3">
           <Link
@@ -184,12 +187,13 @@ function PostCard({ post, onDeletePost, showComment = false }) {
           {media.slice(0, 4).map((img, index) => (
             <div
               key={index}
-              className="relative"
+              className="relative cursor-pointer"
               style={{
                 flex:
                   media.length === 1 ? "1 1 100%" : "1 1 calc(50% - 0.5rem)",
                 minHeight: "240px",
               }}
+              onClick={() => openImagePreview(media, index)}
             >
               <img
                 src={`${Config.BACKEND_URL}${img}`}

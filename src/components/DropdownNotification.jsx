@@ -5,10 +5,11 @@ import { useEffect } from "react";
 import SpinnerLoading from "./SpinnerLoading";
 import Config from "../envVars";
 import { formatTime } from "../utils/timeUtils";
+import propTypes from "prop-types";
 
-function DropdownNotification() {
+function DropdownNotification({notifications}) {
   const { markAsAllRead } = useNotificationStore();
-  const { loading, loadMore, hasMore, notifications } = useGetNotifications();
+  const { loading, loadMore, hasMore } = useGetNotifications();
 
   const getLink = (noti) => {
     const enumPostType = ["new_post", "comment_post", "react_post"];
@@ -81,6 +82,10 @@ function DropdownNotification() {
       )}
     </div>
   );
+}
+
+DropdownNotification.propTypes = {
+    notifications: propTypes.array.isRequired
 }
 
 export default DropdownNotification;
