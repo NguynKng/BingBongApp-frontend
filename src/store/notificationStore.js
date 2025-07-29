@@ -7,7 +7,6 @@ const useNotificationStore = create((set, get) => ({
   setUnreadCount: (count) => set({ unreadCount: count }),
   setNotifications: (notifications) => {
     const unread = notifications.filter((n) => !n.isRead).length;
-    console.log("[NotificationStore] Set notifications:", notifications, "Unread count:", unread);  
     set({ notifications, unreadCount: unread });
   },
   addNotification: (notification) => {
