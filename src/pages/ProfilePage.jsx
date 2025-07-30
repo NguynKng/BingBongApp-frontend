@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { ChevronDown, Plus, UserCheck, UserPlus, UserX } from "lucide-react";
+import { ChevronDown, GraduationCap, MapPin, Pencil, Plus, UserCheck, UserPlus, UserX } from "lucide-react";
 import CreateStatus from "../components/CreateStatus";
 import PostCard from "../components/PostCard";
 import { Link, useParams } from "react-router-dom";
@@ -283,10 +283,7 @@ function ProfilePage() {
                             <span>Thêm vào tin</span>
                           </button>
                           <button className="flex lg:gap-2 gap-1 items-center justify-center bg-gray-200 dark:bg-[#23233b] hover:bg-gray-300 dark:hover:bg-[#23233b] cursor-pointer rounded-md py-2 lg:px-4 px-2 text-black dark:text-white font-medium">
-                            <img
-                              src="/pen.png"
-                              className="size-5 object-cover"
-                            />
+                            <Pencil className="size-5" />
                             <span>Chỉnh sửa trang cá nhân</span>
                           </button>
                         </>
@@ -437,13 +434,13 @@ function ProfilePage() {
                 Thêm tiểu sử
               </button>
               <div className="flex gap-2 items-center">
-                <img src="/graduate.png" className="size-5" />
+                <GraduationCap className="size-6 dark:text-gray-400 " />
                 <span className="text-gray-600 dark:text-gray-400">
                   Went to THPT Trần khai Nguyên
                 </span>
               </div>
               <div className="flex gap-2 items-center">
-                <img src="/location-pin.png" className="size-5" />
+                <MapPin className="size-6 dark:text-gray-400" />
                 <span className="text-gray-600 dark:text-gray-400">
                   From Ho Chi Minh City, Vietnam
                 </span>

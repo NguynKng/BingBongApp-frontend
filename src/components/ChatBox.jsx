@@ -8,8 +8,13 @@ import {
   formatTimeToDateAndHour,
   formatTimeToHourMinute,
 } from "../utils/timeUtils";
+import { chatApi } from "../services/api";
+import useChatStore from "../store/chatStore";
+import ReactMarkdown from "react-markdown";
 
 function ChatBox({ onClose, userChat }) {
+  const { addAIMessage } = useChatStore();
+  const [isLoadingAIResponse, setIsLoadingAIResponse] = useState(false);
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const [isMinimized, setIsMinimized] = useState(false);
@@ -17,9 +22,31 @@ function ChatBox({ onClose, userChat }) {
   const messagesEndRef = useRef(null);
   const [isOnline, setIsOnline] = useState(false);
   const { updateMessage } = useGetChats();
+  const isAIChat = userChat?._id === "bingbong-ai";
 
   useEffect(() => {
     if (!socket || !currentUser || !userChat) return;
+    if (isAIChat) {
+      const { AIMessages } = useChatStore.getState();
+      const exists = AIMessages.some((msg) => msg._id === 1);
+
+      if (!exists) {
+        const introMsg = {
+          _id: 1,
+          senderId: "bingbong-ai",
+          receiverId: currentUser._id,
+          text: "Tôi là BingBong AI. Hãy coi tôi như một trợ lý sẵn sàng giúp bạn học hỏi, lập kế hoạch và kết nối. Tôi có thể giúp gì cho bạn hôm nay?",
+          createdAt: new Date(),
+        };
+        addAIMessage(introMsg);
+      }
+
+      // ❗ Luôn lấy lại AIMessages sau khi add
+      const latestAIMessages = useChatStore.getState().AIMessages;
+      setMessages(latestAIMessages);
+      return;
+    }
+
     setIsOnline(onlineUsers.includes(userChat._id));
 
     socket.emit("loadChatHistory", {
@@ -75,13 +102,21 @@ function ChatBox({ onClose, userChat }) {
       socket.off("loadChatHistory", handleLoadHistory);
       socket.off("newMessage");
     };
-  }, [socket, currentUser, userChat, updateMessage, onlineUsers]);
+  }, [
+    socket,
+    currentUser,
+    userChat,
+    updateMessage,
+    onlineUsers,
+    isAIChat,
+    addAIMessage,
+  ]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "auto" });
   }, [messages]);
 
-  const handleSend = useCallback(() => {
+  const handleSend = useCallback(async () => {
     if (!message.trim() || !currentUser || !socket) return;
 
     const data = {
@@ -91,9 +126,30 @@ function ChatBox({ onClose, userChat }) {
       createdAt: new Date(),
     };
 
-    socket.emit("sendMessage", data);
-    setMessage("");
-  }, [message, currentUser, socket, userChat._id]);
+    if (isAIChat) {
+      setIsLoadingAIResponse(true);
+      addAIMessage(data); // Cập nhật vào store
+      setMessages(useChatStore.getState().AIMessages); // Cập nhật UI
+      setMessage("");
+
+      const aiReply = await chatApi.getAIResponse(message);
+      if (aiReply.success) {
+        const aiMessage = {
+          senderId: "bingbong-ai",
+          receiverId: currentUser._id,
+          text: aiReply.data,
+          createdAt: new Date(),
+        };
+        addAIMessage(aiMessage); // Cập nhật vào store
+        setMessages(useChatStore.getState().AIMessages); // Cập nhật UI
+      }
+
+      setIsLoadingAIResponse(false);
+    } else {
+      socket.emit("sendMessage", data);
+      setMessage("");
+    }
+  }, [message, currentUser, socket, userChat._id, isAIChat, addAIMessage]);
 
   const handleMinimize = () => {
     setIsMinimized(!isMinimized);
@@ -103,13 +159,10 @@ function ChatBox({ onClose, userChat }) {
     <div className="fixed right-10 bottom-0 w-88 z-50 transform transition-all duration-300 ease-out hover:scale-[1.01]">
       <div className="rounded-t-xl shadow-xl overflow-hidden bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
         {/* Header */}
-        <div
-          className="px-4 py-2 font-semibold flex justify-between items-center 
-        bg-gradient-to-r from-blue-500 to-purple-500 text-white"
-        >
+        <div className="px-4 py-2 font-semibold flex justify-between items-center bg-gradient-to-r from-blue-500 to-purple-500 text-white">
           <div className="flex items-center gap-2">
             <Link
-              to={`/profile/${userChat._id}`}
+              to={isAIChat ? `#` : `/profile/${userChat._id}`}
               className="relative rounded-full size-10"
             >
               <img
@@ -126,11 +179,16 @@ function ChatBox({ onClose, userChat }) {
             </Link>
             <div>
               <Link
-                to={`/profile/${userChat._id}`}
+                to={isAIChat ? `#` : `/profile/${userChat._id}`}
                 className="text-base text-white"
               >
                 {`${userChat.fullName}`}
               </Link>
+              {isAIChat && (
+                <span className="text-sm text-gray-300 block">
+                  dùng Gemini 2.5
+                </span>
+              )}
               {isOnline && (
                 <span className="text-green-300 block text-[13px]">
                   Đang hoạt động
@@ -215,7 +273,11 @@ function ChatBox({ onClose, userChat }) {
                           overflowWrap: "break-word",
                         }}
                       >
-                        {msg.text}
+                        {isAIChat && msg.senderId === "bingbong-ai" ? (
+                          <ReactMarkdown>{msg.text}</ReactMarkdown>
+                        ) : (
+                          msg.text
+                        )}
                       </div>
                       <span
                         className={`text-xs mt-1 text-gray-400 ${
@@ -229,6 +291,29 @@ function ChatBox({ onClose, userChat }) {
                 </div>
               );
             })}
+            {/* 👇 Hiển thị khi đang đợi AI trả lời */}
+            {isAIChat && isLoadingAIResponse && (
+              <div className="flex gap-2 justify-start items-start">
+                <img
+                  src={`${Config.BACKEND_URL}/images/bingbong-ai.png`}
+                  className="w-8 h-8 rounded-full object-cover"
+                  alt="AI"
+                />
+                <div className="flex flex-col max-w-[75%] self-start items-start">
+                  <div className="px-4 py-2 rounded-2xl text-sm bg-gray-100 dark:bg-[rgb(52,52,52)] text-gray-500 dark:text-gray-300">
+                    <div className="flex space-x-1">
+                      <span className="animate-bounce [animation-delay:-0.3s]">
+                        .
+                      </span>
+                      <span className="animate-bounce [animation-delay:-0.15s]">
+                        .
+                      </span>
+                      <span className="animate-bounce">.</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
 
             <div ref={messagesEndRef} />
           </div>
