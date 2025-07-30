@@ -1,5 +1,6 @@
 import PropTypes from "prop-types";
 import {
+    Earth,
   Ellipsis,
   Heart,
   MessageCircle,
@@ -153,7 +154,7 @@ function PostCard({ post, onDeletePost, showComment = false }) {
             <div className="flex items-center gap-1 text-gray-500 text-sm">
               <span>{formatTime(createdAt)}</span>
               <span className="text-gray-400">•</span>
-              <img src="/globe.png" className="size-4 object-cover" />
+              <Earth className="size-4 dark:text-gray-400" />
             </div>
           </div>
         </div>

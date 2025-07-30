@@ -52,7 +52,8 @@ function ListFriend({ onToggleChat }) {
         <h1 className="text-lg text-gray-600 dark:text-gray-400">Sponsored</h1>
         <div className="mt-1 space-y-2 transition-all duration-700 ease-in-out animate-fade">
           {currentAds.map((ad) => (
-            <Link to={ad.link}
+            <Link
+              to={ad.link}
               key={ad.id}
               className="flex items-center gap-2 p-2 hover:bg-gray-200 rounded-lg transition-all cursor-pointer dark:hover:bg-[rgb(56,56,56)]"
             >
@@ -113,6 +114,23 @@ function ListFriend({ onToggleChat }) {
             )}
             {/* List of Friends */}
             <div className="space-y-2">
+              <div className="flex items-center gap-2 hover:bg-gray-200 rounded-lg px-2 py-2 cursor-pointer transition dark:hover:bg-[rgb(56,56,56)]" onClick={() => onToggleChat({
+                _id: "bingbong-ai",
+                fullName: "BingBong AI",
+                avatar: "/images/bingbong-ai.png",
+              })}>
+                <div className="size-10 relative rounded-full">
+                  <img
+                    src={`${Config.BACKEND_URL}/images/bingbong-ai.png`}
+                    alt={"Chat with BingBong AI"}
+                    className="size-full rounded-full object-cover"
+                  />
+                </div>
+                <h2 className="text-[15px] font-semibold dark:text-white">
+                  {"BingBong AI"}
+                </h2>
+                <img src="/checklist.png" className="size-4 rounded-full object-cover" />
+              </div>
               {sortedFriends.length > 0 ? (
                 sortedFriends.map((friend) => (
                   <div

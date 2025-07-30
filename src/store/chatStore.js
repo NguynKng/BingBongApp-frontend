@@ -1,6 +1,11 @@
 import { create } from "zustand";
 
 const useChatStore = create((set) => ({
+  AIMessages: [],
+  addAIMessage: (message) =>
+    set((state) => ({
+      AIMessages: [...state.AIMessages, message],
+    })),
   messages: [],
   setMessages: (messages) => set({ messages }),
   updateMessage: (newMessage, isSentByMe) =>

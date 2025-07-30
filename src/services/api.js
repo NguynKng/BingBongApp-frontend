@@ -11,7 +11,8 @@ const api = axios.create({
   },
 });
 
-// Authentication services
+
+//AUTH API services
 export const authAPI = {
   // Register a new user
   signup: async (userData) => {
@@ -196,7 +197,7 @@ export const authAPI = {
   },
 };
 
-// User services
+//USER API services
 export const userAPI = {
   getUserPost: async (userId) => {
     try {
@@ -403,6 +404,7 @@ export const userAPI = {
   },
 };
 
+//POST API services
 export const postAPI = {
   createPost: async (postData) => {
     try {
@@ -579,6 +581,7 @@ export const postAPI = {
   },
 };
 
+//CHAT API services
 export const chatApi = {
   getChatList: async () => {
     try {
@@ -598,8 +601,29 @@ export const chatApi = {
       throw error;
     }
   },
+  getAIResponse : async (prompt) => {
+    try {
+      const response = await api.post("/messages/generate-ai-response", {
+        prompt,
+      });
+
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to get AI response";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  }
 };
 
+//QUIZ API services
 export const quizAPI = {
   // Create a new quiz
   createQuiz: async (quizData) => {
@@ -715,6 +739,7 @@ export const quizAPI = {
   },
 };
 
+//NOTIFICATION API services
 export const notificationAPI = {
   getNotifications: async (page = 1) => {
     try {
@@ -754,6 +779,7 @@ export const notificationAPI = {
   },
 };
 
+//NEWS API services
 export const newsApi = {
   getNews: async (page) => {
     try {
