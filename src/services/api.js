@@ -620,6 +620,28 @@ export const chatApi = {
       }
       throw error;
     }
+  },
+  sendMessage : async (data) => {
+    try {
+      const response = await api.post("/messages/send-message", data, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to send message";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
   }
 };
 

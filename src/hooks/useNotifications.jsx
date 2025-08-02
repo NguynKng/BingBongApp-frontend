@@ -38,11 +38,11 @@ export function useGetNotifications() {
   };
 
   useEffect(() => {
-    if (!initialized) {
+    if (!initialized && notifications.length === 0) {
       fetchNotifications(1);
       setInitialized(true);
     }
-  }, [initialized]);
+  }, [initialized, notifications.length]);
 
   return {
     loading,

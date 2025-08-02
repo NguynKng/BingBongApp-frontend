@@ -22,9 +22,14 @@ const useNotificationStore = create((set, get) => ({
     set({ notifications: updatedNotifications, unreadCount: unread });
   },
   markAsAllRead: async () => {
-    const response = await notificationAPI.markAllAsRead();
-    if (response.success) {
-      set({ notifications: response.data, unreadCount: 0 });
+    if (get().unreadCount === 0) return;
+    try {
+      const response = await notificationAPI.markAllAsRead();
+      if (response.success) {
+        set({ notifications: response.data, unreadCount: 0 });
+      }
+    } catch (error) {
+      console.error("Failed to mark all notifications as read", error);
     }
   },
 }));
