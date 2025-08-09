@@ -10,7 +10,6 @@ function DropdownChat({ onToggleChat }) {
   const { messages, loading } = useGetChats();
   const { onlineUsers } = useAuthStore();
   const [searchTerm, setSearchTerm] = useState("");
-  console.log("[MESSAGES]", messages);
 
   const filteredMessages = useMemo(() => {
     return messages.filter((chat) =>
@@ -63,9 +62,7 @@ function DropdownChat({ onToggleChat }) {
       {/* Chat List */}
       <div className="space-y-2 min-h-[28rem] custom-scroll overflow-y-auto pr-1 custom-scrollbar">
         {loading ? (
-          <div className="flex items-center justify-center">
-            <SpinnerLoading />
-          </div>
+          <SpinnerLoading />
         ) : filteredMessages.length > 0 ? (
           filteredMessages.map((chat) => (
             <div

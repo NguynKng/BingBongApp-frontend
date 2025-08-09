@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { notificationAPI } from "../services/api";
 import useNotificationStore from "../store/notificationStore";
+import useAuthStore from "../store/authStore";
 
 export function useGetNotifications() {
+  const { user } = useAuthStore();
   const { setNotifications, appendNotifications, notifications, unreadCount } =
     useNotificationStore();
   const [loading, setLoading] = useState(false);
@@ -11,6 +13,7 @@ export function useGetNotifications() {
   const [initialized, setInitialized] = useState(false); // để đảm bảo chỉ gọi 1 lần
 
   const fetchNotifications = async (currentPage = 1) => {
+    if (!user) return; // không tải nếu chưa đăng nhập
     setLoading(true);
     try {
       const res = await notificationAPI.getNotifications(currentPage);

@@ -11,7 +11,6 @@ const api = axios.create({
   },
 });
 
-
 //AUTH API services
 export const authAPI = {
   // Register a new user
@@ -422,7 +421,7 @@ export const postAPI = {
       console.log(error);
       return {
         success: false,
-        message: "Đã có lỗi xảy ra khi đăng post",
+        message: error.response?.data?.message || "Đã có lỗi xảy ra khi tạo bài viết",
         data: {},
       };
     }
@@ -601,7 +600,7 @@ export const chatApi = {
       throw error;
     }
   },
-  getAIResponse : async (prompt) => {
+  getAIResponse: async (prompt) => {
     try {
       const response = await api.post("/messages/generate-ai-response", {
         prompt,
@@ -621,7 +620,7 @@ export const chatApi = {
       throw error;
     }
   },
-  sendMessage : async (data) => {
+  sendMessage: async (data) => {
     try {
       const response = await api.post("/messages/send-message", data, {
         headers: {
@@ -642,7 +641,25 @@ export const chatApi = {
       }
       throw error;
     }
-  }
+  },
+  getHistoryChat: async (userChatId) => {
+    try {
+      const response = await api.get(`/messages/history/${userChatId}`);
+
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to send message";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
 };
 
 //QUIZ API services
@@ -806,6 +823,46 @@ export const newsApi = {
   getNews: async (page) => {
     try {
       const response = await api.get(`/crawlblog?pageNumber=${page}`);
+
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch news";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+};
+
+//Badges API
+export const badgesAPI = {
+  getAllBadges: async () => {
+    try {
+      const response = await api.get(`/badges`);
+
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch news";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getUserBadgeInventory: async () => {
+    try {
+      const response = await api.get(`/badges/user-inventory`);
 
       if (response.data.success === false) {
         throw new Error(response.data.message);

@@ -1,6 +1,7 @@
 export const socialNavbar = [
     { src: "/newspaper.png", text: "Tin tức công nghệ", description: "Tổ chức hoặc tìm kiếm các sự kiện và hoạt động trực tuyến hoặc gần bạn.", link: "/news" },
     { src: "/star.png", text: "Sự kiện", description: "Tổ chức hoặc tìm kiếm các sự kiện và hoạt động trực tuyến hoặc gần bạn.", link: "#" },
+    { src: "/medal.png", text: "Danh hiệu", description: "Trang bị danh hiệu cho những thành tựu của bạn.", link: "/user/badges" },
     { src: "/two-people.png", text: "Bạn bè", description: "Tìm kiếm bạn bè hoặc những người bạn có thể quen biết.", link: "/friends" },
     { src: "/group.png", text: "Nhóm", description: "Kết nối với những người có cùng sở thích.", link: "#" },
     { src: "/feed.png", text: "Bảng tin", description: "Xem các bài viết từ những người và Trang mà bạn theo dõi.", link: "#" },

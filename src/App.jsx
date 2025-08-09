@@ -18,6 +18,7 @@ import { ProtectedRoute, AuthRoute } from "./middleware/auth";
 import VerifyEmailPage from "./pages/VerifyEmailPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ChangePasswordPage from "./pages/ChangePasswordPage";
+import UserBadgePage from "./pages/UserBadgePage";
 
 function App() {
   const { checkAuth, theme } = useAuthStore();
@@ -157,6 +158,14 @@ function App() {
           element={
             <ProtectedRoute>
               <Leaderboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/user/badges"
+          element={
+            <ProtectedRoute>
+              <MainLayout Element={UserBadgePage} />
             </ProtectedRoute>
           }
         />

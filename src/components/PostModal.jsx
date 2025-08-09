@@ -27,7 +27,11 @@ function PostModal({ onClose, onPostCreated }) {
       const response = await postAPI.createPost(formData);
       if (response.success === true) {
         toast.success(response.message);
+      } else {
+        toast.error(response.message);
+        return; // Dừng nếu có lỗi
       }
+
       if (onPostCreated) {
         onPostCreated(response.post); // Send it back to HomePage
       }
