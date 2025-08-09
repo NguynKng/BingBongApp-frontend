@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import {
-    Earth,
+  Earth,
   Ellipsis,
   Heart,
   MessageCircle,
@@ -11,7 +11,7 @@ import {
 import Config from "../envVars";
 import { formatTime } from "../utils/timeUtils";
 import { Link } from "react-router-dom";
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { postAPI } from "../services/api";
 import SpinnerLoading from "./SpinnerLoading";
 import CommentItem from "./CommentItem";
@@ -26,7 +26,7 @@ function PostCard({ post, onDeletePost, showComment = false }) {
   const [isOpenPostDropdown, setIsOpenPostDropdown] = useState(false);
   const { user } = useAuthStore();
   const { author, createdAt, content, media } = post;
-  const [userComments, setUserComments] = useState([]);
+  const [userComments, setUserComments] = useState(post.comments);
   const [loadingComment, setLoadingComment] = useState(false);
   const [hoveredEmotion, setHoveredEmotion] = useState(null);
   const [hoveredEmotionUser, setHoveredEmotionUser] = useState(null);
@@ -43,25 +43,6 @@ function PostCard({ post, onDeletePost, showComment = false }) {
   );
 
   const isReacted = useMemo(() => !!myReaction, [myReaction]);
-  useEffect(() => {
-    const fetchComments = async () => {
-      setLoadingComment(true);
-      try {
-        const response = await postAPI.getComments(post._id);
-        if (response.success) {
-          setUserComments(response.comments);
-        } else {
-          console.error("Failed to fetch comments:", response.message);
-        }
-      } catch (error) {
-        console.error("Error fetching comments:", error);
-      } finally {
-        setLoadingComment(false);
-      }
-    };
-
-    fetchComments();
-  }, [post._id]);
 
   const handleDeletePost = async () => {
     if (!user) return;
@@ -127,7 +108,7 @@ function PostCard({ post, onDeletePost, showComment = false }) {
 
   return (
     <div className="bg-white p-5 rounded-lg shadow-md mb-4 dark:bg-[#1e1e2f] dark:border dark:border-[#2b2b3d]">
-        <ImagePreviewModal />
+      <ImagePreviewModal />
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2 mb-3">
           <Link
@@ -326,9 +307,7 @@ function PostCard({ post, onDeletePost, showComment = false }) {
           onClick={() => setOpenComment(!openComment)}
         >
           <MessageCircle className="w-5 h-5" />
-          {userComments.length > 0 && (
-            <span>{`${userComments.length}`}</span>
-          )}
+          {userComments.length > 0 && <span>{`${userComments.length}`}</span>}
           <span>Bình luận</span>
         </button>
       </div>

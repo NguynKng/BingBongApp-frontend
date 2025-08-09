@@ -112,7 +112,7 @@ const useAuthStore = create(
             user: null,
             isAuthenticated: false,
             isLoading: false,
-            error: null, // Don't set error for auth check failures
+            error: error.message, // Don't set error for auth check failures
           });
         }
       },

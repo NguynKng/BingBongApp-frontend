@@ -5,7 +5,7 @@ import { postAPI } from "../services/api.js";
 import useAuthStore from "../store/authStore.js";
 
 function PostModal({ onClose, onPostCreated }) {
-    const { user } = useAuthStore();
+  const { user } = useAuthStore();
   const [content, setContent] = useState("");
   const [images, setImages] = useState([]);
   const [imagesPreview, setImagesPreview] = useState([]);
@@ -27,11 +27,14 @@ function PostModal({ onClose, onPostCreated }) {
       const response = await postAPI.createPost(formData);
       if (response.success === true) {
         toast.success(response.message);
+      } else {
+        toast.error(response.message);
+        return; // Dừng nếu có lỗi
       }
-       if (onPostCreated) {
+
+      if (onPostCreated) {
         onPostCreated(response.post); // Send it back to HomePage
       }
-      
 
       setContent("");
       setImages([]);

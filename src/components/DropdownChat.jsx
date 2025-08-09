@@ -62,9 +62,7 @@ function DropdownChat({ onToggleChat }) {
       {/* Chat List */}
       <div className="space-y-2 min-h-[28rem] custom-scroll overflow-y-auto pr-1 custom-scrollbar">
         {loading ? (
-          <div className="flex items-center justify-center">
-            <SpinnerLoading />
-          </div>
+          <SpinnerLoading />
         ) : filteredMessages.length > 0 ? (
           filteredMessages.map((chat) => (
             <div
@@ -74,7 +72,11 @@ function DropdownChat({ onToggleChat }) {
             >
               <div className="relative size-10 rounded-full">
                 <img
-                  src={chat.participant.avatar ? `${Config.BACKEND_URL}${chat.participant.avatar}` : "/user.png"}
+                  src={
+                    chat.participant.avatar
+                      ? `${Config.BACKEND_URL}${chat.participant.avatar}`
+                      : "/user.png"
+                  }
                   alt="user avatar"
                   className="size-full rounded-full object-cover"
                 />
@@ -88,7 +90,9 @@ function DropdownChat({ onToggleChat }) {
                 </h2>
                 <p className="text-xs text-gray-500 truncate dark:text-white">
                   {chat.lastMessage.isSentByMe ? "Bạn: " : ""}
-                  {chat?.lastMessage.text.length > 30
+                  {chat.lastMessage?.media && chat.lastMessage.media.length > 0
+                    ? `đã gửi ${chat.lastMessage.media.length} hình ảnh`
+                    : chat?.lastMessage.text?.length > 30
                     ? `${chat.lastMessage.text.slice(0, 30)}...`
                     : chat.lastMessage.text}
                 </p>
@@ -99,7 +103,9 @@ function DropdownChat({ onToggleChat }) {
             </div>
           ))
         ) : (
-          <p className="text-center text-gray-500 text-sm dark:text-gray-300">Không tìm thấy đoạn chat nào.</p>
+          <p className="text-center text-gray-500 text-sm dark:text-gray-300">
+            Không tìm thấy đoạn chat nào.
+          </p>
         )}
       </div>
     </div>
