@@ -153,6 +153,26 @@ function ChatBox({ onClose, userChat }) {
     );
   };
 
+  const handleToggleCall = () => {
+    if (!socket) return;
+
+    const callId = `${currentUser._id}_${userChat._id}_${Date.now()}`;
+
+    const payload = {
+      to: userChat._id,
+      from: currentUser._id,
+      callId,
+      metadata: {
+        fromName: currentUser.fullName,
+        avatar: currentUser.avatar,
+      },
+    };
+
+    // emit to server — server should forward to callee and also emit "outgoing-call" back to caller
+    socket.emit("call-user", payload);
+    // do not open modal here — IncomingCall listens for "outgoing-call" / "incoming-call"
+  };
+
   return (
     <>
       <ImagePreviewModal />
@@ -199,7 +219,10 @@ function ChatBox({ onClose, userChat }) {
             <div className="flex items-center gap-1">
               {!isAIChat && (
                 <div className="flex items-center gap-1">
-                  <button className="p-1 rounded-full hover:bg-white/20 transition cursor-pointer">
+                  <button
+                    className="p-1 rounded-full hover:bg-white/20 transition cursor-pointer"
+                    onClick={handleToggleCall}
+                  >
                     <Phone className="size-5 fill-white" />
                   </button>
                   <button className="p-1 rounded-full hover:bg-white/20 transition cursor-pointer">
@@ -231,7 +254,7 @@ function ChatBox({ onClose, userChat }) {
             <div className="flex flex-col h-full">
               <div className="flex-1 flex flex-col gap-2 p-2 overflow-y-auto text-sm dark:text-gray-200">
                 {loading ? (
-                     <SpinnerLoading />
+                  <SpinnerLoading />
                 ) : (
                   messages.map((msg, index) => {
                     const isMyMessage = msg.senderId === currentUser?._id;
