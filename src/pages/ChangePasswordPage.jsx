@@ -14,6 +14,7 @@ export default function ChangePasswordPage() {
     if (!password || !confirm) return toast.error("Please fill in all fields");
     if (password !== confirm) return toast.error("Passwords do not match");
     if (password.length < 6) return toast.error("Password too short");
+    console.log("test")
 
     try {
       const res = await authAPI.resetPassword(email, password);
