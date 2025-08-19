@@ -1,5 +1,14 @@
 import { useState, useRef, useEffect } from "react";
-import { ChevronDown, GraduationCap, MapPin, Pencil, Plus, UserCheck, UserPlus, UserX } from "lucide-react";
+import {
+  ChevronDown,
+  GraduationCap,
+  MapPin,
+  Pencil,
+  Plus,
+  UserCheck,
+  UserPlus,
+  UserX,
+} from "lucide-react";
 import CreateStatus from "../components/CreateStatus";
 import PostCard from "../components/PostCard";
 import { Link, useParams } from "react-router-dom";
@@ -193,15 +202,15 @@ function ProfilePage() {
   return (
     <>
       <div className="lg:px-[15%] bg-gray-100 dark:bg-[#181826]">
-        <div className="relative w-full lg:h-[38rem] h-[30rem]">
-          <div className="relative w-full h-[71%] rounded-b-md">
+        <div className="relative w-full">
+          <div className="relative w-full lg:h-[24rem] md:h-[22rem] sm:h-[20rem] h-[18rem] rounded-b-md">
             <img
               src={
                 displayedUser?.coverPhoto
                   ? `${Config.BACKEND_URL}${displayedUser.coverPhoto}`
                   : "/background-gray.avif"
               }
-              className="size-full rounded-b-md object-cover"
+              className="size-full lg:rounded-b-md object-cover"
               alt="Cover photo"
               loading="lazy"
             />
@@ -214,62 +223,59 @@ function ProfilePage() {
             />
             {isMyProfile && (
               <div
-                className="absolute bottom-4 right-8 z-31 flex items-center gap-2 bg-white hover:bg-gray-300 cursor-pointer rounded-md py-2 px-4 text-black font-medium"
+                className="absolute bottom-4 right-4 z-31 flex items-center gap-2 bg-white hover:bg-gray-300 cursor-pointer rounded-md py-2 px-4 text-black font-medium"
                 onClick={() => coverPhotoInputRef.current.click()}
               >
                 <img src="/camera.png" className="size-4 object-cover" />
-                <span>
+                <span className="lg:inline hidden">
                   {isUploading.coverPhoto ? "Uploading..." : "Thay ảnh bìa"}
                 </span>
               </div>
             )}
-          </div>
-          <div className="absolute w-full -bottom-1">
-            <div className="relative w-full">
-              <div className="absolute top-0 w-full bg-gradient-to-t from-black/50 to-transparent h-[30%] rounded-md"></div>
-              <div className="px-8">
-                <div className="flex lg:flex-row flex-col lg:justify-between justify-center lg:items-end items-center border-b-2 border-gray-200 dark:border-[#2b2b3d] pb-4">
-                  <div className="flex lg:flex-row flex-col gap-2 justify-center items-center">
-                    <div className="relative bg-gray-200 dark:bg-[#23233b] hover:bg-gray-300 dark:hover:bg-[#23233b] rounded-full size-46 flex border-4 border-white items-center justify-center">
-                      <img
-                        src={
-                          displayedUser?.avatar
-                            ? `${Config.BACKEND_URL}${displayedUser.avatar}`
-                            : "/user.png"
-                        }
-                        className="size-full rounded-full object-cover cursor-pointer hover:opacity-70"
-                        alt="Avatar"
-                      />
-                      <input
-                        type="file"
-                        ref={avatarInputRef}
-                        onChange={handleAvatarUpload}
-                        accept="image/*"
-                        className="hidden"
-                      />
-                      {isMyProfile && (
-                        <div
-                          className="absolute bottom-4 right-0 p-2 size-9 rounded-full bg-gray-200 hover:bg-gray-300 cursor-pointer"
-                          onClick={() => avatarInputRef.current.click()}
-                        >
-                          {isUploading.avatar ? (
-                            <div className="size-full flex items-center justify-center">
-                              <div className="w-4 h-4 border-2 border-gray-600 border-t-transparent rounded-full animate-spin"></div>
-                            </div>
-                          ) : (
-                            <img
-                              src="/camera.png"
-                              className="size-full object-cover"
-                            />
-                          )}
-                        </div>
-                      )}
+            <div className="absolute bottom-0 w-full bg-gradient-to-t from-black/50 to-transparent h-[30%] rounded-md"></div>
+            <div className="absolute bottom-0 lg:translate-y-1/2 translate-y-1/5 lg:left-10 left-4 bg-gray-200 dark:bg-[#23233b] hover:bg-gray-300 dark:hover:bg-[#23233b] rounded-full size-46 flex border-4 border-white items-center justify-center">
+              <img
+                src={
+                  displayedUser?.avatar
+                    ? `${Config.BACKEND_URL}${displayedUser.avatar}`
+                    : "/user.png"
+                }
+                className="size-full rounded-full object-cover cursor-pointer hover:opacity-70"
+                alt="Avatar"
+              />
+              <input
+                type="file"
+                ref={avatarInputRef}
+                onChange={handleAvatarUpload}
+                accept="image/*"
+                className="hidden"
+              />
+              {isMyProfile && (
+                <div
+                  className="absolute bottom-4 right-0 p-2 size-9 rounded-full bg-gray-200 hover:bg-gray-300 cursor-pointer"
+                  onClick={() => avatarInputRef.current.click()}
+                >
+                  {isUploading.avatar ? (
+                    <div className="size-full flex items-center justify-center">
+                      <div className="w-4 h-4 border-2 border-gray-600 border-t-transparent rounded-full animate-spin"></div>
                     </div>
-                    <div className="flex flex-col justify-center lg:items-start items-center self-end py-4 px-2">
-                      <h1 className="text-3xl font-bold text-center bg-white/80 dark:bg-[#23233b]/80 lg:bg-transparent px-2 rounded dark:text-white">
+                  ) : (
+                    <img src="/camera.png" className="size-full object-cover" />
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+          <div className="w-full">
+            <div className="relative w-full">
+              <div className="lg:px-8 px-4">
+                <div className="flex lg:flex-row flex-col lg:justify-between justify-center lg:items-end items-start border-b-2 border-gray-200 dark:border-[#2b2b3d] lg:pb-4 pb-1 lg:pl-[13rem] lg:pt-4 pt-10">
+                  <div className="flex lg:flex-row flex-col gap-2 justify-center items-center self-start">
+                    <div className="flex flex-col justify-center items-start self-end">
+                      <h1 className="text-3xl font-bold not-[]:rounded dark:text-white">
                         {displayedUser?.fullName || "Loading..."}
                       </h1>
-                      <p className="text-gray-500 text-center dark:text-gray-400 bg-white/80 dark:bg-[#23233b]/80 lg:bg-transparent px-2 rounded">{`${
+                      <p className="text-gray-500 dark:text-gray-400 rounded">{`${
                         displayedUser.friends.length || 0
                       } người bạn`}</p>
                     </div>
@@ -423,7 +429,7 @@ function ProfilePage() {
         </div>
       </div>
 
-      <section className="bg-gray-200 dark:bg-[#181826] lg:px-[17%] md:px-[10%] px-2 py-4 min-h-screen">
+      <section className="bg-gray-200 dark:bg-[#181826] lg:px-[17%] px-2 py-4 min-h-screen">
         <div className="flex lg:flex-row flex-col gap-4">
           <div className="lg:w-[40%] w-full space-y-4 lg:sticky top-[8.5vh] h-fit">
             <div className="rounded-md bg-white dark:bg-[#1e1e2f] border-2 border-gray-200 dark:border-[#2b2b3d] p-4 space-y-4">
