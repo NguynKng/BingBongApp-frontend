@@ -7,11 +7,14 @@ import useAuthStore from "../store/authStore";
 import useNotificationStore from "../store/notificationStore";
 import NotificationPopup from "./NotificationPopup";
 import { useCallback } from "react";
+import IncomingCall from "./IncomingCall";
 
 function MainLayout({ Element }) {
   const { addNotification } = useNotificationStore();
   const { socket, updateUser, user } = useAuthStore();
   const [showChat, setShowChat] = useState(false);
+  const [incomingCallOpen, setIncomingCallOpen] = useState(false);
+  const [incomingPeer, setIncomingPeer] = useState(null);
   const [activeChatUser, setActiveChatUser] = useState();
 
   const [popup, setPopup] = useState({
@@ -45,10 +48,10 @@ function MainLayout({ Element }) {
         });
       }
 
-      if(notification.type === "accepted_request") {
+      if (notification.type === "accepted_request") {
         const newFriends = [...user.friends, notification.actor._id];
         updateUser({
-          friends: newFriends
+          friends: newFriends,
         });
       }
       addNotification(notification);
@@ -108,16 +111,29 @@ function MainLayout({ Element }) {
     };
   }, [socket, handleGetNewMessage, handleGetNotificationsAndPopup]);
 
+  const inComingCallHandler = ({ isOpen = false, user = null }) => {
+    setIncomingCallOpen(isOpen);
+    setIncomingPeer(user);
+  };
+
   return (
     <>
       <Meta title={`BingBong`} />
       <Header onToggleChat={handleToggleChat} />
       <div className="relative mt-[64px] bg-gradient-to-br from-[#f0f4ff] to-[#fff1f7] dark:from-[#1c1f2a] dark:to-[#2a2e3d] min-h-[92vh]">
         <Element />
-        {showChat && (
-          <ChatBox userChat={activeChatUser} onClose={handleCloseChat} />
-        )}
       </div>
+      <IncomingCall
+        visible={incomingCallOpen}
+        setVisible={setIncomingCallOpen}
+        callerPeer={incomingPeer}
+      />
+      {showChat && (
+        <ChatBox
+          userChat={activeChatUser}
+          onClose={handleCloseChat}
+        />
+      )}
       {popup.isPopup && (
         <NotificationPopup content={popup.content} onClose={handleClosePopup} />
       )}
