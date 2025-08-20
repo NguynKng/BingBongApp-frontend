@@ -116,7 +116,6 @@ const useAuthStore = create(
             isLoading: false,
             error: error.message,
           });
-          toast.error(`loi server ${Config.BACKEND_URL}`)
           // Toast is already shown in the API service
           throw error;
         }

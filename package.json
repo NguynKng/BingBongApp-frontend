@@ -10,8 +10,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
+    "@esbuild-plugins/node-modules-polyfill": "^0.2.2",
     "@tailwindcss/vite": "^4.0.15",
     "axios": "^1.9.0",
+    "crypto-browserify": "^3.12.1",
     "framer-motion": "^12.12.1",
     "frontend": "file:",
     "lodash.debounce": "^4.0.8",
@@ -23,11 +26,14 @@
     "react-hot-toast": "^2.5.2",
     "react-markdown": "^10.1.0",
     "react-router-dom": "^7.4.0",
+    "simple-peer": "^9.11.1",
     "socket.io-client": "^4.8.1",
+    "stream-browserify": "^3.0.0",
     "sweetalert2": "^11.21.2",
     "tailwind-scrollbar-hide": "^2.0.0",
     "tailwindcss": "^4.0.15",
     "uuid": "^11.1.0",
+    "vite-plugin-node-polyfills": "^0.24.0",
     "zustand": "^5.0.3"
   },
   "devDependencies": {

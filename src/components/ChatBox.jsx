@@ -163,7 +163,7 @@ function ChatBox({ onClose, userChat }) {
       from: currentUser._id,
       callId,
       metadata: {
-        fromName: currentUser.fullName,
+        fullName: currentUser.fullName,
         avatar: currentUser.avatar,
       },
     };
@@ -176,7 +176,7 @@ function ChatBox({ onClose, userChat }) {
   return (
     <>
       <ImagePreviewModal />
-      <div className="fixed right-10 bottom-0 w-92 z-50 transform transition-all duration-300 ease-out hover:scale-[1.01]">
+      <div className="fixed right-10 bottom-0 lg:w-92 z-50 transform transition-all duration-300 ease-out hover:scale-[1.01]">
         <div className="rounded-t-xl shadow-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
           {/* Header */}
           <div className="p-2 font-semibold rounded-t-xl flex justify-between items-center bg-gradient-to-r from-blue-500 to-purple-500 text-white">
