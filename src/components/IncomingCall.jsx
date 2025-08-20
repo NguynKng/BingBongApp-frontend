@@ -2,7 +2,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import useAuthStore from "../store/authStore";
 import CallWindow from "./CallWIndow";
-import { v4 as uuidv4 } from "uuid";
 import Config from "../envVars";
 
 export default function IncomingCall() {
@@ -21,13 +20,12 @@ export default function IncomingCall() {
 
     // ---------- Handlers ----------
     const handleIncomingCall = ({ from, callId: incomingCallId, metadata }) => {
-      // CALLEE receives incoming-call
       setMode("incoming");
       setCallId(incomingCallId);
       setPeer({
         _id: from,
-        fullName: metadata?.fromName || from,
-        avatar: metadata?.avatar || "",
+        fullName: metadata?.fullName,
+        avatar: metadata?.avatar,
       });
       setStatus("ringing");
       setVisible(true);
@@ -58,16 +56,8 @@ export default function IncomingCall() {
       setCallId(outgoingCallId);
       setPeer({
         _id: to,
-        fullName:
-          metadata?.toName ||
-          metadata?.calleeName ||
-          metadata?.fromName ||
-          "Unknown",
-        avatar:
-          metadata?.toAvatar ||
-          metadata?.calleeAvatar ||
-          metadata?.avatar ||
-          "",
+        fullName: metadata?.fullName,
+        avatar: metadata?.avatar,
       });
       setStatus("calling");
       setVisible(true);
@@ -83,14 +73,13 @@ export default function IncomingCall() {
     };
 
     const handleCallAccepted = ({ from, callId: acceptedId, metadata }) => {
-      // A callee accepted; if acceptedId matches current callId -> open CallWindow
       if (!acceptedId) return;
       if (acceptedId !== callId) return;
       setStatus("connected");
       setPeer({
-        _id: from,
-        fullName: metadata?.fromName || from,
-        avatar: metadata?.avatar || "",
+        _id: metadata?._id,
+        fullName: metadata?.fullName,
+        avatar: metadata?.avatar,
       });
       // keep modal visible and render CallWindow
     };
@@ -139,7 +128,11 @@ export default function IncomingCall() {
         to: peer._id /* caller id */,
         from: currentUser._id,
         callId,
-        metaData: currentUser
+        metadata: {
+          _id: currentUser._id,
+          fullName: currentUser.fullName,
+          avatar: currentUser.avatar,
+        },
       });
       setStatus("connected");
       if (timeoutRef.current) {
