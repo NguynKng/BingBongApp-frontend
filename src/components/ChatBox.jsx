@@ -166,6 +166,10 @@ function ChatBox({ onClose, userChat }) {
         fullName: currentUser.fullName,
         avatar: currentUser.avatar,
       },
+      toData: {
+        fullName: userChat.fullName,
+        avatar: userChat.avatar,
+      },
     };
 
     // emit to server — server should forward to callee and also emit "outgoing-call" back to caller

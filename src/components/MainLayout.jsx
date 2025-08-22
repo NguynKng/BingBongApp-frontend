@@ -13,8 +13,6 @@ function MainLayout({ Element }) {
   const { addNotification } = useNotificationStore();
   const { socket, updateUser, user } = useAuthStore();
   const [showChat, setShowChat] = useState(false);
-  const [incomingCallOpen, setIncomingCallOpen] = useState(false);
-  const [incomingPeer, setIncomingPeer] = useState(null);
   const [activeChatUser, setActiveChatUser] = useState();
 
   const [popup, setPopup] = useState({
@@ -111,11 +109,6 @@ function MainLayout({ Element }) {
     };
   }, [socket, handleGetNewMessage, handleGetNotificationsAndPopup]);
 
-  const inComingCallHandler = ({ isOpen = false, user = null }) => {
-    setIncomingCallOpen(isOpen);
-    setIncomingPeer(user);
-  };
-
   return (
     <>
       <Meta title={`BingBong`} />
@@ -124,9 +117,6 @@ function MainLayout({ Element }) {
         <Element />
       </div>
       <IncomingCall
-        visible={incomingCallOpen}
-        setVisible={setIncomingCallOpen}
-        callerPeer={incomingPeer}
       />
       {showChat && (
         <ChatBox

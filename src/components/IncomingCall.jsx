@@ -1,25 +1,26 @@
 // components/IncomingCall.jsx
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import useAuthStore from "../store/authStore";
 import CallWindow from "./CallWIndow";
 import Config from "../envVars";
+import { Ringtone } from "../utils/ringtone";
 
 export default function IncomingCall() {
   const socket = useAuthStore((s) => s.socket);
   const currentUser = useAuthStore((s) => s.user);
 
   const [visible, setVisible] = useState(false);
-  const [mode, setMode] = useState(null); // "outgoing" | "incoming" | null
+  const [mode, setMode] = useState(null);
   const [callId, setCallId] = useState(null);
-  const [peer, setPeer] = useState(null); // { _id, fullName, avatar }
-  const [status, setStatus] = useState("idle"); // idle|calling|ringing|connected|rejected|timeout|error
-  const timeoutRef = useRef(null);
+  const [peer, setPeer] = useState(null);
+  const [status, setStatus] = useState("idle");
 
   useEffect(() => {
     if (!socket) return;
 
     // ---------- Handlers ----------
     const handleIncomingCall = ({ from, callId: incomingCallId, metadata }) => {
+      Ringtone.play();
       setMode("incoming");
       setCallId(incomingCallId);
       setPeer({
@@ -29,71 +30,54 @@ export default function IncomingCall() {
       });
       setStatus("ringing");
       setVisible(true);
-
-      // start timeout (30s)
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-      timeoutRef.current = setTimeout(() => {
-        if (status === "ringing") {
-          setStatus("timeout");
-          try {
-            socket.emit("reject-call", {
-              to: from,
-              from: currentUser?._id,
-              callId: incomingCallId,
-              reason: "no-answer",
-            });
-          } catch (e) {}
-          // auto close shortly
-          setTimeout(() => setVisible(false), 900);
-        }
-      }, 30000);
     };
 
-    const handleCallInitiated = ({ to, callId: outgoingCallId, metadata }) => {
-      // CALLER receives call-initiated (server echo) -> show outgoing UI
-      // Here `to` is callee id; caller is currentUser
+    const handleCallInitiated = ({ to, callId: outgoingCallId, toData }) => {
+      Ringtone.play();
       setMode("outgoing");
-      setCallId(outgoingCallId);
       setPeer({
         _id: to,
-        fullName: metadata?.fullName,
-        avatar: metadata?.avatar,
+        fullName: toData?.fullName,
+        avatar: toData?.avatar,
       });
+      setCallId(outgoingCallId);
       setStatus("calling");
       setVisible(true);
-
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-      timeoutRef.current = setTimeout(() => {
-        if (status === "calling") {
-          setStatus("timeout");
-          // keep modal for a moment then close
-          setTimeout(() => setVisible(false), 900);
-        }
-      }, 30000);
     };
 
     const handleCallAccepted = ({ from, callId: acceptedId, metadata }) => {
       if (!acceptedId) return;
       if (acceptedId !== callId) return;
+      Ringtone.stop()
       setStatus("connected");
       setPeer({
         _id: metadata?._id,
         fullName: metadata?.fullName,
         avatar: metadata?.avatar,
       });
-      // keep modal visible and render CallWindow
-    };
-
-    const handleCallRejected = ({ from, callId: rejectedId, reason }) => {
-      if (rejectedId !== callId) return;
-      setStatus("rejected");
-      // small delay so user sees reason
-      setTimeout(() => setVisible(false), 900);
     };
 
     const handleCallTimeout = ({ callId: timeoutId }) => {
       if (timeoutId !== callId) return;
       setStatus("timeout");
+      Ringtone.stop();
+      setTimeout(() => setVisible(false), 2000);
+    };
+
+    const handleEndCall = ({ from }) => {
+      if (from !== currentUser._id) return;
+      setVisible(false);
+      setMode(null);
+      setCallId(null);
+      setPeer(null);
+      setStatus("idle");
+    };
+
+    const handleCallRejected = ({ from, callId: rejectedId, reason }) => {
+      if (rejectedId !== callId) return;
+      setStatus("rejected");
+      Ringtone.stop();
+      // small delay so user sees reason
       setTimeout(() => setVisible(false), 900);
     };
 
@@ -103,7 +87,7 @@ export default function IncomingCall() {
     socket.on("call-accepted", handleCallAccepted);
     socket.on("call-rejected", handleCallRejected);
     socket.on("call-timeout", handleCallTimeout);
-
+    socket.on("end-call", handleEndCall);
     return () => {
       // cleanup
       socket.off("incoming-call", handleIncomingCall);
@@ -111,18 +95,15 @@ export default function IncomingCall() {
       socket.off("call-accepted", handleCallAccepted);
       socket.off("call-rejected", handleCallRejected);
       socket.off("call-timeout", handleCallTimeout);
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-        timeoutRef.current = null;
-      }
+      socket.off("end-call", handleEndCall);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [socket, currentUser, callId, status]);
 
   // ---------- Actions ----------
   const accept = () => {
     if (!socket || !peer || !callId || !currentUser) return;
     try {
+      Ringtone.stop();
       // notify server (server will forward call-accepted to caller)
       socket.emit("accept-call", {
         to: peer._id /* caller id */,
@@ -135,10 +116,6 @@ export default function IncomingCall() {
         },
       });
       setStatus("connected");
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-        timeoutRef.current = null;
-      }
     } catch (e) {
       console.error("accept emit failed", e);
       setStatus("error");
@@ -148,6 +125,7 @@ export default function IncomingCall() {
   const reject = () => {
     if (!socket || !peer || !callId || !currentUser) return;
     try {
+      Ringtone.stop();
       socket.emit("reject-call", {
         to: peer._id /* caller */,
         from: currentUser._id,
@@ -155,10 +133,6 @@ export default function IncomingCall() {
         reason: "rejected",
       });
       setStatus("rejected");
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-        timeoutRef.current = null;
-      }
       setTimeout(() => setVisible(false), 600);
     } catch (e) {
       console.error("reject emit failed", e);
@@ -172,6 +146,7 @@ export default function IncomingCall() {
       return;
     }
     try {
+      Ringtone.stop();
       socket.emit("reject-call", {
         to: peer._id /* callee */,
         from: currentUser._id,
@@ -180,10 +155,6 @@ export default function IncomingCall() {
       });
     } catch (e) {}
     setStatus("rejected");
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-      timeoutRef.current = null;
-    }
     setTimeout(() => setVisible(false), 400);
   };
 
@@ -210,10 +181,18 @@ export default function IncomingCall() {
             {mode === "outgoing"
               ? status === "calling"
                 ? "Đang gọi…"
+                : status === "timeout"
+                ? "Không có phản hồi"
+                : status === "rejected"
+                ? "Đã bị từ chối"
                 : status
               : mode === "incoming"
               ? status === "ringing"
                 ? "Cuộc gọi đến"
+                : status === "timeout"
+                ? "Người gọi đã ngắt"
+                : status === "rejected"
+                ? "Bạn đã từ chối"
                 : status
               : "Cuộc gọi"}
           </h3>

@@ -17,6 +17,7 @@
     "crypto-browserify": "^3.12.1",
     "framer-motion": "^12.12.1",
     "frontend": "file:",
+    "howler": "^2.2.4",
     "lodash.debounce": "^4.0.8",
     "lucide-react": "^0.483.0",
     "prop-types": "^15.8.1",
