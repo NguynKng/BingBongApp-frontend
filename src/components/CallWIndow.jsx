@@ -828,7 +828,7 @@ export default function CallWindow({
 
         <button
           onClick={endCall}
-          className="p-4 bg-red-600 rounded-full hover:bg-red-700"
+          className="p-4 bg-red-600 rounded-full hover:bg-red-700 cursor-pointer"
           title="Kết thúc"
         >
           <PhoneOff className="text-white" />
