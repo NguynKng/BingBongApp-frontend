@@ -62,7 +62,7 @@ export const useImagePreview = () => {
 
       {/* Nút đóng */}
       <button
-        className="absolute top-4 right-4 size-10 bg-red-500 text-white p-2 rounded-full cursor-pointer flex items-center justify-center z-50"
+        className="absolute top-4 right-4 text-2xl hover:scale-130 transform transition-all bg-transparent text-white rounded-full cursor-pointer flex items-center justify-center z-50"
         onClick={closeImagePreview}
       >
         <X />

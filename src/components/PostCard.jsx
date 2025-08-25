@@ -162,7 +162,7 @@ function PostCard({ post, onDeletePost, showComment = false }) {
         )}
       </div>
 
-      <p className="text-gray-800 mb-3 dark:text-white">{content}</p>
+      <p className="text-gray-800 mb-3 dark:text-white break-words whitespace-pre-wrap">{content}</p>
 
       {media && media.length > 0 && (
         <div className="flex flex-wrap gap-2 mt-3">
