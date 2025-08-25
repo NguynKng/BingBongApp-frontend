@@ -36,7 +36,7 @@ function Navbar() {
   useEffect(() => {
     const interval = setInterval(() => {
       setHighlightIndex((prev) => (prev + 1) % visibleItems.length);
-    }, 2000);
+    }, 4000);
 
     return () => clearInterval(interval);
   }, [visibleItems.length]);
