@@ -880,5 +880,26 @@ export const badgesAPI = {
   },
 };
 
+export const translateAPI = {
+  translateText: async (text, to) => {
+    try {
+      const response = await api.post("/translate", { text, to });
+
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to translate text";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+};
+
 // Export the axios instance for use in other API services
 export default api;
