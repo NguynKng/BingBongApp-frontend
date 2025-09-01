@@ -4,7 +4,6 @@ import PropTypes from "prop-types";
 import { CaptionsProvider } from "./Caption/CaptionContext";
 import CaptionToggle from "./Caption/CaptionToggle";
 import RemoteCaption from "./Caption/RemoteCaption";
-import LocalCaption from "./Caption/LocalCaption";
 import SimplePeer from "simple-peer";
 import {
   Mic,
@@ -450,6 +449,9 @@ export default function CallWindow({
           audioOn: true,
         });
       } catch (e) {}
+      try {
+        window.dispatchEvent(new Event('captions:mic-on'));
+      } catch (e) {}
     } catch (err) {
       console.error("enableMic error", err);
       toast.error("Không thể bật mic (permission/error).");
@@ -509,6 +511,9 @@ export default function CallWindow({
         userId: currentUser._id,
         audioOn: false,
       });
+    } catch (e) {}
+    try {
+      window.dispatchEvent(new Event('captions:mic-off'));
     } catch (e) {}
   }
 
@@ -700,7 +705,7 @@ export default function CallWindow({
         <img
           src={`${Config.BACKEND_URL}${userCall.avatar}`}
           alt={userCall.fullName}
-          className="w-8 h-8 rounded-full"
+          className="w-8 h-8 rounded-full object-cover"
         />
         <span>{userCall.fullName}</span>
         {hasRemoteMuted ? (
@@ -719,7 +724,7 @@ export default function CallWindow({
       </button>
 
       <div className="flex-1 flex items-center justify-center w-full">
-        <div className="w-3/4 h-3/4 bg-black rounded-2xl relative overflow-hidden flex items-center justify-center">
+        <div className="w-[95%] h-[85%] bg-black rounded-2xl relative overflow-hidden flex items-center justify-center">
           {/* REMOTE AREA: keep fixed box so layout never jumps */}
           <div className="absolute inset-0 flex items-center justify-center">
             {/* Video always present, but toggle visibility via opacity -> prevents layout change */}
@@ -760,7 +765,7 @@ export default function CallWindow({
           </div>
 
           {/* LOCAL PREVIEW in corner; keep box size stable */}
-          <div className="absolute bottom-4 right-4 w-36 h-24 overflow-hidden rounded-lg border-2 border-white bg-black">
+          <div className="absolute bottom-4 right-4 w-44 h-32 overflow-hidden rounded-lg border-2 border-white bg-black">
             <video
               ref={localVideoRef}
               autoPlay
@@ -778,7 +783,7 @@ export default function CallWindow({
                       : "/user.png"
                   }
                   alt={currentUser?.fullName}
-                  className="w-20 h-16 object-cover rounded-md"
+                  className="w-16 h-16 object-cover rounded-full"
                 />
               </div>
             )}
@@ -786,60 +791,61 @@ export default function CallWindow({
         </div>
       </div>
 
-      <CaptionsProvider callId={callId} peerUserId={userCall._id}>
-        <LocalCaption />
-        <RemoteCaption />
-        {/* Controls always visible */}
-        <div className="flex items-center justify-center gap-3 mb-8">
-          <button
-            onClick={toggleMic}
-            className="p-4 bg-gray-700 rounded-full cursor-pointer hover:bg-gray-600"
-            title={micOn ? "Tắt mic" : "Bật mic"}
-          >
-            {micOn ? (
-              <Mic className="text-white" />
-            ) : (
-              <MicOff className="text-red-400" />
-            )}
-          </button>
+      <div>
+        <CaptionsProvider callId={callId} peerUserId={userCall._id}>
+          <RemoteCaption />
+          {/* Controls always visible */}
+          <div className="flex flex-wrap items-center justify-center gap-3 mb-8">
+            <button
+              onClick={toggleMic}
+              className="p-4 bg-gray-700 rounded-full cursor-pointer hover:bg-gray-600"
+              title={micOn ? "Tắt mic" : "Bật mic"}
+            >
+              {micOn ? (
+                <Mic className="text-white" />
+              ) : (
+                <MicOff className="text-red-400" />
+              )}
+            </button>
 
-          <button
-            onClick={toggleVideo}
-            className="p-4 bg-gray-700 rounded-full cursor-pointer hover:bg-gray-600"
-            title={videoOn ? "Tắt camera" : "Bật camera"}
-          >
-            {videoOn ? (
-              <Video className="text-white" />
-            ) : (
-              <VideoOff className="text-red-400" />
-            )}
-          </button>
-          <CaptionToggle />
-          <button
-            onClick={shareScreen}
-            className="p-4 bg-gray-700 rounded-full hover:bg-gray-600"
-            title="Chia sẻ màn hình"
-          >
-            <MonitorUp className="text-white" />
-          </button>
+            <button
+              onClick={toggleVideo}
+              className="p-4 bg-gray-700 rounded-full cursor-pointer hover:bg-gray-600"
+              title={videoOn ? "Tắt camera" : "Bật camera"}
+            >
+              {videoOn ? (
+                <Video className="text-white" />
+              ) : (
+                <VideoOff className="text-red-400" />
+              )}
+            </button>
+            <CaptionToggle />
+            <button
+              onClick={shareScreen}
+              className="p-4 bg-gray-700 rounded-full hover:bg-gray-600"
+              title="Chia sẻ màn hình"
+            >
+              <MonitorUp className="text-white" />
+            </button>
 
-          <button
-            onClick={sendMessage}
-            className="p-4 bg-gray-700 rounded-full hover:bg-gray-600"
-            title="Gửi tin nhanh (datachannel)"
-          >
-            <MessageSquare className="text-white" />
-          </button>
+            <button
+              onClick={sendMessage}
+              className="p-4 bg-gray-700 rounded-full hover:bg-gray-600"
+              title="Gửi tin nhanh (datachannel)"
+            >
+              <MessageSquare className="text-white" />
+            </button>
 
-          <button
-            onClick={endCall}
-            className="p-4 bg-red-600 rounded-full hover:bg-red-700 cursor-pointer"
-            title="Kết thúc"
-          >
-            <PhoneOff className="text-white" />
-          </button>
-        </div>
-      </CaptionsProvider>
+            <button
+              onClick={endCall}
+              className="p-4 bg-red-600 rounded-full hover:bg-red-700 cursor-pointer"
+              title="Kết thúc"
+            >
+              <PhoneOff className="text-white" />
+            </button>
+          </div>
+        </CaptionsProvider>
+      </div>
     </div>
   );
 }
