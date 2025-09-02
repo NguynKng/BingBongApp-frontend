@@ -2,9 +2,7 @@ import PropTypes from "prop-types";
 import {
   Earth,
   Ellipsis,
-  Heart,
   MessageCircle,
-  Send,
   ThumbsUp,
   Trash2,
 } from "lucide-react";
@@ -19,7 +17,7 @@ import CommentInput from "./CommentInput";
 import useAuthStore from "../store/authStore";
 import emotions from "../data/emotion";
 import { toast } from "react-hot-toast";
-import { useImagePreview } from "../hooks/useImagePreview";
+import InstagramCarousel from "./InstagramCarousel";
 
 function PostCard({ post, onDeletePost, showComment = false }) {
   const [openComment, setOpenComment] = useState(showComment);
@@ -27,11 +25,9 @@ function PostCard({ post, onDeletePost, showComment = false }) {
   const { user } = useAuthStore();
   const { author, createdAt, content, media } = post;
   const [userComments, setUserComments] = useState(post.comments);
-  const [loadingComment, setLoadingComment] = useState(false);
   const [hoveredEmotion, setHoveredEmotion] = useState(null);
   const [hoveredEmotionUser, setHoveredEmotionUser] = useState(null);
   const [reactions, setReactions] = useState(post.reactions);
-  const { openImagePreview, ImagePreviewModal } = useImagePreview();
 
   const filteredReactions = hoveredEmotionUser
     ? reactions.filter((r) => r.type === hoveredEmotionUser)
@@ -107,10 +103,9 @@ function PostCard({ post, onDeletePost, showComment = false }) {
   }
 
   return (
-    <div className="bg-white p-5 rounded-lg shadow-md mb-4 dark:bg-[#1e1e2f] dark:border dark:border-[#2b2b3d]">
-      <ImagePreviewModal />
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-2 mb-3">
+    <div className="bg-white py-5 rounded-xl shadow-md mb-4 dark:bg-[#1e1e2f] dark:border dark:border-[#2b2b3d]">
+      <div className="flex items-center justify-between mb-2 px-5">
+        <div className="flex items-center gap-2">
           <Link
             to={`/profile/${author._id}`}
             className="w-10 h-10 rounded-full"
@@ -162,39 +157,14 @@ function PostCard({ post, onDeletePost, showComment = false }) {
         )}
       </div>
 
-      <p className="text-gray-800 mb-3 dark:text-white break-words whitespace-pre-wrap">{content}</p>
+      <p className="text-gray-800 dark:text-white break-words whitespace-pre-wrap px-5">
+        {content}
+      </p>
 
-      {media && media.length > 0 && (
-        <div className="flex flex-wrap gap-2 mt-3">
-          {media.slice(0, 4).map((img, index) => (
-            <div
-              key={index}
-              className="relative cursor-pointer"
-              style={{
-                flex:
-                  media.length === 1 ? "1 1 100%" : "1 1 calc(50% - 0.5rem)",
-                minHeight: "240px",
-              }}
-              onClick={() => openImagePreview(media, index)}
-            >
-              <img
-                src={`${Config.BACKEND_URL}${img}`}
-                alt={`post-img-${index}`}
-                className="w-full h-full object-cover rounded-lg"
-              />
+      <InstagramCarousel media={media} />
 
-              {/* If more than 4 images, show a "+n" on the last visible one */}
-              {index === 3 && media.length > 4 && (
-                <div className="absolute inset-0 bg-black/50 text-white text-2xl font-bold flex items-center justify-center rounded-lg">
-                  +{media.length - 4}
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
       {reactions.length > 0 && (
-        <div className="flex items-center mt-2">
+        <div className="flex items-center mt-3 px-5">
           <div className="flex items-center relative group">
             {emotions.reduce((acc, emotion) => {
               if (reactions.some((r) => r.type === emotion.name)) {
@@ -235,7 +205,7 @@ function PostCard({ post, onDeletePost, showComment = false }) {
           </span>
         </div>
       )}
-      <div className="flex items-center justify-between pt-3">
+      <div className="flex items-center justify-between pt-3 px-5">
         <div className="flex items-center text-gray-600 hover:text-red-400 transition cursor-pointer relative group">
           {!isReacted ? (
             <button
@@ -321,24 +291,20 @@ function PostCard({ post, onDeletePost, showComment = false }) {
             }
           />
           <div className="mt-6 space-y-2">
-            {loadingComment ? (
-              <SpinnerLoading />
-            ) : (
-              userComments.map((comment) => (
-                <CommentItem
-                  key={comment._id}
-                  comment={comment}
-                  postAuthorId={author._id}
-                  postId={post._id}
-                  onRefresh={async () => {
-                    const refreshed = await postAPI.getComments(post._id);
-                    if (refreshed.success) {
-                      setUserComments(refreshed.comments);
-                    }
-                  }}
-                />
-              ))
-            )}
+            {userComments.map((comment) => (
+              <CommentItem
+                key={comment._id}
+                comment={comment}
+                postAuthorId={author._id}
+                postId={post._id}
+                onRefresh={async () => {
+                  const refreshed = await postAPI.getComments(post._id);
+                  if (refreshed.success) {
+                    setUserComments(refreshed.comments);
+                  }
+                }}
+              />
+            ))}
           </div>
         </div>
       )}

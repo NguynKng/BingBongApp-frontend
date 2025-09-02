@@ -92,10 +92,9 @@ export function CaptionsProvider({ callId, peerUserId, children }) {
       if (final) {
         // call translation endpoint on your server
         try {
-          //const response = await translateAPI.translateText(final.trim(), targetLang);
-          const response = true
+          const response = await translateAPI.translateText(final.trim(), targetLang);
           if (response) {
-            const translatedText = ""
+            const translatedText = response.translated_text;
             setLocalTranslation(translatedText || "");
             // also emit translated event to peer so remote shows translation if you want
             try {

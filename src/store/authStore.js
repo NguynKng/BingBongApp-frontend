@@ -120,7 +120,29 @@ const useAuthStore = create(
           throw error;
         }
       },
-
+      // Login a user
+      adminLogin: async (credentials) => {
+        set({ isLoading: true, error: null });
+        try {
+          const response = await authAPI.adminLogin(credentials);
+          set({
+            user: response.user,
+            isAuthenticated: true,
+            isLoading: false,
+            error: null,
+          });
+          toast.success("Login successful!");
+          get().connectSocket(); // Connect socket after successful login
+          return response;
+        } catch (error) {
+          set({
+            isLoading: false,
+            error: error.message,
+          });
+          // Toast is already shown in the API service
+          throw error;
+        }
+      },
       // Logout the user
       logout: async () => {
         set({ isLoading: true, error: null });

@@ -12,6 +12,22 @@ export const ProtectedRoute = ({ children }) => {
     return children;
 };
 
+export const AdminRoute = ({ children }) => {
+    const { isAuthenticated, user } = useAuthStore();
+    if (!isAuthenticated || user?.role !== 'admin') {
+        return <Navigate to="/admin/login" />;
+    } 
+    return children;
+}
+
+export const AdminAuthRoute = ({ children }) => {
+    const { isAuthenticated, user } = useAuthStore();
+    if (isAuthenticated && user?.role === 'admin') {
+        return <Navigate to="/admin" />;
+    }
+    return children;
+};
+
 // Redirects authenticated users from auth pages (login/register)
 export const AuthRoute = ({ children }) => {
     const { isAuthenticated } = useAuthStore();
