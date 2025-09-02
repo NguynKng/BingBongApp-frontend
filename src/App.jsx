@@ -14,11 +14,13 @@ import NewsPage from "./pages/newsPage";
 import Leaderboard from "./pages/Quiz/Leaderboard";
 import { Toaster } from "react-hot-toast";
 import useAuthStore from "./store/authStore";
-import { ProtectedRoute, AuthRoute } from "./middleware/auth";
+import { ProtectedRoute, AuthRoute, AdminAuthRoute, AdminRoute } from "./middleware/auth";
 import VerifyEmailPage from "./pages/VerifyEmailPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ChangePasswordPage from "./pages/ChangePasswordPage";
 import UserBadgePage from "./pages/UserBadgePage";
+import AdminLoginPage from "./pages/Admin/AdminLoginPage";
+import AdminDashboardPage from "./pages/Admin/AdminDashboardPage";
 
 function App() {
   const { checkAuth, theme } = useAuthStore();
@@ -169,7 +171,23 @@ function App() {
             </ProtectedRoute>
           }
         />
-        {/* Other routes */}
+        {/* Admin routes */}
+        <Route
+          path="/admin/login"
+          element={
+            <AdminAuthRoute>
+              <AdminLoginPage />
+            </AdminAuthRoute>
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            <AdminRoute>
+              <AdminDashboardPage />
+            </AdminRoute>
+          }
+        />
       </Routes>
       <Toaster />
     </>

@@ -64,6 +64,30 @@ export const authAPI = {
       throw error;
     }
   },
+  adminLogin: async (credentials) => {
+    try {
+      const response = await api.post("/auth/admin/login", credentials);
+
+      // Check if response indicates failure
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      // Handle axios error
+      if (error.response) {
+        const errorMessage = error.response.data.message || "Login failed";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+
+      // Handle other errors
+      toast.error(error.message || "Login failed");
+      throw error;
+    }
+  },
 
   // Logout user
   logout: async () => {
