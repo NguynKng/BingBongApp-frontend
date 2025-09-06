@@ -23,31 +23,55 @@ function ForgotPasswordPage() {
   };
 
   return (
-    <>
-      <div className="flex items-center justify-center bg-gray-50 min-h-screen p-4">
-        <div className="flex flex-col items-center gap-4 bg-white rounded-md py-4 px-6 w-[26rem] mt-4 shadow-xl border border-gray-200">
-          <h1 className="text-center text-xl font-medium text-black">
-            Reset Your Password
-          </h1>
-          <p className="text-sm text-center text-gray-500">
-            We will send you an email to reset your password
-          </p>
+    <div className="flex items-center justify-center bg-gradient-to-r from-blue-50 to-blue-100 min-h-screen p-4">
+      <div className="flex flex-col items-center gap-6 bg-white rounded-2xl py-8 px-10 w-[26rem] shadow-2xl border border-gray-200">
+        {/* Tiêu đề */}
+        <h1 className="text-center text-2xl font-bold text-blue-700">
+          Reset Your Password
+        </h1>
+        <p className="text-sm text-center text-gray-500">
+          Enter your email address below and we’ll send you a link to reset your
+          password.
+        </p>
+
+        {/* Input Email */}
+        <div className="relative w-full">
           <input
             type="email"
-            placeholder="Email"
+            placeholder="Enter your email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="py-2 px-4 text-sm block w-full h-10 bg-gray-200 rounded-md"
+            className="w-full py-3 px-4 text-sm border-2 border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-300 placeholder-gray-400"
           />
-          <button
-            className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 cursor-pointer"
-            onClick={handleSubmit}
-          >
-            {loading ? "Sending..." : "Submit"}
-          </button>
+          <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400">
+            <i className="fas fa-envelope"></i>
+          </span>
         </div>
+
+        {/* Nút Submit */}
+        <button
+          className={`w-full py-3 rounded-lg text-white font-semibold shadow-md transition-all duration-300 ${loading
+              ? "bg-blue-400 cursor-not-allowed"
+              : "bg-blue-600 hover:bg-blue-700"
+            }`}
+          onClick={handleSubmit}
+          disabled={loading}
+        >
+          {loading ? "Sending..." : "Submit"}
+        </button>
+
+        {/* Gợi ý */}
+        <p className="text-sm text-gray-500 text-center">
+          Remembered your password?{" "}
+          <span
+            onClick={() => navigate("/login")}
+            className="text-blue-600 font-medium cursor-pointer hover:underline"
+          >
+            Log in
+          </span>
+        </p>
       </div>
-    </>
+    </div>
   );
 }
 
