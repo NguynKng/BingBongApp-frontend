@@ -2,8 +2,6 @@ import { useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import MainLayout from "./components/MainLayout";
-import RegisterPage from "./pages/RegisterPage";
-import LoginPage from "./pages/LoginPage";
 import FriendPage from "./pages/FriendPage";
 import ProfilePage from "./pages/ProfilePage";
 import QuizPage from "./pages/Quiz/QuizPage";
@@ -27,6 +25,7 @@ import UserBadgePage from "./pages/UserBadgePage";
 import AdminLoginPage from "./pages/Admin/AdminLoginPage";
 import AdminDashboardPage from "./pages/Admin/AdminDashboardPage";
 import AdminLayout from "./components/Admin/AdminLayout";
+import AuthContainer from "./pages/AuthContainer"; // Import AuthContainer
 
 function App() {
   const { checkAuth, theme } = useAuthStore();
@@ -78,24 +77,23 @@ function App() {
             </AuthRoute>
           }
         />
+        {/* Sử dụng AuthContainer cho login và register */}
         <Route
           path="/login"
           element={
             <AuthRoute>
-              <LoginPage />
+              <AuthContainer />
             </AuthRoute>
           }
         />
-
         <Route
           path="/register"
           element={
             <AuthRoute>
-              <RegisterPage />
+              <AuthContainer />
             </AuthRoute>
           }
         />
-
         <Route
           path="/profile/:userId"
           element={
@@ -136,7 +134,6 @@ function App() {
             </ProtectedRoute>
           }
         />
-
         <Route
           path="/quiz"
           element={
