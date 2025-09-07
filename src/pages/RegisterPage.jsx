@@ -4,7 +4,7 @@ import useAuthStore from "../store/authStore";
 import toast from "react-hot-toast";
 import { motion } from "framer-motion";
 import { FaUser, FaPhone, FaEnvelope, FaBirthdayCake, FaLock, FaVenusMars } from "react-icons/fa";
-import { HiEye, HiEyeOff } from "react-icons/hi"; // Import icon mới từ React Icons
+import { HiEye, HiEyeOff } from "react-icons/hi";
 
 export default function RegisterPage() {
     const [email, setEmail] = useState("");
@@ -59,46 +59,25 @@ export default function RegisterPage() {
                 Đăng ký
             </h2>
             <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-x-6 gap-y-4">
-                {/* Họ và tên và Giới tính */}
+                {/* Họ và tên */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.05 }}
-                    className="col-span-2 grid grid-cols-10 gap-6" // Chia thành 10 cột
+                    className="col-span-2"
                 >
-                    {/* Họ và tên (70%) */}
-                    <div className="col-span-6">
-                        <label className="flex items-center font-semibold text-gray-700 mb-2 text-lg tracking-wide">
-                            <FaUser className="mr-2 text-blue-500" /> {/* Icon Họ và tên */}
-                            Họ và tên
-                        </label>
-                        <input
-                            type="text"
-                            value={fullName}
-                            onChange={(e) => setFullName(e.target.value)}
-                            required
-                            className="w-full px-4 py-2 rounded-lg transition-all duration-300 bg-white text-base shadow-sm focus:border-blue-400 focus:ring-2 focus:ring-blue-200 placeholder-gray-400"
-                            placeholder="Nhập họ và tên"
-                        />
-                    </div>
-
-                    {/* Giới tính (30%) */}
-                    <div className="col-span-4">
-                        <label className="flex items-center font-semibold text-gray-700 mb-2 text-lg tracking-wide">
-                            <FaVenusMars className="mr-2 text-blue-500" /> {/* Icon Giới tính */}
-                            Giới tính
-                        </label>
-                        <select
-                            className="w-full px-4 py-2 rounded-lg bg-white text-base shadow-sm focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
-                            value={gender}
-                            onChange={(e) => setGender(e.target.value)}
-                            required
-                        >
-                            <option value="Nam">Nam</option>
-                            <option value="Nữ">Nữ</option>
-                            <option value="Khác">Khác</option>
-                        </select>
-                    </div>
+                    <label className="flex items-center font-semibold text-gray-700 mb-2 text-lg tracking-wide">
+                        <FaUser className="mr-2 text-blue-500" /> {/* Icon Họ và tên */}
+                        Họ và tên
+                    </label>
+                    <input
+                        type="text"
+                        value={fullName}
+                        onChange={(e) => setFullName(e.target.value)}
+                        required
+                        className="w-full px-4 py-2 rounded-lg transition-all duration-300 bg-white text-base shadow-sm focus:border-blue-400 focus:ring-2 focus:ring-blue-200 placeholder-gray-400"
+                        placeholder="Nhập họ và tên"
+                    />
                 </motion.div>
 
                 {/* Ngày sinh */}
@@ -157,6 +136,50 @@ export default function RegisterPage() {
                     </div>
                 </motion.div>
 
+
+                {/* Số điện thoại và Giới tính */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 }}
+                    className="col-span-2 grid grid-cols-10 gap-6"
+                >
+                    {/* Số điện thoại */}
+                    <div className="col-span-5">
+                        <label className="flex items-center font-semibold text-gray-700 mb-2 text-lg tracking-wide">
+                            <FaPhone className="mr-2 text-blue-500" /> {/* Icon Số điện thoại */}
+                            Số điện thoại
+                        </label>
+                        <input
+                            type="tel"
+                            value={phoneNumber}
+                            onChange={(e) => setPhoneNumber(e.target.value)}
+                            required
+                            className="w-full px-4 py-2 rounded-lg transition-all duration-300 bg-white text-base shadow-sm focus:border-blue-400 focus:ring-2 focus:ring-blue-200 placeholder-gray-400"
+                            placeholder="Nhập số điện thoại"
+                        />
+                    </div>
+
+                    {/* Giới tính*/}
+                    <div className="col-span-5">
+                        <label className="flex items-center font-semibold text-gray-700 mb-2 text-lg tracking-wide">
+                            <FaVenusMars className="mr-2 text-blue-500" /> {/* Icon Giới tính */}
+                            Giới tính
+                        </label>
+                        <select
+                            className="w-full px-4 py-2 rounded-lg bg-white text-base shadow-sm focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
+                            value={gender}
+                            onChange={(e) => setGender(e.target.value)}
+                            required
+                        >
+                            <option value="Chọn giới tính">Chọn giới tính</option>
+                            <option value="Nam">Nam</option>
+                            <option value="Nữ">Nữ</option>
+                            <option value="Khác">Khác</option>
+                        </select>
+                    </div>
+                </motion.div>
+
                 {/* Email */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -178,51 +201,32 @@ export default function RegisterPage() {
                     />
                 </motion.div>
 
-                {/* Số điện thoại và Mật khẩu */}
+                {/* Mật khẩu */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1 }}
-                    className="col-span-2 grid grid-cols-10 gap-6" // Chia thành 10 cột
+                    transition={{ delay: 0.15 }}
+                    className="col-span-2" // Kéo dài toàn bộ hàng
                 >
-                    {/* Số điện thoại (50%) */}
-                    <div className="col-span-5">
-                        <label className="flex items-center font-semibold text-gray-700 mb-2 text-lg tracking-wide">
-                            <FaPhone className="mr-2 text-blue-500" /> {/* Icon Số điện thoại */}
-                            Số điện thoại
-                        </label>
+                    <label className="flex items-center font-semibold text-gray-700 mb-2 text-lg tracking-wide">
+                        <FaLock className="mr-2 text-blue-500" /> {/* Icon Mật khẩu */}
+                        Mật khẩu
+                    </label>
+                    <div className="relative">
                         <input
-                            type="tel"
-                            value={phoneNumber}
-                            onChange={(e) => setPhoneNumber(e.target.value)}
+                            type={showPassword ? "text" : "password"}
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
                             required
                             className="w-full px-4 py-2 rounded-lg transition-all duration-300 bg-white text-base shadow-sm focus:border-blue-400 focus:ring-2 focus:ring-blue-200 placeholder-gray-400"
-                            placeholder="Nhập số điện thoại"
+                            placeholder="Nhập mật khẩu"
                         />
-                    </div>
-
-                    {/* Mật khẩu (50%) */}
-                    <div className="col-span-5">
-                        <label className="flex items-center font-semibold text-gray-700 mb-2 text-lg tracking-wide">
-                            <FaLock className="mr-2 text-blue-500" /> {/* Icon Mật khẩu */}
-                            Mật khẩu
-                        </label>
-                        <div className="relative">
-                            <input
-                                type={showPassword ? "text" : "password"}
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                required
-                                className="w-full px-4 py-2 rounded-lg transition-all duration-300 bg-white text-base shadow-sm focus:border-blue-400 focus:ring-2 focus:ring-blue-200 placeholder-gray-400"
-                                placeholder="Nhập mật khẩu"
-                            />
-                            <span
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer text-lg"
-                                onClick={() => setShowPassword(!showPassword)}
-                            >
-                                {showPassword ? <HiEyeOff /> : <HiEye />} {/* Icon hiển thị/ẩn mật khẩu */}
-                            </span>
-                        </div>
+                        <span
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer text-lg"
+                            onClick={() => setShowPassword(!showPassword)}
+                        >
+                            {showPassword ? <HiEyeOff /> : <HiEye />} {/* Icon hiển thị/ẩn mật khẩu */}
+                        </span>
                     </div>
                 </motion.div>
 
@@ -231,7 +235,7 @@ export default function RegisterPage() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.35 }}
-                    className="col-span-2 mt-4"
+                    className="col-span-2"
                 >
                     <button
                         type="submit"
@@ -246,7 +250,7 @@ export default function RegisterPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
-                className="mt-8 text-center"
+                className="mt-6 text-center"
             >
                 <span className="text-gray-600 text-base">Đã có tài khoản?</span>
                 <Link
