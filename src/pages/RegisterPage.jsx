@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import useAuthStore from "../store/authStore";
 import toast from "react-hot-toast";
 import { motion } from "framer-motion";
+import { FaUser, FaPhone, FaEnvelope, FaBirthdayCake, FaLock, FaVenusMars } from "react-icons/fa";
+import { HiEye, HiEyeOff } from "react-icons/hi"; // Import icon mới từ React Icons
 
 export default function RegisterPage() {
     const [email, setEmail] = useState("");
@@ -57,79 +59,62 @@ export default function RegisterPage() {
                 Đăng ký
             </h2>
             <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-x-6 gap-y-4">
-                {/* Họ và tên */}
+                {/* Họ và tên và Giới tính */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.05 }}
-                    className="col-span-2 md:col-span-1"
+                    className="col-span-2 grid grid-cols-10 gap-6" // Chia thành 10 cột
                 >
-                    <label className="block font-semibold text-gray-700 mb-2 text-lg tracking-wide">
-                        Họ và tên
-                    </label>
-                    <input
-                        type="text"
-                        value={fullName}
-                        onChange={(e) => setFullName(e.target.value)}
-                        required
-                        className="w-full px-4 py-2 border-2 rounded-lg transition-all duration-300 bg-white text-base shadow-sm focus:border-blue-400 focus:ring-2 focus:ring-blue-200 placeholder-gray-400"
-                        placeholder="Nhập họ và tên"
-                    />
-                </motion.div>
+                    {/* Họ và tên (70%) */}
+                    <div className="col-span-6">
+                        <label className="flex items-center font-semibold text-gray-700 mb-2 text-lg tracking-wide">
+                            <FaUser className="mr-2 text-blue-500" /> {/* Icon Họ và tên */}
+                            Họ và tên
+                        </label>
+                        <input
+                            type="text"
+                            value={fullName}
+                            onChange={(e) => setFullName(e.target.value)}
+                            required
+                            className="w-full px-4 py-2 rounded-lg transition-all duration-300 bg-white text-base shadow-sm focus:border-blue-400 focus:ring-2 focus:ring-blue-200 placeholder-gray-400"
+                            placeholder="Nhập họ và tên"
+                        />
+                    </div>
 
-                {/* Số điện thoại */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1 }}
-                    className="col-span-2 md:col-span-1"
-                >
-                    <label className="block font-semibold text-gray-700 mb-2 text-lg tracking-wide">
-                        Số điện thoại
-                    </label>
-                    <input
-                        type="tel"
-                        value={phoneNumber}
-                        onChange={(e) => setPhoneNumber(e.target.value)}
-                        required
-                        className="w-full px-4 py-2 border-2 rounded-lg transition-all duration-300 bg-white text-base shadow-sm focus:border-blue-400 focus:ring-2 focus:ring-blue-200 placeholder-gray-400"
-                        placeholder="Nhập số điện thoại"
-                    />
-                </motion.div>
-
-                {/* Email */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.15 }}
-                    className="col-span-2"
-                >
-                    <label className="block font-semibold text-gray-700 mb-2 text-lg tracking-wide">
-                        Email
-                    </label>
-                    <input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                        className="w-full px-4 py-2 border-2 rounded-lg transition-all duration-300 bg-white text-base shadow-sm focus:border-blue-400 focus:ring-2 focus:ring-blue-200 placeholder-gray-400"
-                        placeholder="Nhập email của bạn"
-                    />
+                    {/* Giới tính (30%) */}
+                    <div className="col-span-4">
+                        <label className="flex items-center font-semibold text-gray-700 mb-2 text-lg tracking-wide">
+                            <FaVenusMars className="mr-2 text-blue-500" /> {/* Icon Giới tính */}
+                            Giới tính
+                        </label>
+                        <select
+                            className="w-full px-4 py-2 rounded-lg bg-white text-base shadow-sm focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
+                            value={gender}
+                            onChange={(e) => setGender(e.target.value)}
+                            required
+                        >
+                            <option value="Nam">Nam</option>
+                            <option value="Nữ">Nữ</option>
+                            <option value="Khác">Khác</option>
+                        </select>
+                    </div>
                 </motion.div>
 
                 {/* Ngày sinh */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 }}
+                    transition={{ delay: 0.25 }}
                     className="col-span-2"
                 >
-                    <label className="block font-semibold text-gray-700 mb-2 text-lg tracking-wide">
+                    <label className="flex items-center font-semibold text-gray-700 mb-2 text-lg tracking-wide">
+                        <FaBirthdayCake className="mr-2 text-blue-500" /> {/* Icon Ngày sinh */}
                         Ngày sinh
                     </label>
                     <div className="flex gap-2">
                         <select
-                            className="w-1/3 px-4 py-2 border-2 rounded-lg bg-white text-base shadow-sm focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
+                            className="w-1/3 px-4 py-2 rounded-lg bg-white text-base shadow-sm focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
                             value={birthDay}
                             onChange={(e) => setBirthDay(e.target.value)}
                             required
@@ -142,7 +127,7 @@ export default function RegisterPage() {
                             ))}
                         </select>
                         <select
-                            className="w-1/3 px-4 py-2 border-2 rounded-lg bg-white text-base shadow-sm focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
+                            className="w-1/3 px-4 py-2 rounded-lg bg-white text-base shadow-sm focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
                             value={birthMonth}
                             onChange={(e) => setBirthMonth(e.target.value)}
                             required
@@ -157,7 +142,7 @@ export default function RegisterPage() {
                             )}
                         </select>
                         <select
-                            className="w-1/3 px-4 py-2 border-2 rounded-lg bg-white text-base shadow-sm focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
+                            className="w-1/3 px-4 py-2 rounded-lg bg-white text-base shadow-sm focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
                             value={birthYear}
                             onChange={(e) => setBirthYear(e.target.value)}
                             required
@@ -172,55 +157,73 @@ export default function RegisterPage() {
                     </div>
                 </motion.div>
 
-                {/* Mật khẩu */}
+                {/* Email */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.25 }}
-                    className="col-span-2 md:col-span-1"
+                    transition={{ delay: 0.2 }}
+                    className="col-span-2"
                 >
-                    <label className="block font-semibold text-gray-700 mb-2 text-lg tracking-wide">
-                        Mật khẩu
+                    <label className="flex items-center font-semibold text-gray-700 mb-2 text-lg tracking-wide">
+                        <FaEnvelope className="mr-2 text-blue-500" /> {/* Icon Email */}
+                        Email
                     </label>
-                    <div className="relative">
-                        <input
-                            type={showPassword ? "text" : "password"}
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                            className="w-full px-4 py-2 border-2 rounded-lg transition-all duration-300 bg-white text-base shadow-sm focus:border-blue-400 focus:ring-2 focus:ring-blue-200 placeholder-gray-400"
-                            placeholder="Nhập mật khẩu"
-                        />
-                        <span
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer text-lg"
-                            onClick={() => setShowPassword(!showPassword)}
-                        >
-                            {showPassword ? "🙈" : "👁️"}
-                        </span>
-                    </div>
+                    <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                        className="w-full px-4 py-2 rounded-lg transition-all duration-300 bg-white text-base shadow-sm focus:border-blue-400 focus:ring-2 focus:ring-blue-200 placeholder-gray-400"
+                        placeholder="Nhập email của bạn"
+                    />
                 </motion.div>
 
-                {/* Giới tính */}
+                {/* Số điện thoại và Mật khẩu */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3 }}
-                    className="col-span-2 md:col-span-1"
+                    transition={{ delay: 0.1 }}
+                    className="col-span-2 grid grid-cols-10 gap-6" // Chia thành 10 cột
                 >
-                    <label className="block font-semibold text-gray-700 mb-2 text-lg tracking-wide">
-                        Giới tính
-                    </label>
-                    <select
-                        className="w-full px-4 py-2 border-2 rounded-lg bg-white text-base shadow-sm focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
-                        value={gender}
-                        onChange={(e) => setGender(e.target.value)}
-                        required
-                    >
-                        <option value="">Chọn giới tính</option>
-                        <option value="Nam">Nam</option>
-                        <option value="Nữ">Nữ</option>
-                        <option value="Khác">Khác</option>
-                    </select>
+                    {/* Số điện thoại (50%) */}
+                    <div className="col-span-5">
+                        <label className="flex items-center font-semibold text-gray-700 mb-2 text-lg tracking-wide">
+                            <FaPhone className="mr-2 text-blue-500" /> {/* Icon Số điện thoại */}
+                            Số điện thoại
+                        </label>
+                        <input
+                            type="tel"
+                            value={phoneNumber}
+                            onChange={(e) => setPhoneNumber(e.target.value)}
+                            required
+                            className="w-full px-4 py-2 rounded-lg transition-all duration-300 bg-white text-base shadow-sm focus:border-blue-400 focus:ring-2 focus:ring-blue-200 placeholder-gray-400"
+                            placeholder="Nhập số điện thoại"
+                        />
+                    </div>
+
+                    {/* Mật khẩu (50%) */}
+                    <div className="col-span-5">
+                        <label className="flex items-center font-semibold text-gray-700 mb-2 text-lg tracking-wide">
+                            <FaLock className="mr-2 text-blue-500" /> {/* Icon Mật khẩu */}
+                            Mật khẩu
+                        </label>
+                        <div className="relative">
+                            <input
+                                type={showPassword ? "text" : "password"}
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                                className="w-full px-4 py-2 rounded-lg transition-all duration-300 bg-white text-base shadow-sm focus:border-blue-400 focus:ring-2 focus:ring-blue-200 placeholder-gray-400"
+                                placeholder="Nhập mật khẩu"
+                            />
+                            <span
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer text-lg"
+                                onClick={() => setShowPassword(!showPassword)}
+                            >
+                                {showPassword ? <HiEyeOff /> : <HiEye />} {/* Icon hiển thị/ẩn mật khẩu */}
+                            </span>
+                        </div>
+                    </div>
                 </motion.div>
 
                 {/* Nút đăng ký */}
@@ -228,7 +231,7 @@ export default function RegisterPage() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.35 }}
-                    className="col-span-2"
+                    className="col-span-2 mt-4"
                 >
                     <button
                         type="submit"

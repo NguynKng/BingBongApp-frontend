@@ -50,7 +50,7 @@ export default function AuthContainer() {
                             }
                             alt="BingBong Logo"
                             style={{ width: "200px", height: "200px", objectFit: "contain" }}
-                            className="mb-6 rounded-full border-4 border-gray-200 shadow-lg"
+                            className="mb-6 rounded-full border-3 border-gray-200 shadow-lg"
                             key={isRegister ? "logo-register" : "logo-login"}
                             initial={{ x: isRegister ? -500 : 500, opacity: 0 }}
                             animate={{ x: 0, opacity: 1 }}
