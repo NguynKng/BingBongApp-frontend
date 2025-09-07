@@ -5,13 +5,14 @@ import LoginPage from "./LoginPage";
 import RegisterPage from "./RegisterPage";
 
 export default function AuthContainer() {
-  const location = useLocation();
+const location = useLocation();
   const isRegister = location.pathname === "/register";
 
   return (
     <>
       <style>
         {`
+
           @keyframes gradient-x {
             0%, 100% {
               background-position: 0% 50%;

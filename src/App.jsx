@@ -2,8 +2,6 @@ import { useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import MainLayout from "./components/MainLayout";
-import RegisterPage from "./pages/RegisterPage";
-import LoginPage from "./pages/LoginPage";
 import FriendPage from "./pages/FriendPage";
 import ProfilePage from "./pages/ProfilePage";
 import QuizPage from "./pages/Quiz/QuizPage";
@@ -80,6 +78,7 @@ function App() {
             </AuthRoute>
           }
         />
+        {/* Sử dụng AuthContainer cho login và register */}
         <Route
           path="/login"
           element={
@@ -88,7 +87,6 @@ function App() {
             </AuthRoute>
           }
         />
-
         <Route
           path="/register"
           element={
@@ -97,7 +95,6 @@ function App() {
             </AuthRoute>
           }
         />
-
         <Route
           path="/profile/:userId"
           element={
@@ -138,7 +135,6 @@ function App() {
             </ProtectedRoute>
           }
         />
-
         <Route
           path="/quiz"
           element={
