@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { authAPI } from "../services/api";
+import { FaKey, FaInfoCircle, FaEnvelope, FaSpinner, FaPaperPlane, FaQuestionCircle, FaSignInAlt } from "react-icons/fa";
 
 function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -23,31 +24,72 @@ function ForgotPasswordPage() {
   };
 
   return (
-    <>
-      <div className="flex items-center justify-center bg-gray-50 min-h-screen p-4">
-        <div className="flex flex-col items-center gap-4 bg-white rounded-md py-4 px-6 w-[26rem] mt-4 shadow-xl border border-gray-200">
-          <h1 className="text-center text-xl font-medium text-black">
-            Reset Your Password
-          </h1>
-          <p className="text-sm text-center text-gray-500">
-            We will send you an email to reset your password
-          </p>
+    <div
+      className="flex items-center justify-center min-h-screen p-4 bg-cover bg-center"
+      style={{
+        backgroundImage: "url('/public/background-gradient.webp')",
+      }}
+    >
+      <div className="flex flex-col items-center gap-6 bg-white/50 backdrop-blur-md rounded-2xl py-8 px-10 w-[26rem] shadow-2xl border border-gray-300">
+        {/* Tiêu đề */}
+        <h1 className="text-center text-3xl font-extrabold text-blue-700 flex items-center gap-3">
+          <FaKey className="text-blue-500" />
+          Đặt lại mật khẩu
+        </h1>
+        <p className="text-sm text-center text-gray-600 leading-relaxed">
+          <FaInfoCircle className="text-gray-400 mr-1 inline" />
+          Nhập địa chỉ email của bạn bên dưới và chúng tôi sẽ gửi cho bạn một liên kết để đặt lại mật khẩu.
+        </p>
+
+        {/* Input Email */}
+        <div className="relative w-full">
           <input
             type="email"
-            placeholder="Email"
+            placeholder="Nhập email của bạn"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="py-2 px-4 text-sm block w-full h-10 bg-gray-200 rounded-md"
+            className="w-full py-3 px-4 text-sm border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 placeholder-gray-400"
           />
-          <button
-            className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 cursor-pointer"
-            onClick={handleSubmit}
-          >
-            {loading ? "Sending..." : "Submit"}
-          </button>
+          <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400">
+            <FaEnvelope />
+          </span>
         </div>
+
+        {/* Nút Submit */}
+        <button
+          className={`w-full py-3 rounded-lg text-white font-semibold shadow-md transition-all duration-300 ${loading
+            ? "bg-blue-400 cursor-not-allowed"
+            : "bg-blue-600 hover:bg-blue-700"
+            } flex items-center justify-center gap-2`}
+          onClick={handleSubmit}
+          disabled={loading}
+        >
+          {loading ? (
+            <>
+              <FaSpinner className="animate-spin" /> {/* Icon loading */}
+              Đang gửi...
+            </>
+          ) : (
+            <>
+              <FaPaperPlane /> {/* Icon gửi */}
+              Gửi
+            </>
+          )}
+        </button>
+
+        {/* Gợi ý */}
+        <p className="text-sm text-gray-600 text-center">
+          <FaQuestionCircle className="text-gray-400 mr-1 inline" /> {/* Icon câu hỏi */}
+          Nhớ mật khẩu?{" "}
+          <span
+            onClick={() => navigate("/login")}
+            className="text-blue-600 font-medium cursor-pointer hover:underline"
+          >
+            Đăng nhập
+          </span>
+        </p>
       </div>
-    </>
+    </div>
   );
 }
 

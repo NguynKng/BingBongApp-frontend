@@ -23,7 +23,6 @@ export function useCaptionsContext() {
 export function CaptionsProvider({ callId, peerUserId, children }) {
   const socket = useAuthStore((s) => s.socket);
   const currentUser = useAuthStore((s) => s.user);
-
   const [enabled, setEnabled] = useState(false);
   const [enableRemoteCaption, setEnableRemoteCaption] = useState(false);
   const [localCaption, setLocalCaption] = useState("");
