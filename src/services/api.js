@@ -222,6 +222,23 @@ export const authAPI = {
 
 //USER API services
 export const userAPI = {
+  getAllUsers: async () => {
+    try {
+      const response = await api.get(`/user/get-all`);
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to get user posts";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
   getUserPost: async (userId) => {
     try {
       const response = await api.get(`/posts/user/${userId}`);
@@ -445,7 +462,8 @@ export const postAPI = {
       console.log(error);
       return {
         success: false,
-        message: error.response?.data?.message || "Đã có lỗi xảy ra khi tạo bài viết",
+        message:
+          error.response?.data?.message || "Đã có lỗi xảy ra khi tạo bài viết",
         data: {},
       };
     }
@@ -918,6 +936,63 @@ export const translateAPI = {
       if (error.response) {
         const errorMessage =
           error.response.data.message || "Failed to translate text";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+};
+
+export const statsAPI = {
+  getStats: async () => {
+    try {
+      const response = await api.get("/stats");
+
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch stats";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getUserGenderStats: async () => {
+    try {
+      const response = await api.get("/stats/user-gender");
+
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch stats";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getUserPostsStats: async () => {
+    try {
+      const response = await api.get("/stats/user-posts");
+
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch stats";
         throw new Error(errorMessage);
       }
       throw error;

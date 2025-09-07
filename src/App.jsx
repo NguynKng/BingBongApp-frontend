@@ -18,6 +18,7 @@ import {
   AdminAuthRoute,
   AdminRoute,
 } from "./middleware/auth";
+import AuthContainer from "./pages/AuthContainer";
 import VerifyEmailPage from "./pages/VerifyEmailPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ChangePasswordPage from "./pages/ChangePasswordPage";
@@ -25,7 +26,7 @@ import UserBadgePage from "./pages/UserBadgePage";
 import AdminLoginPage from "./pages/Admin/AdminLoginPage";
 import AdminDashboardPage from "./pages/Admin/AdminDashboardPage";
 import AdminLayout from "./components/Admin/AdminLayout";
-import AuthContainer from "./pages/AuthContainer"; // Import AuthContainer
+import AdminUser from "./pages/Admin/AdminUser";
 
 function App() {
   const { checkAuth, theme } = useAuthStore();
@@ -188,6 +189,14 @@ function App() {
           element={
             <AdminRoute>
               <AdminLayout Element={AdminDashboardPage} />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/users"
+          element={
+            <AdminRoute>
+              <AdminLayout Element={AdminUser} />
             </AdminRoute>
           }
         />
