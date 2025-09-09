@@ -1,4 +1,4 @@
-import { MoveDownRight, MoveUpRight } from "lucide-react";
+import { MoveDownRight, MoveUpRight, Users, FileText, MessageCircle, ThumbsUp } from "lucide-react";
 import ColumnChart from "../../components/Admin/Chart/ColumnChart";
 import PieChart from "../../components/Admin/Chart/PieChart";
 import {
@@ -26,21 +26,25 @@ export default function AdminDashboardPage() {
       label: "Total Users",
       value: stats?.userCount,
       change: -2.5,
+      icon: <Users className="size-8 text-[#388e3c] bg-[#e0f2f1] rounded-full p-1" />,
     },
     {
       label: "Total Posts",
       value: stats?.postCount,
       change: 6.7,
+      icon: <FileText className="size-8 text-[#388e3c] bg-[#e0f2f1] rounded-full p-1" />,
     },
     {
       label: "Total Comments",
       value: stats?.commentCount,
       change: -3.4,
+      icon: <MessageCircle className="size-8 text-[#388e3c] bg-[#e0f2f1] rounded-full p-1" />,
     },
     {
       label: "Total Likes",
       value: stats?.likeCount,
       change: 10.4,
+      icon: <ThumbsUp className="size-8 text-[#388e3c] bg-[#e0f2f1] rounded-full p-1" />,
     },
   ];
 
@@ -52,19 +56,20 @@ export default function AdminDashboardPage() {
 
   return (
     <div className="p-4">
-      <div className="grid lg:grid-cols-4 grid-cols-2 rounded-xl py-4 bg-white gap-2">
-        {statsData.map((item, index) => {
+      <div className="grid lg:grid-cols-4 grid-cols-2 gap-4">
+        {statsData.map((item) => {
           const isPositive = item.change >= 0;
           const Icon = isPositive ? MoveUpRight : MoveDownRight;
 
           return (
             <div
               key={item.label}
-              className={`px-4 ${
-                index < statsData.length - 1 ? "border-r border-gray-300" : ""
-              }`}
+              className="bg-white rounded-xl shadow p-4 flex flex-col justify-between"
             >
-              <h3 className="text-lg font-semibold">{item.label}</h3>
+              <div className="flex flex-row items-center mb-2">
+                <span className="mr-2">{item.icon}</span>
+                <h3 className="text-lg font-semibold">{item.label}</h3>
+              </div>
               {loadingStats ? (
                 <SpinnerLoading />
               ) : (
@@ -73,14 +78,12 @@ export default function AdminDashboardPage() {
                   <div className="mt-2">
                     <div className="flex gap-1 items-center">
                       <Icon
-                        className={`size-4 ${
-                          isPositive ? "text-green-500" : "text-red-500"
-                        }`}
+                        className={`size-4 ${isPositive ? "text-green-500" : "text-red-500"
+                          }`}
                       />
                       <span
-                        className={`${
-                          isPositive ? "text-green-500" : "text-red-500"
-                        }`}
+                        className={`${isPositive ? "text-green-500" : "text-red-500"
+                          }`}
                       >
                         {Math.abs(item.change)}%
                       </span>

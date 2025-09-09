@@ -21,13 +21,12 @@ export default function Header({ isOpenNavbar, setIsOpenNavbar }) {
 
   return (
     <header
-      className={`fixed w-full min-h-12 transition-all duration-300 ease-in-out right-0 flex text-white z-10 ${
-        isOpenNavbar ? "lg:w-[85%]" : "lg:w-[93%]"
-      }`}
-      style={{ backgroundColor: "rgb(21, 40, 60)" }}
+      className={`fixed w-full min-h-12 transition-all duration-300 ease-in-out right-0 flex text-white z-10 ${isOpenNavbar ? "lg:w-[85%]" : "lg:w-[93%]"
+        }`}
+      style={{ backgroundColor: "#e91e63" }} // Đổi màu nền header giống navbar
     >
       <div
-        className="bg-orange-600 cursor-pointer flex items-center justify-center min-w-14"
+        className="bg-rose-500 cursor-pointer flex items-center justify-center min-w-14" // Đổi màu cam thành hồng
         onClick={() => setIsOpenNavbar(!isOpenNavbar)}
       >
         <Menu className="size-8" />
@@ -37,7 +36,7 @@ export default function Header({ isOpenNavbar, setIsOpenNavbar }) {
         <div className="flex items-center">
           <div className="relative px-2 cursor-pointer">
             <Bell className="size-5" />
-            <div className="absolute top-0 right-0 -translate-y-3 -translate-x-1 flex items-center justify-center p-2 bg-orange-500 size-4 rounded-full text-xs">
+            <div className="absolute top-0 right-0 -translate-y-3 -translate-x-1 flex items-center justify-center p-2 bg-pink-500 size-4 rounded-full text-xs">
               1
             </div>
           </div>
@@ -46,13 +45,13 @@ export default function Header({ isOpenNavbar, setIsOpenNavbar }) {
           </div>
           <div className="relative px-2 cursor-pointer">
             <Mail className="size-5" />
-            <div className="absolute top-0 right-0 -translate-y-3 -translate-x-1 flex items-center justify-center p-2 bg-orange-500 size-4 rounded-full text-xs">
+            <div className="absolute top-0 right-0 -translate-y-3 -translate-x-1 flex items-center justify-center p-2 bg-pink-500 size-4 rounded-full text-xs">
               1
             </div>
           </div>
         </div>
       </div>
-      <div className="relative cursor-pointer bg-orange-600 min-w-[15%] hidden md:flex items-center justify-center gap-2 p-2 group">
+      <div className="relative cursor-pointer bg-rose-500 min-w-[15%] hidden md:flex items-center justify-center gap-2 p-2 group">
         <img
           src={
             `${Config.BACKEND_URL}${user.avatar}`
