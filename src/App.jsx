@@ -27,6 +27,7 @@ import AdminLoginPage from "./pages/Admin/AdminLoginPage";
 import AdminDashboardPage from "./pages/Admin/AdminDashboardPage";
 import AdminLayout from "./components/Admin/AdminLayout";
 import AdminUser from "./pages/Admin/AdminUser";
+import TestPage from "./pages/test";
 
 function App() {
   const { checkAuth, theme } = useAuthStore();
@@ -100,6 +101,14 @@ function App() {
           element={
             <ProtectedRoute>
               <MainLayout Element={ProfilePage} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/test"
+          element={
+            <ProtectedRoute>
+              <MainLayout Element={TestPage} />
             </ProtectedRoute>
           }
         />

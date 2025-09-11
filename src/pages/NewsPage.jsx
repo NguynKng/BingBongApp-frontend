@@ -49,7 +49,7 @@ const NewsPage = () => {
     <>
       <Meta title="Tin tức công nghệ" />
       <Navbar />
-      <div className="lg:p-4 p-1 lg:ml-[24rem]">
+      <div className="lg:p-4 p-1 lg:ml-[20rem]">
         <div className="lg:w-[80%] w-full px-2 md:px-8 py-6">
           <h1 className="text-2xl text-green-500 font-bold">
             Tin tức công nghệ mới nhất

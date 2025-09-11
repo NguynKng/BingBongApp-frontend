@@ -82,7 +82,7 @@ function Header({ onToggleChat }) {
                 {/* Logo + Search */}
                 <div className="flex items-center gap-2">
                     <Link to="/" className="size-12 sm:size-14 hover:scale-110 transition-transform duration-300">
-                        <img src="/images/ico/logo.ico" alt="logo" className="size-full object-cover rounded-xl" />
+                        <img src="/images/ico/logo_bingbong.ico" alt="logo" className="size-full object-cover rounded-xl" />
                     </Link>
 
                     {/* Tìm kiếm */}
