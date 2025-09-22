@@ -1,16 +1,16 @@
-import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   Gamepad2,
   House,
   Newspaper,
+  PanelLeft,
   UserRound,
   UsersRound,
 } from "lucide-react";
 import useAuthStore from "../store/authStore";
 import Config from "../envVars";
 
-function Navbar() {
+function Navbar({ isCloseSidebar, setIsCloseSidebar }) {
   const { user } = useAuthStore();
   const location = useLocation();
   const pathname = location.pathname;
@@ -29,21 +29,25 @@ function Navbar() {
 
   return (
     <nav
-      className={`fixed top-[64px] left-0 h-[92vh] lg:w-[20rem] p-4 overflow-y-auto custom-scroll z-40 hidden lg:block transition-colors duration-300
-      bg-white`}
+      className={`fixed top-0 left-0 flex flex-col h-screen p-2 z-60 bg-white
+        border-r border-gray-300
+        transition-all duration-300 ease-in-out
+        ${isCloseSidebar ? "w-16" : "w-80"}`}
     >
-      <div className="relative flex flex-col items-center justify-center gap-2 pt-8 pb-4">
+      <div className="flex items-center justify-between">
         <img
-          src={avatarUrl}
-          className="w-18 h-18 p-1 z-11 bg-white object-cover rounded-lg"
+          src="/images/ico/logo_bingbong.ico"
+          className="w-10 h-10 object-cover"
         />
-        <span className="font-semibold text-lg">{fullName}</span>
-        <img
-          className="absolute top-0 w-full h-14 z-10 object-cover rounded-lg"
-          src={`${Config.BACKEND_URL}${user.coverPhoto}`}
-        />
+        <button
+          className="cursor-pointer"
+          onClick={() => setIsCloseSidebar(!isCloseSidebar)}
+        >
+          <PanelLeft />
+        </button>
       </div>
-      <div className="w-full px-2 py-2 rounded-2xl space-y-2 overflow-hidden">
+
+      <div className="flex-1 w-full space-y-2 overflow-y-auto custom-scroll mt-4 border-b border-gray-300">
         {navbarData.map((item, index) => {
           return (
             <Link
@@ -53,16 +57,25 @@ function Navbar() {
                 pathname === item.link
                   ? "bg-black text-white"
                   : "bg-transparent"
-              }
-                `}
+              }`}
             >
               <item.src />
-              <span className={`font-medium transition-colors`}>
-                {item.text}
-              </span>
+              {/* ẩn/hiện text khi thu gọn */}
+              {!isCloseSidebar && (
+                <span className="font-medium transition-colors">
+                  {item.text}
+                </span>
+              )}
             </Link>
           );
         })}
+      </div>
+
+      <div className="flex items-center gap-3 py-2 px-4 mt-4 hover:bg-black hover:text-white rounded-xl transition-all">
+        <img src={avatarUrl} className="w-10 h-10 object-cover rounded-full" />
+        {!isCloseSidebar && (
+          <span className="font-medium transition-colors">{fullName}</span>
+        )}
       </div>
     </nav>
   );

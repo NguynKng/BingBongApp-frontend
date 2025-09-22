@@ -8,12 +8,14 @@ import useNotificationStore from "../store/notificationStore";
 import NotificationPopup from "./NotificationPopup";
 import { useCallback } from "react";
 import IncomingCall from "./IncomingCall";
+import Navbar from "./Navbar";
 
 function MainLayout({ Element }) {
   const { addNotification } = useNotificationStore();
   const { socket, updateUser, user } = useAuthStore();
   const [showChat, setShowChat] = useState(false);
   const [activeChatUser, setActiveChatUser] = useState();
+  const [isCloseSidebar, setIsCloseSidebar] = useState(false);
 
   const [popup, setPopup] = useState({
     isPopup: false,
@@ -112,6 +114,7 @@ function MainLayout({ Element }) {
   return (
     <>
       <Meta title={`BingBong`} />
+      <Navbar isCloseSidebar={isCloseSidebar} setIsCloseSidebar={setIsCloseSidebar} />
       <Header onToggleChat={handleToggleChat} />
       <div className="relative mt-[64px] bg-gradient-to-br from-[#f0f4ff] to-[#fff1f7] dark:from-[#1c1f2a] dark:to-[#2a2e3d] min-h-[92vh]">
         <Element />
