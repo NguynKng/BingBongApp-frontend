@@ -31,7 +31,6 @@ function HomePage() {
 
   return (
     <>
-      <Navbar />
       <div className="flex lg:p-4 md:p-2 p-1 lg:ml-[20rem]">
         <div className="md:w-[60%] w-full px-2 md:px-8 space-y-4">
           <CreateStatus onPostCreated={handleAddPost} />
