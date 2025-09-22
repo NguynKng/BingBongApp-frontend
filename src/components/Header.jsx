@@ -77,16 +77,20 @@ function Header({ onToggleChat }) {
     };
 
     return (
-        <header className="fixed top-0 left-0 w-full h-[64px] z-50 bg-gradient-to-r from-[#f0f4ff] via-[#e0eaff] to-[#f5eaff] dark:from-[#1a1c2c] dark:via-[#23263b] dark:to-[#2e3047] backdrop-blur-xl shadow-md dark:border-gray-700">
-            <div className="w-full h-full flex items-center md:pl-[20rem] md:pr-4 justify-between gap-2">
+        <header className="fixed top-0 left-0 w-full h-[68px] z-50 bg-white dark:from-[#1a1c2c] dark:via-[#23263b] dark:to-[#2e3047] backdrop-blur-xl shadow-md dark:border-gray-700">
+            <div className="w-full h-full flex items-center md:pl-[8rem] md:pr-4 justify-between gap-2">
                 {/* Logo + Search */}
-                <div className="flex items-center gap-2">
+                <div className="flex items-center">
                     <Link to="/" className="size-12 sm:size-14 hover:scale-110 transition-transform duration-300">
-                        <img src="/images/ico/logo_bingbong.ico" alt="logo" className="size-full object-cover rounded-xl" />
+                        <img src="/images/ico/logo_bingbong1.ico" alt="logo" className="size-full object-cover rounded-xl" />
                     </Link>
-
+                    <div className="text-xl font-semibold text-rose-500 dark:text-white">
+                        Bing Bong
+                    </div>
+                </div>
+                <div className="flex items-center">
                     {/* Tìm kiếm */}
-                    <div className="relative w-full max-w-md hidden sm:block">
+                    <div className="relative w-400 max-w-md hidden sm:block">
                         <Search className="absolute size-5 top-2.5 left-3 text-blue-700" />
                         <input
                             type="text"
@@ -200,7 +204,7 @@ function Header({ onToggleChat }) {
                 </div>
 
                 {/* Tabs - Desktop */}
-                <div className="hidden md:flex items-center justify-center flex-1 gap-1">
+                {/* <div className="hidden md:flex items-center justify-center flex-1 gap-1">
                     {tabs.map((tab) => (
                         <Link
                             to={tab.link}
@@ -220,12 +224,12 @@ function Header({ onToggleChat }) {
                             )}
                         </Link>
                     ))}
-                </div>
+                </div> */}
 
                 {/* Right Icons */}
                 <div className="flex items-center gap-2 sm:gap-3">
                     {/* Menu Icon */}
-                    <div
+                    {/* <div
                         className="relative size-11 p-2 bg-white/70 dark:bg-[#2a2e3d] rounded-full flex items-center justify-center shadow-md hover:scale-110 hover:ring-2 ring-blue-300 dark:ring-purple-400 hover:bg-blue-100 dark:hover:bg-[#394056] transition-all cursor-pointer group"
                         onClick={() => toggleDropdown("menu")}
                     >
@@ -233,7 +237,7 @@ function Header({ onToggleChat }) {
                         <div className="absolute -bottom-8 text-xs bg-black/80 text-white px-3 py-1 rounded shadow hidden group-hover:block z-50 text-center whitespace-nowrap">
                             Menu
                         </div>
-                    </div>
+                    </div> */}
                     {/* Messenger Icon */}
                     <div
                         className="relative size-11 p-2 bg-white/70 dark:bg-[#2a2e3d] rounded-full flex items-center justify-center shadow-md hover:scale-110 hover:ring-2 ring-blue-300 dark:ring-purple-400 hover:bg-blue-100 dark:hover:bg-[#394056] transition-all cursor-pointer group"
