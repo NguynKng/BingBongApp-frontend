@@ -3,9 +3,9 @@ import PostCard from "../components/PostCard";
 import { useGetFeed } from "../hooks/usePosts";
 import SpinnerLoading from "../components/SpinnerLoading";
 import { useState } from "react";
-import Navbar from "../components/Navbar";
 import ListFriend from "../components/ListFriend";
 import ChatBox from "../components/ChatBox";
+import ListFriendBar from "../components/ListFriendBar";
 
 function HomePage() {
   const { feed, setFeed, loading } = useGetFeed();
@@ -31,7 +31,7 @@ function HomePage() {
 
   return (
     <>
-      <div className="flex lg:p-4 md:p-2 p-1 lg:ml-[20rem]">
+      <div className="flex lg:p-4 md:p-2 p-1 lg:ml-[20rem] lg:mr-0">
         <div className="md:w-[60%] w-full px-2 md:px-8 space-y-4">
           <CreateStatus onPostCreated={handleAddPost} />
           {/* Spinner when loading */}
@@ -56,6 +56,7 @@ function HomePage() {
         <div className="md:w-[40%] md:block hidden">
           <ListFriend onToggleChat={handleToggleChat} />
         </div>
+        <ListFriendBar onToggleChat={handleToggleChat} />
       </div>
       {showChat && (
         <ChatBox userChat={activeChatUser} onClose={handleCloseChat} />
