@@ -442,6 +442,21 @@ export const userAPI = {
       throw new Error(errorMessage);
     }
   },
+  getSuggestions: async () => {
+    try {
+      const response = await api.get(`/user/suggestions`);
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || "Failed to remove friend";
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
+    }
+  },
 };
 
 //POST API services

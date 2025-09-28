@@ -1,5 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import {
+  ChevronLeft,
   Gamepad2,
   House,
   Newspaper,
@@ -32,9 +33,17 @@ function Navbar({ isCloseSidebar, setIsCloseSidebar }) {
       className={`fixed top-0 left-0 flex flex-col h-screen z-60 bg-white
         border-r border-gray-300
         transition-all duration-300 ease-in-out
-        ${isCloseSidebar ? "w-20" : "w-60"}`}
+        ${
+          isCloseSidebar
+            ? "lg:w-20 lg:translate-x-0 -translate-x-full"
+            : "lg:w-60 w-[50%] translate-x-0"
+        }`}
     >
-      <div className={`flex items-center ${isCloseSidebar ? "justify-center" : "justify-between"} h-[64px] p-2`}>
+      <div
+        className={`flex items-center ${
+          isCloseSidebar ? "justify-center" : "justify-between"
+        } h-[64px] p-2`}
+      >
         {/* Logo */}
         {!isCloseSidebar && (
           <Link to="/" className="hover:bg-blue-500 rounded-xl">
@@ -101,6 +110,15 @@ function Navbar({ isCloseSidebar, setIsCloseSidebar }) {
           )}
         </Link>
       </div>
+      <button
+        type="button"
+        className={`block lg:hidden rounded-r-md absolute top-1/2 right-0 translate-x-10 text-white px-1 py-4 bg-[#e91e63]`} // Đổi màu nút toggle
+        onClick={() => setIsCloseSidebar(!isCloseSidebar)}
+        aria-label="Toggle sidebar"
+        title="Toggle sidebar"
+      >
+        <ChevronLeft className={`size-8 ${isCloseSidebar ? "rotate-180" : ""}`} />
+      </button>
     </nav>
   );
 }

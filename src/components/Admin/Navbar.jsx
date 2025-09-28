@@ -79,7 +79,7 @@ export default function Navbar({ isOpenNavbar, setIsOpenNavbar }) {
 
       {/* KHU VỰC CUỘN: dùng flex-1 + min-h-0 (QUAN TRỌNG) */}
       <div
-        className={`flex flex-1 min-h-0 flex-col custom-scroll overflow-y-auto py-2 text-white ${!isOpenNavbar && "items-center"
+        className={`flex flex-1 min-h-0 flex-col custom-scroll overflow-y-auto p-2 text-white ${!isOpenNavbar && "items-center"
           }`}
       >
         {menuItems.map((item) => {
@@ -88,7 +88,7 @@ export default function Navbar({ isOpenNavbar, setIsOpenNavbar }) {
             <div
               key={item.label}
               className={`py-4 px-6 transition-all duration-200 ${isActive
-                  ? "bg-[#F7F7F7] text-[#388e3c] rounded-l-full shadow-md font-semibold w-full block"
+                  ? "bg-[#F7F7F7] text-[#388e3c] rounded-xl shadow-md font-semibold w-full block"
                   : "text-white"
                 }`}
               style={isActive ? { boxShadow: "0 2px 8px 0 rgba(0,0,0,0.07)" } : {}}

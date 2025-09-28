@@ -126,11 +126,7 @@ export default function ListFriendBar({ onToggleChat }) {
               >
                 <div className="size-8 relative">
                   <img
-                    src={
-                      friend.avatar
-                        ? `${Config.BACKEND_URL}${friend.avatar}`
-                        : "/user.png"
-                    }
+                    src={`${Config.BACKEND_URL}${friend.avatar}`}
                     alt={friend.fullName}
                     className="size-full rounded-full object-cover"
                   />
