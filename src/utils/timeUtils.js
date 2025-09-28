@@ -3,6 +3,15 @@
  * @param {string|number|Date} timestamp - The timestamp to format
  * @returns {string} Formatted relative time
  */
+
+export function formatReleaseDate(date) {
+	return new Date(date).toLocaleDateString("en-US", {
+		year: "numeric",
+		month: "long",
+		day: "numeric",
+	});
+}
+
 export const formatTime = (timestamp) => {
   if (!timestamp) return "";
 

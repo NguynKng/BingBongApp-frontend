@@ -64,3 +64,32 @@ export const useGetProfileByName = (name, options = {}) => {
 
     return { listUser, loading, error };
 };
+
+export const useGetSuggestion = () => {
+    const [suggestions, setSuggestions] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchSuggestions = async () => {
+            setLoading(true);
+            try {
+                const response = await userAPI.getSuggestions();
+                if (response.success) {
+                    setSuggestions(response.data);
+                    setError(null);
+                } else {
+                    setError(response.message || "Lỗi không xác định");
+                }
+            } catch (err) {
+                setError(err.message || "Lỗi khi gọi API");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchSuggestions();
+    }, []);
+
+    return { suggestions, loading, error };
+};

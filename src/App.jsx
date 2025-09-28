@@ -28,6 +28,8 @@ import AdminDashboardPage from "./pages/Admin/AdminDashboardPage";
 import AdminLayout from "./components/Admin/AdminLayout";
 import AdminUser from "./pages/Admin/AdminUser";
 import TestPage from "./pages/test";
+import MoviePage from "./pages/MoviePage";
+import NotFoundPage from "./pages/NotFoundPage";
 
 function App() {
   const { checkAuth, theme } = useAuthStore();
@@ -47,6 +49,14 @@ function App() {
   return (
     <>
       <Routes>
+        <Route
+          path="/*"
+          element={
+            <ProtectedRoute>
+              <MainLayout Element={NotFoundPage} />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/"
           element={
@@ -141,6 +151,14 @@ function App() {
           element={
             <ProtectedRoute>
               <MainLayout Element={NewsPage} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/movie"
+          element={
+            <ProtectedRoute>
+              <MainLayout Element={MoviePage} />
             </ProtectedRoute>
           }
         />

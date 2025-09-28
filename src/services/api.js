@@ -442,6 +442,21 @@ export const userAPI = {
       throw new Error(errorMessage);
     }
   },
+  getSuggestions: async () => {
+    try {
+      const response = await api.get(`/user/suggestions`);
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || "Failed to remove friend";
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
+    }
+  },
 };
 
 //POST API services
@@ -999,6 +1014,243 @@ export const statsAPI = {
     }
   },
 };
+
+export const tmdbAPI = {
+    getTrendingMovie: async () => {
+    try {
+      const response = await api.get("/tmdb/movie/trending");
+
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch tmdb trending movies";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getMovieTrailer: async (id) => {
+    try {
+      const response = await api.get(`/tmdb/movie/trailer/${id}`);
+
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch tmdb trending movies";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getMovieDetail: async (id) => {
+    try {
+      const response = await api.get(`/tmdb/movie/detail/${id}`);
+
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch tmdb trending movies";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getMovieCredit: async (id) => {
+    try {
+      const response = await api.get(`/tmdb/movie/credit/${id}`);
+
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch tmdb trending movies";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getSimilarMovies: async (id) => {
+    try {
+      const response = await api.get(`/tmdb/movie/similar/${id}`);
+
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch tmdb trending movies";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getMoviesByCategory: async (category) => {
+    try {
+      const response = await api.get(`/tmdb/movie/${category}`);
+
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch tmdb trending movies";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getTrendingTVShow: async () => {
+    try {
+      const response = await api.get(`/tmdb/tv/trending`);
+
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch tmdb trending movies";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getTVShowTrailer: async (id) => {
+    try {
+      const response = await api.get(`/tmdb/tv/trailer/${id}`);
+
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch tmdb trending movies";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getTVShowDetail: async (id) => {
+    try {
+      const response = await api.get(`/tmdb/tv/detail/${id}`);
+
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch tmdb trending movies";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getTVShowCredit: async (id) => {
+    try {
+      const response = await api.get(`/tmdb/tv/credit/${id}`);
+
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch tmdb trending movies";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getSimilarTVShow: async (id) => {
+    try {
+      const response = await api.get(`/tmdb/tv/similar/${id}`);
+
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch tmdb trending movies";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getTVShowByCategory: async (category) => {
+    try {
+      const response = await api.get(`/tmdb/tv/${category}`);
+
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch tmdb trending movies";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getTVShowEpisode: async (id, season_number) => {
+    try {
+      const response = await api.get(`/tmdb/tv/${id}/season/${season_number}`);
+
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch tmdb trending movies";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+}
 
 // Export the axios instance for use in other API services
 export default api;

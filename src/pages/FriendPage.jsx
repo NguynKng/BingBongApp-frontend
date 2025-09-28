@@ -6,8 +6,10 @@ import { userAPI } from "../services/api";
 import toast from "react-hot-toast";
 import Config from "../envVars";
 import { Link } from "react-router-dom";
+import { useGetSuggestion } from "../hooks/useProfile";
 
 const FriendPage = () => {
+  const { suggestions } = useGetSuggestion();
   const { user, updateUser } = useAuthStore();
   const { profile } = useGetProfile(user._id);
   const [friendRequests, setFriendRequests] = useState([]);
@@ -51,7 +53,7 @@ const FriendPage = () => {
     <>
       <style>{cardBlinkStyle}</style>
       <div className="dark:bg-[#181826] min-h-[92vh] pt-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 overflow-x-hidden">
+        <div className="lg:w-[90%] w-full mx-auto px-4 sm:px-6 lg:px-8 py-4 overflow-x-hidden">
           <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-8">
             Lời mời kết bạn ({friendRequests.length})
           </h2>
@@ -61,7 +63,9 @@ const FriendPage = () => {
             style={{ perspective: "1000px" }}
           >
             {friendRequests.length === 0 ? (
-              <p className="text-gray-500 dark:text-gray-400 col-span-full">Không có lời mời nào</p>
+              <p className="text-gray-500 dark:text-gray-400 col-span-full">
+                Không có lời mời nào
+              </p>
             ) : (
               friendRequests.map((requester) => (
                 <div
@@ -117,7 +121,35 @@ const FriendPage = () => {
           <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-8">
             Những người bạn có thể biết
           </h2>
-          <p className="text-gray-500 dark:text-gray-400">Tính năng đang phát triển...</p>
+          <div className="flex flex-wrap gap-4 items-center">
+            {suggestions.map((user) => (
+              <div
+                key={user._id}
+                className="bg-white dark:bg-[#1e1e2f] rounded-2xl border border-gray-200 dark:border-[#2b2b3d] shadow-lg transition-transform duration-300 p-4 flex flex-col items-center text-center card-blink w-52"
+                style={{
+                  transformStyle: "preserve-3d",
+                }}
+              >
+                <Link
+                  to={`/profile/${user._id}`}
+                  className="flex flex-col items-center"
+                >
+                  <img
+                    src={`${Config.BACKEND_URL}${user.avatar}`}
+                    alt={user.fullName}
+                    className="w-24 h-24 aspect-square rounded-full object-cover mb-3 shadow-md"
+                  />
+                  <p className="text-sm font-semibold text-gray-900 dark:text-white mb-2 truncate w-full">
+                    {user.fullName}
+                  </p>
+                </Link>
+
+                <button className="text-sm font-medium cursor-pointer bg-[#1b74e4] hover:bg-[#155fc3] text-white px-4 py-2 rounded-md w-full transition shadow">
+                  Thêm bạn bè
+                </button>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </>

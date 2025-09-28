@@ -1,181 +1,141 @@
-import { Ellipsis, Search } from "lucide-react";
-import { useGetProfile } from "../hooks/useProfile";
-import useAuthStore from "../store/authStore";
-import SpinnerLoading from "../components/SpinnerLoading";
-import { useEffect, useMemo, useState } from "react";
-import Config from "../envVars";
-import ads from "../data/ads";
+import { useEffect, useState, useMemo } from "react";
 import { Link } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import SpinnerLoading from "../components/SpinnerLoading";
+import { ORIGINAL_IMG_BASE_URL } from "../utils/movie_constants";
+import { formatReleaseDate } from "../utils/timeUtils";
+import { useGetSuggestion } from "../hooks/useProfile";
+import Config from "../envVars";
+import useMovieStore from "../store/movieStore";
 
-function ListFriend({ onToggleChat }) {
-  const { user, onlineUsers } = useAuthStore();
-  const { profile, loading } = useGetProfile(user?._id || "");
-  const [friends, setFriends] = useState([]);
-  const [search, setSearch] = useState("");
-  const [showSearch, setShowSearch] = useState(false);
+function ListFriend() {
+  const { movies, fetchMovies, loading } = useMovieStore();
+  const { suggestions, loading: suggestionsLoading } = useGetSuggestion();
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
-    if (profile?.friends) {
-      setFriends(profile.friends);
+    fetchMovies();
+  }, [fetchMovies]);
+
+  // Chia phim thành từng nhóm 5, và ghi nhớ bằng useMemo
+  const groupedMovies = useMemo(() => {
+    if (!movies) return [];
+    const groups = [];
+    for (let i = 0; i < movies.length; i += 5) {
+      groups.push(movies.slice(i, i + 5));
     }
-  }, [profile]);
+    return groups;
+  }, [movies]);
 
-  const filteredFriends = useMemo(() => {
-    return friends.filter((friend) =>
-      friend.fullName.toLowerCase().includes(search.toLowerCase())
-    );
-  }, [search, friends]);
+  const randomSuggestions = useMemo(() => {
+    if (!suggestions) return [];
+    const shuffled = [...suggestions].sort(() => Math.random() - 0.5); // shuffle
+    return shuffled.slice(0, 5);
+  }, [suggestions]);
 
-  const onlineFriends = useMemo(() => {
-    return filteredFriends.filter((friend) => onlineUsers.includes(friend._id));
-  }, [filteredFriends, onlineUsers]);
+  // Cứ 10s đổi nhóm phim
+  useEffect(() => {
+    if (!groupedMovies.length) return;
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) =>
+        prev + 1 >= groupedMovies.length ? 0 : prev + 1
+      );
+    }, 10000);
 
-  const offlineFriends = useMemo(() => {
-    return filteredFriends.filter((friend) => !onlineUsers.includes(friend._id));
-  }, [filteredFriends, onlineUsers]);
+    return () => clearInterval(interval);
+  }, [groupedMovies]);
 
   return (
-    <div className="fixed right-0 px-4 overflow-y-auto min-h-[92vh] max-h-[92vh] custom-scroll">
-      {/* Contacts Section */}
-      <div className="py-4">
-        <div className="flex items-center justify-between mb-4">
-          <h1 className="text-gray-600 text-lg font-semibold dark:text-gray-400">
-            Contacts
-          </h1>
-          <div className="flex items-center gap-3">
-            <div
-              onClick={() => setShowSearch((prev) => !prev)}
-              className="hover:bg-gray-300 bg-white/70 rounded-full size-9 flex items-center justify-center shadow cursor-pointer transition dark:hover:bg-[rgb(56,56,56)]"
-            >
-              <Search className="size-5 text-gray-600" />
-            </div>
-          </div>
+    <div className="fixed w-92 min-h-[88vh] rounded-lg max-h-[88vh] overflow-y-auto flex flex-col gap-4 custom-scroll">
+      <div className="shadow-lg rounded-lg w-full p-4 bg-white">
+        <div className="flex items-center justify-between">
+          <h1 className="font-semibold text-lg">Đề xuất cho bạn</h1>
+          <Link to="/friends" className="text-blue-500">
+            Xem tất cả <span className="ml-1">{`->`}</span>
+          </Link>
         </div>
-        {loading ? (
-          <div className="flex items-center justify-center">
+        <div className="flex flex-col gap-4 mt-4">
+          {suggestionsLoading ? (
             <SpinnerLoading />
-          </div>
-        ) : (
-          <>
-            {/* Search Input (conditional) */}
-            {showSearch && (
-              <div className="relative mb-4">
-                <Search className="absolute size-5 top-2.5 left-3 text-gray-500 dark:text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Tìm kiếm bạn bè"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="w-40 py-2 pl-10 pr-3 rounded-full bg-gray-100 text-sm text-gray-800 placeholder:text-gray-500 focus:outline-none shadow-inner dark:bg-[rgb(52,52,53)] dark:text-white dark:placeholder:text-gray-300"
-                />
-              </div>
-            )}
-
-            {/* Online Friends Section */}
-            <div className="space-y-2 mb-4">
-              <h2 className="text-gray-600 text-md font-semibold dark:text-gray-400">
-                Online Friends
-              </h2>
-              {onlineFriends.length > 0 ? (
-                onlineFriends.map((friend) => (
-                  <div
-                    key={friend._id}
-                    className="flex items-center gap-2 hover:bg-gray-200 rounded-lg px-2 py-2 cursor-pointer transition dark:hover:bg-[rgb(56,56,56)]"
-                    onClick={() => onToggleChat(friend)}
-                  >
-                    <div className="size-10 relative rounded-full">
-                      <img
-                        src={
-                          friend.avatar
-                            ? `${Config.BACKEND_URL}${friend.avatar}`
-                            : "/user.png"
-                        }
-                        alt={friend.fullName}
-                        className="size-full rounded-full object-cover"
-                      />
-                      <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
-                    </div>
-                    <h2 className="text-[15px] font-semibold dark:text-white">
-                      {friend.fullName}
-                    </h2>
-                  </div>
-                ))
-              ) : (
-                <p className="text-sm text-gray-500 dark:text-gray-300">
-                  No online friends found.
-                </p>
-              )}
-            </div>
-
-            {/* Divider */}
-            <hr className="border-gray-300 dark:border-gray-600 my-4" />
-
-            {/* Offline Friends Section */}
-            <div className="space-y-2 mb-4">
-              <h2 className="text-gray-600 text-md font-semibold dark:text-gray-400">
-                Offline Friends
-              </h2>
-              {offlineFriends.length > 0 ? (
-                offlineFriends.map((friend) => (
-                  <div
-                    key={friend._id}
-                    className="flex items-center gap-2 hover:bg-gray-200 rounded-lg px-2 py-2 cursor-pointer transition dark:hover:bg-[rgb(56,56,56)]"
-                    onClick={() => onToggleChat(friend)}
-                  >
-                    <div className="size-10 relative rounded-full">
-                      <img
-                        src={
-                          friend.avatar
-                            ? `${Config.BACKEND_URL}${friend.avatar}`
-                            : "/user.png"
-                        }
-                        alt={friend.fullName}
-                        className="size-full rounded-full object-cover"
-                      />
-                    </div>
-                    <h2 className="text-[15px] font-semibold dark:text-white">
-                      {friend.fullName}
-                    </h2>
-                  </div>
-                ))
-              ) : (
-                <p className="text-sm text-gray-500 dark:text-gray-300">
-                  No offline friends found.
-                </p>
-              )}
-            </div>
-
-            {/* Divider */}
-            <hr className="border-gray-300 dark:border-gray-600 my-4" />
-
-            {/* AI Section */}
-            <div className="space-y-2">
-              <h2 className="text-gray-600 text-md font-semibold dark:text-gray-400">
-                AI
-              </h2>
-              <div
-                className="flex items-center gap-2 hover:bg-gray-200 rounded-lg px-2 py-2 cursor-pointer transition dark:hover:bg-[rgb(56,56,56)]"
-                onClick={() =>
-                  onToggleChat({
-                    _id: "bingbong-ai",
-                    fullName: "BingBong AI",
-                    avatar: "/images/bingbong-ai.png",
-                  })
-                }
-              >
-                <div className="size-10 relative rounded-full">
+          ) : (
+            randomSuggestions.map((user) => (
+              <div className="flex items-center gap-4">
+                <Link to={`/profile/${user._id}`}>
                   <img
-                    src={`${Config.BACKEND_URL}/images/bingbong-ai.png`}
-                    alt={"Chat with BingBong AI"}
-                    className="size-full rounded-full object-cover"
+                    src={`${Config.BACKEND_URL}${user.avatar}`}
+                    alt={user.fullName}
+                    className="w-12 h-12 rounded-full object-cover"
                   />
+                </Link>
+
+                <div>
+                  <Link
+                    to={`/profile/${user._id}`}
+                    className="font-semibold block"
+                  >
+                    {user.fullName}
+                  </Link>
+                  <span className="text-sm text-gray-500 block">
+                    Đề xuất cho bạn
+                  </span>
                 </div>
-                <h2 className="text-[15px] font-semibold dark:text-white">
-                  BingBong AI
-                </h2>
+
+                <button className="ml-auto px-3 cursor-pointer py-1 bg-blue-400 text-white text-sm rounded-lg hover:bg-blue-500">
+                  Add
+                </button>
               </div>
-            </div>
-          </>
+            ))
+          )}
+        </div>
+      </div>
+      <div className="shadow-lg rounded-lg w-full p-4 bg-white">
+        <div className="flex items-center justify-between">
+          <h1 className="font-semibold text-lg">Phim Hot 🔥</h1>
+          <Link to="#" className="text-blue-500">
+            Xem thêm <span className="ml-1">{`->`}</span>
+          </Link>
+        </div>
+
+        {loading ? (
+          <SpinnerLoading />
+        ) : (
+          <div className="relative overflow-hidden">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentIndex} // trigger animation khi đổi nhóm
+                initial={{ x: "100%", opacity: 0 }}
+                animate={{ x: "0%", opacity: 1 }}
+                exit={{ x: "-100%", opacity: 0 }}
+                transition={{ duration: 0.6 }}
+                className="flex flex-col divide-y divide-gray-100 w-full"
+              >
+                {groupedMovies[currentIndex]?.map((movie, index) => (
+                  <div
+                    key={movie.id}
+                    className="flex items-center gap-4 py-3 hover:bg-gray-50 rounded-lg px-2 transition"
+                  >
+                    <span className="text-lg font-bold text-gray-500 w-6">
+                      {index + 1}
+                    </span>
+                    <img
+                      src={`${ORIGINAL_IMG_BASE_URL}${movie.backdrop_path}`}
+                      alt={movie.title}
+                      className="w-20 h-14 rounded-lg object-cover shadow-sm"
+                      loading="lazy"
+                    />
+                    <div className="flex-1">
+                      <h2 className="text-base font-semibold line-clamp-1">
+                        {movie?.name || movie?.title}
+                      </h2>
+                      <p className="text-xs text-gray-500">
+                        {`Release: ${formatReleaseDate(movie.release_date)}`}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </motion.div>
+            </AnimatePresence>
+          </div>
         )}
       </div>
     </div>

@@ -15,7 +15,7 @@ function MainLayout({ Element }) {
   const { socket, updateUser, user } = useAuthStore();
   const [showChat, setShowChat] = useState(false);
   const [activeChatUser, setActiveChatUser] = useState();
-  const [isCloseSidebar, setIsCloseSidebar] = useState(false);
+  const [isCloseSidebar, setIsCloseSidebar] = useState(true);
 
   const [popup, setPopup] = useState({
     isPopup: false,
