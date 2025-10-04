@@ -23,7 +23,6 @@ export function useGetNotifications() {
       } else {
         appendNotifications(res.data);
       }
-
       setHasMore(res.pagination?.hasMore ?? false);
     } catch (err) {
       console.error("Failed to load notifications", err);

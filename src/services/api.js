@@ -799,7 +799,7 @@ export const quizAPI = {
   },
   getLeaderboard: async () => {
     try {
-      const response = await api.get("/userScore/leaderboard");
+      const response = await api.get("/quizScore/leaderboard");
 
       if (response.data.success === false) {
         throw new Error(response.data.message);
@@ -1016,7 +1016,7 @@ export const statsAPI = {
 };
 
 export const tmdbAPI = {
-    getTrendingMovie: async () => {
+  getTrendingMovie: async () => {
     try {
       const response = await api.get("/tmdb/movie/trending");
 
@@ -1034,9 +1034,9 @@ export const tmdbAPI = {
       throw error;
     }
   },
-  getMovieTrailer: async (id) => {
+  getContentTrailer: async (id, contentType) => {
     try {
-      const response = await api.get(`/tmdb/movie/trailer/${id}`);
+      const response = await api.get(`/tmdb/${contentType}/trailer/${id}`);
 
       if (response.data.success === false) {
         throw new Error(response.data.message);
@@ -1052,9 +1052,9 @@ export const tmdbAPI = {
       throw error;
     }
   },
-  getMovieDetail: async (id) => {
+  getContentDetail: async (id, contentType) => {
     try {
-      const response = await api.get(`/tmdb/movie/detail/${id}`);
+      const response = await api.get(`/tmdb/${contentType}/detail/${id}`);
 
       if (response.data.success === false) {
         throw new Error(response.data.message);
@@ -1070,9 +1070,9 @@ export const tmdbAPI = {
       throw error;
     }
   },
-  getMovieCredit: async (id) => {
+  getContentCredit: async (id, contentType) => {
     try {
-      const response = await api.get(`/tmdb/movie/credit/${id}`);
+      const response = await api.get(`/tmdb/${contentType}/credit/${id}`);
 
       if (response.data.success === false) {
         throw new Error(response.data.message);
@@ -1088,9 +1088,9 @@ export const tmdbAPI = {
       throw error;
     }
   },
-  getSimilarMovies: async (id) => {
+  getSimilarContent: async (id, contentType) => {
     try {
-      const response = await api.get(`/tmdb/movie/similar/${id}`);
+      const response = await api.get(`/tmdb/${contentType}/similar/${id}`);
 
       if (response.data.success === false) {
         throw new Error(response.data.message);
@@ -1142,78 +1142,6 @@ export const tmdbAPI = {
       throw error;
     }
   },
-  getTVShowTrailer: async (id) => {
-    try {
-      const response = await api.get(`/tmdb/tv/trailer/${id}`);
-
-      if (response.data.success === false) {
-        throw new Error(response.data.message);
-      }
-
-      return response.data;
-    } catch (error) {
-      if (error.response) {
-        const errorMessage =
-          error.response.data.message || "Failed to fetch tmdb trending movies";
-        throw new Error(errorMessage);
-      }
-      throw error;
-    }
-  },
-  getTVShowDetail: async (id) => {
-    try {
-      const response = await api.get(`/tmdb/tv/detail/${id}`);
-
-      if (response.data.success === false) {
-        throw new Error(response.data.message);
-      }
-
-      return response.data;
-    } catch (error) {
-      if (error.response) {
-        const errorMessage =
-          error.response.data.message || "Failed to fetch tmdb trending movies";
-        throw new Error(errorMessage);
-      }
-      throw error;
-    }
-  },
-  getTVShowCredit: async (id) => {
-    try {
-      const response = await api.get(`/tmdb/tv/credit/${id}`);
-
-      if (response.data.success === false) {
-        throw new Error(response.data.message);
-      }
-
-      return response.data;
-    } catch (error) {
-      if (error.response) {
-        const errorMessage =
-          error.response.data.message || "Failed to fetch tmdb trending movies";
-        throw new Error(errorMessage);
-      }
-      throw error;
-    }
-  },
-  getSimilarTVShow: async (id) => {
-    try {
-      const response = await api.get(`/tmdb/tv/similar/${id}`);
-
-      if (response.data.success === false) {
-        throw new Error(response.data.message);
-      }
-
-      return response.data;
-    } catch (error) {
-      if (error.response) {
-        const errorMessage =
-          error.response.data.message || "Failed to fetch tmdb trending movies";
-        throw new Error(errorMessage);
-      }
-      throw error;
-    }
-  },
   getTVShowByCategory: async (category) => {
     try {
       const response = await api.get(`/tmdb/tv/${category}`);
@@ -1234,7 +1162,9 @@ export const tmdbAPI = {
   },
   getTVShowEpisode: async (id, season_number) => {
     try {
-      const response = await api.get(`/tmdb/tv/${id}/season/${season_number}`);
+      const response = await api.get(
+        `/tmdb/tv/detail/${id}/season/${season_number}`
+      );
 
       if (response.data.success === false) {
         throw new Error(response.data.message);
@@ -1250,7 +1180,28 @@ export const tmdbAPI = {
       throw error;
     }
   },
-}
+};
+
+export const shopAPI = {
+  getShopBySlug: async (slug) => {
+    try {
+      const response = await api.get(`/shop/${slug}`);
+
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch tmdb trending movies";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+};
 
 // Export the axios instance for use in other API services
 export default api;

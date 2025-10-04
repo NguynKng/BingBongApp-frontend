@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
 import { userAPI, postAPI } from "../services/api"; 
+import useAuthStore from "../store/authStore";
 
 export const useGetUserPosts = (userId) => {
+    const {user} = useAuthStore()
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect(() => {
+        if(!user) return
         const fetchPosts = async () => {
             try {
                 const response = await userAPI.getUserPost(userId);
@@ -29,11 +32,13 @@ export const useGetUserPosts = (userId) => {
 }
 
 export const useGetFeed = () => {
+    const {user} = useAuthStore()
   const [feed, setFeed] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const loadFeed = async () => {
+    if(!user) return
     setLoading(true);
     try {
       const response = await postAPI.getFeed(); // không truyền page/limit

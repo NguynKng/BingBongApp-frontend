@@ -9,8 +9,10 @@ import NotificationPopup from "./NotificationPopup";
 import { useCallback } from "react";
 import IncomingCall from "./IncomingCall";
 import Navbar from "./Navbar";
+import useMovieStore from "../store/movieStore";
 
 function MainLayout({ Element }) {
+  const { fetchMovies, contentType } = useMovieStore();
   const { addNotification } = useNotificationStore();
   const { socket, updateUser, user } = useAuthStore();
   const [showChat, setShowChat] = useState(false);
@@ -25,6 +27,10 @@ function MainLayout({ Element }) {
       author_img: "",
     },
   });
+
+  useEffect(() => {
+    fetchMovies(contentType);
+  }, [fetchMovies, contentType]);
 
   const handleGetNewMessage = useCallback(
     (sender) => {
@@ -114,18 +120,17 @@ function MainLayout({ Element }) {
   return (
     <>
       <Meta title={`BingBong`} />
-      <Navbar isCloseSidebar={isCloseSidebar} setIsCloseSidebar={setIsCloseSidebar} />
+      <Navbar
+        isCloseSidebar={isCloseSidebar}
+        setIsCloseSidebar={setIsCloseSidebar}
+      />
       <Header onToggleChat={handleToggleChat} />
       <div className="relative mt-[64px] bg-gradient-to-br from-[#f0f4ff] to-[#fff1f7] dark:from-[#1c1f2a] dark:to-[#2a2e3d] min-h-[92vh]">
         <Element />
       </div>
-      <IncomingCall
-      />
+      <IncomingCall />
       {showChat && (
-        <ChatBox
-          userChat={activeChatUser}
-          onClose={handleCloseChat}
-        />
+        <ChatBox userChat={activeChatUser} onClose={handleCloseChat} />
       )}
       {popup.isPopup && (
         <NotificationPopup content={popup.content} onClose={handleClosePopup} />
