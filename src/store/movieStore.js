@@ -1,14 +1,19 @@
 import { create } from "zustand";
 import { tmdbAPI } from "../services/api";
 
-const useMovieStore = create((set, get) => ({
-    movies: [],
-    loading: false,
-    fetchMovies: async () => {
-    if (get().movies.length > 0) return; // tránh fetch lại
+const useMovieStore = create((set) => ({
+  contentType: "movie",
+  movies: [],
+  loading: false,
+  fetchMovies: async (contentType) => {
     set({ loading: true });
     try {
-      const res = await tmdbAPI.getTrendingMovie();
+      let res;
+      if (contentType === "movie") {
+        res = await tmdbAPI.getTrendingMovie();
+      } else if (contentType === "tv") {
+        res = await tmdbAPI.getTrendingTVShow();
+      }
       if (res.success) {
         set({ movies: res.content });
       }
@@ -16,7 +21,7 @@ const useMovieStore = create((set, get) => ({
       set({ loading: false });
     }
   },
-
+  setContentType: (type) => set({ contentType: type }),
 }));
 
 export default useMovieStore;

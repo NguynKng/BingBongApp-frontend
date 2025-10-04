@@ -1,6 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import {
   ChevronLeft,
+  Film,
   Gamepad2,
   House,
   Newspaper,
@@ -26,11 +27,12 @@ function Navbar({ isCloseSidebar, setIsCloseSidebar }) {
     { src: Gamepad2, text: "Quiz Game", link: "/quiz" },
     { src: Newspaper, text: "Tin tức", link: "/news" },
     { src: UsersRound, text: "Bạn bè", link: "/friends" },
+    { src: Film, text: "Phim", link: "/movie" },
   ];
 
   return (
     <nav
-      className={`fixed top-0 left-0 flex flex-col h-screen z-60 bg-white
+      className={`fixed bottom-0 left-0 flex flex-col h-screen pt-[64px] z-50 bg-white
         border-r border-gray-300
         transition-all duration-300 ease-in-out
         ${
@@ -46,7 +48,7 @@ function Navbar({ isCloseSidebar, setIsCloseSidebar }) {
       >
         {/* Logo */}
         {!isCloseSidebar && (
-          <Link to="/" className="hover:bg-blue-500 rounded-xl">
+          <Link to="/" className="absolute left-1/2 -translate-x-1/2 hover:bg-blue-500 rounded-xl">
             <img
               src="/images/ico/logo_bingbong1.ico"
               className="w-12 h-12 object-cover"
@@ -55,7 +57,7 @@ function Navbar({ isCloseSidebar, setIsCloseSidebar }) {
         )}
         {/* Collapse Button */}
         <button
-          className={`cursor-e-resize hover:bg-blue-500 hover:text-white py-3 px-4 rounded-xl`}
+          className={`ml-auto cursor-e-resize hover:bg-blue-500 hover:text-white py-3 px-5 rounded-xl`}
           onClick={() => setIsCloseSidebar(!isCloseSidebar)}
         >
           <PanelLeft />
@@ -73,6 +75,7 @@ function Navbar({ isCloseSidebar, setIsCloseSidebar }) {
         {navbarData.map((item, index) => {
           return (
             <Link
+            title={item.text}
               to={item.link}
               key={index}
               className={`flex items-center gap-3 py-3 px-4 hover:bg-blue-500 hover:text-white rounded-xl transition-all group ${

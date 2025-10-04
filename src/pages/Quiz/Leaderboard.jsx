@@ -130,8 +130,7 @@ function Leaderboard() {
                           <img
                             src={
                               player.user?.avatar
-                                ? `${Config.BACKEND_URL}${player.user.avatar}`
-                                : "/user.png"
+                                && `${Config.BACKEND_URL}${player.user.avatar}`
                             }
                             alt="avatar"
                             className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover"

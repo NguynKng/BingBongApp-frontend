@@ -700,7 +700,7 @@ export default function CallWindow({
   }, []);
 
   return (
-    <div className="fixed inset-0 bg-black/90 flex flex-col items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black/90 flex flex-col items-center justify-center z-[999]">
       <div className="absolute top-4 left-4 flex items-center gap-2 text-white text-lg font-semibold">
         <img
           src={`${Config.BACKEND_URL}${userCall.avatar}`}

@@ -9,13 +9,9 @@ import Config from "../envVars";
 import useMovieStore from "../store/movieStore";
 
 function ListFriend() {
-  const { movies, fetchMovies, loading } = useMovieStore();
+  const { movies, loading } = useMovieStore();
   const { suggestions, loading: suggestionsLoading } = useGetSuggestion();
   const [currentIndex, setCurrentIndex] = useState(0);
-
-  useEffect(() => {
-    fetchMovies();
-  }, [fetchMovies]);
 
   // Chia phim thành từng nhóm 5, và ghi nhớ bằng useMemo
   const groupedMovies = useMemo(() => {
@@ -59,7 +55,7 @@ function ListFriend() {
             <SpinnerLoading />
           ) : (
             randomSuggestions.map((user) => (
-              <div className="flex items-center gap-4">
+              <div key={user._id} className="flex items-center gap-4">
                 <Link to={`/profile/${user._id}`}>
                   <img
                     src={`${Config.BACKEND_URL}${user.avatar}`}
@@ -91,7 +87,7 @@ function ListFriend() {
       <div className="shadow-lg rounded-lg w-full p-4 bg-white">
         <div className="flex items-center justify-between">
           <h1 className="font-semibold text-lg">Phim Hot 🔥</h1>
-          <Link to="#" className="text-blue-500">
+          <Link to="/movie" className="text-blue-500">
             Xem thêm <span className="ml-1">{`->`}</span>
           </Link>
         </div>
@@ -110,7 +106,7 @@ function ListFriend() {
                 className="flex flex-col divide-y divide-gray-100 w-full"
               >
                 {groupedMovies[currentIndex]?.map((movie, index) => (
-                  <div
+                  <Link to={`/movie/${movie.id}`}
                     key={movie.id}
                     className="flex items-center gap-4 py-3 hover:bg-gray-50 rounded-lg px-2 transition"
                   >
@@ -131,7 +127,7 @@ function ListFriend() {
                         {`Release: ${formatReleaseDate(movie.release_date)}`}
                       </p>
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </motion.div>
             </AnimatePresence>

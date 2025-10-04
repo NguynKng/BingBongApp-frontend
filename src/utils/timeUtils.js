@@ -139,3 +139,11 @@ export const formatTimeToDateAndHour = (date) => {
     return `${day}-${month}-${year} ${hours}:${minutes}`;
   }
 };
+
+export function formattedRunTime(minutes) {
+    const second = minutes * 60;
+    const hours = Math.floor(second / 3600);
+    const minutesRemaining = Math.floor((second % 3600) / 60);
+
+    return `${hours > 0 ? `${hours}h ${minutesRemaining.toString().padStart(2, '0')}m` : `${minutesRemaining}m`}`;
+}

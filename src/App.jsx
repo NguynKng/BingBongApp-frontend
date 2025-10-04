@@ -29,7 +29,9 @@ import AdminLayout from "./components/Admin/AdminLayout";
 import AdminUser from "./pages/Admin/AdminUser";
 import TestPage from "./pages/test";
 import MoviePage from "./pages/MoviePage";
+import DetailMoviePage from "./pages/DetailMoviePage";
 import NotFoundPage from "./pages/NotFoundPage";
+import ShopPage from "./pages/ShopPage"
 
 function App() {
   const { checkAuth, theme } = useAuthStore();
@@ -123,6 +125,14 @@ function App() {
           }
         />
         <Route
+          path="/shop/:shopSlug/*"
+          element={
+            <ProtectedRoute>
+              <MainLayout Element={ShopPage} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/posts/:postId"
           element={
             <ProtectedRoute>
@@ -159,6 +169,14 @@ function App() {
           element={
             <ProtectedRoute>
               <MainLayout Element={MoviePage} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/movie/:id"
+          element={
+            <ProtectedRoute>
+              <MainLayout Element={DetailMoviePage} />
             </ProtectedRoute>
           }
         />

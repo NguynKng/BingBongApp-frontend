@@ -23,3 +23,15 @@ body {
 .animate-fade-in {
   animation: fade-in 0.3s ease-out;
 }
+
+.shimmer {
+    animation: shimmer 2s infinite linear;
+    background-image: linear-gradient(to right, #2c2c2c 4%, #333 25%, #2c2c2c 36%);
+    background-size: 1000px 100%;
+}
+
+@keyframes shimmer {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
