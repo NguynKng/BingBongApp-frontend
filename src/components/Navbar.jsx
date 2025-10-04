@@ -46,7 +46,7 @@ function Navbar({ isCloseSidebar, setIsCloseSidebar }) {
       >
         {/* Logo */}
         {!isCloseSidebar && (
-          <Link to="/" className="hover:bg-blue-500 rounded-xl">
+          <Link to="/" className="absolute left-1/2 -translate-x-1/2 hover:bg-blue-500 rounded-xl">
             <img
               src="/images/ico/logo_bingbong1.ico"
               className="w-12 h-12 object-cover"
@@ -55,7 +55,7 @@ function Navbar({ isCloseSidebar, setIsCloseSidebar }) {
         )}
         {/* Collapse Button */}
         <button
-          className={`cursor-e-resize hover:bg-blue-500 hover:text-white py-3 px-4 rounded-xl`}
+          className={`ml-auto cursor-e-resize hover:bg-blue-500 hover:text-white py-3 px-5 rounded-xl`}
           onClick={() => setIsCloseSidebar(!isCloseSidebar)}
         >
           <PanelLeft />
