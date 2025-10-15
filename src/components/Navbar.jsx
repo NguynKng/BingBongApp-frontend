@@ -3,9 +3,11 @@ import {
   ChevronLeft,
   Film,
   Gamepad2,
+  Handshake,
   House,
   Newspaper,
   PanelLeft,
+  Store,
   UserRound,
   UsersRound,
 } from "lucide-react";
@@ -26,8 +28,10 @@ function Navbar({ isCloseSidebar, setIsCloseSidebar }) {
     { src: UserRound, text: "Cá nhân", link: `/profile/${user._id}` },
     { src: Gamepad2, text: "Quiz Game", link: "/quiz" },
     { src: Newspaper, text: "Tin tức", link: "/news" },
-    { src: UsersRound, text: "Bạn bè", link: "/friends" },
+    { src: Handshake, text: "Bạn bè", link: "/friends" },
     { src: Film, text: "Phim", link: "/movie" },
+    { src: Store, text: "Shop", link: "#" },
+    { src: UsersRound, text: "Nhóm", link: "#" },
   ];
 
   return (
@@ -48,7 +52,7 @@ function Navbar({ isCloseSidebar, setIsCloseSidebar }) {
       >
         {/* Logo */}
         {!isCloseSidebar && (
-          <Link to="/" className="absolute left-1/2 -translate-x-1/2 hover:bg-blue-500 rounded-xl">
+          <Link to="/" className="absolute left-1/2 -translate-x-1/2 rounded-xl">
             <img
               src="/images/ico/logo_bingbong1.ico"
               className="w-12 h-12 object-cover"

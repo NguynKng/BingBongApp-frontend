@@ -20,17 +20,17 @@ export default function ProductTab({ shop, user }) {
           >
             Tất cả
           </li>
-          {shop.productTypes.map((cat, idx) => (
+          {shop.categories.map((cat) => (
             <li
-              key={idx}
+              key={cat._id}
               className={`cursor-pointer px-2 py-1 rounded-md ${
                 activeCategory === cat
                   ? "bg-blue-500 text-white"
                   : "hover:bg-gray-200 dark:hover:bg-[#2b2b3d]"
               }`}
-              onClick={() => setActiveCategory(cat)}
+              onClick={() => setActiveCategory(cat.name)}
             >
-              {cat}
+              {cat.name}
             </li>
           ))}
         </ul>

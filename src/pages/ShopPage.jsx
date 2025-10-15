@@ -13,6 +13,7 @@ import ManageTab from "../components/Shop/ManageTab";
 export default function ShopPage() {
   const { shopSlug } = useParams();
   const [shop, setShop] = useState(null);
+  const [loading, setLoading] = useState(true);
   const { user } = useAuthStore();
   const location = useLocation();
   const clean = (p) => p.replace(/\/+$/, "");
@@ -30,17 +31,22 @@ export default function ShopPage() {
 
   useEffect(() => {
     const fetchShop = async () => {
+      setLoading(true);
       try {
         const res = await shopAPI.getShopBySlug(shopSlug);
         if (res.success) setShop(res.data);
       } catch (err) {
         console.error(err);
+      } finally {
+        setLoading(false);
       }
     };
     fetchShop();
   }, [shopSlug]);
 
-  if (!shop) return <div className="p-10 text-center">Đang tải shop...</div>;
+  if (loading) return <div className="p-10 text-center">Đang tải shop...</div>;
+
+  if (!shop) return <div className="p-10 text-center">Không tìm thấy shop</div>;
 
   return (
     <>

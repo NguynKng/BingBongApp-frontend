@@ -386,7 +386,7 @@ function ProfilePage() {
                                 : "Thêm bạn bè"}
                             </span>
                           </button>
-                          <button className="flex gap-2 items-center justify-center bg-gray-200 dark:bg-[#23233b] hover:bg-gray-300 dark:hover:bg-[#23233b] cursor-pointer rounded-md py-2 px-4 text-black dark:text-white font-medium">
+                          <button className="flex gap-2 items-center justify-center bg-gray-200 dark:bg-[#23233b] hover:bg-gray-300 dark:hover:bg-[#23233b] cursor-pointer rounded-md py-2 px-4 text-black dark:text-white font-medium" onClick={() => handleToggleChat(displayedUser)}>
                             <img
                               src={
                                 theme === "light"

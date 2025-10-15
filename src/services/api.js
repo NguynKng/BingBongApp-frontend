@@ -1195,7 +1195,111 @@ export const shopAPI = {
     } catch (error) {
       if (error.response) {
         const errorMessage =
-          error.response.data.message || "Failed to fetch tmdb trending movies";
+          error.response.data.message || "Lấy thông tin shop thất bại";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+};
+
+export const productAPI = {
+  addProduct: async (productData) => {
+    try {
+      const response = await api.post("/product/add", productData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Thêm sản phẩm thất bại";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getProductsByShop: async (shopId) => {
+    try {
+      const response = await api.get(`/product/shop/${shopId}`);
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Lấy sản phẩm thất bại";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getProductBySlug: async (slug) => {
+    try {
+      const response = await api.get(`/product/slug/${slug}`);
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Lấy sản phẩm thất bại";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getProductById: async (id) => {
+    try {
+      const response = await api.get(`/product/id/${id}`);
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Lấy sản phẩm thất bại";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  updateProductById: async (id, productData) => {
+    try {
+      const response = await api.put(`/product/id/${id}`, productData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Lấy sản phẩm thất bại";
+        toast.error(errorMessage);
         throw new Error(errorMessage);
       }
       throw error;

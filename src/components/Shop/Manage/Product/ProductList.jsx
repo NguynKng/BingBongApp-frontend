@@ -5,13 +5,29 @@ import { useEffect, useState } from "react";
 import Config from "../../../../envVars";
 import toast from "react-hot-toast";
 import Swal from "sweetalert2";
+import { productAPI } from "../../../../services/api";
 
 function ProductList({ shop }) {
   const [products, setProducts] = useState([]);
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
-  const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("default");
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      if (!shop || !shop._id) return;
+      setLoading(true);
+      try {
+        const response = await productAPI.getProductsByShop(shop._id);
+        setProducts(response.data);
+      } catch (error) {
+        toast.error(error.message || "Failed to fetch products");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProducts();
+  }, [shop]);
 
   const handleSearch = async () => {};
 
@@ -25,9 +41,8 @@ function ProductList({ shop }) {
         name: product.name,
         id: product._id,
         images: product.images,
-        price: product.price,
+        price: product.basePrice,
         category: product.category,
-        quantity: product.quantity,
         brand: product.brand,
       })),
       columns: [
@@ -44,15 +59,11 @@ function ProductList({ shop }) {
           dataIndex: "images",
           key: "images",
           render: (images) => {
-            const thumbnail = images.find((img) => img.type === "thumbnail");
+            const thumbnail = images[0];
             return (
               <div className="flex items-center justify-center">
                 <img
-                  src={
-                    thumbnail
-                      ? `${Config.BACKEND_URL}/images/${thumbnail.path} `
-                      : `/images/no-thumbnail.png`
-                  }
+                  src={`${Config.BACKEND_URL}${thumbnail}`}
                   alt="Product Thumbnail"
                   className="size-12 object-cover rounded-md"
                 />
@@ -60,30 +71,14 @@ function ProductList({ shop }) {
             );
           },
           align: "center",
-          width: "10rem",
+          width: "6rem",
           className: "text-lg",
         },
         {
           title: "Name",
           dataIndex: "name",
           key: "name",
-          width: "20rem",
-          align: "center",
-          className: "text-lg",
-        },
-        {
-          title: "Category",
-          dataIndex: "category",
-          key: "category",
-          width: "8rem",
-          align: "center",
-          className: "text-lg",
-        },
-        {
-          title: "Brand",
-          dataIndex: "brand",
-          key: "brand",
-          width: "8rem",
+          width: "14rem",
           align: "center",
           className: "text-lg",
         },
@@ -91,13 +86,7 @@ function ProductList({ shop }) {
           title: "Price ($)",
           dataIndex: "price",
           key: "price",
-          align: "center",
-          className: "text-lg",
-        },
-        {
-          title: "Quantity",
-          dataIndex: "quantity",
-          key: "quantity",
+          width: "8rem",
           align: "center",
           className: "text-lg",
         },
@@ -107,11 +96,10 @@ function ProductList({ shop }) {
           key: "action",
           render: (id) => (
             <div className="flex items-center justify-center gap-2">
-              <Link
-                to={`/admin/product/edit/${id}`}
-                className="px-4 py-2 rounded-md hover:text-blue-500 bg-blue-900 text-white"
-              >
-                Edit
+              <Link to={`/shop/${shop.slug}/manage/products/edit/${id}`}>
+                <div className="px-4 py-2 rounded-md hover:text-blue-500 bg-blue-900 text-white">
+                  Edit
+                </div>
               </Link>
               <div
                 className="px-4 py-2 rounded-md bg-red-500 hover:text-red-700 text-white cursor-pointer"
@@ -123,6 +111,7 @@ function ProductList({ shop }) {
           ),
           align: "center",
           className: "text-lg",
+          width: "14rem",
         },
       ],
     };
@@ -133,7 +122,7 @@ function ProductList({ shop }) {
         pagination={{ pageSize: 5 }}
         bordered={true}
         scroll={{ x: "max-content" }}
-        className="mt-6 mx-auto"
+        className="mt-6 mx-auto w-full"
         size="middle"
         loading={loading}
       />
@@ -183,7 +172,7 @@ function ProductList({ shop }) {
             onChange={(e) => setSelectedCategory(e.target.value)}
           >
             <option value="default">All</option>
-            {categories.map((category) => (
+            {shop.categories.map((category) => (
               <option key={category._id} value={category.name}>
                 {category.name}
               </option>
@@ -195,7 +184,9 @@ function ProductList({ shop }) {
         </div>
         <h2 className="text-xl font-medium">{`Total (${products.length})`}</h2>
       </div>
-      <ProductTable />
+      <div className="flex justify-center w-full">
+        <ProductTable />
+      </div>
     </div>
   );
 }

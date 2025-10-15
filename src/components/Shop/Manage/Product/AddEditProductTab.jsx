@@ -12,42 +12,39 @@ import {
 } from "lucide-react";
 import Swal from "sweetalert2";
 import Config from "../../../../envVars";
+import { productAPI } from "../../../../services/api";
 
 function AddEditProductTab({ shop }) {
-  const { id } = useParams(); // Lấy ID từ URL (nếu có)
-  const navigate = useNavigate(); // Hook điều hướng
-  const [categories, setCategories] = useState([]);
-  const [brands, setBrands] = useState([]);
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [variants, setVariants] = useState([
+    { name: "", price: 0, stock: 0, image: null },
+  ]);
   const [openTab, setOpenTab] = useState({ General: true });
   const imageSliderRef = useRef(null);
-  const [files, setFiles] = useState([]);
-  const [previewImages, setPreviewImages] = useState([]);
-  const [deletedImageIds, setDeletedImageIds] = useState([]);
+  const [mainProductImages, setMainProductImages] = useState([]);
+  const [deletedImagePaths, setDeletedImagePaths] = useState([]);
   const [generalForm, setGeneralForm] = useState({
-    productName: "",
-    slug: "",
-    productCategory: "",
-    productBrand: "",
+    name: "",
+    category: "",
+    brand: "",
     price: 0,
     discount: 0,
     description: "",
   });
 
-  const [stockForm, setStockForm] = useState({
-    keepingUnit: "",
-    stock: 0,
-    minStock: 0,
-  });
-
   const handleFileChange = (e) => {
     const selectedFiles = Array.from(e.target.files);
-    setFiles((prevFiles) => [...prevFiles, ...selectedFiles]);
-    const newPreviews = selectedFiles.map((file) => ({
-      // temporary unique id for the preview
-      path: URL.createObjectURL(file),
-      fromFile: true,
+
+    // Tạo danh sách ảnh mới có preview
+    const newImages = selectedFiles.map((file) => ({
+      file, // ảnh thực tế
+      path: URL.createObjectURL(file), // đường dẫn preview
+      fromFile: true, // ảnh từ local, chưa upload
     }));
-    setPreviewImages((prevPreviews) => [...prevPreviews, ...newPreviews]);
+
+    // Cập nhật state
+    setMainProductImages((prev) => [...prev, ...newImages]);
   };
 
   const handleRemoveImage = async (index) => {
@@ -61,16 +58,80 @@ function AddEditProductTab({ shop }) {
     });
     if (result.isConfirmed) {
       // Get the image being removed
-      setPreviewImages((prevPreviews) => {
-        const removed = prevPreviews[index];
-        // If the removed image has an _id and is not from a new file, store its ID
-        if (removed && removed._id && !removed.fromFile) {
-          setDeletedImageIds((prevIds) => [...prevIds, removed._id]);
+      setMainProductImages((prevImages) => {
+        const removed = prevImages[index];
+
+        // ✅ Nếu ảnh là từ DB thì thêm vào deleted list (chỉ làm 1 lần)
+        if (removed && !removed.fromFile && removed.path) {
+          setDeletedImagePaths((prev) => {
+            if (!prev.includes(removed.path)) {
+              return [...prev, removed.path];
+            }
+            return prev; // tránh thêm trùng
+          });
         }
-        return prevPreviews.filter((_, i) => i !== index);
+
+        // ✅ Xóa khỏi danh sách hiển thị
+        return prevImages.filter((_, i) => i !== index);
       });
-      setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
     }
+  };
+
+  const handleAddVariant = () => {
+    setVariants((prev) => [
+      ...prev,
+      { name: "", price: 0, stock: 0, image: null },
+    ]);
+  };
+
+  const handleRemoveVariant = (index) => {
+    setVariants((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  // Xóa ảnh biến thể
+  const handleRemoveVariantImage = (index) => {
+    setVariants((prevVariants) => {
+      const updatedVariants = [...prevVariants];
+      const variant = updatedVariants[index];
+
+      if (!variant) return prevVariants;
+
+      const removedImage = variant.image;
+
+      // ✅ Nếu ảnh từ DB (có path và không phải từ file upload)
+      if (removedImage && removedImage.path && !removedImage.fromFile) {
+        setDeletedImagePaths((prev) => {
+          if (!prev.includes(removedImage.path)) {
+            return [...prev, removedImage.path];
+          }
+          return prev; // tránh thêm trùng
+        });
+      }
+
+      // ✅ Xoá ảnh khỏi variant
+      updatedVariants[index] = { ...variant, image: null };
+
+      return updatedVariants;
+    });
+  };
+
+  // 🧩 VARIANT IMAGE
+  const handleVariantImageChange = (index, e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const newPreview = URL.createObjectURL(file);
+
+    setVariants((prev) =>
+      prev.map((variant, i) =>
+        i === index
+          ? {
+              ...variant,
+              image: { file, path: newPreview, fromFile: true },
+            }
+          : variant
+      )
+    );
   };
 
   const scrollLeft = () => {
@@ -97,54 +158,11 @@ function AddEditProductTab({ shop }) {
     }
   };
 
-  //Check Progress Stock Form
-  const totalStockFormFields = Object.keys(stockForm).length;
-  const filledStockFormFields = Object.entries(stockForm).filter(([key, val]) =>
-    typeof val === "number" ? val > 0 : val.toString().trim() !== ""
-  ).length;
-  const filledStockFormBars = Math.round(
-    (filledStockFormFields / totalStockFormFields) * totalStockFormFields
-  );
-
-  // Exclude discount and discountPrice fields from the total count
-  const totalGeneralFormFields = Object.keys(generalForm).filter(
-    (key) => !["discount"].includes(key)
-  ).length;
-
-  // excluding discount and discountPrice
-  const filledGeneralFormFields = Object.entries(generalForm).filter(
-    ([key, val]) => {
-      if (["discount"].includes(key)) return false;
-      return typeof val === "number" ? val > 0 : val.toString().trim() !== "";
-    }
-  ).length;
-
-  // Calculate filled bars (this will essentially equal filledGeneralFormFields)
-  const filledGeneralFormBars = Math.round(
-    (filledGeneralFormFields / totalGeneralFormFields) * totalGeneralFormFields
-  );
-
-  const handleChangeStockForm = (e) => {
-    setStockForm({ ...stockForm, [e.target.name]: e.target.value });
-  };
-
   const handleChangeGeneralForm = (e) => {
     if (e.target.name === "description" && e.target.value.length > 500) {
       return;
     }
-
-    if (e.target.name === "productName") {
-      const newProductName = e.target.value;
-      // Generate slug: trim, lowercase, and replace any whitespace with a dash
-      const newSlug = newProductName.trim().toLowerCase().replace(/\s+/g, "-");
-      setGeneralForm({
-        ...generalForm,
-        productName: newProductName,
-        slug: newSlug,
-      });
-    } else {
-      setGeneralForm({ ...generalForm, [e.target.name]: e.target.value });
-    }
+    setGeneralForm({ ...generalForm, [e.target.name]: e.target.value });
   };
 
   const toggleTab = (tabName) => {
@@ -154,20 +172,124 @@ function AddEditProductTab({ shop }) {
     }));
   };
 
-  const handleSubmit = async (e) => {};
+  useEffect(() => {
+    const fetchProductData = async () => {
+      if (!id) return;
+      try {
+        const response = await productAPI.getProductById(id);
+        const productData = response.data;
+        if (productData) {
+          setGeneralForm({
+            name: productData.name,
+            description: productData.description,
+            price: productData.basePrice,
+            discount: productData.discount,
+            category: productData.category,
+            brand: productData.brand,
+          });
+          const loadedImages = productData.images.map((img) => ({
+            path: img,
+            fromFile: false,
+          }));
+          setMainProductImages(loadedImages);
+
+          const loadedVariants = productData.variants.map((variant) => ({
+            ...variant,
+            image: variant.image
+              ? { path: variant.image, fromFile: false }
+              : null,
+          }));
+          setVariants(loadedVariants);
+        }
+      } catch (error) {
+        console.error("Failed to fetch product data:", error);
+      }
+    };
+    fetchProductData();
+  }, [id]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append("name", generalForm.name);
+    formData.append("description", generalForm.description);
+    formData.append("basePrice", generalForm.price);
+    formData.append("discount", generalForm.discount);
+    formData.append("category", generalForm.category);
+    formData.append("brand", generalForm.brand);
+    formData.append("shop", shop._id);
+
+    if (
+      !generalForm.name ||
+      !generalForm.category ||
+      !generalForm.price ||
+      !generalForm.description ||
+      variants.length === 0
+    ) {
+      toast.error("Vui lòng điền đầy đủ thông tin sản phẩm");
+      return;
+    }
+
+    if (mainProductImages.length === 0) {
+      toast.error("Hãy thêm ít nhất 1 ảnh cho sản phẩm");
+      return;
+    }
+
+    // Ảnh chính
+    mainProductImages.forEach((img) => {
+      if (img.fromFile && img.file) {
+        formData.append("mainImages", img.file);
+      }
+    });
+
+    // Ảnh variant
+    let imageIndex = 0;
+
+    variants.forEach((variant) => {
+      if (variant.image && variant.image.fromFile && variant.image.file) {
+        formData.append("variantImages", variant.image.file);
+        variant.imageIndex = imageIndex; // chỉ số ảnh mới upload
+        imageIndex++;
+      } else {
+        variant.imageIndex = null; // không có ảnh mới
+      }
+    });
+
+    formData.append("variants", JSON.stringify(variants));
+
+    if (id) {
+      formData.append("deletedImagePath", JSON.stringify(deletedImagePaths));
+    }
+
+    try {
+      let response;
+      if (!id) {
+        response = await productAPI.addProduct(formData);
+      } else {
+        response = await productAPI.updateProductById(id, formData);
+      }
+
+      if (response.success == true) {
+        toast.success(response.message);
+        navigate(`/shop/${shop.slug}/manage/products`);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   return (
     <div className="p-4">
       <div className="flex items-center sm:flex-row flex-col justify-between gap-4">
         <div className="flex items-center gap-2">
           <Link
-            to="/admin/product/add"
+            to={`/shop/${shop.slug}/manage/products/add`}
             className="px-4 py-2 rounded-md bg-blue-900 text-white text-center"
           >
             Add Product
           </Link>
           <Link
-            to="/admin/product"
+            to={`/shop/${shop.slug}/manage/products`}
             className="px-4 py-2 rounded-md bg-blue-900 text-white text-center"
           >
             Manage Product
@@ -181,13 +303,13 @@ function AddEditProductTab({ shop }) {
         <div className="flex items-center justify-end">
           <button
             type="submit"
-            className="mr-2 my-2 p-4 px-4 py-2 text-white bg-blue-950 rounded-md w-36bg-"
+            className="mr-2 my-2 p-4 px-4 py-2 text-white cursor-pointer bg-blue-950 rounded-md w-36"
           >
             Save Product
           </button>
         </div>
-        <div className="flex md:flex-row flex-col-reverse gap-6 p-4">
-          <div className="rounded-md border-2 border-gray-200 w-full lg:w-[30%] h-fit">
+        <div className="flex flex-col gap-6 p-2">
+          <div className="rounded-md border-2 border-gray-200 w-full h-fit">
             <h1 className="p-4 font-medium text-lg text-green-800">
               Product Image
             </h1>
@@ -208,8 +330,8 @@ function AddEditProductTab({ shop }) {
               <div className="flex flex-col gap-2 mt-2">
                 {/* Preview Image */}
                 <div className="flex justify-between">
-                  <h1>Product Image ({previewImages.length})</h1>
-                  {previewImages.length > 0 && (
+                  <h1>Product Image ({mainProductImages.length})</h1>
+                  {mainProductImages.length > 0 && (
                     <div className="flex">
                       <ChevronLeft
                         className="hover:text-red-500 cursor-pointer"
@@ -222,30 +344,30 @@ function AddEditProductTab({ shop }) {
                     </div>
                   )}
                 </div>
-                {previewImages.length === 0 ? (
+                {mainProductImages.length === 0 ? (
                   <p className="text-center text-gray-500">
                     No images selected yet.
                   </p>
                 ) : (
                   <div
-                    className="flex overflow-x-scroll scrollbar-hide items-center rounded-md"
+                    className="flex overflow-x-scroll custom-scroll items-center rounded-md gap-2"
                     ref={imageSliderRef}
                   >
-                    {previewImages.length == 0 ? (
+                    {mainProductImages.length == 0 ? (
                       <p className="text-center text-gray-500">
                         No images selected yet.
                       </p>
                     ) : (
-                      previewImages.map((src, index) => (
+                      mainProductImages.map((src, index) => (
                         <div
                           key={index}
-                          className="relative w-full flex-none rounded-md border-2 border-gray-200 h-[16rem] group cursor-pointer"
+                          className="relative w-72 flex-none rounded-md border-2 border-gray-200 h-[16rem] group cursor-pointer"
                         >
                           <img
                             src={
                               src.fromFile
                                 ? src.path
-                                : `${Config.BACKEND_URL}/images/${src.path}`
+                                : `${Config.BACKEND_URL}${src.path}`
                             }
                             alt={`Preview ${index}`}
                             className="size-full object-cover rounded-md"
@@ -290,51 +412,13 @@ function AddEditProductTab({ shop }) {
               </div>
             </div>
           </div>
-          <div className="lg:w-[70%] w-full">
+          <div className="w-full">
             <div className="rounded-md border-2 border-gray-200 w-full">
               <div className="p-4 flex items-center justify-between">
                 <h1 className="font-medium text-lg text-green-800">
                   General Information
                 </h1>
                 <div className="flex items-center gap-2">
-                  <div
-                    className={`${
-                      totalGeneralFormFields == filledGeneralFormFields &&
-                      "bg-green-800"
-                    } rounded-full border-2 border-gray-200 flex items-center justify-center gap-1 px-3 py-1 bg-gray-50`}
-                  >
-                    {filledGeneralFormFields < totalGeneralFormFields ? (
-                      <>
-                        <div className="sm:flex gap-[0.1rem] hidden">
-                          {[...Array(totalGeneralFormFields)].map((_, i) => (
-                            <div
-                              key={i}
-                              className={`w-4 h-1 rounded-lg ${
-                                i < filledGeneralFormBars
-                                  ? "bg-black"
-                                  : "bg-gray-300"
-                              }`}
-                            ></div>
-                          ))}
-                        </div>
-                        <div className="rotate-90 h-[0.1rem] w-3 bg-gray-400 sm:block hidden"></div>
-                      </>
-                    ) : (
-                      <div className="bg-white rounded-full">
-                        <Check className="size-4 p-1" />
-                      </div>
-                    )}
-                    <div
-                      className={`${
-                        totalGeneralFormFields === filledGeneralFormFields &&
-                        "text-white"
-                      } flex`}
-                    >
-                      <span>{filledGeneralFormFields}</span>
-                      <span>/</span>
-                      <span>{totalGeneralFormFields}</span>
-                    </div>
-                  </div>
                   <div
                     className="border-2 border-gray-200 rounded-md cursor-pointer"
                     onClick={() => toggleTab("General")}
@@ -356,44 +440,32 @@ function AddEditProductTab({ shop }) {
               >
                 <div className="flex flex-col gap-4">
                   <div>
-                    <label htmlFor="productName">Product Name</label>
+                    <label htmlFor="name">Product Name</label>
                     <input
                       className="w-full px-4 py-2 border-2 border-gray-200 rounded-md"
                       type="text"
-                      name="productName"
-                      id="productName"
+                      name="name"
+                      id="name"
                       placeholder="Product Name"
-                      value={generalForm.productName}
-                      onChange={handleChangeGeneralForm}
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="slug">Slug</label>
-                    <input
-                      className="w-full px-4 py-2 border-2 border-gray-200 rounded-md"
-                      type="text"
-                      name="slug"
-                      id="slug"
-                      placeholder="Ex: iphone-16-promax"
-                      value={generalForm.slug}
+                      value={generalForm.name}
                       onChange={handleChangeGeneralForm}
                     />
                   </div>
                   <div className="flex gap-4">
                     <div className="w-1/2">
-                      <label htmlFor="productCategory">Product Category</label>
+                      <label htmlFor="category">Category</label>
                       <div className="relative">
                         <select
                           className="block w-full px-4 py-2 border-2 border-gray-200 rounded-md appearance-none"
-                          name="productCategory"
-                          id="productCategory"
-                          value={generalForm.productCategory}
+                          name="category"
+                          id="category"
+                          value={generalForm.category}
                           onChange={handleChangeGeneralForm}
                         >
                           <option value="" disabled>
                             Select Category
                           </option>
-                          {categories.map((category) => (
+                          {shop.categories.map((category) => (
                             <option key={category._id} value={category.name}>
                               {category.name}
                             </option>
@@ -405,28 +477,16 @@ function AddEditProductTab({ shop }) {
                       </div>
                     </div>
                     <div className="w-1/2">
-                      <label htmlFor="productBrand">Product Brand</label>
-                      <div className="relative">
-                        <select
-                          className="block w-full px-4 py-2 border-2 border-gray-200 rounded-md appearance-none"
-                          name="productBrand"
-                          id="productBrand"
-                          value={generalForm.productBrand}
-                          onChange={handleChangeGeneralForm}
-                        >
-                          <option value="" disabled>
-                            Select Brand
-                          </option>
-                          {brands.map((brand) => (
-                            <option key={brand._id} value={brand.name}>
-                              {brand.name}
-                            </option>
-                          ))}
-                        </select>
-                        <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none">
-                          <ChevronDown className="w-5 h-5 text-gray-600" />
-                        </div>
-                      </div>
+                      <label htmlFor="productName">Brand</label>
+                      <input
+                        className="w-full px-4 py-2 border-2 border-gray-200 rounded-md"
+                        type="text"
+                        name="brand"
+                        id="brand"
+                        placeholder="Brand"
+                        value={generalForm.brand}
+                        onChange={handleChangeGeneralForm}
+                      />
                     </div>
                   </div>
                   <div className="flex lg:flex-row flex-col gap-4">
@@ -526,113 +586,151 @@ function AddEditProductTab({ shop }) {
                       onChange={handleChangeGeneralForm}
                     />
                   </div>
-                </div>
-              </div>
-            </div>
-            <div className={`rounded-md border-2 border-gray-200 w-full mt-4`}>
-              <div className="p-4 flex items-center justify-between">
-                <h1 className="font-medium text-lg text-green-800">
-                  Manage Stock
-                </h1>
-                <div className="flex items-center gap-2">
-                  <div
-                    className={`${
-                      totalStockFormFields === filledStockFormFields &&
-                      "bg-green-800"
-                    } rounded-full border-2 border-gray-200 flex items-center justify-center gap-1 px-3 py-1 bg-gray-50`}
-                  >
-                    {filledStockFormFields < totalStockFormFields ? (
-                      <>
-                        <div className="sm:flex gap-[0.1rem] hidden">
-                          {[...Array(totalStockFormFields)].map((_, i) => (
-                            <div
-                              key={i}
-                              className={`w-4 h-1 rounded-lg ${
-                                i < filledStockFormBars
-                                  ? "bg-black"
-                                  : "bg-gray-300"
-                              }`}
-                            ></div>
-                          ))}
-                        </div>
-                        <div className="rotate-90 h-[0.1rem] w-3 bg-gray-400 sm:block hidden"></div>
-                      </>
-                    ) : (
-                      <div className="bg-white rounded-full">
-                        <Check className="size-4 p-1" />
-                      </div>
-                    )}
-                    <div
-                      className={`${
-                        totalStockFormFields === filledStockFormFields &&
-                        "text-white"
-                      } flex`}
-                    >
-                      <span>{filledStockFormFields}</span>
-                      <span>/</span>
-                      <span>{totalStockFormFields}</span>
+                  <div className="rounded-md border-2 border-gray-200">
+                    <div className="p-4 flex items-center justify-between">
+                      <h1 className="font-medium text-lg text-green-800">
+                        Variants
+                      </h1>
+                      <button
+                        type="button"
+                        onClick={handleAddVariant}
+                        className="px-3 py-2 bg-blue-900 cursor-pointer text-white rounded-md"
+                      >
+                        + Add Variant
+                      </button>
                     </div>
-                  </div>
-                  <div
-                    className="border-2 border-gray-200 rounded-md cursor-pointer"
-                    onClick={() => toggleTab("Stock")}
-                  >
-                    <ChevronDown
-                      className={`${
-                        openTab["Stock"] && "rotate-180"
-                      } transition-transform duration-300 ease-in-out text-gray-500 size-5 mx-auto`}
-                    />
-                  </div>
-                </div>
-              </div>
-              <div
-                className={`border-t-2 border-gray-200 flex lg:flex-row flex-col gap-4 transition-all duration-300 ease-in-out overflow-hidden origin-top ${
-                  openTab["Stock"]
-                    ? "max-h-fit px-4 py-6 opacity-100 scale-y-100"
-                    : "max-h-0 opacity-0 scale-y-0"
-                }`}
-              >
-                <div className="lg:w-1/2 w-full flex flex-col gap-4">
-                  <div className="w-full">
-                    <label htmlFor="keepingUnit" className="block">
-                      Stock Keeping Unit
-                    </label>
-                    <input
-                      className="w-full px-4 py-2 border-2 border-gray-200 rounded-md"
-                      type="text"
-                      id="keepingUnit"
-                      name="keepingUnit"
-                      value={stockForm.keepingUnit}
-                      onChange={handleChangeStockForm}
-                    />
-                  </div>
-                  <div className="w-full">
-                    <label htmlFor="stock" className="block">
-                      Stock
-                    </label>
-                    <input
-                      className="w-full px-4 py-2 border-2 border-gray-200 rounded-md"
-                      type="number"
-                      id="stock"
-                      name="stock"
-                      value={stockForm.stock}
-                      onChange={handleChangeStockForm}
-                    />
-                  </div>
-                </div>
-                <div className="lg:w-1/2 w-full flex gap-4">
-                  <div className="md:self-end w-full">
-                    <label htmlFor="minStock" className="block">
-                      Minimum Stock
-                    </label>
-                    <input
-                      className="w-full px-4 py-2 border-2 border-gray-200 rounded-md"
-                      type="number"
-                      id="minStock"
-                      name="minStock"
-                      value={stockForm.minStock}
-                      onChange={handleChangeStockForm}
-                    />
+                    <div className="border-t-2 border-gray-200 p-4 flex flex-col gap-4">
+                      {variants.length === 0 ? (
+                        <p className="text-gray-500 text-center">
+                          No variants yet.
+                        </p>
+                      ) : (
+                        variants.map((variant, index) => (
+                          <div
+                            key={index}
+                            className="border-2 border-gray-200 p-4 rounded-md flex flex-col gap-3"
+                          >
+                            <div className="flex justify-between items-center">
+                              <h2 className="font-medium text-green-700">
+                                Variant {index + 1}
+                              </h2>
+                              <button
+                                type="button"
+                                className="text-red-600"
+                                onClick={() => handleRemoveVariant(index)}
+                              >
+                                Remove
+                              </button>
+                            </div>
+                            <div className="flex sm:flex-row flex-col gap-4">
+                              <div className="flex flex-col gap-2 sm:w-[70%] w-full">
+                                <div>
+                                  <label>Variant Name</label>
+                                  <input
+                                    type="text"
+                                    className="w-full border-2 border-gray-200 px-3 py-2 rounded-md"
+                                    value={variant.name}
+                                    onChange={(e) =>
+                                      setVariants((prev) =>
+                                        prev.map((v, i) =>
+                                          i === index
+                                            ? { ...v, name: e.target.value }
+                                            : v
+                                        )
+                                      )
+                                    }
+                                  />
+                                </div>
+                                <div>
+                                  <label>Price</label>
+                                  <input
+                                    type="number"
+                                    className="w-full border-2 border-gray-200 px-3 py-2 rounded-md"
+                                    value={variant.price}
+                                    onChange={(e) =>
+                                      setVariants((prev) =>
+                                        prev.map((v, i) =>
+                                          i === index
+                                            ? { ...v, price: e.target.value }
+                                            : v
+                                        )
+                                      )
+                                    }
+                                  />
+                                </div>
+                                <div>
+                                  <label>Stock</label>
+                                  <input
+                                    type="number"
+                                    className="w-full border-2 border-gray-200 px-3 py-2 rounded-md"
+                                    value={variant.stock}
+                                    onChange={(e) =>
+                                      setVariants((prev) =>
+                                        prev.map((v, i) =>
+                                          i === index
+                                            ? { ...v, stock: e.target.value }
+                                            : v
+                                        )
+                                      )
+                                    }
+                                  />
+                                </div>
+                              </div>
+                              <div className="sm:w-[30%] w-full flex flex-col items-center gap-2">
+                                {/* Nút upload */}
+                                <div className="relative w-full h-52 border-2 border-gray-200 rounded-md overflow-hidden group">
+                                  {variant.image ? (
+                                    <>
+                                      <img
+                                        src={
+                                          variant.image.fromFile
+                                            ? variant.image.path
+                                            : `${Config.BACKEND_URL}${variant.image.path}`
+                                        }
+                                        alt={`Variant ${index + 1}`}
+                                        className="w-full h-full object-cover"
+                                      />
+                                      <button
+                                        type="button"
+                                        onClick={() =>
+                                          handleRemoveVariantImage(index)
+                                        }
+                                        className="absolute top-1/2 left-1/2 transform cursor-pointer -translate-x-1/2 -translate-y-1/2 bg-red-500 text-white px-2 py-1 rounded-md text-xs opacity-0 group-hover:opacity-100 transition"
+                                      >
+                                        Remove
+                                      </button>
+                                    </>
+                                  ) : (
+                                    <p className="text-center text-gray-500 mt-16">
+                                      No image selected yet.
+                                    </p>
+                                  )}
+                                </div>
+                                <div className="relative cursor-pointer w-full p-2 border-2 border-gray-300 rounded-md bg-white hover:bg-gray-200 text-md text-green-800">
+                                  <input
+                                    type="file"
+                                    id={`image-${index}`}
+                                    name="images"
+                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                    accept="image/*"
+                                    onChange={(e) =>
+                                      handleVariantImageChange(index, e)
+                                    }
+                                  />
+                                  <label
+                                    className="flex items-center justify-center gap-2"
+                                    htmlFor={`image-${index}`}
+                                  >
+                                    <Upload className="size-5" />
+                                    <span>Add Image</span>
+                                  </label>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
