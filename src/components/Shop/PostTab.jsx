@@ -25,8 +25,8 @@ export default function PostTab({ shop, user }) {
               <CircleAlert />
               <span>
                 {`Trang`}
-                {shop.productTypes.length > 0 && (
-                  <> bán {shop.productTypes.join(", ")}</>
+                {shop.categories.length > 0 && (
+                  <> bán {shop.categories.map((c) => c.name).join(", ")}</>
                 )}
               </span>
             </div>

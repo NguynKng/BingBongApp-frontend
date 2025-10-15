@@ -125,7 +125,7 @@ const FriendPage = () => {
             {suggestions.map((user) => (
               <div
                 key={user._id}
-                className="bg-white dark:bg-[#1e1e2f] rounded-2xl border border-gray-200 dark:border-[#2b2b3d] shadow-lg transition-transform duration-300 p-4 flex flex-col items-center text-center card-blink w-52"
+                className="bg-white dark:bg-[#1e1e2f] rounded-2xl border border-gray-200 dark:border-[#2b2b3d] shadow-lg transition-transform duration-300 p-4 flex flex-col items-center text-center card-blink w-50"
                 style={{
                   transformStyle: "preserve-3d",
                 }}
