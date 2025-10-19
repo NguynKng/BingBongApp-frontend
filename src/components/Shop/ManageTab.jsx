@@ -16,9 +16,8 @@ import {
   X,
 } from "lucide-react";
 
-export default function ManageTab({ shop, user }) {
+export default function ManageTab({ shop }) {
   const location = useLocation();
-  const isMyShop = shop.owner._id === user?._id;
   const [openSidebar, setOpenSidebar] = useState(false);
 
   const clean = (p) => p.replace(/\/+$/, "");
@@ -52,7 +51,7 @@ export default function ManageTab({ shop, user }) {
       {/* Sidebar */}
       <aside
         className={`
-          bg-white dark:bg-[#1e1e2f] border border-gray-200 lg:mr-4 dark:border-[#2b2b3d]
+          bg-white dark:bg-[#1e1e2f] border border-gray-200 lg:sticky top-[8.5vh]  lg:mr-4 dark:border-[#2b2b3d]
           rounded-lg p-4 transition-all duration-300 ease-in-out
           ${openSidebar ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"}
           overflow-hidden lg:opacity-100 lg:max-h-fit lg:w-1/5 lg:block

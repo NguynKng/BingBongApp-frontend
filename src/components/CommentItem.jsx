@@ -20,6 +20,7 @@ function CommentItem({ comment, postAuthorId, onRefresh }) {
     try {
       const response = await postAPI.addReply(comment._id, responseComment);
       if (response.success) {
+        setOpenReplies(true);
         setResponseComment("");
         setReplyingTo(null);
         onRefresh();
@@ -31,7 +32,7 @@ function CommentItem({ comment, postAuthorId, onRefresh }) {
 
   const toggleReplies = () => setOpenReplies((prev) => !prev);
 
-  return (
+  return (  
     <div className="flex items-start gap-2 w-full max-w-full">
       <Link
         to={`/profile/${comment.user._id}`}

@@ -6,8 +6,10 @@ import { useState } from "react";
 import ListFriend from "../components/ListFriend";
 import ChatBox from "../components/ChatBox";
 import ListFriendBar from "../components/ListFriendBar";
+import useAuthStore from "../store/authStore";
 
 function HomePage() {
+  const { user } = useAuthStore();
   const { feed, setFeed, loading } = useGetFeed();
   const [showChat, setShowChat] = useState(false);
   const [activeChatUser, setActiveChatUser] = useState();
@@ -33,7 +35,11 @@ function HomePage() {
     <>
       <div className="flex lg:p-4 md:p-2 p-1 lg:ml-[20rem] lg:mr-0">
         <div className="md:w-[60%] w-full px-2 md:px-8 space-y-4">
-          <CreateStatus onPostCreated={handleAddPost} />
+          <CreateStatus
+            onPostCreated={handleAddPost}
+            postedByType="User"
+            postedById={user._id}
+          />
           {/* Spinner when loading */}
           {loading ? (
             <SpinnerLoading />

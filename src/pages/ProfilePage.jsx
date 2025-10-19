@@ -16,7 +16,7 @@ import useAuthStore from "../store/authStore";
 import Config from "../envVars";
 import { userAPI } from "../services/api";
 import { toast } from "react-hot-toast";
-import { useGetUserPosts } from "../hooks/usePosts";
+import { useGetOwnerPosts } from "../hooks/usePosts";
 import { useGetProfile } from "../hooks/useProfile";
 import SpinnerLoading from "../components/SpinnerLoading";
 import ChatBox from "../components/ChatBox";
@@ -34,7 +34,7 @@ function ProfilePage() {
   const { user, updateUser, theme } = useAuthStore();
   const avatarInputRef = useRef(null);
   const coverPhotoInputRef = useRef(null);
-  const { posts, setPosts, loading } = useGetUserPosts(userId);
+  const { posts, setPosts, loading } = useGetOwnerPosts("User", userId);
 
   const isMyProfile = userId === user?._id;
 
@@ -100,8 +100,8 @@ function ProfilePage() {
 
     try {
       setIsUploading((prev) => ({ ...prev, avatar: true }));
-      const response = await userAPI.uploadAvatar(file);
-      updateUser({ avatar: response.user.avatar });
+      const response = await userAPI.uploadAvatar(file, "User", userId);
+      updateUser({ avatar: response.data });
       toast.success("Avatar updated successfully");
     } catch (error) {
       console.error("Avatar upload error:", error);
@@ -116,8 +116,8 @@ function ProfilePage() {
 
     try {
       setIsUploading((prev) => ({ ...prev, coverPhoto: true }));
-      const response = await userAPI.uploadCoverPhoto(file);
-      updateUser({ coverPhoto: response.user.coverPhoto });
+      const response = await userAPI.uploadCoverPhoto(file, "User", userId);
+      updateUser({ coverPhoto: response.data });
       toast.success("Cover photo updated successfully");
     } catch (error) {
       console.error("Cover photo upload error:", error);
@@ -214,25 +214,27 @@ function ProfilePage() {
               alt="Cover photo"
               loading="lazy"
             />
-            <input
-              type="file"
-              ref={coverPhotoInputRef}
-              onChange={handleCoverPhotoUpload}
-              accept="image/*"
-              className="hidden"
-            />
             {isMyProfile && (
-              <div
-                className="absolute bottom-4 right-4 z-31 flex items-center gap-2 bg-white hover:bg-gray-300 cursor-pointer rounded-md py-2 px-4 text-black font-medium"
-                onClick={() => coverPhotoInputRef.current.click()}
-              >
-                <img src="/camera.png" className="size-4 object-cover" />
-                <span className="lg:inline hidden">
-                  {isUploading.coverPhoto ? "Uploading..." : "Thay ảnh bìa"}
-                </span>
-              </div>
+              <>
+                <input
+                  type="file"
+                  ref={coverPhotoInputRef}
+                  onChange={handleCoverPhotoUpload}
+                  accept="image/*"
+                  className="hidden"
+                />
+                <div
+                  className="absolute bottom-4 right-4 z-31 flex items-center gap-2 bg-white hover:bg-gray-300 cursor-pointer rounded-md py-2 px-4 text-black font-medium"
+                  onClick={() => coverPhotoInputRef.current.click()}
+                >
+                  <img src="/camera.png" className="size-4 object-cover" />
+                  <span className="lg:inline hidden">
+                    {isUploading.coverPhoto ? "Uploading..." : "Thay ảnh bìa"}
+                  </span>
+                </div>
+                <div className="absolute bottom-0 w-full bg-gradient-to-t from-black/50 to-transparent h-[30%] rounded-md"></div>
+              </>
             )}
-            <div className="absolute bottom-0 w-full bg-gradient-to-t from-black/50 to-transparent h-[30%] rounded-md"></div>
             <div className="absolute bottom-0 lg:translate-y-1/2 translate-y-1/5 lg:left-10 left-4 bg-gray-200 dark:bg-[#23233b] hover:bg-gray-300 dark:hover:bg-[#23233b] rounded-full z-10 w-46 h-46 flex border-4 border-white items-center justify-center">
               <img
                 src={
@@ -386,7 +388,10 @@ function ProfilePage() {
                                 : "Thêm bạn bè"}
                             </span>
                           </button>
-                          <button className="flex gap-2 items-center justify-center bg-gray-200 dark:bg-[#23233b] hover:bg-gray-300 dark:hover:bg-[#23233b] cursor-pointer rounded-md py-2 px-4 text-black dark:text-white font-medium" onClick={() => handleToggleChat(displayedUser)}>
+                          <button
+                            className="flex gap-2 items-center justify-center bg-gray-200 dark:bg-[#23233b] hover:bg-gray-300 dark:hover:bg-[#23233b] cursor-pointer rounded-md py-2 px-4 text-black dark:text-white font-medium"
+                            onClick={() => handleToggleChat(displayedUser)}
+                          >
                             <img
                               src={
                                 theme === "light"
@@ -525,7 +530,13 @@ function ProfilePage() {
           </div>
 
           <div className="lg:w-[60%] w-full space-y-4">
-            {isMyProfile && <CreateStatus onPostCreated={handleAddPost} />}
+            {isMyProfile && (
+              <CreateStatus
+                onPostCreated={handleAddPost}
+                postedByType={"User"}
+                postedById={user?._id}
+              />
+            )}
             <div className="py-2 px-4 bg-white dark:bg-[#1e1e2f] rounded-lg">
               <h1 className="text-xl font-bold text-gray-900 dark:text-white">
                 Bài viết

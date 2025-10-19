@@ -239,28 +239,13 @@ export const userAPI = {
       throw error;
     }
   },
-  getUserPost: async (userId) => {
-    try {
-      const response = await api.get(`/posts/user/${userId}`);
-      if (response.data.success === false) {
-        throw new Error(response.data.message);
-      }
-      return response.data;
-    } catch (error) {
-      if (error.response) {
-        const errorMessage =
-          error.response.data.message || "Failed to get user posts";
-        toast.error(errorMessage);
-        throw new Error(errorMessage);
-      }
-      throw error;
-    }
-  },
   // Upload user avatar
-  uploadAvatar: async (file) => {
+  uploadAvatar: async (file, type, id) => {
     try {
       const formData = new FormData();
       formData.append("avatar", file);
+      formData.append("type", type);
+      formData.append("id", id);
 
       const response = await api.post("/user/avatar", formData, {
         headers: {
@@ -287,10 +272,12 @@ export const userAPI = {
   },
 
   // Upload user cover photo
-  uploadCoverPhoto: async (file) => {
+  uploadCoverPhoto: async (file, type, id) => {
     try {
       const formData = new FormData();
       formData.append("coverPhoto", file);
+      formData.append("type", type);
+      formData.append("id", id);
 
       const response = await api.post("/user/cover-photo", formData, {
         headers: {
@@ -521,7 +508,7 @@ export const postAPI = {
   // Get user feed (posts from user and their friends)
   getFeed: async () => {
     try {
-      const response = await api.get(`/posts/feed`);
+      const response = await api.get(`/posts`);
 
       if (response.data.success === false) {
         throw new Error(response.data.message);
@@ -538,11 +525,11 @@ export const postAPI = {
     }
   },
 
-  // Get posts by user ID
-  getUserPosts: async (userId, page = 1, limit = 10) => {
+  // Get posts by owner
+  getPostsByOwner: async (type, id, page = 1, limit = 10) => {
     try {
       const response = await api.get(
-        `/posts/user/${userId}?page=${page}&limit=${limit}`
+        `/posts/by/${type}/${id}?page=${page}&limit=${limit}`
       );
 
       if (response.data.success === false) {
@@ -1228,9 +1215,11 @@ export const productAPI = {
       throw error;
     }
   },
-  getProductsByShop: async (shopId) => {
+  getProductsByShop: async (shopId, query) => {
     try {
-      const response = await api.get(`/product/shop/${shopId}`);
+      const response = await api.get(`/product/shop/${shopId}`, {
+        params: query,
+      });
       if (response.data.success === false) {
         toast.error(response.data.message);
         throw new Error(response.data.message);
@@ -1247,9 +1236,9 @@ export const productAPI = {
       throw error;
     }
   },
-  getProductBySlug: async (slug) => {
+  getProductBySlug: async (slug, shopId) => {
     try {
-      const response = await api.get(`/product/slug/${slug}`);
+      const response = await api.get(`/product/slug/${slug}/${shopId}`);
       if (response.data.success === false) {
         toast.error(response.data.message);
         throw new Error(response.data.message);

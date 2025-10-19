@@ -1,44 +1,44 @@
 import { useEffect, useState } from "react";
-import { userAPI, postAPI } from "../services/api"; 
+import { postAPI } from "../services/api";
 import useAuthStore from "../store/authStore";
 
-export const useGetUserPosts = (userId) => {
-    const {user} = useAuthStore()
-    const [posts, setPosts] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+export const useGetOwnerPosts = (type, id) => {
+  const { user } = useAuthStore();
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-    useEffect(() => {
-        if(!user) return
-        const fetchPosts = async () => {
-            try {
-                const response = await userAPI.getUserPost(userId);
-                if (response.success) {
-                    setPosts(response.posts);
-                } else {
-                    setError(response.message);
-                }
-            } catch (err) {
-                setError(err.message);
-            } finally {
-                setLoading(false);
-            }
-        };
+  useEffect(() => {
+    if (!user) return;
+    const fetchPosts = async () => {
+      try {
+        const response = await postAPI.getPostsByOwner(type, id);
+        if (response.success) {
+          setPosts(response.posts);
+        } else {
+          setError(response.message);
+        }
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-        fetchPosts();
-    }, [userId]);
+    fetchPosts();
+  }, [type, id, user]);
 
-    return { posts, setPosts, loading, error };
-}
+  return { posts, setPosts, loading, error };
+};
 
 export const useGetFeed = () => {
-    const {user} = useAuthStore()
+  const { user } = useAuthStore();
   const [feed, setFeed] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const loadFeed = async () => {
-    if(!user) return
+    if (!user) return;
     setLoading(true);
     try {
       const response = await postAPI.getFeed(); // không truyền page/limit
@@ -63,6 +63,6 @@ export const useGetFeed = () => {
     setFeed,
     loading,
     error,
-    refresh: loadFeed
+    refresh: loadFeed,
   };
 };

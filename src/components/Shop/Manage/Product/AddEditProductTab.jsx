@@ -2,7 +2,6 @@ import { Link, useParams, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useState, useEffect, useRef } from "react";
 import {
-  Check,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
@@ -10,13 +9,13 @@ import {
   Upload,
   X,
 } from "lucide-react";
-import Swal from "sweetalert2";
 import Config from "../../../../envVars";
 import { productAPI } from "../../../../services/api";
 
 function AddEditProductTab({ shop }) {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const [variants, setVariants] = useState([
     { name: "", price: 0, stock: 0, image: null },
   ]);
@@ -31,6 +30,7 @@ function AddEditProductTab({ shop }) {
     price: 0,
     discount: 0,
     description: "",
+    status: "active",
   });
 
   const handleFileChange = (e) => {
@@ -48,33 +48,23 @@ function AddEditProductTab({ shop }) {
   };
 
   const handleRemoveImage = async (index) => {
-    const result = await Swal.fire({
-      title: "Are you sure?",
-      text: "Do you want to remove this image?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Yes, remove it!",
-      cancelButtonText: "Cancel",
+    // Get the image being removed
+    setMainProductImages((prevImages) => {
+      const removed = prevImages[index];
+
+      // ✅ Nếu ảnh là từ DB thì thêm vào deleted list (chỉ làm 1 lần)
+      if (removed && !removed.fromFile && removed.path) {
+        setDeletedImagePaths((prev) => {
+          if (!prev.includes(removed.path)) {
+            return [...prev, removed.path];
+          }
+          return prev; // tránh thêm trùng
+        });
+      }
+
+      // ✅ Xóa khỏi danh sách hiển thị
+      return prevImages.filter((_, i) => i !== index);
     });
-    if (result.isConfirmed) {
-      // Get the image being removed
-      setMainProductImages((prevImages) => {
-        const removed = prevImages[index];
-
-        // ✅ Nếu ảnh là từ DB thì thêm vào deleted list (chỉ làm 1 lần)
-        if (removed && !removed.fromFile && removed.path) {
-          setDeletedImagePaths((prev) => {
-            if (!prev.includes(removed.path)) {
-              return [...prev, removed.path];
-            }
-            return prev; // tránh thêm trùng
-          });
-        }
-
-        // ✅ Xóa khỏi danh sách hiển thị
-        return prevImages.filter((_, i) => i !== index);
-      });
-    }
   };
 
   const handleAddVariant = () => {
@@ -186,6 +176,7 @@ function AddEditProductTab({ shop }) {
             discount: productData.discount,
             category: productData.category,
             brand: productData.brand,
+            status: productData.status,
           });
           const loadedImages = productData.images.map((img) => ({
             path: img,
@@ -218,6 +209,7 @@ function AddEditProductTab({ shop }) {
     formData.append("category", generalForm.category);
     formData.append("brand", generalForm.brand);
     formData.append("shop", shop._id);
+    formData.append("status", generalForm.status);
 
     if (
       !generalForm.name ||
@@ -260,7 +252,7 @@ function AddEditProductTab({ shop }) {
     if (id) {
       formData.append("deletedImagePath", JSON.stringify(deletedImagePaths));
     }
-
+    setLoading(true);
     try {
       let response;
       if (!id) {
@@ -275,6 +267,8 @@ function AddEditProductTab({ shop }) {
       }
     } catch (err) {
       console.error(err);
+    } finally {
+        setLoading(false);
     }
   };
 
@@ -305,7 +299,7 @@ function AddEditProductTab({ shop }) {
             type="submit"
             className="mr-2 my-2 p-4 px-4 py-2 text-white cursor-pointer bg-blue-950 rounded-md w-36"
           >
-            Save Product
+            {loading ? "Saving..." : "Save Product"}
           </button>
         </div>
         <div className="flex flex-col gap-6 p-2">
@@ -327,7 +321,7 @@ function AddEditProductTab({ shop }) {
                   </div>
                 </div>
               </div>
-              <div className="flex flex-col gap-2 mt-2">
+              <div className="flex flex-col gap-2 mt-2 w-full">
                 {/* Preview Image */}
                 <div className="flex justify-between">
                   <h1>Product Image ({mainProductImages.length})</h1>
@@ -361,7 +355,7 @@ function AddEditProductTab({ shop }) {
                       mainProductImages.map((src, index) => (
                         <div
                           key={index}
-                          className="relative w-72 flex-none rounded-md border-2 border-gray-200 h-[16rem] group cursor-pointer"
+                          className="relative max-w-72 flex-none rounded-md border-2 border-gray-200 group cursor-pointer"
                         >
                           <img
                             src={
@@ -452,7 +446,7 @@ function AddEditProductTab({ shop }) {
                     />
                   </div>
                   <div className="flex gap-4">
-                    <div className="w-1/2">
+                    <div className="w-1/3">
                       <label htmlFor="category">Category</label>
                       <div className="relative">
                         <select
@@ -476,8 +470,8 @@ function AddEditProductTab({ shop }) {
                         </div>
                       </div>
                     </div>
-                    <div className="w-1/2">
-                      <label htmlFor="productName">Brand</label>
+                    <div className="w-1/3">
+                      <label htmlFor="brand">Brand</label>
                       <input
                         className="w-full px-4 py-2 border-2 border-gray-200 rounded-md"
                         type="text"
@@ -487,6 +481,25 @@ function AddEditProductTab({ shop }) {
                         value={generalForm.brand}
                         onChange={handleChangeGeneralForm}
                       />
+                    </div>
+                    <div className="w-1/3">
+                      <label htmlFor="status">Status</label>
+                      <div className="relative">
+                        <select
+                          className="block w-full px-4 py-2 border-2 border-gray-200 rounded-md appearance-none"
+                          name="status"
+                          id="status"
+                          value={generalForm.status}
+                          onChange={handleChangeGeneralForm}
+                        >
+                          <option value="active">Active</option>
+                          <option value="inactive">Inactive</option>
+                          <option value="deleted">Deleted</option>
+                        </select>
+                        <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none">
+                          <ChevronDown className="w-5 h-5 text-gray-600" />
+                        </div>
+                      </div>
                     </div>
                   </div>
                   <div className="flex lg:flex-row flex-col gap-4">

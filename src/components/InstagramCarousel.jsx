@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import Config from "../envVars";
 import { useImagePreview } from "../hooks/useImagePreview";
+import { getBackendImgURL } from "../utils/helper";
 
 export default function ImageCarousel({ media }) {
   const [currentIndex, setCurrentIndex] = useState(0); // Dùng state thay vì ref
@@ -32,7 +32,7 @@ export default function ImageCarousel({ media }) {
           {media.map((img, idx) => (
             <div key={idx} className="w-full flex-shrink-0">
               <img
-                src={`${Config.BACKEND_URL}${img}`}
+                src={getBackendImgURL(img)}
                 alt={`post-img-${idx}`}
                 className="w-full h-[400px] object-cover"
               />
