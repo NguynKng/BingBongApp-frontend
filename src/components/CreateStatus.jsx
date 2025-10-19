@@ -4,7 +4,7 @@ import Config from "../envVars.js";
 import useAuthStore from "../store/authStore.js";
 import PostModal from "./PostModal"; // Bạn phải tạo PostModal.jsx theo hướng dẫn trước
 
-function CreateStatus({ onPostCreated }) {
+function CreateStatus({ onPostCreated, postedByType, postedById }) {
   const { user } = useAuthStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -15,7 +15,7 @@ function CreateStatus({ onPostCreated }) {
         <div className="flex items-center gap-2 py-4 border-b-2 border-gray-200 dark:border-gray-700">
           <Link
             to={`/profile/${user._id}`}
-            className="size-12 rounded-full border-2 border-gray-300 dark:border-gray-600 cursor-pointer hover:opacity-[70%]"
+            className="size-12 rounded-full border-[1px] border-gray-300 dark:border-gray-600 cursor-pointer hover:opacity-[70%]"
           >
             <img
               src={
@@ -63,6 +63,8 @@ function CreateStatus({ onPostCreated }) {
       {isModalOpen && (
         <PostModal
           onPostCreated={onPostCreated}
+          postedByType={postedByType}
+          postedById={postedById}
           onClose={() => setIsModalOpen(false)}
         />
       )}

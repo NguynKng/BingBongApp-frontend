@@ -4,7 +4,7 @@ import { toast } from "react-hot-toast";
 import { postAPI } from "../services/api.js";
 import useAuthStore from "../store/authStore.js";
 
-function PostModal({ onClose, onPostCreated }) {
+function PostModal({ onClose, onPostCreated, postedByType, postedById }) {
   const { user } = useAuthStore();
   const [content, setContent] = useState("");
   const [images, setImages] = useState([]);
@@ -18,6 +18,8 @@ function PostModal({ onClose, onPostCreated }) {
     const formData = new FormData();
     formData.append("content", content);
     formData.append("time", new Date().toISOString());
+    formData.append("postedByType", postedByType);
+    formData.append("postedById", postedById);
 
     images.forEach((img) => {
       formData.append("images", img);

@@ -1,4 +1,6 @@
 // helper: create a black (blank) video track to replace camera when user "turns off" video
+import Config from "../envVars";
+
 export const createBlankVideoTrack = (width = 640, height = 480) => {
   const canvas = document.createElement("canvas");
   canvas.width = width;
@@ -12,4 +14,8 @@ export const createBlankVideoTrack = (width = 640, height = 480) => {
   // keep track disabled to indicate "no signal" (optional)
   track.enabled = false;
   return track;
+}
+
+export const getBackendImgURL = (imgPath) => {
+    return `${Config.BACKEND_URL}${imgPath}`;
 }

@@ -1,16 +1,24 @@
-import {
-  MessageCircle,
-  UserPlus,
-  Globe,
-  Phone,
-  Mail,
-  ChevronDown,
-  CircleAlert,
-  MapPinHouse,
-  Link,
-} from "lucide-react";
+import { Phone, Mail, CircleAlert, MapPinHouse, Link } from "lucide-react";
+import useAuthStore from "../../store/authStore";
+import CreateStatus from "../CreateStatus";
+import { useEffect, useState } from "react";
+import PostCard from "../PostCard";
+import SpinnerLoading from "../SpinnerLoading";
+import { useGetOwnerPosts } from "../../hooks/usePosts";
 
-export default function PostTab({ shop, user }) {
+export default function PostTab({ shop }) {
+  const { user } = useAuthStore();
+  const { posts, setPosts, loading } = useGetOwnerPosts("Shop", shop._id);
+  const isShopOwner = user && shop.owner._id === user._id;
+
+  const handleAddPost = (newPost) => {
+    setPosts((prev) => [newPost, ...prev]);
+  };
+
+  const handleRemovePost = (postId) => {
+    setPosts((prev) => prev.filter((post) => post._id !== postId));
+  };
+
   return (
     <div className="flex lg:flex-row flex-col gap-4">
       <div className="lg:w-[40%] w-full space-y-4 lg:sticky top-[8.5vh] h-fit">
@@ -51,11 +59,37 @@ export default function PostTab({ shop, user }) {
       </div>
 
       <div className="lg:w-[60%] w-full space-y-4">
+        {isShopOwner && (
+          <CreateStatus
+            onPostCreated={handleAddPost}
+            postedByType={"Shop"}
+            postedById={shop._id}
+          />
+        )}
         <div className="py-2 px-4 bg-white dark:bg-[#1e1e2f] rounded-lg">
           <h1 className="text-xl font-bold text-gray-900 dark:text-white">
             Bài viết
           </h1>
         </div>
+        {loading ? (
+          <SpinnerLoading />
+        ) : (
+          <>
+            {posts && posts.length > 0 ? (
+              posts.map((post) => (
+                <PostCard
+                  key={post._id}
+                  post={post}
+                  onDeletePost={handleRemovePost}
+                />
+              ))
+            ) : (
+              <p className="text-center text-2xl dark:text-white">
+                Không có bài viết nào
+              </p>
+            )}
+          </>
+        )}
       </div>
     </div>
   );

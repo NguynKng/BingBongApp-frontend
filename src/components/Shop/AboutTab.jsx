@@ -1,6 +1,3 @@
-export default  function AboutTab({shop, user}) {
-
-    return (
-        <div>This is About tab</div>
-    )
+export default function AboutTab({ shop }) {
+  return <div>This is About tab</div>;
 }

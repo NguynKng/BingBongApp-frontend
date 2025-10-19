@@ -1,15 +1,9 @@
 import PropTypes from "prop-types";
-import {
-  Earth,
-  Ellipsis,
-  MessageCircle,
-  ThumbsUp,
-  Trash2,
-} from "lucide-react";
+import { Earth, Ellipsis, MessageCircle, ThumbsUp, Trash2 } from "lucide-react";
 import Config from "../envVars";
 import { formatTime } from "../utils/timeUtils";
 import { Link } from "react-router-dom";
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { postAPI } from "../services/api";
 import SpinnerLoading from "./SpinnerLoading";
 import CommentItem from "./CommentItem";
@@ -18,16 +12,38 @@ import useAuthStore from "../store/authStore";
 import emotions from "../data/emotion";
 import { toast } from "react-hot-toast";
 import InstagramCarousel from "./InstagramCarousel";
+import { getBackendImgURL } from "../utils/helper";
 
 function PostCard({ post, onDeletePost, showComment = false }) {
   const [openComment, setOpenComment] = useState(showComment);
+  const [isLoadingComments, setIsLoadingComments] = useState(false);
   const [isOpenPostDropdown, setIsOpenPostDropdown] = useState(false);
   const { user } = useAuthStore();
-  const { author, createdAt, content, media } = post;
-  const [userComments, setUserComments] = useState(post.comments);
+  const { postedById, postedByType, author, createdAt, content, media } = post;
+  const [userComments, setUserComments] = useState([]);
   const [hoveredEmotion, setHoveredEmotion] = useState(null);
   const [hoveredEmotionUser, setHoveredEmotionUser] = useState(null);
   const [reactions, setReactions] = useState(post.reactions);
+
+  useEffect(() => {
+    if (!post) return;
+    const fetchComments = async () => {
+      setIsLoadingComments(true);
+      try {
+        const response = await postAPI.getComments(post._id);
+        if (response.success) {
+          setUserComments(response.comments);
+        }
+      } catch (error) {
+        console.error("Error fetching comments:", error);
+      } finally {
+        setIsLoadingComments(false);
+      }
+    };
+    if (openComment && userComments.length === 0) {
+      fetchComments();
+    }
+  }, [post, openComment, userComments.length]);
 
   const filteredReactions = hoveredEmotionUser
     ? reactions.filter((r) => r.type === hoveredEmotionUser)
@@ -94,6 +110,37 @@ function PostCard({ post, onDeletePost, showComment = false }) {
     [post._id, user, reactions, myReaction]
   );
 
+  const getPoster = () => {
+    switch (postedByType) {
+      case "User":
+        return {
+          name: postedById.fullName,
+          avatar: postedById.avatar,
+          link: `/profile/${postedById._id}`,
+        };
+      case "Shop":
+        return {
+          name: postedById.name,
+          avatar: postedById.avatar,
+          link: `/shop/${postedById.slug}`,
+        };
+      case "Group":
+        return {
+          name: postedById.name,
+          avatar: postedById.avatar,
+          link: `/group/${postedById.slug}`,
+        };
+      default:
+        return {
+          name: "Unknown",
+          avatar: "/images/default-avatar/user.png",
+          link: "#",
+        };
+    }
+  };
+
+  const poster = getPoster();
+
   if (!post) {
     return (
       <div className="flex items-center justify-center">
@@ -106,26 +153,19 @@ function PostCard({ post, onDeletePost, showComment = false }) {
     <div className="bg-white py-5 rounded-xl shadow-md mb-4 dark:bg-[#1e1e2f] dark:border dark:border-[#2b2b3d]">
       <div className="flex items-center justify-between mb-2 px-5">
         <div className="flex items-center gap-2">
-          <Link
-            to={`/profile/${author._id}`}
-            className="w-10 h-10 rounded-full"
-          >
+          <Link to={poster.link} className="w-10 h-10 rounded-full border-[1px] border-gray-300 hover:opacity-[70%]">
             <img
-              src={
-                author?.avatar
-                  ? `${Config.BACKEND_URL}${author.avatar}`
-                  : "/user.png"
-              }
-              alt={author.fullName}
+              src={getBackendImgURL(poster.avatar)}
+              alt={poster.name}
               className="object-cover size-full rounded-full"
             />
           </Link>
           <div>
             <Link
-              to={`/profile/${author._id}`}
+              to={poster.link}
               className="text-black font-semibold hover:underline underline-offset-2 dark:text-white"
             >
-              {author.fullName}
+              {poster.name}
             </Link>
             <div className="flex items-center gap-1 text-gray-500 text-sm">
               <span>{formatTime(createdAt)}</span>
@@ -134,7 +174,7 @@ function PostCard({ post, onDeletePost, showComment = false }) {
             </div>
           </div>
         </div>
-        {author._id === user?._id && (
+        {postedById._id === user?._id && (
           <div
             className="relative rounded-full text-black hover:bg-gray-100 cursor-pointer p-2 dark:hover:bg-[rgb(56,56,56)]"
             onClick={() => setIsOpenPostDropdown(!isOpenPostDropdown)}
@@ -277,7 +317,9 @@ function PostCard({ post, onDeletePost, showComment = false }) {
           onClick={() => setOpenComment(!openComment)}
         >
           <MessageCircle className="w-5 h-5" />
-          {userComments.length > 0 && <span>{`${userComments.length}`}</span>}
+          {post.comments && post.comments.length > 0 && (
+            <span>{post.comments.length}</span>
+          )}
           <span>Bình luận</span>
         </button>
       </div>
@@ -291,20 +333,24 @@ function PostCard({ post, onDeletePost, showComment = false }) {
             }
           />
           <div className="mt-6 space-y-2">
-            {userComments.map((comment) => (
-              <CommentItem
-                key={comment._id}
-                comment={comment}
-                postAuthorId={author._id}
-                postId={post._id}
-                onRefresh={async () => {
-                  const refreshed = await postAPI.getComments(post._id);
-                  if (refreshed.success) {
-                    setUserComments(refreshed.comments);
-                  }
-                }}
-              />
-            ))}
+            {isLoadingComments ? (
+              <SpinnerLoading />
+            ) : (
+              userComments.map((comment) => (
+                <CommentItem
+                  key={comment._id}
+                  comment={comment}
+                  postAuthorId={author._id}
+                  postId={post._id}
+                  onRefresh={async () => {
+                    const refreshed = await postAPI.getComments(post._id);
+                    if (refreshed.success) {
+                      setUserComments(refreshed.comments);
+                    }
+                  }}
+                />
+              ))
+            )}
           </div>
         </div>
       )}
@@ -319,7 +365,10 @@ PostCard.propTypes = {
     createdAt: PropTypes.string,
     content: PropTypes.string,
     media: PropTypes.array,
+    postedByType: PropTypes.string,
+    postedById: PropTypes.object,
     author: PropTypes.shape({
+      _id: PropTypes.string,
       fullName: PropTypes.string,
       avatar: PropTypes.string,
     }),
