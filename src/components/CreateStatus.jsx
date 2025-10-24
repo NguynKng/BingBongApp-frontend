@@ -10,7 +10,7 @@ function CreateStatus({ onPostCreated, postedByType, postedById }) {
 
   return (
     <>
-      <div className="px-4 bg-white dark:bg-[#1e1e2f] dark:border dark:border-[#2b2b3d] rounded-lg">
+      <div className="px-4 bg-white dark:bg-[#1b1f2b] dark:border dark:border-[#2b2b3d] rounded-lg">
         {/* Dòng tạo status */}
         <div className="flex items-center gap-2 py-4 border-b-2 border-gray-200 dark:border-gray-700">
           <Link

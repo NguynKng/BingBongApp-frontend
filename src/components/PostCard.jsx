@@ -150,7 +150,7 @@ function PostCard({ post, onDeletePost, showComment = false }) {
   }
 
   return (
-    <div className="bg-white py-5 rounded-xl shadow-md mb-4 dark:bg-[#1e1e2f] dark:border dark:border-[#2b2b3d]">
+    <div className="bg-white py-5 rounded-xl shadow-md mb-4 dark:bg-[#1b1f2b] dark:border dark:border-[#2b2b3d]">
       <div className="flex items-center justify-between mb-2 px-5">
         <div className="flex items-center gap-2">
           <Link to={poster.link} className="w-10 h-10 rounded-full border-[1px] border-gray-300 hover:opacity-[70%]">

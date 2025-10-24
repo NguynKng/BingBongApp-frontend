@@ -24,8 +24,8 @@ export default function PostTab({ shop }) {
       <div className="lg:w-[40%] w-full space-y-4 lg:sticky top-[8.5vh] h-fit">
         <div className="rounded-lg bg-white dark:bg-[#1e1e2f] border-2 border-gray-200 dark:border-[#2b2b3d] p-4 space-y-4">
           <div>
-            <h1 className="text-xl font-bold">Giới thiệu</h1>
-            <p className="text-center mt-2">{shop.description.about}</p>
+            <h1 className="text-xl font-bold dark:text-white">Giới thiệu</h1>
+            <p className="text-center mt-2 dark:text-gray-400">{shop.description.about}</p>
           </div>
           <hr className="border-gray-300 dark:border-[#2b2b3d]" />
           <div className="flex flex-col gap-4 text-gray-600 dark:text-gray-300">
