@@ -13,7 +13,6 @@ function ListFriend() {
   const { suggestions, loading: suggestionsLoading } = useGetSuggestion();
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Chia phim thành từng nhóm 5, và ghi nhớ bằng useMemo
   const groupedMovies = useMemo(() => {
     if (!movies) return [];
     const groups = [];
@@ -25,11 +24,10 @@ function ListFriend() {
 
   const randomSuggestions = useMemo(() => {
     if (!suggestions) return [];
-    const shuffled = [...suggestions].sort(() => Math.random() - 0.5); // shuffle
+    const shuffled = [...suggestions].sort(() => Math.random() - 0.5);
     return shuffled.slice(0, 5);
   }, [suggestions]);
 
-  // Cứ 10s đổi nhóm phim
   useEffect(() => {
     if (!groupedMovies.length) return;
     const interval = setInterval(() => {
@@ -37,46 +35,55 @@ function ListFriend() {
         prev + 1 >= groupedMovies.length ? 0 : prev + 1
       );
     }, 10000);
-
     return () => clearInterval(interval);
   }, [groupedMovies]);
 
   return (
-    <div className="fixed w-92 min-h-[88vh] rounded-lg max-h-[88vh] overflow-y-auto flex flex-col gap-4 custom-scroll">
-      <div className="shadow-lg rounded-lg w-full p-4 bg-white">
+    <div className="fixed w-92 min-h-[88vh] max-h-[88vh] overflow-y-auto flex flex-col gap-4 custom-scroll">
+      {/* Đề xuất bạn bè */}
+      <div className="shadow-lg rounded-lg w-full p-4 bg-white dark:bg-[#1b1f2b] border border-gray-100 dark:border-gray-700 transition-all">
         <div className="flex items-center justify-between">
-          <h1 className="font-semibold text-lg">Đề xuất cho bạn</h1>
-          <Link to="/friends" className="text-blue-500">
+          <h1 className="font-semibold text-gray-800 dark:text-gray-100">
+            Đề xuất cho bạn
+          </h1>
+          <Link
+            to="/friends"
+            className="text-blue-500 dark:text-blue-400 hover:underline"
+          >
             Xem tất cả <span className="ml-1">{`->`}</span>
           </Link>
         </div>
-        <div className="flex flex-col gap-4 mt-4">
+
+        <div className="flex flex-col gap-2 mt-4">
           {suggestionsLoading ? (
             <SpinnerLoading />
           ) : (
             randomSuggestions.map((user) => (
-              <div key={user._id} className="flex items-center gap-4">
+              <div
+                key={user._id}
+                className="flex items-center gap-4 py-2 px-2 rounded-lg hover:bg-gray-50 dark:hover:bg-[#2a3142] transition-all"
+              >
                 <Link to={`/profile/${user._id}`}>
                   <img
                     src={`${Config.BACKEND_URL}${user.avatar}`}
                     alt={user.fullName}
-                    className="w-12 h-12 rounded-full object-cover"
+                    className="w-10 h-10 rounded-full object-cover border border-gray-200 dark:border-gray-700"
                   />
                 </Link>
 
                 <div>
                   <Link
                     to={`/profile/${user._id}`}
-                    className="font-semibold block"
+                    className="font-semibold block text-gray-800 dark:text-gray-100 hover:text-blue-500 dark:hover:text-blue-400"
                   >
                     {user.fullName}
                   </Link>
-                  <span className="text-sm text-gray-500 block">
+                  <span className="text-sm text-gray-500 dark:text-gray-400 block">
                     Đề xuất cho bạn
                   </span>
                 </div>
 
-                <button className="ml-auto px-3 cursor-pointer py-1 bg-blue-400 text-white text-sm rounded-lg hover:bg-blue-500">
+                <button className="ml-auto px-3 py-1 text-sm bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-all">
                   Add
                 </button>
               </div>
@@ -84,10 +91,17 @@ function ListFriend() {
           )}
         </div>
       </div>
-      <div className="shadow-lg rounded-lg w-full p-4 bg-white">
+
+      {/* Phim Hot 🔥 */}
+      <div className="shadow-lg rounded-lg w-full p-4 bg-white dark:bg-[#1b1f2b] border border-gray-100 dark:border-gray-700 transition-all">
         <div className="flex items-center justify-between">
-          <h1 className="font-semibold text-lg">Phim Hot 🔥</h1>
-          <Link to="/movie" className="text-blue-500">
+          <h1 className="font-semibold text-lg text-gray-800 dark:text-gray-100">
+            Phim Hot 🔥
+          </h1>
+          <Link
+            to="/movie"
+            className="text-blue-500 dark:text-blue-400 hover:underline"
+          >
             Xem thêm <span className="ml-1">{`->`}</span>
           </Link>
         </div>
@@ -98,32 +112,33 @@ function ListFriend() {
           <div className="relative overflow-hidden">
             <AnimatePresence mode="wait">
               <motion.div
-                key={currentIndex} // trigger animation khi đổi nhóm
+                key={currentIndex}
                 initial={{ x: "100%", opacity: 0 }}
                 animate={{ x: "0%", opacity: 1 }}
                 exit={{ x: "-100%", opacity: 0 }}
                 transition={{ duration: 0.6 }}
-                className="flex flex-col divide-y divide-gray-100 w-full"
+                className="flex flex-col divide-y divide-gray-100 dark:divide-gray-700 w-full"
               >
                 {groupedMovies[currentIndex]?.map((movie, index) => (
-                  <Link to={`/movie/${movie.id}`}
+                  <Link
+                    to={`/movie/${movie.id}`}
                     key={movie.id}
-                    className="flex items-center gap-4 py-3 hover:bg-gray-50 rounded-lg px-2 transition"
+                    className="flex items-center gap-4 py-3 px-2 hover:bg-gray-50 dark:hover:bg-[#2a3142] rounded-lg transition-all group"
                   >
-                    <span className="text-lg font-bold text-gray-500 w-6">
+                    <span className="text-lg font-bold text-gray-500 dark:text-gray-400 w-6">
                       {index + 1}
                     </span>
                     <img
                       src={`${ORIGINAL_IMG_BASE_URL}${movie.backdrop_path}`}
                       alt={movie.title}
-                      className="w-20 h-14 rounded-lg object-cover shadow-sm"
+                      className="w-20 h-14 rounded-lg object-cover shadow-sm group-hover:shadow-md group-hover:shadow-blue-500/20 transition-all"
                       loading="lazy"
                     />
                     <div className="flex-1">
-                      <h2 className="text-base font-semibold line-clamp-1">
+                      <h2 className="text-base font-semibold text-gray-800 dark:text-gray-100 line-clamp-1 group-hover:text-blue-500 dark:group-hover:text-blue-400">
                         {movie?.name || movie?.title}
                       </h2>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
                         {`Release: ${formatReleaseDate(movie.release_date)}`}
                       </p>
                     </div>

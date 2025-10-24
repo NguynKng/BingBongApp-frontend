@@ -104,6 +104,7 @@ const useAuthStore = create(
           const response = await authAPI.login(credentials);
           set({
             user: response.user,
+            token: response.token,
             isAuthenticated: true,
             isLoading: false,
             error: null,
@@ -127,6 +128,7 @@ const useAuthStore = create(
           const response = await authAPI.adminLogin(credentials);
           set({
             user: response.user,
+            token: response.token,
             isAuthenticated: true,
             isLoading: false,
             error: null,
@@ -147,9 +149,9 @@ const useAuthStore = create(
       logout: async () => {
         set({ isLoading: true, error: null });
         try {
-          await authAPI.logout();
           set({
             user: null,
+            token: null,
             isAuthenticated: false,
             isLoading: false,
             error: null,
@@ -239,6 +241,7 @@ const useAuthStore = create(
       name: "bingbong-auth",
       partialize: (state) => ({
         user: state.user,
+        token: state.token,
         isAuthenticated: state.isAuthenticated,
         theme: state.theme,
         iceServers: state.iceServers, // persist ICE config so it survives refresh
