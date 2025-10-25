@@ -1,11 +1,28 @@
 import { create } from "zustand";
 import { tmdbAPI } from "../services/api";
 
-const useMovieStore = create((set) => ({
+const useMovieStore = create((set, get) => ({
   contentType: "movie",
-  movies: [],
+  movies: {
+    movie: {
+      trending: [],
+      now_playing: [],
+      top_rated: [],
+      popular: [],
+      upcoming: []
+    },
+    tv: {
+      trending: [],
+      airing_today: [],
+      top_rated: [],
+      popular: [],
+      on_the_air: []
+    }
+  },
+
   loading: false,
-  fetchMovies: async (contentType) => {
+  fetchTrendingMovies: async (contentType) => {
+    if (get().movies[contentType].trending.length > 0) return;
     set({ loading: true });
     try {
       let res;
@@ -15,7 +32,24 @@ const useMovieStore = create((set) => ({
         res = await tmdbAPI.getTrendingTVShow();
       }
       if (res.success) {
-        set({ movies: res.content });
+        set({ movies: { ...get().movies, [contentType]: { ...get().movies[contentType], trending: res.content } } });
+      }
+    } finally {
+      set({ loading: false });
+    }
+  },
+  fetchMoviesByCategory: async (contentType, category) => {
+    if (get().movies[contentType][category].length > 0) return;
+    set({ loading: true });
+    try {
+      let res;
+      if (contentType === "movie") {
+        res = await tmdbAPI.getMoviesByCategory(category);
+      } else if (contentType === "tv") {
+        res = await tmdbAPI.getTVShowsByCategory(category);
+      }
+      if (res.success) {
+        set({ movies: { ...get().movies, [contentType]: { ...get().movies[contentType], [category]: res.content } } });
       }
     } finally {
       set({ loading: false });

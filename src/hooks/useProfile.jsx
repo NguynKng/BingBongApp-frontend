@@ -1,36 +1,33 @@
 import { useEffect, useState } from "react";
 import { userAPI } from "../services/api";
 import useAuthStore from "../store/authStore";
+import useUserStore from "../store/userStore";
 
 export const useGetProfile = (userId, options = {}) => {
   const [profile, setProfile] = useState(null);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const { users, fetchUserProfile, loading } = useUserStore();
   const shouldFetch = options.enabled !== false;
 
   useEffect(() => {
     if (!shouldFetch || !userId) return;
 
-    const fetchProfile = async () => {
-      setLoading(true);
+    const loadProfile = async () => {
       try {
-        const response = await userAPI.getUserProfile(userId);
-        if (response.success) {
-          setProfile(response.user);
-          setError(null);
+        if (users[userId]) {
+          setProfile(users[userId]);
         } else {
-          setError(response.message || "Lỗi không xác định");
+          const fetched = await fetchUserProfile(userId);
+          setProfile(fetched);
         }
       } catch (err) {
-        setError(err.message || "Lỗi khi gọi API");
-      } finally {
-        setLoading(false);
+        setError(err.message || "Lỗi khi tải profile");
       }
     };
 
-    fetchProfile();
-  }, [userId, shouldFetch]);
+    loadProfile();
+  }, [userId, shouldFetch, users, fetchUserProfile]);
 
   return { profile, loading, error };
 };
@@ -67,31 +64,11 @@ export const useGetProfileByName = (name, options = {}) => {
 
 export const useGetSuggestion = () => {
   const { user } = useAuthStore();
-  const [suggestions, setSuggestions] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const { suggestions, loading, error, fetchSuggestions } = useUserStore();
 
   useEffect(() => {
-    if (!user) return;
-    const fetchSuggestions = async () => {
-      setLoading(true);
-      try {
-        const response = await userAPI.getSuggestions();
-        if (response.success) {
-          setSuggestions(response.data);
-          setError(null);
-        } else {
-          setError(response.message || "Lỗi không xác định");
-        }
-      } catch (err) {
-        setError(err.message || "Lỗi khi gọi API");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchSuggestions();
-  }, []);
+    if (user) fetchSuggestions(); // ✅ Fetch only once unless empty
+  }, [user, fetchSuggestions]);
 
   return { suggestions, loading, error };
 };

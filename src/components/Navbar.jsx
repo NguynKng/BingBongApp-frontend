@@ -13,9 +13,11 @@ import {
 } from "lucide-react";
 import useAuthStore from "../store/authStore";
 import Config from "../envVars";
+import { useGetProfile } from "../hooks/useProfile";
 
 function Navbar({ isCloseSidebar, setIsCloseSidebar }) {
   const { user } = useAuthStore();
+  const { profile } = useGetProfile(user?._id);
   const location = useLocation();
   const pathname = location.pathname;
   const avatarUrl = user?.avatar
@@ -24,14 +26,19 @@ function Navbar({ isCloseSidebar, setIsCloseSidebar }) {
   const fullName = user?.fullName || "User";
 
   const navbarData = [
-    { src: House, text: "Trang chủ", link: "/" },
-    { src: UserRound, text: "Cá nhân", link: `/profile/${user._id}` },
-    { src: Gamepad2, text: "Quiz", link: "/quiz" },
-    { src: Newspaper, text: "Tin tức", link: "/news" },
-    { src: Handshake, text: "Bạn bè", link: "/friends" },
-    { src: Film, text: "Phim", link: "/movie" },
-    { src: Store, text: "Shop", link: "#" },
-    { src: UsersRound, text: "Nhóm", link: "#" },
+    { tab: "home", src: House, text: "Trang chủ", link: "/" },
+    {
+      tab: "profile",
+      src: UserRound,
+      text: "Cá nhân",
+      link: `/profile/${user._id}`,
+    },
+    { tab: "quiz", src: Gamepad2, text: "Quiz", link: "/quiz" },
+    { tab: "news", src: Newspaper, text: "Tin tức", link: "/news" },
+    { tab: "friends", src: Handshake, text: "Bạn bè", link: "/friends" },
+    { tab: "movie", src: Film, text: "Phim", link: "/movie" },
+    { tab: "shop", src: Store, text: "Shop", link: "/shop" },
+    { tab: "groups", src: UsersRound, text: "Nhóm", link: "#" },
   ];
 
   return (
@@ -64,7 +71,7 @@ function Navbar({ isCloseSidebar, setIsCloseSidebar }) {
           </Link>
         )}
         <button
-          className={`ml-auto cursor-pointer hover:bg-blue-700/80 text-gray-700 dark:text-gray-100 
+          className={`ml-auto cursor-pointer hover:text-white hover:bg-blue-800 text-gray-700 dark:text-gray-100 
             py-3 px-5 rounded-xl transition-all`}
           onClick={() => setIsCloseSidebar(!isCloseSidebar)}
         >
@@ -87,10 +94,10 @@ function Navbar({ isCloseSidebar, setIsCloseSidebar }) {
               title={item.text}
               to={item.link}
               key={index}
-              className={`flex items-center gap-3 py-3 px-4 rounded-xl group transition-all
+              className={`relative flex items-center gap-3 py-3 px-4 rounded-xl group transition-all
                 ${
                   isActive
-                    ? "bg-blue-600 text-white shadow-md shadow-blue-500/30"
+                    ? "bg-blue-800 text-white shadow-md shadow-blue-500/30"
                     : "hover:bg-blue-500/10 dark:hover:bg-blue-600/20"
                 } ${isCloseSidebar ? "justify-center" : ""}`}
             >
@@ -111,6 +118,19 @@ function Navbar({ isCloseSidebar, setIsCloseSidebar }) {
                 >
                   {item.text}
                 </span>
+              )}
+              {item.tab === "friends" && profile?.friendRequests.length > 0 && (
+                <div
+                  className={`absolute ${
+                    isCloseSidebar
+                      ? "-top-1.5 -right-0.5"
+                      : "top-1/2 -translate-y-1/2 right-2"
+                  } bg-red-500 size-6 flex items-center justify-center rounded-full`}
+                >
+                  <span className="text-white text-xs font-semibold">
+                    {profile?.friendRequests.length}
+                  </span>
+                </div>
               )}
             </Link>
           );
@@ -141,14 +161,14 @@ function Navbar({ isCloseSidebar, setIsCloseSidebar }) {
       {/* Toggle (mobile) */}
       <button
         type="button"
-        className={`block lg:hidden rounded-r-md absolute top-1/2 right-0 translate-x-10 
-          text-white px-1 py-4 bg-gradient-to-b from-pink-500 to-[#e91e63] transition-all`}
+        className={`block lg:hidden rounded-r-md absolute top-1/2 right-0 translate-x-8
+          text-white px-1 py-2 bg-blue-800 transition-all`}
         onClick={() => setIsCloseSidebar(!isCloseSidebar)}
         aria-label="Toggle sidebar"
         title="Toggle sidebar"
       >
         <ChevronLeft
-          className={`size-8 transition-transform ${
+          className={`size-6 transition-transform ${
             isCloseSidebar ? "rotate-180" : ""
           }`}
         />

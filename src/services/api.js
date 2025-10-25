@@ -1179,6 +1179,60 @@ export const tmdbAPI = {
 };
 
 export const shopAPI = {
+  getAllShops: async () => {
+    try {
+      const response = await api.get(`/shop`);
+
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Lấy danh sách shop thất bại";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getFollowedShops: async () => {
+    try {
+      const response = await api.get(`/shop/followed-shops`);
+
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Lấy danh sách shop theo dõi thất bại";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getMyShops: async () => {
+    try {
+      const response = await api.get(`/shop/my-shops`);
+
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Lấy thất bại shop của tôi";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
   getShopBySlug: async (slug) => {
     try {
       const response = await api.get(`/shop/${slug}`);

@@ -2,42 +2,23 @@ import { useEffect, useRef, useState } from "react";
 import { SMALL_IMG_BASE_URL } from "../utils/movie_constants";
 import { Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { tmdbAPI } from "../services/api";
 import useMovieStore from "../store/movieStore";
 import SpinnerLoading from "./SpinnerLoading";
 
 export default function MovieSlider({ category }) {
-  const { contentType } = useMovieStore();
+  const { movies, fetchMoviesByCategory, contentType, loading } = useMovieStore();
   const formattedContentType = contentType === "movie" ? "Movies" : "TV Shows";
   const formattedCategories =
     category.replaceAll("_", " ")[0].toUpperCase() +
     category.replaceAll("_", " ").slice(1);
-  const [content, setContent] = useState([]);
-  const [loading, setLoading] = useState(true);
+    const content = movies[contentType][category] || [];
   const [imgLoading, setImgLoading] = useState(true);
   const [showArrows, setShowArrows] = useState(false);
   const sliderRef = useRef();
 
   useEffect(() => {
-    const getContent = async () => {
-      setLoading(true);
-      try {
-        let res;
-        if (contentType === "movie") {
-          res = await tmdbAPI.getMoviesByCategory(category);
-        } else {
-          res = await tmdbAPI.getTVShowByCategory(category);
-        }
-        setContent(res.content);
-      } catch (error) {
-        console.error("Error fetching content:", error.message);
-        setContent([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-    getContent();
-  }, [contentType, category]);
+    fetchMoviesByCategory(contentType, category);
+  }, [fetchMoviesByCategory, contentType, category]);
 
   const scrollLeft = () => {
     if (sliderRef.current)
