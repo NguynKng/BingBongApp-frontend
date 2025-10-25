@@ -9,10 +9,8 @@ import NotificationPopup from "./NotificationPopup";
 import { useCallback } from "react";
 import IncomingCall from "./IncomingCall";
 import Navbar from "./Navbar";
-import useMovieStore from "../store/movieStore";
 
 function MainLayout({ Element }) {
-  const { fetchMovies, contentType } = useMovieStore();
   const { addNotification } = useNotificationStore();
   const { socket, updateUser, user } = useAuthStore();
   const [showChat, setShowChat] = useState(false);
@@ -27,10 +25,6 @@ function MainLayout({ Element }) {
       author_img: "",
     },
   });
-
-  useEffect(() => {
-    fetchMovies(contentType);
-  }, [fetchMovies, contentType]);
 
   const handleGetNewMessage = useCallback(
     (sender) => {

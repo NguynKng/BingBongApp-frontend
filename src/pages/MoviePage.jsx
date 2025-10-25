@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import useMovieStore from "../store/movieStore";
 import {
   MOVIE_CATEGORIES,
@@ -12,21 +12,31 @@ import WatchPageSkeleton from "../components/WatchPageSkeleton";
 import MovieSlider from "../components/MovieSlider";
 
 export default function MoviePage() {
-  const { movies, loading, setContentType, contentType } = useMovieStore();
+  const { movies, loading, setContentType, contentType, fetchTrendingMovies } =
+    useMovieStore();
   const [imgLoading, setImgLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const movieTest = movies && movies.length > 0 ? movies[currentIndex] : null;
+
+  const movieTest = useMemo(
+    () => (movies[contentType].trending ? movies[contentType].trending[currentIndex] : null),
+    [movies, currentIndex, contentType]
+  );
 
   useEffect(() => {
-    if (!movies.length) return;
+    fetchTrendingMovies(contentType);
+  }, [fetchTrendingMovies, contentType]);
+
+  useEffect(() => {
+    if (!movies[contentType].trending) return;
+    let index = 0;
     const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1 >= movies.length ? 0 : prev + 1));
+      index = (index + 1) % movies[contentType].trending.length;
+      setCurrentIndex(index);
     }, 10000);
-
     return () => clearInterval(interval);
-  }, [movies]);
+  }, [movies, contentType]);
 
-  if (loading || !movies)
+  if (loading || !movies[contentType].trending)
     return (
       <div className="min-h-screen bg-black p-10">
         <WatchPageSkeleton />
@@ -110,14 +120,14 @@ export default function MoviePage() {
 
             <div className="mt-8 flex gap-4">
               <Link
-                to={`/movie/${movieTest.id}`}
+                to={`/movie/${movieTest?.id}`}
                 className="flex bg-white items-center rounded-lg hover:bg-white/80 text-black font-bold py-2 px-4 gap-2"
               >
                 <Play className="fill-black" />
                 Play
               </Link>
               <Link
-                to={`/movie/${movieTest.id}`}
+                to={`/movie/${movieTest?.id}`}
                 className="flex bg-gray-600 items-center rounded-lg hover:bg-gray-800 text-white py-2 px-4 gap-2"
               >
                 <CircleAlert />

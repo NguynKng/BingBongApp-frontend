@@ -1,6 +1,4 @@
-import { useState } from "react";
 import { Routes, Route, Link, useLocation } from "react-router-dom";
-import Config from "../../envVars";
 import ProductTab from "./Manage/ProductTab";
 import DashboardTab from "./Manage/DashboardTab";
 import CategoryTab from "./Manage/CategoryTab";
@@ -12,13 +10,10 @@ import {
   ShoppingBag,
   ChartNoAxesColumnIncreasing,
   Settings,
-  Menu,
-  X,
 } from "lucide-react";
 
 export default function ManageTab({ shop }) {
   const location = useLocation();
-  const [openSidebar, setOpenSidebar] = useState(false);
 
   const clean = (p) => p.replace(/\/+$/, "");
   const isCurrentTab = (tabPath) => {
@@ -38,50 +33,30 @@ export default function ManageTab({ shop }) {
   ];
 
   return (
-    <div className={`flex lg:flex-row flex-col gap-2 relative`}>
-      {/* Nút mở sidebar (chỉ hiện trên mobile) */}
-      <button
-        className="lg:hidden flex items-center gap-2 bg-blue-900 text-white px-4 py-2 rounded-md w-fit"
-        onClick={() => setOpenSidebar(!openSidebar)}
-      >
-        {openSidebar ? <X className="size-5" /> : <Menu className="size-5" />}
-        <span>{openSidebar ? "Close Menu" : "Open Menu"}</span>
-      </button>
-
-      {/* Sidebar */}
-      <aside
-        className={`
-          bg-white dark:bg-[#1e1e2f] border border-gray-200 lg:sticky top-[8.5vh]  lg:mr-4 dark:border-[#2b2b3d]
-          rounded-lg p-4 transition-all duration-300 ease-in-out
-          ${openSidebar ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"}
-          overflow-hidden lg:opacity-100 lg:max-h-fit lg:w-1/5 lg:block
-        `}
-      >
-        <h2 className="text-lg font-semibold mb-3 dark:text-white">Chung</h2>
-        <ul className="space-y-2">
+    <div className="flex flex-col gap-4">
+      {/* 🔹 Top Navbar luôn hiển thị */}
+      <div className="bg-white dark:bg-[#1e1e2f] border border-gray-200 dark:border-[#2b2b3d] rounded-lg p-3 shadow-sm">
+        <nav className="flex flex-wrap items-center gap-2">
           {menuItems.map((item) => (
-            <li key={item.label}>
-              <Link
-                to={`/shop/${shop.slug}/manage${
-                  item.path ? `/${item.path}` : ""
-                }`}
-                className={`flex items-center gap-2 cursor-pointer p-2 rounded-md transition-colors ${
+            <Link
+              key={item.label}
+              to={`/shop/${shop.slug}/manage${item.path ? `/${item.path}` : ""}`}
+              className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors
+                ${
                   isCurrentTab(item.path)
-                    ? "bg-blue-100 text-blue-600"
-                    : "hover:bg-gray-200 dark:hover:bg-[#2b2b3d] dark:text-white"
+                    ? "bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400"
+                    : "hover:bg-gray-100 dark:hover:bg-[#2b2b3d] dark:text-white text-gray-700"
                 }`}
-                onClick={() => setOpenSidebar(false)} // đóng sidebar khi chọn menu
-              >
-                <item.icon className="size-5" />
-                <span className="font-semibold">{item.label}</span>
-              </Link>
-            </li>
+            >
+              <item.icon className="w-4 h-4" />
+              {item.label}
+            </Link>
           ))}
-        </ul>
-      </aside>
+        </nav>
+      </div>
 
-      {/* Nội dung */}
-      <div className="lg:w-4/5 w-full rounded-md bg-white shadow-sm">
+      {/* 🔹 Nội dung */}
+      <div className="bg-white dark:bg-[#1e1e2f] rounded-lg shadow-sm p-4">
         <Routes>
           <Route path="/" element={<DashboardTab shop={shop} />} />
           <Route path="products/*" element={<ProductTab shop={shop} />} />

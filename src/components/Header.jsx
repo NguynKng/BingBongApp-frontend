@@ -9,10 +9,11 @@ import {
   Gamepad2,
   X,
   Newspaper,
-  BotMessageSquare,
   SunMedium,
   ShoppingCart,
   Moon,
+  Mail,
+  UserPlus,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import useAuthStore from "../store/authStore";
@@ -238,9 +239,9 @@ function Header({ onToggleChat }) {
             onClick={toggleTheme}
           >
             {theme === "dark" ? (
-                <Moon className="text-gray-600 dark:text-white" />
+              <Moon className="text-gray-600 dark:text-white" />
             ) : (
-                <SunMedium className="text-gray-600 dark:text-white" />
+              <SunMedium className="text-gray-600 dark:text-white" />
             )}
             <div className="absolute -bottom-8 text-xs bg-black/80 text-white px-3 py-1 rounded shadow hidden group-hover:block z-50 text-center whitespace-nowrap">
               Messenger
@@ -250,7 +251,7 @@ function Header({ onToggleChat }) {
             className="relative size-9 p-1 bg-white/70 dark:bg-[#2a2e3d] rounded-full flex items-center justify-center hover:scale-110 hover:ring-2 ring-blue-300 dark:ring-purple-400 hover:bg-blue-100 dark:hover:bg-[#394056] transition-all cursor-pointer group"
             onClick={() => toggleDropdown("chat")}
           >
-            <BotMessageSquare className="text-gray-600 dark:text-white" />
+            <Mail className="text-gray-600 dark:text-white" />
             <div className="absolute -bottom-8 text-xs bg-black/80 text-white px-3 py-1 rounded shadow hidden group-hover:block z-50 text-center whitespace-nowrap">
               Messenger
             </div>

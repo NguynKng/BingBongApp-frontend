@@ -31,7 +31,8 @@ import TestPage from "./pages/test";
 import MoviePage from "./pages/MoviePage";
 import DetailMoviePage from "./pages/DetailMoviePage";
 import NotFoundPage from "./pages/NotFoundPage";
-import ShopPage from "./pages/ShopPage"
+import DetailShopPage from "./pages/DetailShopPage";
+import ShopPage from "./pages/ShopPage";
 
 function App() {
   const { checkAuth, theme } = useAuthStore();
@@ -125,10 +126,18 @@ function App() {
           }
         />
         <Route
-          path="/shop/:shopSlug/*"
+          path="/shop"
           element={
             <ProtectedRoute>
               <MainLayout Element={ShopPage} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/shop/:shopSlug/*"
+          element={
+            <ProtectedRoute>
+              <MainLayout Element={DetailShopPage} />
             </ProtectedRoute>
           }
         />

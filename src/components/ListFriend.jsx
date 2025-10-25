@@ -9,23 +9,26 @@ import Config from "../envVars";
 import useMovieStore from "../store/movieStore";
 
 function ListFriend() {
-  const { movies, loading } = useMovieStore();
+  const { movies, loading, fetchTrendingMovies, contentType } = useMovieStore();
   const { suggestions, loading: suggestionsLoading } = useGetSuggestion();
   const [currentIndex, setCurrentIndex] = useState(0);
 
+  useEffect(() => {
+    fetchTrendingMovies(contentType);
+  }, [fetchTrendingMovies, contentType]);
+
   const groupedMovies = useMemo(() => {
-    if (!movies) return [];
+    if (!movies[contentType].trending) return [];
     const groups = [];
-    for (let i = 0; i < movies.length; i += 5) {
-      groups.push(movies.slice(i, i + 5));
+    for (let i = 0; i < movies[contentType].trending.length; i += 5) {
+      groups.push(movies[contentType].trending.slice(i, i + 5));
     }
     return groups;
-  }, [movies]);
+  }, [movies, contentType]);
 
   const randomSuggestions = useMemo(() => {
     if (!suggestions) return [];
-    const shuffled = [...suggestions].sort(() => Math.random() - 0.5);
-    return shuffled.slice(0, 5);
+    return suggestions.slice(0, 5);
   }, [suggestions]);
 
   useEffect(() => {
