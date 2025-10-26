@@ -40,6 +40,18 @@ const useUserStore = create((set, get) => ({
     }
   },
 
+  updateUserProfileInStore: (userId, updatedData) => {
+    set((state) => ({
+      users: {
+        ...state.users,
+        [userId]: {
+          ...state.users[userId],
+          ...updatedData,
+        },
+      },
+    }));
+  },
+
   // ✅ Fetch user suggestions (with caching)
   fetchSuggestions: async (force = false) => {
     const { suggestions, loading } = get();

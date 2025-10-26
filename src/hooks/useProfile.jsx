@@ -7,7 +7,7 @@ export const useGetProfile = (userId, options = {}) => {
   const [profile, setProfile] = useState(null);
   const [error, setError] = useState(null);
 
-  const { users, fetchUserProfile, loading } = useUserStore();
+  const { users, fetchUserProfile, loading} = useUserStore();
   const shouldFetch = options.enabled !== false;
 
   useEffect(() => {

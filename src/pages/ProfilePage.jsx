@@ -1,13 +1,17 @@
 import { useState, useRef, useEffect } from "react";
 import {
+    Briefcase,
   ChevronDown,
+  Globe,
   GraduationCap,
   MapPin,
   Pencil,
   Plus,
+  Sparkles,
   UserCheck,
   UserPlus,
   UserX,
+  Link2
 } from "lucide-react";
 import CreateStatus from "../components/CreateStatus";
 import PostCard from "../components/PostCard";
@@ -21,16 +25,20 @@ import { useGetProfile } from "../hooks/useProfile";
 import SpinnerLoading from "../components/SpinnerLoading";
 import ChatBox from "../components/ChatBox";
 import WarningDeleteFriend from "../components/WarningDeleteFriend";
+import EditInfoModal from "../components/EditInfoModal";
+import useUserStore from "../store/userStore";
 
 function ProfilePage() {
   const [isOpenFriendsDropdown, setIsOpenFriendsDropdown] = useState(false);
   const { userId } = useParams();
+  const { updateUserProfileInStore } = useUserStore();
   const [activeTab, setActiveTab] = useState("Bài viết");
   const [isUploading, setIsUploading] = useState({
     avatar: false,
     coverPhoto: false,
   });
   const [isWarningDeleteFriend, setIsWarningDeleteFriend] = useState(false);
+  const [isOpenInfoModal, setIsOpenInfoModal] = useState(false);
   const { user, updateUser, theme } = useAuthStore();
   const avatarInputRef = useRef(null);
   const coverPhotoInputRef = useRef(null);
@@ -196,6 +204,12 @@ function ProfilePage() {
     } catch (error) {
       console.error("Error accepting friend request:", error);
       toast.error("Không thể chấp nhận lời mời");
+    }
+  };
+
+  const handleUpdateUser = (updatedData) => {
+    if (isMyProfile) {
+      updateUserProfileInStore(user._id, updatedData);
     }
   };
 
@@ -437,33 +451,170 @@ function ProfilePage() {
       <section className="bg-gray-200 dark:bg-[#181826] lg:px-[17%] px-2 py-4 min-h-screen">
         <div className="flex lg:flex-row flex-col gap-4">
           <div className="lg:w-[40%] w-full space-y-4 lg:sticky top-[8.5vh] h-fit">
-            <div className="rounded-md bg-white dark:bg-[#1e1e2f] border-2 border-gray-200 dark:border-[#2b2b3d] p-4 space-y-4">
-              <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-                Giới thiệu
-              </h1>
-              <button className="py-2 px-4 text-center w-full rounded-md bg-gray-200 dark:bg-[#23233b] dark:text-white font-medium cursor-pointer hover:bg-gray-300 dark:hover:bg-[#23233b]">
-                Thêm tiểu sử
-              </button>
-              <div className="flex gap-2 items-center">
-                <GraduationCap className="size-6 dark:text-gray-400 " />
-                <span className="text-gray-600 dark:text-gray-400">
-                  Went to THPT Trần khai Nguyên
-                </span>
+            <div className="rounded-xl bg-white dark:bg-[#1e1e2f] border border-gray-200 dark:border-[#2b2b3d] p-5 space-y-5 shadow-sm transition-all duration-300">
+              {/* Header */}
+              <div className="flex justify-between items-center">
+                <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
+                  Giới thiệu
+                </h1>
+                <button
+                  onClick={() => setIsOpenInfoModal(true)}
+                  className="text-sm px-3 py-1.5 rounded-md bg-gray-100 dark:bg-[#23233b] text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#2b2b3d] transition"
+                >
+                  <Pencil className="inline w-4 h-4 mr-1" /> Chỉnh sửa
+                </button>
               </div>
-              <div className="flex gap-2 items-center">
-                <MapPin className="size-6 dark:text-gray-400" />
-                <span className="text-gray-600 dark:text-gray-400">
-                  From Ho Chi Minh City, Vietnam
-                </span>
-              </div>
-              <button className="py-2 px-4 text-center w-full rounded-md bg-gray-200 dark:bg-[#23233b] dark:text-white font-medium cursor-pointer hover:bg-gray-300 dark:hover:bg-[#23233b]">
-                Chỉnh sửa chi tiết
-              </button>
-              <button className="py-2 px-4 text-center w-full rounded-md bg-gray-200 dark:bg-[#23233b] dark:text-white font-medium cursor-pointer hover:bg-gray-300 dark:hover:bg-[#23233b]">
-                Thêm nội dung đáng chú ý
-              </button>
-            </div>
 
+              {/* Bio */}
+              {displayedUser?.bio ? (
+                <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                  {displayedUser.bio}
+                </p>
+              ) : (
+                <button
+                  onClick={() => setIsOpenInfoModal(true)}
+                  className="py-2 px-4 w-full rounded-md bg-gray-100 dark:bg-[#23233b] dark:text-white font-medium text-sm hover:bg-gray-200 dark:hover:bg-[#2b2b3d]"
+                >
+                  Thêm tiểu sử
+                </button>
+              )}
+
+              <hr className="border-gray-200 dark:border-[#2b2b3d]" />
+
+              {/* Education */}
+              {displayedUser?.education?.length > 0 && (
+                <div className="space-y-2">
+                  <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                    <GraduationCap className="w-5 h-5 text-blue-500" />
+                    Học vấn
+                  </h2>
+                  {displayedUser.education.map((edu, idx) => (
+                    <div
+                      key={idx}
+                      className="pl-7 text-gray-700 dark:text-gray-300 text-sm"
+                    >
+                      <p className="font-medium">{edu.school}</p>
+                      {edu.major && <p>{edu.major}</p>}
+                      {edu.year && (
+                        <p className="text-gray-500 dark:text-gray-400 text-xs">
+                          {edu.year}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Work */}
+              {displayedUser?.work?.length > 0 && (
+                <div className="space-y-2">
+                  <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                    <Briefcase className="w-5 h-5 text-amber-500" />
+                    Công việc
+                  </h2>
+                  {displayedUser.work.map((job, idx) => (
+                    <div
+                      key={idx}
+                      className="pl-7 text-gray-700 dark:text-gray-300 text-sm"
+                    >
+                      <p className="font-medium">{job.company}</p>
+                      {job.position && <p>{job.position}</p>}
+                      {job.duration && (
+                        <p className="text-gray-500 dark:text-gray-400 text-xs">
+                          {job.duration}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Location */}
+              {displayedUser?.address && (
+                <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+                  <MapPin className="w-5 h-5 text-red-500" />
+                  <span>Sống tại {displayedUser.address}</span>
+                </div>
+              )}
+
+              {/* Website */}
+              {displayedUser?.website && (
+                <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+                  <Globe className="w-5 h-5 text-green-500" />
+                  <a
+                    href={displayedUser.website}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-500 hover:underline"
+                  >
+                    {displayedUser.website}
+                  </a>
+                </div>
+              )}
+
+              {/* Skills */}
+              {displayedUser?.skills?.length > 0 && (
+                <div>
+                  <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2 mb-2">
+                    <Sparkles className="w-5 h-5 text-yellow-500" />
+                    Kỹ năng
+                  </h2>
+                  <div className="flex flex-wrap gap-2">
+                    {displayedUser.skills.map((skill, idx) => (
+                      <span
+                        key={idx}
+                        className="px-3 py-1 text-sm bg-gray-100 dark:bg-[#23233b] text-gray-800 dark:text-gray-300 rounded-full"
+                      >
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Interests */}
+              {displayedUser?.interests?.length > 0 && (
+                <div>
+                  <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2 mb-2">
+                    <Heart className="w-5 h-5 text-pink-500" />
+                    Sở thích
+                  </h2>
+                  <div className="flex flex-wrap gap-2">
+                    {displayedUser.interests.map((interest, idx) => (
+                      <span
+                        key={idx}
+                        className="px-3 py-1 text-sm bg-gray-100 dark:bg-[#23233b] text-gray-800 dark:text-gray-300 rounded-full"
+                      >
+                        {interest}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Social Links */}
+              {displayedUser?.socialLinks?.length > 0 && (
+                <div>
+                  <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2 mb-2">
+                    <Link2 className="w-5 h-5 text-indigo-500" />
+                    Mạng xã hội
+                  </h2>
+                  <div className="flex flex-col gap-1 text-sm text-blue-500">
+                    {displayedUser.socialLinks.map((link, idx) => (
+                      <a
+                        key={idx}
+                        href={link.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:underline"
+                      >
+                        {link.platform}: {link.url}
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
             <div className="rounded-md bg-white dark:bg-[#1e1e2f] border-2 border-gray-200 dark:border-[#2b2b3d] p-4 space-y-2">
               <div className="flex items-center justify-between gap-2">
                 <h1 className="text-xl font-bold text-gray-900 dark:text-white">
@@ -573,6 +724,15 @@ function ProfilePage() {
       )}
       {showChat && (
         <ChatBox userChat={activeChatUser} onClose={handleCloseChat} />
+      )}
+
+      {/* Modal */}
+      {isOpenInfoModal && (
+        <EditInfoModal
+          onClose={() => setIsOpenInfoModal(false)}
+          user={displayedUser}
+          onUpdated={handleUpdateUser}
+        />
       )}
     </>
   );
