@@ -248,6 +248,23 @@ export const userAPI = {
       throw error;
     }
   },
+  updateUserInfo: async (userId, userData) => {
+    try {
+      const response = await api.post(`/user/update-info/${userId}`, userData);
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to update user info";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
   // Upload user avatar
   uploadAvatar: async (file, type, id) => {
     try {
