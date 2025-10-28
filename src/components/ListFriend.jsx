@@ -66,7 +66,7 @@ function ListFriend() {
                 key={user._id}
                 className="flex items-center gap-4 py-2 px-2 rounded-lg hover:bg-gray-50 dark:hover:bg-[#2a3142] transition-all"
               >
-                <Link to={`/profile/${user._id}`}>
+                <Link to={`/profile/${user.slug}`}>
                   <img
                     src={`${Config.BACKEND_URL}${user.avatar}`}
                     alt={user.fullName}
@@ -76,7 +76,7 @@ function ListFriend() {
 
                 <div>
                   <Link
-                    to={`/profile/${user._id}`}
+                    to={`/profile/${user.slug}`}
                     className="font-semibold block text-gray-800 dark:text-gray-100 hover:text-blue-500 dark:hover:text-blue-400"
                   >
                     {user.fullName}

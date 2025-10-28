@@ -4,7 +4,7 @@ import { useState } from "react";
 import { userAPI } from "../services/api";
 import { toast } from "react-hot-toast";
 
-const EditInfoModal = ({ user, onClose, onUpdated }) => {
+const EditInfoModal = ({ user, onClose, onUpdated, isMyProfile }) => {
   const [loading, setLoading] = useState(false);
   const [showEdu, setShowEdu] = useState(!!user?.education?.school);
   const [showWork, setShowWork] = useState(!!user?.work?.company);
@@ -69,11 +69,15 @@ const EditInfoModal = ({ user, onClose, onUpdated }) => {
       onClose();
     } catch (error) {
       console.error(error);
-      toast.error(error.response?.data?.message || "Lỗi khi cập nhật thông tin");
+      toast.error(
+        error.response?.data?.message || "Lỗi khi cập nhật thông tin"
+      );
     } finally {
       setLoading(false);
     }
   };
+
+  if (!isMyProfile) return null;
 
   return (
     <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50">

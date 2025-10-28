@@ -61,6 +61,12 @@ export default function PostTab({ shop }) {
       <div className="lg:w-[60%] w-full space-y-4">
         {isShopOwner && (
           <CreateStatus
+            postedBy={{
+                _id: shop._id,
+                fullName: shop.name,
+                avatar: shop.avatar,
+                slug: shop.slug,
+            }}
             onPostCreated={handleAddPost}
             postedByType={"Shop"}
             postedById={shop._id}

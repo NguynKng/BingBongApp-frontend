@@ -1,6 +1,6 @@
 import { ChevronLeft, Search } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { useGetProfile } from "../hooks/useProfile";
+import { useGetProfileBySlug } from "../hooks/useProfile";
 import useAuthStore from "../store/authStore";
 import SpinnerLoading from "./SpinnerLoading";
 import Config from "../envVars";
@@ -11,7 +11,7 @@ export default function ListFriendBar({ onToggleChat }) {
   const [friends, setFriends] = useState([]);
   const [search, setSearch] = useState("");
   const [tab, setTab] = useState("Friends");
-  const { profile, loading } = useGetProfile(user?._id || "");
+  const { profile, loading } = useGetProfileBySlug(user?.slug || "");
   const isOnline = (friendId) => onlineUsers.includes(friendId);
 
   useEffect(() => {

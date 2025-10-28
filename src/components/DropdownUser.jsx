@@ -22,7 +22,7 @@ function DropdownUser() {
       {/* User */}
       <div className="shadow-lg p-1 w-full rounded-lg border-2 border-gray-200 dark:border-gray-800">
         <Link
-          to={`/profile/${user._id}`}
+          to={`/profile/${user.slug}`}
           className="p-2 hover:bg-gray-100 w-full flex items-center gap-2 rounded-lg cursor-pointer dark:hover:bg-[rgb(56,56,56)]"
         >
           <img

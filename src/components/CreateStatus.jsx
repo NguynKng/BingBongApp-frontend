@@ -1,12 +1,28 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import Config from "../envVars.js";
 import useAuthStore from "../store/authStore.js";
 import PostModal from "./PostModal"; // Bạn phải tạo PostModal.jsx theo hướng dẫn trước
+import { getBackendImgURL } from "../utils/helper.js";
 
-function CreateStatus({ onPostCreated, postedByType, postedById }) {
+function CreateStatus({ onPostCreated, postedBy, postedByType, postedById }) {
   const { user } = useAuthStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const isShopPage = postedByType === "Shop";
+  const isUserPage = postedByType === "User";
+  const isGroupPage = postedByType === "Group";
+
+  const linkToProfile = () => {
+    switch (postedByType) {
+      case "User":
+        return `/profile/${postedBy.slug}`;
+      case "Shop":
+        return `/shop/${postedBy.slug}`;
+      case "Group":
+        return `/group/${postedBy.slug}`;
+      default:
+        return `/profile/${user.slug}`;
+    }
+  };
 
   return (
     <>
@@ -14,15 +30,11 @@ function CreateStatus({ onPostCreated, postedByType, postedById }) {
         {/* Dòng tạo status */}
         <div className="flex items-center gap-2 py-4 border-b-2 border-gray-200 dark:border-gray-700">
           <Link
-            to={`/profile/${user._id}`}
+            to={linkToProfile()}
             className="size-12 rounded-full border-[1px] border-gray-300 dark:border-gray-600 cursor-pointer hover:opacity-[70%]"
           >
             <img
-              src={
-                user?.avatar
-                  ? `${Config.BACKEND_URL}${user.avatar}`
-                  : "/user.png"
-              }
+              src={getBackendImgURL(postedBy?.avatar)}
               alt="user-avatar"
               className="object-cover rounded-full size-full"
             />
@@ -33,7 +45,7 @@ function CreateStatus({ onPostCreated, postedByType, postedById }) {
             onClick={() => setIsModalOpen(true)}
           >
             <span className="text-gray-500 dark:text-gray-300 lg:text-[1.1rem] text-sm">
-              {`${user.fullName} ơi, bạn đang nghĩ gì thế?`}
+              {`${postedBy.fullName} ơi, bạn đang nghĩ gì thế?`}
             </span>
           </div>
         </div>
@@ -63,6 +75,7 @@ function CreateStatus({ onPostCreated, postedByType, postedById }) {
       {isModalOpen && (
         <PostModal
           onPostCreated={onPostCreated}
+          postedBy={postedBy}
           postedByType={postedByType}
           postedById={postedById}
           onClose={() => setIsModalOpen(false)}

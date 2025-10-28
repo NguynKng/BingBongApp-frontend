@@ -17,7 +17,7 @@ function DropdownNotification({notifications}) {
     if (enumPostType.includes(noti.type)) {
         return `/posts/${noti.post}`;
     } else if (enumFriendType.includes(noti.type) && noti.actor) {
-        return `/profile/${noti.actor._id}`;
+        return `/profile/${noti.actor.slug}`;
     } else {
         return "#"
     }
