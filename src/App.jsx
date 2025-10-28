@@ -110,7 +110,7 @@ function App() {
           }
         />
         <Route
-          path="/profile/:userId"
+          path="/profile/:slug"
           element={
             <ProtectedRoute>
               <MainLayout Element={ProfilePage} />

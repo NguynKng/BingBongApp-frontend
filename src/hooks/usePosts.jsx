@@ -9,7 +9,7 @@ export const useGetOwnerPosts = (type, id) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user || !id || !type) return;
     const fetchPosts = async () => {
       try {
         const response = await postAPI.getPostsByOwner(type, id);

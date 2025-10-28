@@ -5,11 +5,12 @@ import { Link } from "react-router-dom";
 import Config from "../envVars";
 import useAuthStore from "../store/authStore";
 import { postAPI } from "../services/api";
+import { getBackendImgURL } from "../utils/helper";
 
 function CommentInput({ postId, onSuccessRefresh }) {
+  const { user } = useAuthStore();
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
-  const { user } = useAuthStore();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -37,14 +38,13 @@ function CommentInput({ postId, onSuccessRefresh }) {
   };
 
   return (
-    <form className="flex items-center gap-2 sm:gap-3 w-full sm:flex-nowrap mt-4" onSubmit={handleSubmit}>
-      <Link to={`/profile/${user._id}`} className="w-12 h-12 rounded-full">
+    <form
+      className="flex items-center gap-2 sm:gap-3 w-full sm:flex-nowrap mt-4"
+      onSubmit={handleSubmit}
+    >
+      <Link to={`/profile/${user.slug}`} className="w-12 h-12 rounded-full">
         <img
-          src={
-            user?.avatar
-              ? `${Config.BACKEND_URL}${user.avatar}`
-              : "/user.png"
-          }
+          src={getBackendImgURL(user?.avatar)}
           className="object-cover w-full h-full rounded-full"
         />
       </Link>
@@ -70,6 +70,8 @@ function CommentInput({ postId, onSuccessRefresh }) {
 CommentInput.propTypes = {
   postId: PropTypes.string.isRequired,
   onSuccessRefresh: PropTypes.func.isRequired,
+  postedByType: PropTypes.string.isRequired,
+  postedBy: PropTypes.object.isRequired,
 };
 
 export default CommentInput;

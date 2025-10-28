@@ -9,22 +9,22 @@ const useUserStore = create((set, get) => ({
   error: null,
 
   // ✅ Fetch a user profile (with caching)
-  fetchUserProfile: async (userId, force = false) => {
-    if (!userId) return null;
+  fetchUserProfile: async (slug, force = false) => {
+    if (!slug) return null;
 
     const { users } = get();
-    if (users[userId] && !force) {
+    if (users[slug] && !force) {
       // Already cached
-      return users[userId];
+      return users[slug];
     }
 
     set({ loading: true, error: null });
     try {
-      const response = await userAPI.getUserProfile(userId);
+      const response = await userAPI.getUserProfileBySlug(slug);
       if (response.success) {
         const user = response.user;
         set((state) => ({
-          users: { ...state.users, [userId]: user },
+          users: { ...state.users, [slug]: user },
         }));
         return user;
       } else {
@@ -40,12 +40,12 @@ const useUserStore = create((set, get) => ({
     }
   },
 
-  updateUserProfileInStore: (userId, updatedData) => {
+  updateUserProfileInStore: (slug, updatedData) => {
     set((state) => ({
       users: {
         ...state.users,
-        [userId]: {
-          ...state.users[userId],
+        [slug]: {
+          ...state.users[slug],
           ...updatedData,
         },
       },

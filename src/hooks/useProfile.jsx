@@ -3,22 +3,22 @@ import { userAPI } from "../services/api";
 import useAuthStore from "../store/authStore";
 import useUserStore from "../store/userStore";
 
-export const useGetProfile = (userId, options = {}) => {
+export const useGetProfileBySlug = (slug, options = {}) => {
   const [profile, setProfile] = useState(null);
   const [error, setError] = useState(null);
 
-  const { users, fetchUserProfile, loading} = useUserStore();
+  const { users, fetchUserProfile, loading } = useUserStore();
   const shouldFetch = options.enabled !== false;
 
   useEffect(() => {
-    if (!shouldFetch || !userId) return;
+    if (!shouldFetch || !slug) return;
 
     const loadProfile = async () => {
       try {
-        if (users[userId]) {
-          setProfile(users[userId]);
+        if (users[slug]) {
+          setProfile(users[slug]);
         } else {
-          const fetched = await fetchUserProfile(userId);
+          const fetched = await fetchUserProfile(slug);
           setProfile(fetched);
         }
       } catch (err) {
@@ -27,7 +27,7 @@ export const useGetProfile = (userId, options = {}) => {
     };
 
     loadProfile();
-  }, [userId, shouldFetch, users, fetchUserProfile]);
+  }, [slug, shouldFetch, users, fetchUserProfile]);
 
   return { profile, loading, error };
 };

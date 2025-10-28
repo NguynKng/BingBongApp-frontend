@@ -13,16 +13,15 @@ import {
 } from "lucide-react";
 import useAuthStore from "../store/authStore";
 import Config from "../envVars";
-import { useGetProfile } from "../hooks/useProfile";
+import { useGetProfileBySlug } from "../hooks/useProfile";
+import { getBackendImgURL } from "../utils/helper";
 
 function Navbar({ isCloseSidebar, setIsCloseSidebar }) {
   const { user } = useAuthStore();
-  const { profile } = useGetProfile(user?._id);
+  const { profile } = useGetProfileBySlug(user?.slug);
   const location = useLocation();
   const pathname = location.pathname;
-  const avatarUrl = user?.avatar
-    ? `${Config.BACKEND_URL}${user.avatar}`
-    : "/user.png";
+  const avatarUrl = getBackendImgURL(user?.avatar);
   const fullName = user?.fullName || "User";
 
   const navbarData = [
@@ -31,7 +30,7 @@ function Navbar({ isCloseSidebar, setIsCloseSidebar }) {
       tab: "profile",
       src: UserRound,
       text: "Cá nhân",
-      link: `/profile/${user._id}`,
+      link: `/profile/${user.slug}`,
     },
     { tab: "quiz", src: Gamepad2, text: "Quiz", link: "/quiz" },
     { tab: "news", src: Newspaper, text: "Tin tức", link: "/news" },
@@ -140,7 +139,7 @@ function Navbar({ isCloseSidebar, setIsCloseSidebar }) {
       {/* Profile */}
       <div className="p-2">
         <Link
-          to={`/profile/${user._id}`}
+          to={`/profile/${user.slug}`}
           className={`flex items-center gap-3 py-2 rounded-xl cursor-pointer transition-all
             hover:bg-blue-500/10 dark:hover:bg-blue-600/20 ${
               isCloseSidebar ? "justify-center px-2" : "px-4"

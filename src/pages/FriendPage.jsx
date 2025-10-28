@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Header from "../components/Header";
 import useAuthStore from "../store/authStore";
-import { useGetProfile } from "../hooks/useProfile";
+import { useGetProfileBySlug } from "../hooks/useProfile";
 import { userAPI } from "../services/api";
 import toast from "react-hot-toast";
 import Config from "../envVars";
@@ -11,7 +11,7 @@ import { useGetSuggestion } from "../hooks/useProfile";
 const FriendPage = () => {
   const { suggestions } = useGetSuggestion();
   const { user, updateUser } = useAuthStore();
-  const { profile } = useGetProfile(user._id);
+  const { profile } = useGetProfileBySlug(user.slug);
   const [friendRequests, setFriendRequests] = useState([]);
 
   useEffect(() => {
@@ -76,7 +76,7 @@ const FriendPage = () => {
                   }}
                 >
                   <Link
-                    to={`/profile/${requester._id}`}
+                    to={`/profile/${requester.slug}`}
                     className="flex flex-col items-center"
                   >
                     <img
@@ -131,7 +131,7 @@ const FriendPage = () => {
                 }}
               >
                 <Link
-                  to={`/profile/${user._id}`}
+                  to={`/profile/${user.slug}`}
                   className="flex flex-col items-center"
                 >
                   <img

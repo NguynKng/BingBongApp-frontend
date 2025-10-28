@@ -122,7 +122,7 @@ function Header({ onToggleChat }) {
                 ) : (
                   listUser.map((user) => (
                     <Link
-                      to={`/profile/${user._id}`}
+                      to={`/profile/${user.slug}`}
                       key={user._id}
                       onClick={() => {
                         setQuery("");
@@ -244,7 +244,7 @@ function Header({ onToggleChat }) {
               <SunMedium className="text-gray-600 dark:text-white" />
             )}
             <div className="absolute -bottom-8 text-xs bg-black/80 text-white px-3 py-1 rounded shadow hidden group-hover:block z-50 text-center whitespace-nowrap">
-              Messenger
+                Chế độ {theme === "dark" ? "tối" : "sáng"}
             </div>
           </div>
           <div

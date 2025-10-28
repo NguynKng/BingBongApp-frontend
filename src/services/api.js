@@ -351,7 +351,26 @@ export const userAPI = {
       throw error;
     }
   },
+  getUserProfileBySlug: async (slug) => {
+    try {
+      // Use different endpoints based on whether userId is provided
+      const response = await api.get(`/user/profile/slug/${slug}`);
 
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to get user profile";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
   getUserProfileByName: async (name) => {
     try {
       // Use different endpoints based on whether userId is provided

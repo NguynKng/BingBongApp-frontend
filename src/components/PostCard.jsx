@@ -116,7 +116,7 @@ function PostCard({ post, onDeletePost, showComment = false }) {
         return {
           name: postedById.fullName,
           avatar: postedById.avatar,
-          link: `/profile/${postedById._id}`,
+          link: `/profile/${postedById.slug}`,
         };
       case "Shop":
         return {
@@ -153,7 +153,10 @@ function PostCard({ post, onDeletePost, showComment = false }) {
     <div className="bg-white py-5 rounded-xl shadow-md mb-4 dark:bg-[#1b1f2b] dark:border dark:border-[#2b2b3d]">
       <div className="flex items-center justify-between mb-2 px-5">
         <div className="flex items-center gap-2">
-          <Link to={poster.link} className="w-10 h-10 rounded-full border-[1px] border-gray-300 hover:opacity-[70%]">
+          <Link
+            to={poster.link}
+            className="w-10 h-10 rounded-full border-[1px] border-gray-300 hover:opacity-[70%]"
+          >
             <img
               src={getBackendImgURL(poster.avatar)}
               alt={poster.name}
@@ -341,7 +344,16 @@ function PostCard({ post, onDeletePost, showComment = false }) {
                   key={comment._id}
                   comment={comment}
                   postAuthorId={author._id}
-                  postId={post._id}
+                  postedByType={postedByType}
+                  postedBy={{
+                    _id: postedById._id,
+                    slug: postedById.slug,
+                    avatar: postedById.avatar,
+                    name:
+                      postedByType === "User"
+                        ? postedById.fullName
+                        : postedById.name,
+                  }}
                   onRefresh={async () => {
                     const refreshed = await postAPI.getComments(post._id);
                     if (refreshed.success) {

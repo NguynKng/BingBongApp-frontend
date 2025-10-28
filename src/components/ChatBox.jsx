@@ -186,7 +186,7 @@ function ChatBox({ onClose, userChat }) {
           <div className="p-2 font-semibold rounded-t-xl flex justify-between items-center bg-gradient-to-r from-blue-500 to-purple-500 text-white">
             <div className="flex items-center gap-2">
               <Link
-                to={isAIChat ? `#` : `/profile/${userChat._id}`}
+                to={isAIChat ? `#` : `/profile/${userChat.slug}`}
                 className="relative rounded-full size-8"
               >
                 <img
@@ -203,7 +203,7 @@ function ChatBox({ onClose, userChat }) {
               </Link>
               <div>
                 <Link
-                  to={isAIChat ? `#` : `/profile/${userChat._id}`}
+                  to={isAIChat ? `#` : `/profile/${userChat.slug}`}
                   className="text-[15px] text-white"
                 >
                   {`${userChat.fullName}`}

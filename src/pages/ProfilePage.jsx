@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import {
-    Briefcase,
+  Briefcase,
   ChevronDown,
   Globe,
   GraduationCap,
@@ -11,7 +11,7 @@ import {
   UserCheck,
   UserPlus,
   UserX,
-  Link2
+  Link2,
 } from "lucide-react";
 import CreateStatus from "../components/CreateStatus";
 import PostCard from "../components/PostCard";
@@ -21,16 +21,17 @@ import Config from "../envVars";
 import { userAPI } from "../services/api";
 import { toast } from "react-hot-toast";
 import { useGetOwnerPosts } from "../hooks/usePosts";
-import { useGetProfile } from "../hooks/useProfile";
+import { useGetProfileBySlug } from "../hooks/useProfile";
 import SpinnerLoading from "../components/SpinnerLoading";
 import ChatBox from "../components/ChatBox";
 import WarningDeleteFriend from "../components/WarningDeleteFriend";
 import EditInfoModal from "../components/EditInfoModal";
 import useUserStore from "../store/userStore";
+import { useMemo } from "react";
 
 function ProfilePage() {
   const [isOpenFriendsDropdown, setIsOpenFriendsDropdown] = useState(false);
-  const { userId } = useParams();
+  const { slug } = useParams();
   const { updateUserProfileInStore } = useUserStore();
   const [activeTab, setActiveTab] = useState("Bài viết");
   const [isUploading, setIsUploading] = useState({
@@ -41,12 +42,12 @@ function ProfilePage() {
   const [isOpenInfoModal, setIsOpenInfoModal] = useState(false);
   const { user, updateUser, theme } = useAuthStore();
   const avatarInputRef = useRef(null);
+  const { profile } = useGetProfileBySlug(slug);
+  const userId = useMemo(() => profile?._id ?? null, [profile]);
   const coverPhotoInputRef = useRef(null);
   const { posts, setPosts, loading } = useGetOwnerPosts("User", userId);
 
   const isMyProfile = userId === user?._id;
-
-  const { profile } = useGetProfile(userId);
 
   const displayedUser = profile ?? null;
 
@@ -457,12 +458,15 @@ function ProfilePage() {
                 <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
                   Giới thiệu
                 </h1>
-                <button
-                  onClick={() => setIsOpenInfoModal(true)}
-                  className="text-sm px-3 py-1.5 rounded-md bg-gray-100 dark:bg-[#23233b] text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#2b2b3d] transition"
-                >
-                  <Pencil className="inline w-4 h-4 mr-1" /> Chỉnh sửa
-                </button>
+
+                {isMyProfile && (
+                  <button
+                    onClick={() => setIsOpenInfoModal(true)}
+                    className="text-sm px-3 py-1.5 rounded-md bg-gray-100 dark:bg-[#23233b] text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#2b2b3d] transition"
+                  >
+                    <Pencil className="inline w-4 h-4 mr-1" /> Chỉnh sửa
+                  </button>
+                )}
               </div>
 
               {/* Bio */}
@@ -471,12 +475,14 @@ function ProfilePage() {
                   {displayedUser.bio}
                 </p>
               ) : (
-                <button
-                  onClick={() => setIsOpenInfoModal(true)}
-                  className="py-2 px-4 w-full rounded-md bg-gray-100 dark:bg-[#23233b] dark:text-white font-medium text-sm hover:bg-gray-200 dark:hover:bg-[#2b2b3d]"
-                >
-                  Thêm tiểu sử
-                </button>
+                isMyProfile && (
+                  <button
+                    onClick={() => setIsOpenInfoModal(true)}
+                    className="py-2 px-4 w-full rounded-md bg-gray-100 dark:bg-[#23233b] dark:text-white font-medium text-sm hover:bg-gray-200 dark:hover:bg-[#2b2b3d]"
+                  >
+                    Thêm tiểu sử
+                  </button>
+                )
               )}
 
               <hr className="border-gray-200 dark:border-[#2b2b3d]" />
@@ -657,7 +663,7 @@ function ProfilePage() {
               <div className="grid grid-cols-3 gap-2">
                 {profile.friends.map((friend) => (
                   <div key={friend._id} className="w-full rounded-md">
-                    <Link to={`/profile/${friend._id}`}>
+                    <Link to={`/profile/${friend.slug}`}>
                       <img
                         src={
                           friend.avatar
@@ -669,7 +675,7 @@ function ProfilePage() {
                       />
                     </Link>
                     <Link
-                      to={`/profile/${friend._id}`}
+                      to={`/profile/${friend.slug}`}
                       className="font-medium dark:text-white text-sm hover:underline-offset-2 hover:underline"
                     >
                       {friend.fullName}
@@ -683,6 +689,12 @@ function ProfilePage() {
           <div className="lg:w-[60%] w-full space-y-4">
             {isMyProfile && (
               <CreateStatus
+                postedBy={{
+                  _id: user._id,
+                  fullName: user.fullName,
+                  avatar: user.avatar,
+                  slug: user.slug,
+                }}
                 onPostCreated={handleAddPost}
                 postedByType={"User"}
                 postedById={user?._id}
@@ -731,6 +743,7 @@ function ProfilePage() {
         <EditInfoModal
           onClose={() => setIsOpenInfoModal(false)}
           user={displayedUser}
+          isMyProfile={isMyProfile}
           onUpdated={handleUpdateUser}
         />
       )}

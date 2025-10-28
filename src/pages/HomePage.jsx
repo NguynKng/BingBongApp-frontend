@@ -37,6 +37,12 @@ function HomePage() {
         <div className="md:w-[60%] w-full px-2 md:px-8 space-y-4">
           <CreateStatus
             onPostCreated={handleAddPost}
+            postedBy={{
+                _id: user._id,
+                fullName: user.fullName,
+                avatar: user.avatar,
+                slug: user.slug,
+            }}
             postedByType="User"
             postedById={user._id}
           />

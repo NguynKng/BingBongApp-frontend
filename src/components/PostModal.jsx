@@ -3,9 +3,9 @@ import Config from "../envVars.js";
 import { toast } from "react-hot-toast";
 import { postAPI } from "../services/api.js";
 import useAuthStore from "../store/authStore.js";
+import { getBackendImgURL } from "../utils/helper.js";
 
-function PostModal({ onClose, onPostCreated, postedByType, postedById }) {
-  const { user } = useAuthStore();
+function PostModal({ onClose, onPostCreated, postedBy, postedByType, postedById }) {
   const [content, setContent] = useState("");
   const [images, setImages] = useState([]);
   const [imagesPreview, setImagesPreview] = useState([]);
@@ -90,12 +90,12 @@ function PostModal({ onClose, onPostCreated, postedByType, postedById }) {
         <div className="flex gap-3 items-center mb-4">
           <img
             src={
-              user?.avatar ? `${Config.BACKEND_URL}${user.avatar}` : "/user.png"
+                getBackendImgURL(postedBy?.avatar)
             }
             className="w-10 h-10 rounded-full object-cover"
           />
           <div>
-            <p className="font-medium">{user.fullName}</p>
+            <p className="font-medium">{postedBy.fullName}</p>
             <select className="text-sm text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded px-2 py-1">
               <option>Bạn bè</option>
               <option>Công khai</option>
@@ -106,7 +106,7 @@ function PostModal({ onClose, onPostCreated, postedByType, postedById }) {
 
         <textarea
           className="w-full h-40 resize-none p-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded focus:outline-none"
-          placeholder={`${user.fullName} ơi, bạn đang nghĩ gì thế?`}
+          placeholder={`${postedBy.fullName} ơi, bạn đang nghĩ gì thế?`}
           value={content}
           onChange={(e) => setContent(e.target.value)}
         ></textarea>
