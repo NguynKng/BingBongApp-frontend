@@ -39,7 +39,7 @@ function HomePage() {
             onPostCreated={handleAddPost}
             postedBy={{
                 _id: user._id,
-                fullName: user.fullName,
+                name: user.fullName,
                 avatar: user.avatar,
                 slug: user.slug,
             }}

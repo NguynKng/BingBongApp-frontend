@@ -145,10 +145,11 @@ const useAuthStore = create(
           throw error;
         }
       },
-      // Logout the user
-      logout: async () => {
-        set({ isLoading: true, error: null });
+      logout: async (manual = true) => {
         try {
+          get().disconnectSocket(); // Ngắt socket trước
+
+          // Xóa toàn bộ state user
           set({
             user: null,
             token: null,
@@ -156,15 +157,11 @@ const useAuthStore = create(
             isLoading: false,
             error: null,
           });
-          toast.success("Logged out successfully!");
-          get().disconnectSocket(); // Disconnect socket on logout
+
+          if (manual) toast.success("Logged out successfully!");
         } catch (error) {
-          set({
-            isLoading: false,
-            error: error.message,
-          });
-          // Toast is already shown in the API service
-          throw error;
+          set({ isLoading: false, error: error.message });
+          console.error("Logout error:", error);
         }
       },
 

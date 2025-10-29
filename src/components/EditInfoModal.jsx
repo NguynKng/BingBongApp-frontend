@@ -6,8 +6,8 @@ import { toast } from "react-hot-toast";
 
 const EditInfoModal = ({ user, onClose, onUpdated, isMyProfile }) => {
   const [loading, setLoading] = useState(false);
-  const [showEdu, setShowEdu] = useState(!!user?.education?.school);
-  const [showWork, setShowWork] = useState(!!user?.work?.company);
+  const [showEdu, setShowEdu] = useState(!!user?.education);
+  const [showWork, setShowWork] = useState(!!user?.work);
   const [showSocial, setShowSocial] = useState(
     Array.isArray(user?.socialLinks) && user.socialLinks.length > 0
   );

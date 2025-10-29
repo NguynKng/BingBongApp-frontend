@@ -12,7 +12,6 @@ function CommentItem({
   postAuthorId,
   onRefresh,
   postedByType,
-  postedBy,
 }) {
   const [replyingTo, setReplyingTo] = useState(null);
   const [openReplies, setOpenReplies] = useState(false);
@@ -22,10 +21,6 @@ function CommentItem({
   // ✅ Kiểm tra từng comment có phải của chủ shop không
   const isShopAuthor = (userId) =>
     postedByType === "Shop" && userId === postAuthorId;
-
-  // ✅ Nếu comment là của chủ shop thì hiển thị thông tin shop, ngược lại là user
-  const displayEntity =
-    isShopAuthor(comment?.user?._id) && postedBy ? postedBy : comment?.user;
 
   const getProfileLink = (entity, type, isShopOwner = false) => {
     if (!entity?.slug) return "#";
@@ -68,11 +63,11 @@ function CommentItem({
     <div className="flex items-start gap-2 w-full max-w-full">
       {/* ✅ Avatar */}
       <Link
-        to={getProfileLink(displayEntity, postedByType, isShopAuthor(comment?.user?._id))}
+        to={getProfileLink(comment?.user, postedByType, isShopAuthor(comment?.user?._id))}
         className="size-10 rounded-full transition-transform duration-200 active:scale-95 hover:brightness-105"
       >
         <img
-          src={getAvatar(displayEntity)}
+          src={getAvatar(comment?.user)}
           alt="avatar"
           className="size-full object-cover rounded-full"
         />
@@ -83,17 +78,13 @@ function CommentItem({
         <div className="py-2 px-4 rounded-3xl bg-gray-200 w-fit max-w-full dark:bg-[rgb(52,52,53)]">
           <div className="flex items-center gap-2 flex-wrap">
             <Link
-              to={getProfileLink(displayEntity, postedByType, isShopAuthor(comment?.user?._id))}
+              to={getProfileLink(comment?.user, postedByType, isShopAuthor(comment?.user?._id))}
               className="text-[16px] font-semibold hover:text-blue-600 transition-colors dark:text-white"
             >
-              {displayEntity?.name || displayEntity?.fullName}
+              {comment?.user?.name || comment?.user?.fullName}
             </Link>
 
-            {isShopAuthor(comment?.user?._id) && (
-              <span className="text-sm text-green-600 font-medium">Shop</span>
-            )}
-
-            {displayEntity?._id === postAuthorId && (
+            {comment?.user?._id === postAuthorId && (
               <span className="text-sm text-blue-500 font-medium">Tác giả</span>
             )}
           </div>
@@ -132,19 +123,15 @@ function CommentItem({
         {/* ✅ Danh sách phản hồi */}
         {openReplies &&
           comment.replies.map((reply) => {
-            const replyEntity =
-              isShopAuthor(reply?.user?._id) && postedBy
-                ? postedBy
-                : reply?.user;
 
             return (
               <div key={reply._id} className="flex gap-2 mt-2 ml-1 w-full">
                 <Link
-                  to={getProfileLink(replyEntity, postedByType, isShopAuthor(reply?.user?._id))}
+                  to={getProfileLink(reply?.user, "User", isShopAuthor(reply?.user?._id))}
                   className="size-9 rounded-full transition-transform duration-200 active:scale-95 hover:brightness-105 min-w-[36px]"
                 >
                   <img
-                    src={getAvatar(replyEntity)}
+                    src={getAvatar(reply?.user)}
                     alt="reply avatar"
                     className="size-full object-cover rounded-full"
                   />
@@ -153,19 +140,13 @@ function CommentItem({
                   <div className="py-2 px-4 rounded-3xl bg-gray-100 dark:bg-[rgb(52,52,53)] w-fit max-w-full">
                     <div className="flex items-center gap-2 flex-wrap">
                       <Link
-                        to={getProfileLink(replyEntity, postedByType, isShopAuthor(reply?.user?._id))}
+                        to={getProfileLink(reply?.user, "User", isShopAuthor(reply?.user?._id))}
                         className="text-[15px] font-semibold hover:text-blue-600 transition-colors dark:text-white"
                       >
-                        {replyEntity?.name || replyEntity?.fullName}
+                        {reply?.user?.name || reply?.user?.fullName}
                       </Link>
 
-                      {isShopAuthor(reply?.user?._id) && (
-                        <span className="text-sm text-green-600 font-medium">
-                          Shop
-                        </span>
-                      )}
-
-                      {replyEntity?._id === postAuthorId && (
+                      {reply?.user?._id === postAuthorId && (
                         <span className="text-sm text-blue-500 font-medium">
                           Tác giả
                         </span>
@@ -198,7 +179,7 @@ function CommentItem({
             </Link>
             <input
               type="text"
-              placeholder={`Trả lời ${displayEntity.name || displayEntity.fullName}...`}
+              placeholder={`Trả lời ${comment.user.name || comment.user.fullName}...`}
               className="py-2 px-4 rounded-full flex-1 bg-gray-200 text-base dark:bg-[rgb(52,52,53)] dark:text-white"
               value={responseComment}
               onChange={(e) => setResponseComment(e.target.value)}

@@ -7,9 +7,6 @@ import { getBackendImgURL } from "../utils/helper.js";
 function CreateStatus({ onPostCreated, postedBy, postedByType, postedById }) {
   const { user } = useAuthStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const isShopPage = postedByType === "Shop";
-  const isUserPage = postedByType === "User";
-  const isGroupPage = postedByType === "Group";
 
   const linkToProfile = () => {
     switch (postedByType) {
@@ -21,6 +18,19 @@ function CreateStatus({ onPostCreated, postedBy, postedByType, postedById }) {
         return `/group/${postedBy.slug}`;
       default:
         return `/profile/${user.slug}`;
+    }
+  };
+
+  const placeholderText = () => {
+    switch (postedByType) {
+      case "User":
+        return `Bạn đang nghĩ gì thế, ${postedBy.name}?`;
+      case "Shop":
+        return `Cửa hàng của bạn có gì mới không, ${postedBy.name}?`;
+      case "Group":
+        return `Nhóm của bạn có gì mới không, ${postedBy.name}?`;
+      default:
+        return `Bạn đang nghĩ gì thế, ${postedBy.name}?`;
     }
   };
 
@@ -45,7 +55,7 @@ function CreateStatus({ onPostCreated, postedBy, postedByType, postedById }) {
             onClick={() => setIsModalOpen(true)}
           >
             <span className="text-gray-500 dark:text-gray-300 lg:text-[1.1rem] text-sm">
-              {`${postedBy.fullName} ơi, bạn đang nghĩ gì thế?`}
+              {placeholderText()}
             </span>
           </div>
         </div>
@@ -79,6 +89,7 @@ function CreateStatus({ onPostCreated, postedBy, postedByType, postedById }) {
           postedByType={postedByType}
           postedById={postedById}
           onClose={() => setIsModalOpen(false)}
+            placeholder={placeholderText()}
         />
       )}
     </>

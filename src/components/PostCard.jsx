@@ -25,6 +25,10 @@ function PostCard({ post, onDeletePost, showComment = false }) {
   const [hoveredEmotionUser, setHoveredEmotionUser] = useState(null);
   const [reactions, setReactions] = useState(post.reactions);
 
+  const isShopPost = postedByType === "Shop";
+  const isUserPost = postedByType === "User";
+  const isGroupPost = postedByType === "Group";
+
   useEffect(() => {
     if (!post) return;
     const fetchComments = async () => {
@@ -110,37 +114,6 @@ function PostCard({ post, onDeletePost, showComment = false }) {
     [post._id, user, reactions, myReaction]
   );
 
-  const getPoster = () => {
-    switch (postedByType) {
-      case "User":
-        return {
-          name: postedById.fullName,
-          avatar: postedById.avatar,
-          link: `/profile/${postedById.slug}`,
-        };
-      case "Shop":
-        return {
-          name: postedById.name,
-          avatar: postedById.avatar,
-          link: `/shop/${postedById.slug}`,
-        };
-      case "Group":
-        return {
-          name: postedById.name,
-          avatar: postedById.avatar,
-          link: `/group/${postedById.slug}`,
-        };
-      default:
-        return {
-          name: "Unknown",
-          avatar: "/images/default-avatar/user.png",
-          link: "#",
-        };
-    }
-  };
-
-  const poster = getPoster();
-
   if (!post) {
     return (
       <div className="flex items-center justify-center">
@@ -149,49 +122,106 @@ function PostCard({ post, onDeletePost, showComment = false }) {
     );
   }
 
+  // ✅ Helper: link profile theo loại
+  const getProfileLink = (entity, type) => {
+    if (!entity?.slug) return "#";
+    switch (type) {
+      case "User":
+        return `/profile/${entity.slug}`;
+      case "Shop":
+        return `/shop/${entity.slug}`;
+      case "Group":
+        return `/group/${entity.slug}`;
+      default:
+        return "#";
+    }
+  };
+
   return (
     <div className="bg-white py-5 rounded-xl shadow-md mb-4 dark:bg-[#1b1f2b] dark:border dark:border-[#2b2b3d]">
-      <div className="flex items-center justify-between mb-2 px-5">
-        <div className="flex items-center gap-2">
-          <Link
-            to={poster.link}
-            className="w-10 h-10 rounded-full border-[1px] border-gray-300 hover:opacity-[70%]"
-          >
-            <img
-              src={getBackendImgURL(poster.avatar)}
-              alt={poster.name}
-              className="object-cover size-full rounded-full"
-            />
-          </Link>
-          <div>
+      <div className="flex items-start justify-between px-5 mb-3">
+        <div className="flex items-center gap-3">
+          {/* Avatar */}
+          {isUserPost && (
+            <>
+              <Link
+                to={getProfileLink(postedById, postedByType)}
+                className="w-10 h-10 rounded-full overflow-hidden border border-gray-200 hover:opacity-80 shrink-0"
+              >
+                <img
+                  src={getBackendImgURL(postedById.avatar)}
+                  alt={postedById.name || postedById.fullName}
+                  className="object-cover w-full h-full"
+                />
+              </Link>
+            </>
+          )}
+          {isShopPost && (
+            <div className="relative w-11 h-11 rounded-lg border border-gray-200">
+              <Link to={getProfileLink(postedById, postedByType)}>
+                <img
+                  src={getBackendImgURL(postedById.avatar)}
+                  alt={postedById.name || postedById.fullName}
+                  className="object-cover w-full h-full hover:opacity-80"
+                />
+              </Link>
+              <div className="absolute bottom-0 right-0 w-7 h-7 translate-1 rounded-full  border border-gray-200 hover:opacity-80">
+                <Link to={`/profile/${author.slug}`}>
+                  <img
+                    src={getBackendImgURL(author.avatar)}
+                    alt={author.avatar}
+                    className="object-cover w-full h-full rounded-full"
+                  />
+                </Link>
+              </div>
+            </div>
+          )}
+
+          {/* Info */}
+          <div className="flex flex-col">
+            {/* Tên chính */}
             <Link
-              to={poster.link}
-              className="text-black font-semibold hover:underline underline-offset-2 dark:text-white"
+              to={getProfileLink(postedById, postedByType)}
+              className="font-semibold text-base hover:underline dark:text-white leading-tight"
             >
-              {poster.name}
+              {postedByType === "Shop" ? postedById.name : postedById.fullName}
             </Link>
-            <div className="flex items-center gap-1 text-gray-500 text-sm">
+
+            {/* Thời gian */}
+            <div className="flex items-center gap-1 text-sm text-gray-500 mt-0.5">
+              {isShopPost && (
+                <>
+                  <Link to={`/profile/${author.slug}`}>
+                    {author._id === user?._id ? "Bạn" : author.fullName}
+                  </Link>
+                  <span>•</span>
+                </>
+              )}
               <span>{formatTime(createdAt)}</span>
-              <span className="text-gray-400">•</span>
-              <Earth className="size-4 dark:text-gray-400" />
+              <span>•</span>
+              <Earth className="w-3.5 h-3.5" />
             </div>
           </div>
         </div>
-        {postedById._id === user?._id && (
-          <div
-            className="relative rounded-full text-black hover:bg-gray-100 cursor-pointer p-2 dark:hover:bg-[rgb(56,56,56)]"
-            onClick={() => setIsOpenPostDropdown(!isOpenPostDropdown)}
-          >
-            <Ellipsis className="size-5 dark:text-gray-500" />
+
+        {/* Dropdown */}
+        {author?._id === user?._id && (
+          <div className="relative">
+            <button
+              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-[rgb(56,56,56)]"
+              onClick={() => setIsOpenPostDropdown(!isOpenPostDropdown)}
+            >
+              <Ellipsis className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+            </button>
             {isOpenPostDropdown && (
-              <div className="absolute right-0 top-full w-72 bg-white rounded-lg shadow-xl z-50 border border-gray-200">
-                <ul className="p-2">
+              <div className="absolute right-0 mt-2 w-60 bg-white dark:bg-[rgb(36,36,36)] border border-gray-200 dark:border-gray-700 rounded-xl shadow-md z-50">
+                <ul className="p-1">
                   <li
-                    className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 cursor-pointer rounded-md"
+                    className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 dark:hover:bg-[rgb(64,64,64)] rounded-lg cursor-pointer"
                     onClick={handleDeletePost}
                   >
-                    <Trash2 />
-                    <span className="font-medium">Xoá bài viết</span>
+                    <Trash2 className="w-4 h-4" />
+                    <span className="text-sm font-medium">Xoá bài viết</span>
                   </li>
                 </ul>
               </div>
@@ -345,15 +375,6 @@ function PostCard({ post, onDeletePost, showComment = false }) {
                   comment={comment}
                   postAuthorId={author._id}
                   postedByType={postedByType}
-                  postedBy={{
-                    _id: postedById._id,
-                    slug: postedById.slug,
-                    avatar: postedById.avatar,
-                    name:
-                      postedByType === "User"
-                        ? postedById.fullName
-                        : postedById.name,
-                  }}
                   onRefresh={async () => {
                     const refreshed = await postAPI.getComments(post._id);
                     if (refreshed.success) {
