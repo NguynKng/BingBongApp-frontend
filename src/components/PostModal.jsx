@@ -2,10 +2,9 @@ import { useState } from "react";
 import Config from "../envVars.js";
 import { toast } from "react-hot-toast";
 import { postAPI } from "../services/api.js";
-import useAuthStore from "../store/authStore.js";
 import { getBackendImgURL } from "../utils/helper.js";
 
-function PostModal({ onClose, onPostCreated, postedBy, postedByType, postedById }) {
+function PostModal({ onClose, onPostCreated, postedBy, postedByType, postedById, placeholder }) {
   const [content, setContent] = useState("");
   const [images, setImages] = useState([]);
   const [imagesPreview, setImagesPreview] = useState([]);
@@ -95,7 +94,7 @@ function PostModal({ onClose, onPostCreated, postedBy, postedByType, postedById 
             className="w-10 h-10 rounded-full object-cover"
           />
           <div>
-            <p className="font-medium">{postedBy.fullName}</p>
+            <p className="font-medium">{postedBy.name}</p>
             <select className="text-sm text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded px-2 py-1">
               <option>Bạn bè</option>
               <option>Công khai</option>
@@ -106,7 +105,7 @@ function PostModal({ onClose, onPostCreated, postedBy, postedByType, postedById 
 
         <textarea
           className="w-full h-40 resize-none p-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded focus:outline-none"
-          placeholder={`${postedBy.fullName} ơi, bạn đang nghĩ gì thế?`}
+          placeholder={placeholder}
           value={content}
           onChange={(e) => setContent(e.target.value)}
         ></textarea>

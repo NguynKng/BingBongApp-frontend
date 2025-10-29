@@ -452,17 +452,16 @@ function ProfilePage() {
       <section className="bg-gray-200 dark:bg-[#181826] lg:px-[17%] px-2 py-4 min-h-screen">
         <div className="flex lg:flex-row flex-col gap-4">
           <div className="lg:w-[40%] w-full space-y-4 lg:sticky top-[8.5vh] h-fit">
-            <div className="rounded-xl bg-white dark:bg-[#1e1e2f] border border-gray-200 dark:border-[#2b2b3d] p-5 space-y-5 shadow-sm transition-all duration-300">
+            <div className="rounded-xl bg-white dark:bg-[#1c1c28] border border-gray-200 dark:border-[#2c2c3a] p-5 space-y-2 shadow-sm transition-all duration-300">
               {/* Header */}
               <div className="flex justify-between items-center">
-                <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
+                <h1 className="text-lg font-semibold text-gray-900 dark:text-white">
                   Giới thiệu
                 </h1>
-
                 {isMyProfile && (
                   <button
                     onClick={() => setIsOpenInfoModal(true)}
-                    className="text-sm px-3 py-1.5 rounded-md bg-gray-100 dark:bg-[#23233b] text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#2b2b3d] transition"
+                    className="text-sm px-3 py-1.5 rounded-md bg-gray-50 dark:bg-[#23233b] text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#2b2b3d] transition"
                   >
                     <Pencil className="inline w-4 h-4 mr-1" /> Chỉnh sửa
                   </button>
@@ -471,14 +470,14 @@ function ProfilePage() {
 
               {/* Bio */}
               {displayedUser?.bio ? (
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-center">
                   {displayedUser.bio}
                 </p>
               ) : (
                 isMyProfile && (
                   <button
                     onClick={() => setIsOpenInfoModal(true)}
-                    className="py-2 px-4 w-full rounded-md bg-gray-100 dark:bg-[#23233b] dark:text-white font-medium text-sm hover:bg-gray-200 dark:hover:bg-[#2b2b3d]"
+                    className="py-2 px-4 w-full rounded-md bg-gray-50 dark:bg-[#23233b] dark:text-white font-medium text-sm hover:bg-gray-100 dark:hover:bg-[#2b2b3d]"
                   >
                     Thêm tiểu sử
                   </button>
@@ -491,7 +490,7 @@ function ProfilePage() {
               {displayedUser?.education?.length > 0 && (
                 <div className="space-y-2">
                   <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                    <GraduationCap className="w-5 h-5 text-blue-500" />
+                    <GraduationCap className="w-5 h-5 text-gray-500 dark:text-gray-400" />
                     Học vấn
                   </h2>
                   {displayedUser.education.map((edu, idx) => (
@@ -512,33 +511,29 @@ function ProfilePage() {
               )}
 
               {/* Work */}
-              {displayedUser?.work?.length > 0 && (
-                <div className="space-y-2">
-                  <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                    <Briefcase className="w-5 h-5 text-amber-500" />
-                    Công việc
-                  </h2>
-                  {displayedUser.work.map((job, idx) => (
-                    <div
-                      key={idx}
-                      className="pl-7 text-gray-700 dark:text-gray-300 text-sm"
-                    >
-                      <p className="font-medium">{job.company}</p>
-                      {job.position && <p>{job.position}</p>}
-                      {job.duration && (
-                        <p className="text-gray-500 dark:text-gray-400 text-xs">
-                          {job.duration}
-                        </p>
-                      )}
-                    </div>
-                  ))}
+              {displayedUser?.work && (
+                <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+                  <Briefcase className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                  <span>
+                    {(() => {
+                      const { position, company, duration } =
+                        displayedUser.work;
+                      if (position && company && duration)
+                        return `Làm ${position} tại ${company} (${duration})`;
+                      if (position && company)
+                        return `Làm ${position} tại ${company}`;
+                      if (position) return position;
+                      if (company) return `Làm việc tại ${company}`;
+                      return null;
+                    })()}
+                  </span>
                 </div>
               )}
 
               {/* Location */}
               {displayedUser?.address && (
                 <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-                  <MapPin className="w-5 h-5 text-red-500" />
+                  <MapPin className="w-5 h-5 text-gray-500 dark:text-gray-400" />
                   <span>Sống tại {displayedUser.address}</span>
                 </div>
               )}
@@ -546,12 +541,12 @@ function ProfilePage() {
               {/* Website */}
               {displayedUser?.website && (
                 <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-                  <Globe className="w-5 h-5 text-green-500" />
+                  <Globe className="w-5 h-5 text-gray-500 dark:text-gray-400" />
                   <a
                     href={displayedUser.website}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-blue-500 hover:underline"
+                    className="text-blue-600 dark:text-blue-400 hover:underline"
                   >
                     {displayedUser.website}
                   </a>
@@ -562,7 +557,7 @@ function ProfilePage() {
               {displayedUser?.skills?.length > 0 && (
                 <div>
                   <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2 mb-2">
-                    <Sparkles className="w-5 h-5 text-yellow-500" />
+                    <Sparkles className="w-5 h-5 text-gray-500 dark:text-gray-400" />
                     Kỹ năng
                   </h2>
                   <div className="flex flex-wrap gap-2">
@@ -582,7 +577,7 @@ function ProfilePage() {
               {displayedUser?.interests?.length > 0 && (
                 <div>
                   <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2 mb-2">
-                    <Heart className="w-5 h-5 text-pink-500" />
+                    <Heart className="w-5 h-5 text-gray-500 dark:text-gray-400" />
                     Sở thích
                   </h2>
                   <div className="flex flex-wrap gap-2">
@@ -602,25 +597,26 @@ function ProfilePage() {
               {displayedUser?.socialLinks?.length > 0 && (
                 <div>
                   <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2 mb-2">
-                    <Link2 className="w-5 h-5 text-indigo-500" />
-                    Mạng xã hội
+                    <Link2 className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                    Liên kết
                   </h2>
-                  <div className="flex flex-col gap-1 text-sm text-blue-500">
+                  <div className="flex flex-col gap-1 text-sm">
                     {displayedUser.socialLinks.map((link, idx) => (
-                      <a
+                      <Link
                         key={idx}
-                        href={link.url}
+                        to={link.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="hover:underline"
+                        className="text-blue-600 dark:text-blue-400 hover:underline"
                       >
-                        {link.platform}: {link.url}
-                      </a>
+                        {link.platform}
+                      </Link>
                     ))}
                   </div>
                 </div>
               )}
             </div>
+
             <div className="rounded-md bg-white dark:bg-[#1e1e2f] border-2 border-gray-200 dark:border-[#2b2b3d] p-4 space-y-2">
               <div className="flex items-center justify-between gap-2">
                 <h1 className="text-xl font-bold text-gray-900 dark:text-white">
@@ -691,7 +687,7 @@ function ProfilePage() {
               <CreateStatus
                 postedBy={{
                   _id: user._id,
-                  fullName: user.fullName,
+                  name: user.fullName,
                   avatar: user.avatar,
                   slug: user.slug,
                 }}
