@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from "react";
 import {
-  Briefcase,
   ChevronDown,
   Globe,
   GraduationCap,
@@ -12,6 +11,7 @@ import {
   UserPlus,
   UserX,
   Link2,
+  BriefcaseBusiness,
 } from "lucide-react";
 import CreateStatus from "../components/CreateStatus";
 import PostCard from "../components/PostCard";
@@ -490,7 +490,7 @@ function ProfilePage() {
               {displayedUser?.education?.length > 0 && (
                 <div className="space-y-2">
                   <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                    <GraduationCap className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                    <GraduationCap className="size-5 fill-gray-500 text-white dark:text-black" />
                     Học vấn
                   </h2>
                   {displayedUser.education.map((edu, idx) => (
@@ -513,7 +513,7 @@ function ProfilePage() {
               {/* Work */}
               {displayedUser?.work && (
                 <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-                  <Briefcase className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                  <BriefcaseBusiness className="fill-gray-500 text-white size-5 dark:text-black" />
                   <span>
                     {(() => {
                       const { position, company, duration } =
@@ -533,7 +533,7 @@ function ProfilePage() {
               {/* Location */}
               {displayedUser?.address && (
                 <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-                  <MapPin className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                  <MapPin className="fill-gray-500 text-white size-5 dark:text-black" />
                   <span>Sống tại {displayedUser.address}</span>
                 </div>
               )}
@@ -541,15 +541,15 @@ function ProfilePage() {
               {/* Website */}
               {displayedUser?.website && (
                 <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-                  <Globe className="w-5 h-5 text-gray-500 dark:text-gray-400" />
-                  <a
-                    href={displayedUser.website}
+                  <Globe className="fill-gray-500 text-white size-5 dark:text-black" />
+                  <Link
+                    to={displayedUser.website}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-blue-600 dark:text-blue-400 hover:underline"
                   >
                     {displayedUser.website}
-                  </a>
+                  </Link>
                 </div>
               )}
 
@@ -557,7 +557,7 @@ function ProfilePage() {
               {displayedUser?.skills?.length > 0 && (
                 <div>
                   <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2 mb-2">
-                    <Sparkles className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                    <Sparkles className="fill-gray-500 text-white size-5" />
                     Kỹ năng
                   </h2>
                   <div className="flex flex-wrap gap-2">
@@ -577,7 +577,7 @@ function ProfilePage() {
               {displayedUser?.interests?.length > 0 && (
                 <div>
                   <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2 mb-2">
-                    <Heart className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                    <Heart className="fill-gray-500 text-white size-5 dark:text-black" />
                     Sở thích
                   </h2>
                   <div className="flex flex-wrap gap-2">
@@ -597,7 +597,7 @@ function ProfilePage() {
               {displayedUser?.socialLinks?.length > 0 && (
                 <div>
                   <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2 mb-2">
-                    <Link2 className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                    <Link2 className="fill-gray-500 text-white size-5 dark:text-black" />
                     Liên kết
                   </h2>
                   <div className="flex flex-col gap-1 text-sm">

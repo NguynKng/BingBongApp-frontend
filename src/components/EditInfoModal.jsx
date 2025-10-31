@@ -81,9 +81,9 @@ const EditInfoModal = ({ user, onClose, onUpdated, isMyProfile }) => {
 
   return (
     <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50">
-      <div className="bg-white dark:bg-[#1e1e2f] rounded-xl shadow-lg w-full max-w-lg p-6 relative">
+      <div className="bg-white dark:bg-[#1e1e2f] rounded-xl shadow-lg w-full max-w-lg p-2 relative">
         {/* Header */}
-        <div className="flex justify-between items-center mb-4">
+        <div className="flex justify-between items-center mb-4 p-2">
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
             Chỉnh sửa thông tin
           </h2>
@@ -95,7 +95,7 @@ const EditInfoModal = ({ user, onClose, onUpdated, isMyProfile }) => {
           </button>
         </div>
 
-        <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-2">
+        <div className="space-y-4 max-h-[70vh] overflow-y-auto p-2">
           {/* Tiểu sử */}
           <div>
             <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -120,7 +120,7 @@ const EditInfoModal = ({ user, onClose, onUpdated, isMyProfile }) => {
                 type="text"
                 value={formData.address}
                 onChange={(e) => handleChange("address", e.target.value)}
-                className="w-full mt-1 p-2 rounded-md border border-gray-300 dark:border-[#2b2b3d] bg-gray-50 dark:bg-[#23233b]"
+                className="w-full mt-1 p-2 rounded-md border border-gray-300 dark:border-[#2b2b3d] bg-gray-50 dark:bg-[#23233b] dark:text-white"
               />
             </div>
             <div>
@@ -131,7 +131,7 @@ const EditInfoModal = ({ user, onClose, onUpdated, isMyProfile }) => {
                 type="text"
                 value={formData.website}
                 onChange={(e) => handleChange("website", e.target.value)}
-                className="w-full mt-1 p-2 rounded-md border border-gray-300 dark:border-[#2b2b3d] bg-gray-50 dark:bg-[#23233b]"
+                className="w-full mt-1 p-2 rounded-md border border-gray-300 dark:border-[#2b2b3d] bg-gray-50 dark:bg-[#23233b] dark:text-white"
               />
             </div>
           </div>
@@ -157,7 +157,7 @@ const EditInfoModal = ({ user, onClose, onUpdated, isMyProfile }) => {
                     handleNestedChange("education", "school", e.target.value)
                   }
                   placeholder="Trường học"
-                  className="w-full p-2 rounded-md border border-gray-300 dark:border-[#2b2b3d] bg-gray-50 dark:bg-[#23233b]"
+                  className="w-full p-2 rounded-md border border-gray-300 dark:border-[#2b2b3d] bg-gray-50 dark:bg-[#23233b] dark:text-white"
                 />
                 <input
                   type="text"
@@ -166,7 +166,7 @@ const EditInfoModal = ({ user, onClose, onUpdated, isMyProfile }) => {
                     handleNestedChange("education", "major", e.target.value)
                   }
                   placeholder="Ngành học"
-                  className="w-full p-2 rounded-md border border-gray-300 dark:border-[#2b2b3d] bg-gray-50 dark:bg-[#23233b]"
+                  className="w-full p-2 rounded-md border border-gray-300 dark:border-[#2b2b3d] bg-gray-50 dark:bg-[#23233b] dark:text-white"
                 />
                 <input
                   type="text"
@@ -175,7 +175,7 @@ const EditInfoModal = ({ user, onClose, onUpdated, isMyProfile }) => {
                     handleNestedChange("education", "year", e.target.value)
                   }
                   placeholder="Thời gian học (VD: 2019 - 2023)"
-                  className="w-full p-2 rounded-md border border-gray-300 dark:border-[#2b2b3d] bg-gray-50 dark:bg-[#23233b]"
+                  className="w-full p-2 rounded-md border border-gray-300 dark:border-[#2b2b3d] bg-gray-50 dark:bg-[#23233b] dark:text-white"
                 />
               </div>
             )}
@@ -202,7 +202,7 @@ const EditInfoModal = ({ user, onClose, onUpdated, isMyProfile }) => {
                     handleNestedChange("work", "company", e.target.value)
                   }
                   placeholder="Công ty"
-                  className="w-full p-2 rounded-md border border-gray-300 dark:border-[#2b2b3d] bg-gray-50 dark:bg-[#23233b]"
+                  className="w-full p-2 rounded-md border border-gray-300 dark:border-[#2b2b3d] bg-gray-50 dark:bg-[#23233b] dark:text-white"
                 />
                 <input
                   type="text"
@@ -211,7 +211,7 @@ const EditInfoModal = ({ user, onClose, onUpdated, isMyProfile }) => {
                     handleNestedChange("work", "position", e.target.value)
                   }
                   placeholder="Vị trí"
-                  className="w-full p-2 rounded-md border border-gray-300 dark:border-[#2b2b3d] bg-gray-50 dark:bg-[#23233b]"
+                  className="w-full p-2 rounded-md border border-gray-300 dark:border-[#2b2b3d] bg-gray-50 dark:bg-[#23233b] dark:text-white"
                 />
                 <input
                   type="text"
@@ -220,7 +220,7 @@ const EditInfoModal = ({ user, onClose, onUpdated, isMyProfile }) => {
                     handleNestedChange("work", "duration", e.target.value)
                   }
                   placeholder="Thời gian làm việc (VD: 2021 - nay)"
-                  className="w-full p-2 rounded-md border border-gray-300 dark:border-[#2b2b3d] bg-gray-50 dark:bg-[#23233b]"
+                  className="w-full p-2 rounded-md border border-gray-300 dark:border-[#2b2b3d] bg-gray-50 dark:bg-[#23233b] dark:text-white"
                 />
               </div>
             )}
@@ -249,7 +249,7 @@ const EditInfoModal = ({ user, onClose, onUpdated, isMyProfile }) => {
                         handleSocialChange(index, "platform", e.target.value)
                       }
                       placeholder="Nền tảng (Facebook, Instagram...)"
-                      className="flex-1 p-2 rounded-md border border-gray-300 dark:border-[#2b2b3d] bg-gray-50 dark:bg-[#23233b]"
+                      className="flex-1 p-2 rounded-md border border-gray-300 dark:border-[#2b2b3d] bg-gray-50 dark:bg-[#23233b] dark:text-white"
                     />
                     <input
                       type="text"
@@ -258,7 +258,7 @@ const EditInfoModal = ({ user, onClose, onUpdated, isMyProfile }) => {
                         handleSocialChange(index, "url", e.target.value)
                       }
                       placeholder="Liên kết"
-                      className="flex-1 p-2 rounded-md border border-gray-300 dark:border-[#2b2b3d] bg-gray-50 dark:bg-[#23233b]"
+                      className="flex-1 p-2 rounded-md border border-gray-300 dark:border-[#2b2b3d] bg-gray-50 dark:bg-[#23233b] dark:text-white"
                     />
                     <button
                       onClick={() => removeSocialLink(index)}

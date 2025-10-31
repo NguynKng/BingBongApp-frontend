@@ -1287,6 +1287,60 @@ export const shopAPI = {
       throw error;
     }
   },
+  addShopCategory: async (shopId, categoryData) => {
+    try {
+      const response = await api.post(`/shop/category/${shopId}`, categoryData);
+
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Lấy thông tin shop thất bại";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  updateShopCategory: async (shopId, updatedCategory) => {
+    try {
+      const response = await api.put(`/shop/category/${shopId}`, updatedCategory);
+
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Lấy thông tin shop thất bại";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  updateShopInfo: async (shopId, updatedInfo) => {
+    try {
+      const response = await api.put(`/shop/info/${shopId}`, updatedInfo);
+
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Lấy thông tin shop thất bại";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
 };
 
 export const productAPI = {

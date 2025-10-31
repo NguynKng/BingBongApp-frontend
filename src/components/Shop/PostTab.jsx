@@ -1,8 +1,6 @@
 import {
   Phone,
   Mail,
-  MapPinHouse,
-  Link,
   Clock,
   CircleAlert,
   Facebook,
@@ -12,6 +10,7 @@ import {
   Globe,
   Pencil,
   Activity,
+  MapPin,
 } from "lucide-react";
 import useAuthStore from "../../store/authStore";
 import CreateStatus from "../CreateStatus";
@@ -20,6 +19,7 @@ import PostCard from "../PostCard";
 import SpinnerLoading from "../SpinnerLoading";
 import { useGetOwnerPosts } from "../../hooks/usePosts";
 import EditShopInfoModal from "../EditShopInfoModal";
+import { Link } from "react-router-dom";
 
 export default function PostTab({ shop }) {
   const { user } = useAuthStore();
@@ -56,7 +56,9 @@ export default function PostTab({ shop }) {
 
           {/* Trạng thái hoạt động */}
           <div
-            className={`inline-block text-sm px-3 py-1 rounded-full font-medium mb-3 ${statusColor[shop.status]}`}
+            className={`inline-block text-sm px-3 py-1 rounded-full font-medium mb-3 ${
+              statusColor[shop.status]
+            }`}
           >
             {shop.status === "open"
               ? "Đang hoạt động"
@@ -73,32 +75,31 @@ export default function PostTab({ shop }) {
           <hr className="my-4 border-gray-200 dark:border-[#2b2b3d]" />
 
           {/* Thông tin cơ bản */}
-          <div className="space-y-3 text-gray-600 dark:text-gray-300 text-sm">
+          <div className="space-y-3 text-gray-600 dark:text-gray-300 text-base">
             <InfoItem
-              icon={<CircleAlert />}
+              icon={<CircleAlert className="fill-gray-500 text-white dark:text-black" />}
               text={`Shop chuyên ${shop.mainCategory || "đa lĩnh vực"}`}
             />
             <InfoItem
-              icon={<MapPinHouse />}
+              icon={<MapPin className="fill-gray-500 text-white dark:text-black" />}
               text={shop.description.address || "Chưa có địa chỉ"}
             />
             <InfoItem
-              icon={<Phone />}
+              icon={<Phone className="fill-gray-500 text-white dark:text-black" />}
               text={shop.description.phone || "Chưa có số điện thoại"}
             />
             <InfoItem
-              icon={<Mail />}
+              icon={<Mail className="fill-gray-500 text-white dark:text-black" />}
               text={shop.description.email || "Chưa có email"}
             />
             <InfoItem
-              icon={<Globe />}
-              text={shop.description.website || "Chưa có website"}
+              icon={<Globe className="fill-gray-500 text-white dark:text-black" />}
+              text={shop.description.website}
+              type="link"
             />
             <InfoItem
-              icon={<Clock />}
-              text={`${shop.openTime || "?"} - ${
-                shop.closeTime || "?"
-              }`}
+              icon={<Clock className="fill-gray-500 text-white dark:text-black" />}
+              text={`${shop.openTime || "?"} - ${shop.closeTime || "?"}`}
             />
           </div>
 
@@ -195,10 +196,6 @@ export default function PostTab({ shop }) {
         <EditShopInfoModal
           shop={shop}
           onClose={() => setIsOpenEditModal(false)}
-          onUpdated={(updatedShop) => {
-            Object.assign(shop, updatedShop);
-            setIsOpenEditModal(false);
-          }}
           isShopOwner={isShopOwner}
         />
       )}
@@ -207,11 +204,22 @@ export default function PostTab({ shop }) {
 }
 
 // 🔹 Item thông tin
-function InfoItem({ icon, text }) {
+function InfoItem({ type, icon, text }) {
   return (
     <div className="flex items-center gap-2">
       {icon}
-      <span>{text}</span>
+      {type === "link" ? (
+        <Link
+          to={text}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-2 hover:underline text-blue-600 dark:text-blue-400"
+        >
+          {text}
+        </Link>
+      ) : (
+        <span>{text}</span>
+      )}
     </div>
   );
 }
@@ -219,13 +227,13 @@ function InfoItem({ icon, text }) {
 // 🔹 Liên kết mạng xã hội
 function SocialLink({ icon, url }) {
   return (
-    <a
-      href={url}
+    <Link
+      to={url}
       target="_blank"
       rel="noopener noreferrer"
       className="flex items-center gap-1 hover:underline"
     >
       {icon}
-    </a>
+    </Link>
   );
 }
