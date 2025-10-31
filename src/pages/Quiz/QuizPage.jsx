@@ -6,12 +6,14 @@ import debounce from "lodash.debounce";
 import { Search } from "lucide-react";
 import Swal from "sweetalert2";
 import quizTopics from "../../data/quizTopic";
+import SpinnerLoading from "../../components/SpinnerLoading";
 
 export default function QuizPage() {
   const navigate = useNavigate();
   const [searchText, setSearchText] = useState("");
   const [selectedTopics, setSelectedTopics] = useState([]);
   const [allQuizzes, setAllQuizzes] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const debouncedSearch = debounce((text) => {
     setSearchText(text);
@@ -19,6 +21,7 @@ export default function QuizPage() {
 
   useEffect(() => {
     const fetchQuizzes = async () => {
+      setLoading(true);
       try {
         const response = await quizAPI.getAllQuizzes();
         if (Array.isArray(response.quizzes)) {
@@ -28,6 +31,8 @@ export default function QuizPage() {
         }
       } catch (error) {
         console.error("Lỗi khi lấy danh sách quiz:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -58,6 +63,12 @@ export default function QuizPage() {
       return matchTopic && matchSearch;
     });
   }, [allQuizzes, searchText, selectedTopics]);
+
+  if (loading) {
+    return <div className="h-screen">
+        <SpinnerLoading />
+    </div>
+  }
 
   return (
     <div className="dark:bg-[#181826] min-h-[92vh]">

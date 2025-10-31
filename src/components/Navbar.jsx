@@ -61,7 +61,7 @@ function Navbar({ isCloseSidebar, setIsCloseSidebar }) {
         {!isCloseSidebar && (
           <Link
             to="/"
-            className="absolute left-1/2 -translate-x-1/2 rounded-xl"
+            className="absolute left-2 rounded-xl"
           >
             <img
               src="/images/ico/logo_bingbong1.ico"

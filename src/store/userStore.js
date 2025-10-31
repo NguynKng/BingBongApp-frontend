@@ -5,7 +5,6 @@ import { userAPI } from "../services/api";
 const useUserStore = create((set, get) => ({
   users: {}, // ✅ store multiple user profiles { [userId]: userData }
   suggestions: [],
-  loading: false,
   error: null,
 
   // ✅ Fetch a user profile (with caching)
@@ -18,7 +17,7 @@ const useUserStore = create((set, get) => ({
       return users[slug];
     }
 
-    set({ loading: true, error: null });
+    set({ error: null });
     try {
       const response = await userAPI.getUserProfileBySlug(slug);
       if (response.success) {
@@ -35,8 +34,6 @@ const useUserStore = create((set, get) => ({
     } catch (err) {
       set({ error: err.message || "Lỗi khi gọi API" });
       throw err;
-    } finally {
-      set({ loading: false });
     }
   },
 
@@ -54,12 +51,10 @@ const useUserStore = create((set, get) => ({
 
   // ✅ Fetch user suggestions (with caching)
   fetchSuggestions: async (force = false) => {
-    const { suggestions, loading } = get();
+    const { suggestions } = get();
 
     if (suggestions.length > 0 && !force) return;
-    if (loading) return;
 
-    set({ loading: true, error: null });
     try {
       const res = await userAPI.getSuggestions();
       if (res.success) {
@@ -69,8 +64,6 @@ const useUserStore = create((set, get) => ({
       }
     } catch (err) {
       set({ error: err.message || "Lỗi khi gọi API gợi ý" });
-    } finally {
-      set({ loading: false });
     }
   },
 

@@ -60,8 +60,8 @@ export default function ManageTab({ shop }) {
         <Routes>
           <Route path="/" element={<DashboardTab shop={shop} />} />
           <Route path="products/*" element={<ProductTab shop={shop} />} />
-          <Route path="orders" element={<OrderTab shop={shop} />} />
-          <Route path="categories" element={<CategoryTab shop={shop} />} />
+          <Route path="orders/*" element={<OrderTab shop={shop} />} />
+          <Route path="categories/*" element={<CategoryTab shop={shop} />} />
         </Routes>
       </div>
     </div>

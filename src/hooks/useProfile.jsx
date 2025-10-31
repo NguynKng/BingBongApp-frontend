@@ -6,14 +6,16 @@ import useUserStore from "../store/userStore";
 export const useGetProfileBySlug = (slug, options = {}) => {
   const [profile, setProfile] = useState(null);
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  const { users, fetchUserProfile, loading } = useUserStore();
+  const { users, fetchUserProfile } = useUserStore();
   const shouldFetch = options.enabled !== false;
 
   useEffect(() => {
     if (!shouldFetch || !slug) return;
 
     const loadProfile = async () => {
+      setLoading(true);
       try {
         if (users[slug]) {
           setProfile(users[slug]);
@@ -23,6 +25,8 @@ export const useGetProfileBySlug = (slug, options = {}) => {
         }
       } catch (err) {
         setError(err.message || "Lỗi khi tải profile");
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -63,11 +67,24 @@ export const useGetProfileByName = (name, options = {}) => {
 };
 
 export const useGetSuggestion = () => {
+  const [loading, setLoading] = useState(false);
   const { user } = useAuthStore();
-  const { suggestions, loading, error, fetchSuggestions } = useUserStore();
+  const { suggestions, error, fetchSuggestions } = useUserStore();
 
   useEffect(() => {
-    if (user) fetchSuggestions(); // ✅ Fetch only once unless empty
+    const loadSuggestions = async () => {
+      if (!user) return;
+      setLoading(true);
+      try {
+        await fetchSuggestions();
+      } catch (err) {
+        console.error("Failed to fetch suggestions:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadSuggestions();
   }, [user, fetchSuggestions]);
 
   return { suggestions, loading, error };

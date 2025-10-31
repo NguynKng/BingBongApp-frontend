@@ -460,7 +460,7 @@ function AddEditProductTab({ shop }) {
                             Select Category
                           </option>
                           {shop.categories.map((category) => (
-                            <option key={category._id} value={category.name}>
+                            <option key={category._id} value={category.name} disabled={!category.isActive}>
                               {category.name}
                             </option>
                           ))}

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { shopAPI } from "../services/api";
 import { toast } from "react-hot-toast";
 
-const EditShopInfoModal = ({ shop, onClose, onUpdated, isShopOwner }) => {
+const EditShopInfoModal = ({ shop, onClose, isShopOwner }) => {
   const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -17,6 +17,7 @@ const EditShopInfoModal = ({ shop, onClose, onUpdated, isShopOwner }) => {
     closeTime: shop?.closeTime || "21:00",
     mainCategory: shop?.mainCategory || "Khác",
     status: shop?.status || "open",
+    mapURL: shop?.mapURL || "",
     socials: {
       facebook: shop?.socials?.facebook || "",
       instagram: shop?.socials?.instagram || "",
@@ -48,17 +49,21 @@ const EditShopInfoModal = ({ shop, onClose, onUpdated, isShopOwner }) => {
       mainCategory: formData.mainCategory,
       socials: formData.socials,
       status: formData.status,
+      mapURL: formData.mapURL,
     };
 
     try {
       setLoading(true);
-      const res = await shopAPI.updateShop(shop._id, updatedShop);
-      toast.success("Cập nhật thông tin shop thành công!");
-      onUpdated(res.data.shop);
-      onClose();
+      const res = await shopAPI.updateShopInfo(shop._id, updatedShop);
+      if (res.success) {
+        toast.success("Cập nhật thông tin shop thành công!");
+        onClose();
+      }
     } catch (error) {
       console.error(error);
-      toast.error(error.response?.data?.message || "Lỗi khi cập nhật thông tin");
+      toast.error(
+        error.response?.data?.message || "Lỗi khi cập nhật thông tin"
+      );
     } finally {
       setLoading(false);
     }
@@ -115,7 +120,12 @@ const EditShopInfoModal = ({ shop, onClose, onUpdated, isShopOwner }) => {
               onChange={(e) => handleChange("website", e.target.value)}
             />
           </div>
-
+          <InputField
+            label="Link bản đồ Google Maps"
+            value={formData.mapURL}
+            onChange={(e) => handleChange("mapURL", e.target.value)}
+            placeholder="Dán link iframe hoặc link chia sẻ bản đồ..."
+          />
           {/* Giờ mở cửa - đóng cửa */}
           <div className="grid grid-cols-2 gap-3">
             <InputField
@@ -166,7 +176,9 @@ const EditShopInfoModal = ({ shop, onClose, onUpdated, isShopOwner }) => {
               <InputField
                 label="Instagram"
                 value={formData.socials.instagram}
-                onChange={(e) => handleSocialChange("instagram", e.target.value)}
+                onChange={(e) =>
+                  handleSocialChange("instagram", e.target.value)
+                }
               />
               <InputField
                 label="YouTube"
