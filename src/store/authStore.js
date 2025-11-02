@@ -9,15 +9,30 @@ import normalizeIceServers from "../utils/normalize";
 const useAuthStore = create(
   persist(
     (set, get) => ({
+      /** ==== STATE ==== */
       user: null,
+      token: null,
       isAuthenticated: false,
-      isLoading: false,
+
+      // Separate loading states
+      isCheckingAuth: false,
+      isLoggingIn: false,
+      isSigningUp: false,
+
       error: null,
       onlineUsers: [],
       socket: null,
-      theme: "light", // Default theme
+      theme: "light",
       iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
-      // Replace iceServers (useful when you fetch TURN credentials)
+
+      /** ==== THEME ==== */
+      toggleTheme: () => {
+        const newTheme = get().theme === "light" ? "dark" : "light";
+        set({ theme: newTheme });
+        document.documentElement.classList.toggle("dark", newTheme === "dark");
+      },
+
+      /** ==== ICE SERVERS ==== */
       setIceServers: (servers) => set({ iceServers: servers }),
 
       requestTurnViaSocket: (opts = { ttl: 600, timeoutMs: 8000 }) => {
@@ -26,6 +41,7 @@ const useAuthStore = create(
           console.warn("Socket not connected, cannot request TURN via socket");
           return Promise.resolve(null);
         }
+
         const requestId = `turn_req_${Date.now()}_${Math.random()
           .toString(36)
           .slice(2, 8)}`;
@@ -40,7 +56,6 @@ const useAuthStore = create(
           }, opts.timeoutMs || 8000);
 
           const handler = (payload) => {
-            // If server includes requestId echoing, match it (optional)
             if (payload?.requestId && payload.requestId !== requestId) return;
             if (handled) return;
             handled = true;
@@ -49,146 +64,105 @@ const useAuthStore = create(
             try {
               const ice = normalizeIceServers(payload?.data || payload);
               set({ iceServers: ice });
-            } catch (e) {
+            } catch {
               /* ignore normalize error */
             }
             resolve(payload);
           };
 
           socket.on("turn-credentials", handler);
-
-          // emit with optional requestId and ttl
           socket.emit("request-turn", { requestId, ttl: opts.ttl || 600 });
         });
       },
 
-      // deprecated: kept for compatibility (calls socket-based request)
-      fetchTurnCredentials: async (userId, opts = {}) => {
-        // simply wrap the socket request to keep API compatibility
+      fetchTurnCredentials: async (_, opts = {}) => {
         return await get().requestTurnViaSocket(opts);
       },
-      toggleTheme: () => {
-        const currentTheme = get().theme;
-        const newTheme = currentTheme === "light" ? "dark" : "light";
-        set({ theme: newTheme });
-        document.documentElement.classList.toggle("dark", newTheme === "dark");
-      },
-      // Reset the error state
+
+      /** ==== AUTH ==== */
       resetError: () => set({ error: null }),
 
-      // Sign up a new user
-      signup: async (userData) => {
-        set({ isLoading: true, error: null });
+      /** Sign up */
+      signup: async (data) => {
+        set({ isSigningUp: true, error: null });
         try {
-          const response = await authAPI.signup(userData);
-          set({
-            isLoading: false,
-            error: null,
-          });
+          const res = await authAPI.signup(data);
+          set({ isSigningUp: false });
           toast.success("Account created successfully!");
-          return response;
+          return res;
         } catch (error) {
-          set({
-            isLoading: false,
-            error: error.message,
-          });
-          // Toast is already shown in the API service
+          set({ isSigningUp: false, error: error.message });
           throw error;
         }
       },
 
-      // Login a user
-      login: async (credentials) => {
-        set({ isLoading: true, error: null });
+      /** Login (user hoặc admin) */
+      login: async (credentials, options = { admin: false }) => {
+        set({ isLoggingIn: true, error: null });
         try {
-          const response = await authAPI.login(credentials);
+          const response = options.admin
+            ? await authAPI.adminLogin(credentials)
+            : await authAPI.login(credentials);
+
           set({
             user: response.user,
             token: response.token,
             isAuthenticated: true,
-            isLoading: false,
+            isLoggingIn: false,
             error: null,
           });
+
           toast.success("Login successful!");
-          get().connectSocket(); // Connect socket after successful login
+          get().connectSocket();
           return response;
         } catch (error) {
-          set({
-            isLoading: false,
-            error: error.message,
-          });
-          // Toast is already shown in the API service
+          set({ isLoggingIn: false, error: error.message });
           throw error;
         }
       },
-      // Login a user
-      adminLogin: async (credentials) => {
-        set({ isLoading: true, error: null });
-        try {
-          const response = await authAPI.adminLogin(credentials);
-          set({
-            user: response.user,
-            token: response.token,
-            isAuthenticated: true,
-            isLoading: false,
-            error: null,
-          });
-          toast.success("Login successful!");
-          get().connectSocket(); // Connect socket after successful login
-          return response;
-        } catch (error) {
-          set({
-            isLoading: false,
-            error: error.message,
-          });
-          // Toast is already shown in the API service
-          throw error;
-        }
-      },
+
+      /** Logout */
       logout: async (manual = true) => {
         try {
-          get().disconnectSocket(); // Ngắt socket trước
-
-          // Xóa toàn bộ state user
+          get().disconnectSocket();
           set({
             user: null,
             token: null,
             isAuthenticated: false,
-            isLoading: false,
+            isLoggingIn: false,
+            isCheckingAuth: false,
+            isSigningUp: false,
             error: null,
           });
-
           if (manual) toast.success("Logged out successfully!");
         } catch (error) {
-          set({ isLoading: false, error: error.message });
+          set({ error: error.message });
           console.error("Logout error:", error);
         }
       },
 
-      // Check if user is authenticated
+      /** Check Authentication */
       checkAuth: async () => {
-        set({ isLoading: true, error: null });
+        set({ isCheckingAuth: true, error: null });
         try {
           const response = await authAPI.checkAuth();
           set({
             user: response.user,
             isAuthenticated: true,
-            isLoading: false,
-            error: null,
+            isCheckingAuth: false,
           });
-          if (!get().socket) {
-            get().connectSocket();
-          }
+          if (!get().socket) get().connectSocket();
           return response;
-        } catch (error) {
+        } catch {
           set({
             user: null,
             isAuthenticated: false,
-            isLoading: false,
-            error: error.message, // Don't set error for auth check failures
+            isCheckingAuth: false,
           });
         }
       },
+
+      /** ==== SOCKET ==== */
       connectSocket: () => {
         const { user } = get();
         if (!user || get().socket?.connected) return;
@@ -197,25 +171,21 @@ const useAuthStore = create(
           withCredentials: true,
           transports: ["websocket"],
         });
-        // set socket early so other modules can access
+
         set({ socket });
 
         socket.on("connect", () => {
           console.log("[SOCKET CONNECTED]", socket.id);
-          const userId = get().user?._id;
-          if (userId) socket.emit("setup", userId);
-
-          // proactively request TURN (server may also push without request)
-          socket.emit("request-turn", { userId });
+          if (user?._id) socket.emit("setup", user._id);
+          socket.emit("request-turn", { userId: user?._id });
         });
 
-        // handle server-sent turn credentials (may be unsolicited or in reply)
         socket.on("turn-credentials", (payload) => {
           try {
             const ice = normalizeIceServers(payload?.data || payload);
             set({ iceServers: ice });
           } catch (e) {
-            console.warn("invalid turn-credentials", e);
+            console.warn("Invalid turn-credentials", e);
           }
         });
 
@@ -223,15 +193,15 @@ const useAuthStore = create(
           set({ onlineUsers });
         });
       },
+
       disconnectSocket: () => {
-        if (get().socket?.connected) get().socket.disconnect();
+        const socket = get().socket;
+        if (socket?.connected) socket.disconnect();
       },
 
-      // Update user data
-      updateUser: (userData) => {
-        set({
-          user: { ...get().user, ...userData },
-        });
+      /** ==== USER ==== */
+      updateUser: (data) => {
+        set({ user: { ...get().user, ...data } });
       },
     }),
     {
@@ -241,7 +211,7 @@ const useAuthStore = create(
         token: state.token,
         isAuthenticated: state.isAuthenticated,
         theme: state.theme,
-        iceServers: state.iceServers, // persist ICE config so it survives refresh
+        iceServers: state.iceServers,
       }),
     }
   )

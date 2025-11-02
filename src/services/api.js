@@ -1215,6 +1215,24 @@ export const tmdbAPI = {
 };
 
 export const shopAPI = {
+  createShop: async (shopData) => {
+    try {
+      const response = await api.post(`/shop/create-shop`, shopData);
+
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Tạo shop thất bại";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
   getAllShops: async () => {
     try {
       const response = await api.get(`/shop`);
@@ -1307,7 +1325,10 @@ export const shopAPI = {
   },
   updateShopCategory: async (shopId, updatedCategory) => {
     try {
-      const response = await api.put(`/shop/category/${shopId}`, updatedCategory);
+      const response = await api.put(
+        `/shop/category/${shopId}`,
+        updatedCategory
+      );
 
       if (response.data.success === false) {
         throw new Error(response.data.message);

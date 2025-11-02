@@ -18,7 +18,7 @@ export default function MovieSlider({ category }) {
 
   useEffect(() => {
     fetchMoviesByCategory(contentType, category);
-  }, [fetchMoviesByCategory, contentType, category]);
+  }, [contentType, category, fetchMoviesByCategory]);
 
   const scrollLeft = () => {
     if (sliderRef.current)

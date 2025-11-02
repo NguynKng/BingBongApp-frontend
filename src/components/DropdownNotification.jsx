@@ -6,6 +6,7 @@ import SpinnerLoading from "./SpinnerLoading";
 import Config from "../envVars";
 import { formatTime } from "../utils/timeUtils";
 import propTypes from "prop-types";
+import { getBackendImgURL } from "../utils/helper";
 
 function DropdownNotification({notifications}) {
   const { markAsAllRead } = useNotificationStore();
@@ -49,12 +50,10 @@ function DropdownNotification({notifications}) {
             >
               <img
                 src={
-                  noti.actor.avatar
-                    ? `${Config.BACKEND_URL}${noti.actor.avatar}`
-                    : "/user.png"
+                  getBackendImgURL(noti.actor?.avatar)
                 }
                 alt="avatar"
-                className="size-13 rounded-full object-cover shadow-sm border border-blue-100"
+                className="size-10 rounded-full object-cover shadow-sm border border-blue-100"
               />
               <div className="flex-1">
                 <p className="text-base leading-tight">

@@ -12,13 +12,16 @@ import WatchPageSkeleton from "../components/WatchPageSkeleton";
 import MovieSlider from "../components/MovieSlider";
 
 export default function MoviePage() {
-  const { movies, loading, setContentType, contentType, fetchTrendingMovies } =
+  const { movies, fetchTrendingMovies, contentType, setContentType, loading } =
     useMovieStore();
   const [imgLoading, setImgLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const movieTest = useMemo(
-    () => (movies[contentType].trending ? movies[contentType].trending[currentIndex] : null),
+    () =>
+      movies[contentType].trending
+        ? movies[contentType].trending[currentIndex]
+        : null,
     [movies, currentIndex, contentType]
   );
 
@@ -74,12 +77,6 @@ export default function MoviePage() {
                 Movies
               </Link>
             </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <Link to="#">
-              <Search />
-            </Link>
-            <Bell className="text-white fill-white" />
           </div>
         </nav>
         <div className="absolute top-0 left-0 w-full h-full">

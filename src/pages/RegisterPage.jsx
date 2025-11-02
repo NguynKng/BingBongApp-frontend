@@ -18,7 +18,7 @@ export default function RegisterPage() {
     const [showPassword, setShowPassword] = useState(false);
 
     const navigate = useNavigate();
-    const { signup, isLoading, resetError } = useAuthStore();
+    const { signup, isSigningUp: isLoading, resetError } = useAuthStore();
 
     useEffect(() => {
         return () => resetError();
