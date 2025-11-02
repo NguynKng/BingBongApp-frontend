@@ -3,8 +3,10 @@ import { X, Plus } from "lucide-react";
 import PropTypes from "prop-types";
 import { shopAPI } from "../services/api";
 import SpinnerLoading from "./SpinnerLoading";
+import { useNavigate } from "react-router-dom";
 
 const CreateShopModal = ({ onClose, onCreated }) => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
     description: {
@@ -56,10 +58,13 @@ const CreateShopModal = ({ onClose, onCreated }) => {
     setLoading(true);
     try {
       const res = await shopAPI.createShop(formData);
-      onCreated?.(res.data);
-      onClose();
+      if (res.success) {
+        onCreated?.(res.data);
+        onClose();
+        navigate(`/shop/${res.data.slug}`);
+      }
     } catch (err) {
-      setError(err.response?.data?.message || "Không thể tạo cửa hàng!");
+      setError(err.message || "Tạo shop thất bại");
     } finally {
       setLoading(false);
     }
@@ -197,9 +202,7 @@ const CreateShopModal = ({ onClose, onCreated }) => {
           </div>
 
           {/* Error */}
-          {error && (
-            <p className="text-red-500 text-sm text-center">{error}</p>
-          )}
+          {error && <p className="text-red-500 text-sm text-center">{error}</p>}
 
           {/* Submit */}
           <button

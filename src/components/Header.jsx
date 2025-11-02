@@ -26,6 +26,7 @@ import debounce from "lodash.debounce";
 import SpinnerLoading from "./SpinnerLoading";
 import DropdownMenu from "./DropdownMenu";
 import { useGetNotifications } from "../hooks/useNotifications";
+import DropdownCart from "./DropdownCart";
 
 function Header({ onToggleChat }) {
   const { notifications, unreadCount } = useGetNotifications();
@@ -39,6 +40,7 @@ function Header({ onToggleChat }) {
     chat: false,
     notification: false,
     menu: false,
+    cart: false,
   });
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showSearch, setShowSearch] = useState(false); // State to control search toggle
@@ -79,6 +81,7 @@ function Header({ onToggleChat }) {
       chat: type === "chat" ? !prev.chat : false,
       notification: type === "notification" ? !prev.notification : false,
       menu: type === "menu" ? !prev.menu : false,
+      cart: type === "cart" ? !prev.cart : false,
     }));
   };
 
@@ -244,7 +247,7 @@ function Header({ onToggleChat }) {
               <SunMedium className="text-gray-600 dark:text-white" />
             )}
             <div className="absolute -bottom-8 text-xs bg-black/80 text-white px-3 py-1 rounded shadow hidden group-hover:block z-50 text-center whitespace-nowrap">
-                Chế độ {theme === "dark" ? "tối" : "sáng"}
+              Chế độ {theme === "dark" ? "tối" : "sáng"}
             </div>
           </div>
           <div
@@ -278,7 +281,7 @@ function Header({ onToggleChat }) {
 
           <div
             className="relative size-9 p-1 bg-white/70 dark:bg-[#2a2e3d] rounded-full flex items-center justify-center hover:scale-110 hover:ring-2 ring-blue-300 dark:ring-purple-400 hover:bg-blue-100 dark:hover:bg-[#394056] transition-all cursor-pointer group"
-            onClick={() => toggleDropdown("chat")}
+            onClick={() => toggleDropdown("cart")}
           >
             <ShoppingCart className="text-gray-600 dark:text-white" />
             <div className="absolute -bottom-8 text-xs bg-black/80 text-white px-3 py-1 rounded shadow hidden group-hover:block z-50 text-center whitespace-nowrap">
@@ -312,6 +315,7 @@ function Header({ onToggleChat }) {
             {dropdown.notification && (
               <DropdownNotification notifications={notifications} />
             )}
+            {dropdown.cart && <DropdownCart />}
             {dropdown.menu && <DropdownMenu />}
           </div>
         </div>
