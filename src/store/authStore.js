@@ -140,7 +140,6 @@ const useAuthStore = create(
           console.error("Logout error:", error);
         }
       },
-
       /** Check Authentication */
       checkAuth: async () => {
         set({ isCheckingAuth: true, error: null });

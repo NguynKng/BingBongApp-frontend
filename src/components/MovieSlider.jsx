@@ -6,19 +6,24 @@ import useMovieStore from "../store/movieStore";
 import SpinnerLoading from "./SpinnerLoading";
 
 export default function MovieSlider({ category }) {
-  const { movies, fetchMoviesByCategory, contentType, loading } = useMovieStore();
+  const { movies, fetchMoviesByCategory, contentType, loading } =
+    useMovieStore();
   const formattedContentType = contentType === "movie" ? "Movies" : "TV Shows";
   const formattedCategories =
     category.replaceAll("_", " ")[0].toUpperCase() +
     category.replaceAll("_", " ").slice(1);
-    const content = movies[contentType][category] || [];
-  const [imgLoading, setImgLoading] = useState(true);
+  const content = movies[contentType][category] || [];
+  const [loadedImages, setLoadedImages] = useState({}); // ✅ Lưu trạng thái từng ảnh
   const [showArrows, setShowArrows] = useState(false);
   const sliderRef = useRef();
 
   useEffect(() => {
     fetchMoviesByCategory(contentType, category);
   }, [contentType, category, fetchMoviesByCategory]);
+
+  const handleImageLoad = (id) => {
+    setLoadedImages((prev) => ({ ...prev, [id]: true }));
+  };
 
   const scrollLeft = () => {
     if (sliderRef.current)
@@ -64,7 +69,7 @@ export default function MovieSlider({ category }) {
                 key={item.id}
               >
                 <div className="rounded-lg overflow-hidden relative">
-                  {imgLoading && (
+                  {!loadedImages[item.id] && (
                     <div className="absolute inset-0 flex justify-center items-center bg-gray-900">
                       <SpinnerLoading size="small" />
                     </div>
@@ -72,9 +77,11 @@ export default function MovieSlider({ category }) {
                   <img
                     src={`${SMALL_IMG_BASE_URL}/${item.backdrop_path}`}
                     alt="Movie image"
-                    className="transition-transform duration-500 ease-in-out group-hover:scale-125"
+                    className={`transition-transform duration-500 ease-in-out group-hover:scale-110 ${
+                      loadedImages[item.id] ? "opacity-100" : "opacity-0"
+                    }`}
                     loading="lazy"
-                    onLoad={() => setImgLoading(false)}
+                    onLoad={() => handleImageLoad(item.id)}
                   />
                 </div>
                 <h1 className="mt-2 font-bold group-hover:text-orange-300 text-black dark:text-white">
@@ -84,7 +91,9 @@ export default function MovieSlider({ category }) {
             ))}
           </div>
         ) : (
-          <p className="text-center text-gray-400">No {formattedContentType} found</p>
+          <p className="text-center text-gray-400">
+            No {formattedContentType} found
+          </p>
         )}
 
         {showArrows && !loading && (

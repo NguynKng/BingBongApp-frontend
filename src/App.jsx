@@ -38,6 +38,7 @@ function App() {
   const { checkAuth, theme, isCheckingAuth } = useAuthStore();
 
   useEffect(() => {
+    if (!theme) return;
     if (theme === "dark") {
       document.documentElement.classList.add("dark");
     } else {
