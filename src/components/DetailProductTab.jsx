@@ -10,14 +10,16 @@ import {
   Ruler,
 } from "lucide-react";
 import { formatPriceWithDollar } from "../utils/formattedFunction";
-import Config from "../envVars";
 import SpinnerLoading from "./SpinnerLoading";
 import { productAPI } from "../services/api";
 import { useParams } from "react-router-dom";
 import ProductCard from "./ProductCard";
+import useCartStore from "../store/cartStore";
+import { getBackendImgURL } from "../utils/helper";
 
 function DetailProductTab({ shop }) {
   const { slug } = useParams();
+  const { addToCart } = useCartStore();
   const [product, setProduct] = useState(null);
   const isUnavailable = ["deleted", "inactive"].includes(product?.status);
   const [relatedProducts, setRelatedProducts] = useState([]);
@@ -39,11 +41,10 @@ function DetailProductTab({ shop }) {
         const query = {
           category: relatedCategory?.slug,
         };
-        const response = await productAPI.getProductBySlug(slug, shop._id);
-        const responseRelated = await productAPI.getProductsByShop(
-          shop._id,
-          query
-        );
+        const [response, responseRelated] = await Promise.all([
+          productAPI.getProductBySlug(slug, shop._id),
+          productAPI.getProductsByShop(shop._id, query),
+        ]);
         if (response.success) {
           setProduct(response.data);
         }
@@ -108,11 +109,7 @@ function DetailProductTab({ shop }) {
               </div>
             ) : (
               <img
-                src={
-                  product?.images
-                    ? `${Config.BACKEND_URL}${product.images[currentIndex]}`
-                    : "/images/no-thumbnail.png"
-                }
+                src={getBackendImgURL(product.images[currentIndex])}
                 className="size-full object-cover border-2 border-gray-200"
                 alt="Ảnh sản phẩm"
                 onLoad={handleImageLoad}
@@ -162,7 +159,7 @@ function DetailProductTab({ shop }) {
                       : "border-gray-200 hover:border-black"
                   }`}
                   key={index}
-                  src={`${Config.BACKEND_URL}${image}`}
+                  src={getBackendImgURL(image)}
                   onClick={() => updateImage(index)}
                   alt={`Ảnh ${index + 1}`}
                 />
@@ -270,7 +267,7 @@ function DetailProductTab({ shop }) {
                     >
                       {variant.image && (
                         <img
-                          src={`${Config.BACKEND_URL}${variant.image}`}
+                          src={getBackendImgURL(variant.image)}
                           alt={variant.name}
                           className="w-16 h-16 object-cover mb-2 rounded-md"
                         />
@@ -310,7 +307,7 @@ function DetailProductTab({ shop }) {
               </span>
             ) : (
               <>
-                <button className="text-white bg-blue-900 rounded-md py-2 px-4 hover:opacity-90 cursor-pointer">
+                <button className="text-white bg-blue-900 rounded-md py-2 px-4 hover:opacity-90 cursor-pointer" onClick={() => addToCart(product, product.variants[selectedVariantIndex]._id)}>
                   Thêm vào giỏ hàng
                 </button>
                 <button className="text-black bg-orange-400 rounded-md py-2 px-4 hover:opacity-90 cursor-pointer">
@@ -375,7 +372,9 @@ function DetailProductTab({ shop }) {
           ref={productSliderRef}
         >
           {relatedProducts.map((product) => {
-            return <ProductCard product={product} shop={shop} />;
+            return (
+              <ProductCard key={product._id} product={product} shop={shop} />
+            );
           })}
         </div>
       </div>

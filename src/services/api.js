@@ -1226,8 +1226,7 @@ export const shopAPI = {
       return response.data;
     } catch (error) {
       if (error.response) {
-        const errorMessage =
-          error.response.data.message || "Tạo shop thất bại";
+        const errorMessage = error.response.data.message || "Tạo shop thất bại";
         throw new Error(errorMessage);
       }
       throw error;
@@ -1470,5 +1469,79 @@ export const productAPI = {
   },
 };
 
+export const cartAPI = {
+  addToCart: async (productId, variantId) => {
+    try {
+      const response = await api.post(`/cart/add`, { productId, variantId });
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Thêm giỏ hàng thất bại";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getUserCart: async () => {
+    try {
+      const response = await api.get(`/cart`);
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Lấy giỏ hàng thất bại";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  removeFromCart: async (productId) => {
+    try {
+      const response = await api.delete(`/cart/remove/${productId}`);
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Bỏ sản phẩm khỏi giỏ hàng thất bại";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  clearCart: async () => {
+    try {
+      const response = await api.delete(`/cart/clear`);
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Dọn giỏ hàng thất bại";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+};
 // Export the axios instance for use in other API services
 export default api;

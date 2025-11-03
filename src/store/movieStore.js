@@ -9,20 +9,20 @@ const useMovieStore = create((set, get) => ({
       now_playing: [],
       top_rated: [],
       popular: [],
-      upcoming: []
+      upcoming: [],
     },
     tv: {
       trending: [],
       airing_today: [],
       top_rated: [],
       popular: [],
-      on_the_air: []
-    }
+      on_the_air: [],
+    },
   },
 
   loading: false,
   fetchTrendingMovies: async (contentType) => {
-    if (get().movies[contentType].trending.length > 0) return;
+    if (get().movies[contentType].trending.length > 0 || !contentType) return;
     set({ loading: true });
     try {
       let res;
@@ -32,14 +32,27 @@ const useMovieStore = create((set, get) => ({
         res = await tmdbAPI.getTrendingTVShow();
       }
       if (res.success) {
-        set({ movies: { ...get().movies, [contentType]: { ...get().movies[contentType], trending: res.content } } });
+        set({
+          movies: {
+            ...get().movies,
+            [contentType]: {
+              ...get().movies[contentType],
+              trending: res.content,
+            },
+          },
+        });
       }
     } finally {
       set({ loading: false });
     }
   },
   fetchMoviesByCategory: async (contentType, category) => {
-    if (get().movies[contentType][category].length > 0) return;
+    if (
+      get().movies[contentType][category].length > 0 ||
+      !contentType ||
+      !category
+    )
+      return;
     set({ loading: true });
     try {
       let res;
@@ -49,7 +62,15 @@ const useMovieStore = create((set, get) => ({
         res = await tmdbAPI.getTVShowsByCategory(category);
       }
       if (res.success) {
-        set({ movies: { ...get().movies, [contentType]: { ...get().movies[contentType], [category]: res.content } } });
+        set({
+          movies: {
+            ...get().movies,
+            [contentType]: {
+              ...get().movies[contentType],
+              [category]: res.content,
+            },
+          },
+        });
       }
     } finally {
       set({ loading: false });

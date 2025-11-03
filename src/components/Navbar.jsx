@@ -49,7 +49,7 @@ function Navbar({ isCloseSidebar, setIsCloseSidebar }) {
         ${
           isCloseSidebar
             ? "lg:w-20 lg:translate-x-0 -translate-x-full"
-            : "lg:w-60 w-[50%] translate-x-0"
+            : "lg:w-60 md:w-[25%] sm:w-[40%] w-[50%] translate-x-0"
         }`}
     >
       {/* Header */}

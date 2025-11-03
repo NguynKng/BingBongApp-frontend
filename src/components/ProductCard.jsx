@@ -3,12 +3,11 @@ import { Heart, ShoppingBag, Star, TrendingUpDown } from "lucide-react";
 import PropTypes from "prop-types";
 import Config from "../envVars";
 import { formatPriceWithDollar } from "../utils/formattedFunction";
-import useAuthStore from "../store/authStore";
 import { useState } from "react";
 import SpinnerLoading from "./SpinnerLoading";
+import { getBackendImgURL } from "../utils/helper";
 
 function ProductCard({ product, shop }) {
-  const { user } = useAuthStore();
   const [imgLoading, setImgLoading] = useState(true);
 
   return (
@@ -48,7 +47,7 @@ function ProductCard({ product, shop }) {
           </div>
         )}
         <img
-          src={`${Config.BACKEND_URL}${product.images[0]}`}
+          src={getBackendImgURL(product.images[0])}
           className="size-full rounded-t-md object-cover"
           alt="Product Thumbnail"
           onLoad={() => setImgLoading(false)}

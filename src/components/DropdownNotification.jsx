@@ -3,12 +3,11 @@ import { useGetNotifications } from "../hooks/useNotifications";
 import useNotificationStore from "../store/notificationStore";
 import { useEffect } from "react";
 import SpinnerLoading from "./SpinnerLoading";
-import Config from "../envVars";
 import { formatTime } from "../utils/timeUtils";
 import propTypes from "prop-types";
 import { getBackendImgURL } from "../utils/helper";
 
-function DropdownNotification({notifications}) {
+function DropdownNotification({ notifications }) {
   const { markAsAllRead } = useNotificationStore();
   const { loading, loadMore, hasMore } = useGetNotifications();
 
@@ -16,11 +15,11 @@ function DropdownNotification({notifications}) {
     const enumPostType = ["new_post", "comment_post", "react_post"];
     const enumFriendType = ["friend_request", "accepted_request"];
     if (enumPostType.includes(noti.type)) {
-        return `/posts/${noti.post}`;
+      return `/posts/${noti.post}`;
     } else if (enumFriendType.includes(noti.type) && noti.actor) {
-        return `/profile/${noti.actor.slug}`;
+      return `/profile/${noti.actor.slug}`;
     } else {
-        return "#"
+      return "#";
     }
   };
 
@@ -49,9 +48,7 @@ function DropdownNotification({notifications}) {
               className="flex items-start gap-3 py-3 px-2 last:border-none rounded-xl transition-all duration-300 ease-out transform hover:scale-[1.02] hover:shadow-lg dark:hover:bg-[rgb(56,56,56)]"
             >
               <img
-                src={
-                  getBackendImgURL(noti.actor?.avatar)
-                }
+                src={getBackendImgURL(noti.actor?.avatar)}
                 alt="avatar"
                 className="size-10 rounded-full object-cover shadow-sm border border-blue-100"
               />
@@ -84,7 +81,7 @@ function DropdownNotification({notifications}) {
 }
 
 DropdownNotification.propTypes = {
-    notifications: propTypes.array.isRequired
-}
+  notifications: propTypes.array.isRequired,
+};
 
 export default DropdownNotification;
