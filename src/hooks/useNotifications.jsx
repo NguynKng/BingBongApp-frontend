@@ -10,11 +10,11 @@ export function useGetNotifications() {
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const [initialized, setInitialized] = useState(false); // để đảm bảo chỉ gọi 1 lần
 
   const fetchNotifications = async (currentPage = 1) => {
-    if (!user) return; // không tải nếu chưa đăng nhập
+    if (!user) return;
     setLoading(true);
+
     try {
       const res = await notificationAPI.getNotifications(currentPage);
 
@@ -23,6 +23,7 @@ export function useGetNotifications() {
       } else {
         appendNotifications(res.data);
       }
+
       setHasMore(res.pagination?.hasMore ?? false);
     } catch (err) {
       console.error("Failed to load notifications", err);
@@ -31,6 +32,28 @@ export function useGetNotifications() {
     }
   };
 
+  // Fetch lại khi user thay đổi + cache không đúng user
+  useEffect(() => {
+    if (!user) {
+      // logout → reset
+      setNotifications([]);
+      setHasMore(false);
+      setPage(1);
+      return;
+    }
+
+    const isCachedForThisUser =
+      notifications.length > 0 && notifications[0].user === user._id;
+
+    if (!isCachedForThisUser) {
+      // cache không khớp → reset và fetch mới
+      setNotifications([]);
+      setPage(1);
+      setHasMore(true);
+      fetchNotifications(1);
+    }
+  }, [user?._id]); // chỉ theo user._id
+
   const loadMore = () => {
     if (hasMore && !loading) {
       const nextPage = page + 1;
@@ -38,13 +61,6 @@ export function useGetNotifications() {
       fetchNotifications(nextPage);
     }
   };
-
-  useEffect(() => {
-    if (!initialized && notifications.length === 0) {
-      fetchNotifications(1);
-      setInitialized(true);
-    }
-  }, [initialized, notifications.length]);
 
   return {
     loading,

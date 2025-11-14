@@ -17,7 +17,7 @@ export default function ProductTab({ shop }) {
   const [isDiscounted, setIsDiscounted] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
-  // 🔹 Lấy toàn bộ sản phẩm 1 lần duy nhất
+  // Fetch all products once
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -32,7 +32,7 @@ export default function ProductTab({ shop }) {
     if (shop) fetchProducts();
   }, [shop]);
 
-  // 🔹 Lọc sản phẩm
+  // Filter products
   const filteredProducts = useMemo(() => {
     let result = allProducts;
 
@@ -56,10 +56,10 @@ export default function ProductTab({ shop }) {
 
   return (
     <div className="bg-white dark:bg-[#1e1e2f] p-4 rounded-lg">
-      {/* 🔹 Thanh filter nằm ngang */}
+      {/* Filter bar */}
       <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 mb-6 border-b border-gray-300 dark:border-[#2b2b3d] pb-4">
 
-        {/* Bộ lọc danh mục */}
+        {/* Category filter */}
         <div className="flex flex-wrap items-center gap-2">
           <Link
             to={`/shop/${shop.slug}/product`}
@@ -69,7 +69,7 @@ export default function ProductTab({ shop }) {
                 : "bg-gray-100 dark:bg-[#2b2b3d] hover:bg-gray-200 dark:hover:bg-[#3b3b4f] text-gray-800 dark:text-gray-200"
             }`}
           >
-            Tất cả
+            All
           </Link>
           {shop.categories.map((cat) => (
             <Link
@@ -86,12 +86,12 @@ export default function ProductTab({ shop }) {
           ))}
         </div>
 
-        {/* Bộ lọc giá + giảm giá + tìm kiếm */}
+        {/* Price filter + discount + search */}
         <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto">
 
-          {/* Lọc giá */}
+          {/* Price filter */}
           <div className="flex items-center gap-2">
-            <label className="text-sm dark:text-gray-200">Giá:</label>
+            <label className="text-sm dark:text-gray-200">Price:</label>
             <input
               type="number"
               placeholder="Min"
@@ -109,7 +109,7 @@ export default function ProductTab({ shop }) {
             />
           </div>
 
-          {/* Checkbox giảm giá */}
+          {/* Discount checkbox */}
           <label className="flex items-center gap-2 cursor-pointer text-sm dark:text-gray-200">
             <input
               type="checkbox"
@@ -117,15 +117,15 @@ export default function ProductTab({ shop }) {
               onChange={(e) => setIsDiscounted(e.target.checked)}
               className="accent-blue-500"
             />
-            Giảm giá
+            Discounted
           </label>
 
-          {/* Tìm kiếm */}
+          {/* Search */}
           <div className="relative w-full sm:w-64">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
             <input
               type="text"
-              placeholder="Tìm kiếm sản phẩm..."
+              placeholder="Search products..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-9 pr-3 py-1.5 rounded-md border border-gray-300 dark:border-[#2b2b3d]
@@ -135,7 +135,7 @@ export default function ProductTab({ shop }) {
         </div>
       </div>
 
-      {/* 🛍️ Danh sách sản phẩm */}
+      {/* Product list */}
       {loading ? (
         <SpinnerLoading />
       ) : filteredProducts.length > 0 ? (
@@ -146,7 +146,7 @@ export default function ProductTab({ shop }) {
         </div>
       ) : (
         <p className="text-gray-500 dark:text-gray-400 text-center py-10">
-          Không có sản phẩm nào phù hợp.
+          No matching products found.
         </p>
       )}
     </div>

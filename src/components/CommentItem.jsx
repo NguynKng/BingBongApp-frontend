@@ -18,7 +18,7 @@ function CommentItem({
   const [responseComment, setResponseComment] = useState("");
   const { user } = useAuthStore();
 
-  // ✅ Kiểm tra từng comment có phải của chủ shop không
+  // ✅ Check if the comment belongs to the shop owner
   const isShopAuthor = (userId) =>
     postedByType === "Shop" && userId === postAuthorId;
 
@@ -37,7 +37,7 @@ function CommentItem({
     }
   };
 
-  // ✅ Lấy avatar đúng nguồn backend
+  // ✅ Get avatar from backend
   const getAvatar = (entity) => getBackendImgURL(entity?.avatar) || "/user.png";
 
   const handleReply = async (e) => {
@@ -74,7 +74,7 @@ function CommentItem({
       </Link>
 
       <div className="space-y-1 flex-1">
-        {/* ✅ Nội dung bình luận */}
+        {/* ✅ Comment content */}
         <div className="py-2 px-4 rounded-3xl bg-gray-200 w-fit max-w-full dark:bg-[rgb(52,52,53)]">
           <div className="flex items-center gap-2 flex-wrap">
             <Link
@@ -85,7 +85,7 @@ function CommentItem({
             </Link>
 
             {comment?.user?._id === postAuthorId && (
-              <span className="text-sm text-blue-500 font-medium">Tác giả</span>
+              <span className="text-sm text-blue-500 font-medium">Author</span>
             )}
           </div>
           <p className="text-base break-words dark:text-white">
@@ -93,7 +93,7 @@ function CommentItem({
           </p>
         </div>
 
-        {/* ✅ Thời gian + nút trả lời */}
+        {/* ✅ Time + Reply button */}
         <div className="flex items-center gap-2 px-3 text-sm flex-wrap">
           <span className="text-sm text-gray-500 dark:text-gray-400">
             {formatTime(comment.createdAt)}
@@ -104,26 +104,25 @@ function CommentItem({
               setReplyingTo((prev) => (prev === comment._id ? null : comment._id))
             }
           >
-            Trả lời
+            Reply
           </button>
         </div>
 
-        {/* ✅ Nút xem phản hồi */}
+        {/* ✅ View replies button */}
         {comment.replies?.length > 0 && (
           <button
             className="text-sm text-blue-500 hover:underline w-fit cursor-pointer"
             onClick={toggleReplies}
           >
             {openReplies
-              ? "Ẩn phản hồi"
-              : `Xem ${comment.replies.length} phản hồi`}
+              ? "Hide replies"
+              : `View ${comment.replies.length} replies`}
           </button>
         )}
 
-        {/* ✅ Danh sách phản hồi */}
+        {/* ✅ Replies list */}
         {openReplies &&
           comment.replies.map((reply) => {
-
             return (
               <div key={reply._id} className="flex gap-2 mt-2 ml-1 w-full">
                 <Link
@@ -148,7 +147,7 @@ function CommentItem({
 
                       {reply?.user?._id === postAuthorId && (
                         <span className="text-sm text-blue-500 font-medium">
-                          Tác giả
+                          Author
                         </span>
                       )}
                     </div>
@@ -164,7 +163,7 @@ function CommentItem({
             );
           })}
 
-        {/* ✅ Form trả lời */}
+        {/* ✅ Reply form */}
         {replyingTo === comment._id && (
           <form className="flex gap-2 items-center mt-2" onSubmit={handleReply}>
             <Link
@@ -179,7 +178,7 @@ function CommentItem({
             </Link>
             <input
               type="text"
-              placeholder={`Trả lời ${comment.user.name || comment.user.fullName}...`}
+              placeholder={`Reply to ${comment.user.name || comment.user.fullName}...`}
               className="py-2 px-4 rounded-full flex-1 bg-gray-200 text-base dark:bg-[rgb(52,52,53)] dark:text-white"
               value={responseComment}
               onChange={(e) => setResponseComment(e.target.value)}

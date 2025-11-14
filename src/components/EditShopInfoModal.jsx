@@ -15,7 +15,7 @@ const EditShopInfoModal = ({ shop, onClose, isShopOwner }) => {
     website: shop?.description?.website || "",
     openTime: shop?.openTime || "08:00",
     closeTime: shop?.closeTime || "21:00",
-    mainCategory: shop?.mainCategory || "Khác",
+    mainCategory: shop?.mainCategory || "Other",
     status: shop?.status || "open",
     mapURL: shop?.mapURL || "",
     socials: {
@@ -56,13 +56,13 @@ const EditShopInfoModal = ({ shop, onClose, isShopOwner }) => {
       setLoading(true);
       const res = await shopAPI.updateShopInfo(shop._id, updatedShop);
       if (res.success) {
-        toast.success("Cập nhật thông tin shop thành công!");
+        toast.success("Shop information updated successfully!");
         onClose();
       }
     } catch (error) {
       console.error(error);
       toast.error(
-        error.response?.data?.message || "Lỗi khi cập nhật thông tin"
+        error.response?.data?.message || "Failed to update shop information"
       );
     } finally {
       setLoading(false);
@@ -77,7 +77,7 @@ const EditShopInfoModal = ({ shop, onClose, isShopOwner }) => {
         {/* Header */}
         <div className="flex justify-between items-center mb-4 p-2">
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-            🏪 Chỉnh sửa thông tin Shop
+            🏪 Edit Shop Information
           </h2>
           <button
             onClick={onClose}
@@ -87,25 +87,25 @@ const EditShopInfoModal = ({ shop, onClose, isShopOwner }) => {
           </button>
         </div>
 
-        {/* Nội dung */}
+        {/* Content */}
         <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-2 custom-scroll p-2">
-          {/* Mô tả */}
+          {/* About */}
           <TextareaField
-            label="Giới thiệu"
+            label="About"
             value={formData.about}
             onChange={(e) => handleChange("about", e.target.value)}
-            placeholder="Mô tả ngắn về cửa hàng..."
+            placeholder="Brief description about the shop..."
           />
 
-          {/* Địa chỉ, liên hệ */}
+          {/* Address & Contact */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <InputField
-              label="Địa chỉ"
+              label="Address"
               value={formData.address}
               onChange={(e) => handleChange("address", e.target.value)}
             />
             <InputField
-              label="Số điện thoại"
+              label="Phone"
               value={formData.phone}
               onChange={(e) => handleChange("phone", e.target.value)}
             />
@@ -120,52 +120,54 @@ const EditShopInfoModal = ({ shop, onClose, isShopOwner }) => {
               onChange={(e) => handleChange("website", e.target.value)}
             />
           </div>
+
           <InputField
-            label="Link bản đồ Google Maps"
+            label="Google Maps Link"
             value={formData.mapURL}
             onChange={(e) => handleChange("mapURL", e.target.value)}
-            placeholder="Dán link iframe hoặc link chia sẻ bản đồ..."
+            placeholder="Paste iframe or share link of the map..."
           />
-          {/* Giờ mở cửa - đóng cửa */}
+
+          {/* Open/Close Time */}
           <div className="grid grid-cols-2 gap-3">
             <InputField
-              label="Giờ mở cửa"
+              label="Opening Time"
               type="time"
               value={formData.openTime}
               onChange={(e) => handleChange("openTime", e.target.value)}
             />
             <InputField
-              label="Giờ đóng cửa"
+              label="Closing Time"
               type="time"
               value={formData.closeTime}
               onChange={(e) => handleChange("closeTime", e.target.value)}
             />
           </div>
 
-          {/* Danh mục và trạng thái */}
+          {/* Category & Status */}
           <div className="grid grid-cols-2 gap-3">
             <InputField
-              label="Danh mục chính"
+              label="Main Category"
               value={formData.mainCategory}
               onChange={(e) => handleChange("mainCategory", e.target.value)}
-              placeholder="Ví dụ: Thời trang, Ẩm thực..."
+              placeholder="E.g.: Fashion, Food..."
             />
             <SelectField
-              label="Trạng thái hoạt động"
+              label="Operating Status"
               value={formData.status}
               onChange={(e) => handleChange("status", e.target.value)}
               options={[
-                { value: "open", label: "Đang mở cửa" },
-                { value: "closed", label: "Đang đóng cửa" },
-                { value: "maintenance", label: "Đang bảo trì" },
+                { value: "open", label: "Open" },
+                { value: "closed", label: "Closed" },
+                { value: "maintenance", label: "Maintenance" },
               ]}
             />
           </div>
 
-          {/* Mạng xã hội */}
+          {/* Social Media */}
           <div>
             <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
-              Mạng xã hội
+              Social Media
             </label>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <InputField
@@ -200,7 +202,7 @@ const EditShopInfoModal = ({ shop, onClose, isShopOwner }) => {
             onClick={onClose}
             className="px-4 py-2 rounded-md bg-gray-200 dark:bg-[#2b2b3d] text-gray-700 dark:text-gray-300"
           >
-            Hủy
+            Cancel
           </button>
           <button
             disabled={loading}
@@ -211,7 +213,7 @@ const EditShopInfoModal = ({ shop, onClose, isShopOwner }) => {
                 : "bg-blue-600 hover:bg-blue-700"
             }`}
           >
-            {loading ? "Đang lưu..." : "Lưu thay đổi"}
+            {loading ? "Saving..." : "Save Changes"}
           </button>
         </div>
       </div>
@@ -275,7 +277,6 @@ const SelectField = ({ label, value, onChange, options }) => (
 EditShopInfoModal.propTypes = {
   shop: PropTypes.object,
   onClose: PropTypes.func.isRequired,
-  onUpdated: PropTypes.func.isRequired,
   isShopOwner: PropTypes.bool,
 };
 

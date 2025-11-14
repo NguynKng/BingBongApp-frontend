@@ -43,17 +43,17 @@ function ListFriend() {
 
   return (
     <div className="fixed w-92 min-h-[88vh] max-h-[88vh] overflow-y-auto flex flex-col gap-4 custom-scroll">
-      {/* Đề xuất bạn bè */}
+      {/* Friend Suggestions */}
       <div className="shadow-lg rounded-lg w-full p-4 bg-white dark:bg-[#1b1f2b] border border-gray-100 dark:border-gray-700 transition-all">
         <div className="flex items-center justify-between">
           <h1 className="font-semibold text-gray-800 dark:text-gray-100">
-            Đề xuất cho bạn
+            Suggestions for you
           </h1>
           <Link
             to="/friends"
             className="text-blue-500 dark:text-blue-400 hover:underline"
           >
-            Xem tất cả <span className="ml-1">{`->`}</span>
+            See all <span className="ml-1">{`->`}</span>
           </Link>
         </div>
 
@@ -82,7 +82,7 @@ function ListFriend() {
                     {user.fullName}
                   </Link>
                   <span className="text-sm text-gray-500 dark:text-gray-400 block">
-                    Đề xuất cho bạn
+                    Suggested for you
                   </span>
                 </div>
 
@@ -95,17 +95,17 @@ function ListFriend() {
         </div>
       </div>
 
-      {/* Phim Hot 🔥 */}
+      {/* Trending Movies 🔥 */}
       <div className="shadow-lg rounded-lg w-full p-4 bg-white dark:bg-[#1b1f2b] border border-gray-100 dark:border-gray-700 transition-all">
         <div className="flex items-center justify-between">
           <h1 className="font-semibold text-lg text-gray-800 dark:text-gray-100">
-            Phim Hot 🔥
+            Trending Movies
           </h1>
           <Link
             to="/movie"
             className="text-blue-500 dark:text-blue-400 hover:underline"
           >
-            Xem thêm <span className="ml-1">{`->`}</span>
+            View more <span className="ml-1">{`->`}</span>
           </Link>
         </div>
 

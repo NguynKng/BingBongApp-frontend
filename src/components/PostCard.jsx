@@ -163,6 +163,7 @@ function PostCard({ post, onDeletePost, showComment = false }) {
                   src={getBackendImgURL(postedById.avatar)}
                   alt={postedById.name || postedById.fullName}
                   className="object-cover w-full h-full hover:opacity-80"
+                  loading="lazy"
                 />
               </Link>
               <div className="absolute bottom-0 right-0 w-7 h-7 translate-1 rounded-full  border border-gray-200 hover:opacity-80">
@@ -171,6 +172,7 @@ function PostCard({ post, onDeletePost, showComment = false }) {
                     src={getBackendImgURL(author.avatar)}
                     alt={author.avatar}
                     className="object-cover w-full h-full rounded-full"
+                    loading="lazy"
                   />
                 </Link>
               </div>
@@ -353,12 +355,12 @@ function PostCard({ post, onDeletePost, showComment = false }) {
           {post.comments && post.comments.length > 0 && (
             <span>{post.comments.length}</span>
           )}
-          <span>Bình luận</span>
+          <span>Comment</span>
         </button>
       </div>
       {openComment && (
         <div className="py-2 px-4 border-t-2 mt-2 border-gray-200 dark:border-gray-500">
-          <h1 className="text-lg dark:text-gray-400">Tất cả bình luận</h1>
+          <h1 className="text-lg dark:text-gray-400">All comments</h1>
           <CommentInput
             postId={post._id}
             onSuccessRefresh={(updatedComments) =>

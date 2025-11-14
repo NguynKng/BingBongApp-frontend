@@ -5,12 +5,21 @@
  */
 
 export function formatReleaseDate(date) {
-	return new Date(date).toLocaleDateString("en-US", {
-		year: "numeric",
-		month: "long",
-		day: "numeric",
-	});
+  return new Date(date).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
 }
+
+export const formatDateTime = (dateString) => {
+  const date = new Date(dateString);
+  const day = date.getUTCDate(); // Use UTC to prevent timezone shifts
+  const month = date.getUTCMonth() + 1; // getUTCMonth() is zero-based
+  const year = date.getUTCFullYear();
+
+  return `${day}/${month}/${year}`;
+};
 
 export const formatTime = (timestamp) => {
   if (!timestamp) return "";
@@ -30,36 +39,36 @@ export const formatTime = (timestamp) => {
   // Less than an hour
   if (secondsAgo < 3600) {
     const minutes = Math.floor(secondsAgo / 60);
-    return `${minutes} phút`;
+    return `${minutes} min${minutes > 1 ? "s" : ""}`;
   }
 
   // Less than a day
   if (secondsAgo < 86400) {
     const hours = Math.floor(secondsAgo / 3600);
-    return `${hours} giờ`;
+    return `${hours} hour${hours > 1 ? "s" : ""}`;
   }
 
   // Less than a week
   if (secondsAgo < 604800) {
     const days = Math.floor(secondsAgo / 86400);
-    return `${days} ngày`;
+    return `${days} day${days > 1 ? "s" : ""}`;
   }
 
   // Less than a month
   if (secondsAgo < 2592000) {
     const weeks = Math.floor(secondsAgo / 604800);
-    return `${weeks} tuần`;
+    return `${weeks} week${weeks > 1 ? "s" : ""}`;
   }
 
   // Less than a year
   if (secondsAgo < 31536000) {
     const months = Math.floor(secondsAgo / 2592000);
-    return `${months} tháng`;
+    return `${months} month${months > 1 ? "s" : ""}`;
   }
 
   // More than a year
   const years = Math.floor(secondsAgo / 31536000);
-  return `${years} năm`;
+  return `${years} year${years > 1 ? "s" : ""}`;
 };
 
 export const formatTimeToHourMinute = (timestamp) => {
@@ -109,10 +118,28 @@ export const formatTimeToDateOrHour = (timestamp) => {
   return `${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}`; // e.g., 5-6-2025
 };
 
+export function formatDateTimeWithTime(dateString) {
+  const date = new Date(dateString);
+
+  const dateStr = date.toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+
+  const timeStr = date.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
+
+  return `${dateStr} ${timeStr}`;
+}
+
 export const formatTimeToDateAndHour = (date) => {
   const d = new Date(date);
-  const hours = d.getHours().toString().padStart(2, '0');
-  const minutes = d.getMinutes().toString().padStart(2, '0');
+  const hours = d.getHours().toString().padStart(2, "0");
+  const minutes = d.getMinutes().toString().padStart(2, "0");
 
   const today = new Date();
   const yesterday = new Date();
@@ -129,21 +156,25 @@ export const formatTimeToDateAndHour = (date) => {
     d.getFullYear() === yesterday.getFullYear();
 
   if (isToday) {
-    return `Hôm nay ${hours}:${minutes}`;
+    return `Today ${hours}:${minutes}`;
   } else if (isYesterday) {
-    return `Hôm qua ${hours}:${minutes}`;
+    return `Yesterday ${hours}:${minutes}`;
   } else {
-    const day = d.getDate().toString().padStart(2, '0');
-    const month = (d.getMonth() + 1).toString().padStart(2, '0');
+    const day = d.getDate().toString().padStart(2, "0");
+    const month = (d.getMonth() + 1).toString().padStart(2, "0");
     const year = d.getFullYear();
     return `${day}-${month}-${year} ${hours}:${minutes}`;
   }
 };
 
 export function formattedRunTime(minutes) {
-    const second = minutes * 60;
-    const hours = Math.floor(second / 3600);
-    const minutesRemaining = Math.floor((second % 3600) / 60);
+  const second = minutes * 60;
+  const hours = Math.floor(second / 3600);
+  const minutesRemaining = Math.floor((second % 3600) / 60);
 
-    return `${hours > 0 ? `${hours}h ${minutesRemaining.toString().padStart(2, '0')}m` : `${minutesRemaining}m`}`;
+  return `${
+    hours > 0
+      ? `${hours}h ${minutesRemaining.toString().padStart(2, "0")}m`
+      : `${minutesRemaining}m`
+  }`;
 }

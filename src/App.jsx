@@ -33,6 +33,9 @@ import NotFoundPage from "./pages/NotFoundPage";
 import DetailShopPage from "./pages/DetailShopPage";
 import ShopPage from "./pages/ShopPage";
 import SpinnerLoading from "./components/SpinnerLoading";
+import CartPage from "./pages/CartPage";
+import CheckoutPage from "./pages/CheckoutPage";
+import OrderPage from "./pages/OrderPage";
 
 function App() {
   const { checkAuth, theme, isCheckingAuth } = useAuthStore();
@@ -163,6 +166,30 @@ function App() {
           element={
             <ProtectedRoute>
               <MainLayout Element={NewsPage} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/cart"
+          element={
+            <ProtectedRoute>
+              <MainLayout Element={CartPage} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/checkout"
+          element={
+            <ProtectedRoute>
+              <MainLayout Element={CheckoutPage} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/order"
+          element={
+            <ProtectedRoute>
+              <MainLayout Element={OrderPage} />
             </ProtectedRoute>
           }
         />

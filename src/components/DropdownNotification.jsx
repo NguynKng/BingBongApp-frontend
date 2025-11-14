@@ -30,14 +30,14 @@ function DropdownNotification({ notifications }) {
   return (
     <div className="absolute right-0 top-[110%] w-92 bg-white rounded-xl shadow-xl z-50 p-4 custom-scroll overflow-y-auto h-[42rem] min-h-0 dark:bg-[rgb(35,35,35)]">
       <div className="font-semibold text-lg text-blue-800 mb-3 dark:text-white">
-        Thông báo
+        Notifications
       </div>
 
       {loading ? (
         <SpinnerLoading />
       ) : notifications.length === 0 ? (
         <div className="text-center text-gray-500 py-4 dark:text-white">
-          Không có thông báo mới
+          No new notifications
         </div>
       ) : (
         <>
@@ -70,7 +70,7 @@ function DropdownNotification({ notifications }) {
                 onClick={loadMore}
                 className="w-full px-4 py-2 font-medium text-base bg-gray-200 text-black dark:text-white rounded-lg hover:bg-gray-300 cursor-pointer transition dark:bg-gray-600 dark:hover:bg-gray-500"
               >
-                Xem thêm thông báo
+                Load more notifications
               </button>
             </div>
           )}

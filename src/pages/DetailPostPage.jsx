@@ -44,17 +44,17 @@ function DetailPostPage() {
       <div className="flex flex-col items-center justify-center text-center px-4 min-h-[92vh]">
         <img src="/404-error.png" alt="Not Found" className="w-40 mb-2" />
         <h1 className="text-2xl font-semibold text-gray-700 dark:text-white mb-2">
-          Không tìm thấy bài viết
+          Post not found
         </h1>
         <p className="text-gray-500 dark:text-gray-300 max-w-md">
-          Bài viết bạn đang tìm có thể đã bị xóa hoặc không tồn tại. Vui lòng
-          kiểm tra lại liên kết hoặc quay về trang trước.
+          The post you are looking for may have been deleted or does not exist. Please
+          check the link again or go back to the previous page.
         </p>
         <button
           onClick={() => navigate("/")}
           className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition cursor-pointer"
         >
-          Quay lại trang chủ
+            Back to Home
         </button>
       </div>
     );

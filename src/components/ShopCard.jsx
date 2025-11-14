@@ -3,7 +3,7 @@ import { getBackendImgURL } from "../utils/helper";
 import { MapPin, Users, Tag } from "lucide-react";
 
 export default function ShopCard({ shop }) {
-  // Hiển thị tối đa 3 danh mục để gọn gàng
+  // Display up to 3 categories for cleaner layout
   const displayCategories = shop.categories?.slice(0, 3) || [];
 
   return (
@@ -11,7 +11,7 @@ export default function ShopCard({ shop }) {
       to={`/shop/${shop.slug}`}
       className="group flex flex-col overflow-hidden rounded-2xl border border-gray-200 dark:border-[#2b2b3d] bg-white dark:bg-[#1e1e2f] shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
     >
-      {/* Ảnh bìa */}
+      {/* Cover Image */}
       <div className="relative w-full h-36 overflow-hidden">
         <img
           src={getBackendImgURL(shop.coverPhoto)}
@@ -20,7 +20,7 @@ export default function ShopCard({ shop }) {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-60 group-hover:opacity-70 transition"></div>
 
-        {/* Avatar + Tên shop */}
+        {/* Avatar + Shop Name */}
         <div className="absolute bottom-2 left-3 flex items-center">
           <img
             src={getBackendImgURL(shop.avatar)}
@@ -35,27 +35,27 @@ export default function ShopCard({ shop }) {
         </div>
       </div>
 
-      {/* Nội dung */}
+      {/* Content */}
       <div className="p-4 flex flex-col gap-2">
-        {/* Địa chỉ */}
+        {/* Address */}
         <div className="flex items-center text-sm text-gray-600 dark:text-gray-400 gap-1">
           <MapPin className="size-4 shrink-0 text-gray-400" />
           <span className="truncate">
-            {shop.description?.address || "Chưa có địa chỉ"}
+            {shop.description?.address || "No address available"}
           </span>
         </div>
 
-        {/* Lượt follow */}
+        {/* Followers */}
         <div className="flex items-center text-sm text-gray-600 dark:text-gray-400 gap-1">
           <Users className="size-4 shrink-0 text-gray-400" />
-          <span>{shop.followers?.length || 0} người theo dõi</span>
+          <span>{shop.followers?.length || 0} followers</span>
         </div>
 
-        {/* Danh mục sản phẩm */}
+        {/* Product Categories */}
         {displayCategories.length > 0 && (
           <div className="flex flex-wrap items-center gap-1 mt-2 text-sm">
             <Tag className="size-4 text-gray-400" />
-            {displayCategories.map((cat, i) => (
+            {displayCategories.map((cat) => (
               <span
                 key={cat._id}
                 className="px-2 py-0.5 bg-gray-100 dark:bg-[#2b2b3d] text-gray-700 dark:text-gray-300 rounded-full text-xs"
@@ -64,18 +64,18 @@ export default function ShopCard({ shop }) {
               </span>
             ))}
             {shop.categories.length > 3 && (
-              <span className="text-xs text-gray-400">+{shop.categories.length - 3} nữa</span>
+              <span className="text-xs text-gray-400">+{shop.categories.length - 3} more</span>
             )}
           </div>
         )}
 
-        {/* Nút xem shop */}
+        {/* View Shop Button */}
         <div className="mt-3">
           <button
             className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm py-1.5 rounded-md transition"
             type="button"
           >
-            Xem shop
+            View Shop
           </button>
         </div>
       </div>

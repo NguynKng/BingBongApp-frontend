@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   Bell,
   CircleUserRound,
@@ -27,9 +27,11 @@ import SpinnerLoading from "./SpinnerLoading";
 import DropdownMenu from "./DropdownMenu";
 import { useGetNotifications } from "../hooks/useNotifications";
 import DropdownCart from "./DropdownCart";
+import { useGetCart } from "../hooks/useGetCart";
 
 function Header({ onToggleChat }) {
   const { notifications, unreadCount } = useGetNotifications();
+  const { cart } = useGetCart();
   const [query, setQuery] = useState("");
   const isSearchingUser = query.length > 0;
   const { listUser, loading } = useGetProfileByName(query, {
@@ -43,7 +45,7 @@ function Header({ onToggleChat }) {
     cart: false,
   });
   const [showMobileMenu, setShowMobileMenu] = useState(false);
-  const [showSearch, setShowSearch] = useState(false); // State to control search toggle
+  const [showSearch, setShowSearch] = useState(false);
   const { user, theme, toggleTheme } = useAuthStore();
   const location = useLocation();
 
@@ -63,14 +65,14 @@ function Header({ onToggleChat }) {
   }, [location.pathname]);
 
   const tabs = [
-    { id: "home", icon: <House />, label: "Trang chủ", link: "/" },
-    { id: "friends", icon: <UsersRound />, label: "Bạn bè", link: "/friends" },
-    { id: "news", icon: <Newspaper />, label: "Video", link: "/news" },
-    { id: "quiz", icon: <Gamepad2 />, label: "Quizz", link: "/quiz" },
+    { id: "home", icon: <House />, label: "Home", link: "/" },
+    { id: "friends", icon: <UsersRound />, label: "Friends", link: "/friends" },
+    { id: "news", icon: <Newspaper />, label: "News", link: "/news" },
+    { id: "quiz", icon: <Gamepad2 />, label: "Quiz", link: "/quiz" },
     {
       id: "profile",
       icon: <CircleUserRound />,
-      label: "Cá nhân",
+      label: "Profile",
       link: `/profile/${user._id}`,
     },
   ];
@@ -101,16 +103,16 @@ function Header({ onToggleChat }) {
             />
           </Link>
           <div className="text-xl font-semibold text-rose-500 dark:text-white">
-            Bing Bong
+            BingBong
           </div>
         </div>
         <div className="flex items-center">
-          {/* Tìm kiếm */}
+          {/* Search */}
           <div className="relative w-400 max-w-md hidden sm:block">
             <Search className="absolute size-5 top-2.5 left-3 text-blue-700" />
             <input
               type="text"
-              placeholder="Tìm kiếm trên Bing Bong"
+              placeholder="Search on Bing Bong"
               className="text-blue-900 dark:text-gray-200 font-medium w-full py-2 pl-10 bg-white/90 dark:bg-[#1f2233] rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-purple-400 shadow-md transition-all duration-300"
               onChange={(e) => debouncedSearch(e.target.value)}
             />
@@ -120,16 +122,14 @@ function Header({ onToggleChat }) {
                   <SpinnerLoading />
                 ) : listUser.length === 0 ? (
                   <div className="text-center text-gray-500 py-2 px-4 dark:text-white">
-                    Không tìm thấy người dùng
+                    No users found
                   </div>
                 ) : (
                   listUser.map((user) => (
                     <Link
                       to={`/profile/${user.slug}`}
                       key={user._id}
-                      onClick={() => {
-                        setQuery("");
-                      }}
+                      onClick={() => setQuery("")}
                       className="w-full py-2 px-4 flex items-center justify-between gap-2 hover:bg-blue-100 rounded-md transition duration-200 dark:hover:bg-[#394056]"
                     >
                       <div className="flex items-center gap-2">
@@ -172,7 +172,7 @@ function Header({ onToggleChat }) {
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-blue-700" />
                   <input
                     type="text"
-                    placeholder="Tìm kiếm trên Bing Bong"
+                    placeholder="Search on Bing Bong"
                     className="w-full py-2 pl-10 pr-10 rounded-xl bg-white text-blue-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
                     onChange={(e) => setQuery(e.target.value)}
                     value={query}
@@ -188,14 +188,13 @@ function Header({ onToggleChat }) {
                     <X />
                   </button>
                 </div>
-                {/* Gợi ý kết quả tìm kiếm nằm ngay dưới input */}
                 {query.length > 0 && (
                   <div className="bg-white rounded-lg shadow-lg mt-2 max-h-60 overflow-y-auto p-2 w-full">
                     {loading ? (
                       <SpinnerLoading />
                     ) : listUser.length === 0 ? (
                       <div className="text-center text-gray-500 py-2 px-4">
-                        Không tìm thấy người dùng
+                        No users found
                       </div>
                     ) : (
                       listUser.map((user) => (
@@ -247,9 +246,10 @@ function Header({ onToggleChat }) {
               <SunMedium className="text-gray-600 dark:text-white" />
             )}
             <div className="absolute -bottom-8 text-xs bg-black/80 text-white px-3 py-1 rounded shadow hidden group-hover:block z-50 text-center whitespace-nowrap">
-              Chế độ {theme === "dark" ? "tối" : "sáng"}
+              {theme === "dark" ? "Dark Mode" : "Light Mode"}
             </div>
           </div>
+
           <div
             className="relative size-9 p-1 bg-white/70 dark:bg-[#2a2e3d] rounded-full flex items-center justify-center hover:scale-110 hover:ring-2 ring-blue-300 dark:ring-purple-400 hover:bg-blue-100 dark:hover:bg-[#394056] transition-all cursor-pointer group"
             onClick={() => toggleDropdown("chat")}
@@ -267,9 +267,8 @@ function Header({ onToggleChat }) {
           >
             <Bell className="text-gray-600 dark:text-white dark:fill-white" />
             <div className="absolute -bottom-8 text-xs bg-black/80 text-white px-3 py-1 rounded shadow hidden group-hover:block z-50 text-center whitespace-nowrap">
-              Thông báo
+              Notifications
             </div>
-            {/* Unread Count */}
             {unreadCount > 0 && (
               <div className="absolute -top-1.5 -right-0.5 bg-red-500 size-5 flex items-center justify-center rounded-full">
                 <span className="text-white text-xs font-semibold">
@@ -285,8 +284,15 @@ function Header({ onToggleChat }) {
           >
             <ShoppingCart className="text-gray-600 dark:text-white" />
             <div className="absolute -bottom-8 text-xs bg-black/80 text-white px-3 py-1 rounded shadow hidden group-hover:block z-50 text-center whitespace-nowrap">
-              Giỏ hàng
+              Cart
             </div>
+            {cart?.items?.length > 0 && (
+              <div className="absolute -top-1.5 -right-0.5 bg-red-500 size-5 flex items-center justify-center rounded-full">
+                <span className="text-white text-xs font-semibold">
+                  {cart?.items.length}
+                </span>
+              </div>
+            )}
           </div>
 
           {/* User Dropdown */}
@@ -304,7 +310,7 @@ function Header({ onToggleChat }) {
                 className="size-full object-cover rounded-full"
               />
               <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-xs bg-black/80 text-white px-3 py-1 rounded shadow hidden group-hover:block text-center whitespace-nowrap">
-                Tài khoản
+                Account
               </div>
               <div className="absolute -bottom-1 -right-1 bg-white size-4 rounded-full flex items-center justify-center">
                 <ChevronDown className="size-3 text-black" />

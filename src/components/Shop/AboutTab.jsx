@@ -19,7 +19,7 @@ export default function AboutTab({ shop }) {
     mapURL,
   } = shop || {};
 
-  // 🕒 Xác định giờ hoạt động hiện tại
+  // 🕒 Determine current open status
   const now = new Date();
   const [openH, openM] = openTime.split(":").map(Number);
   const [closeH, closeM] = closeTime.split(":").map(Number);
@@ -34,27 +34,28 @@ export default function AboutTab({ shop }) {
 
   return (
     <div className="bg-white dark:bg-[#1e1e2f] rounded-xl shadow-sm p-6 space-y-8">
-      {/* 🏪 Giới thiệu */}
+      {/* 🏪 About Section */}
       <section>
         <h2 className="text-2xl font-semibold mb-3 text-gray-900 dark:text-gray-100">
-          Giới thiệu
+          About
         </h2>
         <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-          {description.about || "Chưa có mô tả về cửa hàng này."}
+          {description.about || "No description available for this shop."}
         </p>
       </section>
 
-      {/* 📍 Thông tin liên hệ + Giờ hoạt động */}
+      {/* 📍 Contact Info + Opening Hours */}
       <section className="grid md:grid-cols-2 gap-8">
-        {/* Liên hệ */}
+        {/* Contact Info */}
         <div className="space-y-3">
           <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
-            Thông tin liên hệ
+            Contact Information
           </h3>
 
           {description.address && (
             <p className="flex items-center gap-3 text-gray-700 dark:text-gray-300">
-              <MapPin className="fill-gray-500 text-white dark:text-black" /> {description.address}
+              <MapPin className="fill-gray-500 text-white dark:text-black" />{" "}
+              {description.address}
             </p>
           )}
           {description.phone && (
@@ -88,10 +89,10 @@ export default function AboutTab({ shop }) {
           )}
         </div>
 
-        {/* Giờ hoạt động */}
+        {/* Opening Hours */}
         <div className="space-y-3">
           <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
-            Giờ hoạt động
+            Opening Hours
           </h3>
           <div className="flex items-center gap-3 text-gray-700 dark:text-gray-300">
             <Clock className="fill-gray-500 text-white dark:text-black" />
@@ -106,19 +107,19 @@ export default function AboutTab({ shop }) {
                 : "bg-red-100 text-red-700 dark:bg-red-800 dark:text-red-300"
             }`}
           >
-            {isOpen ? "Đang mở cửa" : "Đã đóng cửa"}
+            {isOpen ? "Open Now" : "Closed"}
           </span>
         </div>
       </section>
 
-      {/* 🌐 Mạng xã hội */}
+      {/* 🌐 Social Media */}
       {(socials.facebook ||
         socials.instagram ||
         socials.tiktok ||
         socials.youtube) && (
         <section>
           <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-3">
-            Mạng xã hội
+            Social Media
           </h3>
           <div className="flex flex-wrap items-center gap-5">
             {socials.facebook && (
@@ -162,7 +163,7 @@ export default function AboutTab({ shop }) {
       {mapURL && (
         <section>
           <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-3">
-            Bản đồ
+            Map
           </h3>
           <div className="rounded-xl overflow-hidden shadow-md border border-gray-100 dark:border-gray-700">
             <iframe

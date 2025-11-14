@@ -29,7 +29,7 @@ export default function Footer() {
 
   return (
     <>
-      {/* Toàn bộ CSS animation được nhúng trực tiếp */}
+      {/* Inline CSS animations */}
       <style>{`
         /* Gradient animation */
         .gradient-bg {
@@ -78,18 +78,19 @@ export default function Footer() {
 
         {/* Content */}
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-10 text-sm sm:text-base md:text-lg flex flex-col md:flex-row flex-wrap justify-between gap-8">
-          {/* Cột 1: Giới thiệu */}
+          {/* Column 1: About */}
           <div className="flex-1 min-w-[250px] text-center md:text-left">
-            <h3 className="font-bold text-2xl mb-4">Bing Bong</h3> {/* Tăng kích thước chữ Bing Bong */}
+            <h3 className="font-bold text-2xl mb-4">Bing Bong</h3>
             <p className="text-justify">
-              Bing Bong là cộng đồng mạng xã hội dành cho những người yêu công nghệ,
-              học hỏi không ngừng và sẵn sàng chia sẻ kiến thức cùng nhau phát triển.
+              Bing Bong is a social community for tech enthusiasts,
+              lifelong learners, and people who are eager to share knowledge
+              and grow together.
             </p>
           </div>
 
-          {/* Cột 2: Liên hệ */}
+          {/* Column 2: Contact */}
           <div className="flex-1 min-w-[250px] text-center">
-            <h4 className="font-semibold text-xl mb-3">Liên hệ</h4> {/* Tăng kích thước chữ Liên hệ */}
+            <h4 className="font-semibold text-xl mb-3">Contact</h4>
             <ul className="space-y-2">
               <li className="flex justify-center items-center gap-2 text-lg">
                 <Mail className="size-5" /> <span>support@bingbong.vn</span>
@@ -98,14 +99,14 @@ export default function Footer() {
                 <Phone className="size-5" /> <span>0123 456 789</span>
               </li>
               <li className="flex justify-center items-center gap-2 text-lg">
-                <MapPin className="size-5" /> <span>TP. Hồ Chí Minh</span>
+                <MapPin className="size-5" /> <span>Ho Chi Minh City</span>
               </li>
             </ul>
           </div>
 
-          {/* Cột 3: Mạng xã hội */}
+          {/* Column 3: Social Media */}
           <div className="flex-1 min-w-[250px] text-center md:text-center">
-            <h4 className="font-semibold text-xl mb-3">Theo dõi chúng tôi</h4> {/* Tăng kích thước chữ Theo dõi */}
+            <h4 className="font-semibold text-xl mb-3">Follow Us</h4>
             <div className="flex justify-center gap-4">
               <a
                 href="#"
@@ -129,7 +130,7 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Bản quyền */}
+        {/* Copyright */}
         <div className="relative z-10 text-center text-xs py-4 text-blue-700 dark:text-gray-400">
           © {new Date().getFullYear()} Bing Bong. All rights reserved.
         </div>

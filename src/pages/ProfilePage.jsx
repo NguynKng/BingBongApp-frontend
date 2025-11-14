@@ -79,10 +79,10 @@ function ProfilePage() {
   }
 
   const tabs = [
-    { name: "Bài viết" },
-    { name: "Giới thiệu" },
-    { name: "Bạn bè" },
-    { name: "Ảnh" },
+    { name: "Posts" },
+    { name: "About" },
+    { name: "Friends" },
+    { name: "Photos" },
   ];
 
   const handleToggleChat = (friend) => {
@@ -244,7 +244,9 @@ function ProfilePage() {
                 >
                   <img src="/camera.png" className="size-4 object-cover" />
                   <span className="lg:inline hidden">
-                    {isUploading.coverPhoto ? "Uploading..." : "Thay ảnh bìa"}
+                    {isUploading.coverPhoto
+                      ? "Uploading..."
+                      : "Change cover photo"}
                   </span>
                 </div>
                 <div className="absolute bottom-0 w-full bg-gradient-to-t from-black/50 to-transparent h-[30%] rounded-md"></div>
@@ -294,7 +296,9 @@ function ProfilePage() {
                       </h1>
                       <p className="text-gray-500 dark:text-gray-400 rounded">{`${
                         displayedUser.friends.length || 0
-                      } người bạn`}</p>
+                      } friend${
+                        displayedUser.friends.length !== 1 ? "s" : ""
+                      }`}</p>
                     </div>
                   </div>
                   <div className="flex flex-col justify-end items-end py-4 z-30">
@@ -302,12 +306,12 @@ function ProfilePage() {
                       {isMyProfile ? (
                         <>
                           <button className="flex lg:gap-2 gap-1 bg-blue-500 hover:bg-blue-600 cursor-pointer rounded-md py-2 lg:px-4 px-2 text-white items-center justify-center">
-                            <Plus className="size-5" />
-                            <span>Thêm vào tin</span>
+                            <Plus className="size-4" />
+                            <span>Add to story</span>
                           </button>
                           <button className="flex lg:gap-2 gap-1 items-center justify-center bg-gray-200 dark:bg-[#23233b] hover:bg-gray-300 dark:hover:bg-[#23233b] cursor-pointer rounded-md py-2 lg:px-4 px-2 text-black dark:text-white font-medium">
-                            <Pencil className="size-5" />
-                            <span>Chỉnh sửa trang cá nhân</span>
+                            <Pencil className="size-4" />
+                            <span>Edit profile</span>
                           </button>
                         </>
                       ) : isFriend ? (
@@ -331,7 +335,7 @@ function ProfilePage() {
                                   >
                                     <UserX />
                                     <span className="font-medium">
-                                      Xoá kết bạn
+                                      Remove Friend
                                     </span>
                                   </li>
                                 </ul>
@@ -350,7 +354,7 @@ function ProfilePage() {
                               }
                               className="object-cover size-5"
                             />
-                            <span>Nhắn tin</span>
+                            <span>Message</span>
                           </button>
                         </>
                       ) : isReceivingFriendRequest ? (
@@ -359,13 +363,13 @@ function ProfilePage() {
                             className="flex gap-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md py-2 px-4 font-medium items-center cursor-pointer"
                             onClick={handleAcceptFriendRequest}
                           >
-                            <span>Chấp nhận lời mời</span>
+                            <span>Accept Request</span>
                           </button>
                           <button
                             className="flex gap-2 bg-gray-200 dark:bg-[#23233b] hover:bg-gray-300 dark:hover:bg-[#23233b] text-black dark:text-white rounded-md py-2 px-4 font-medium items-center cursor-pointer"
                             onClick={handleDeclineFriendRequest}
                           >
-                            <span>Xoá lời mời</span>
+                            <span>Delete Request</span>
                           </button>
                           <button
                             className="flex gap-2 items-center justify-center bg-gray-200 dark:bg-[#23233b] hover:bg-gray-300 dark:hover:bg-[#23233b] cursor-pointer rounded-md py-2 px-4 text-black dark:text-white font-medium"
@@ -379,7 +383,7 @@ function ProfilePage() {
                               }
                               className="object-cover size-5"
                             />
-                            <span>Nhắn tin</span>
+                            <span>Message</span>
                           </button>
                         </>
                       ) : (
@@ -399,8 +403,8 @@ function ProfilePage() {
                             <UserPlus />
                             <span>
                               {hasSentFriendRequest
-                                ? "Huỷ lời mời"
-                                : "Thêm bạn bè"}
+                                ? "Cancel Request"
+                                : "Add Friend"}
                             </span>
                           </button>
                           <button
@@ -415,7 +419,7 @@ function ProfilePage() {
                               }
                               className="object-cover size-5"
                             />
-                            <span>Nhắn tin</span>
+                            <span>Message</span>
                           </button>
                         </>
                       )}
@@ -438,7 +442,7 @@ function ProfilePage() {
                       </div>
                     ))}
                     <div className="flex gap-2 items-center justify-center hover:bg-gray-200 cursor-pointer rounded-md py-1 px-2 lg:py-3 lg:px-4 text-gray-500 font-medium">
-                      <span>Xem thêm</span>
+                      <span>More</span>
                       <ChevronDown className="size-5" />
                     </div>
                   </div>
@@ -456,14 +460,14 @@ function ProfilePage() {
               {/* Header */}
               <div className="flex justify-between items-center">
                 <h1 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  Giới thiệu
+                  Intro
                 </h1>
                 {isMyProfile && (
                   <button
                     onClick={() => setIsOpenInfoModal(true)}
                     className="text-sm px-3 py-1.5 rounded-md bg-gray-50 dark:bg-[#23233b] text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#2b2b3d] transition"
                   >
-                    <Pencil className="inline w-4 h-4 mr-1" /> Chỉnh sửa
+                    <Pencil className="inline w-4 h-4 mr-1" /> Edit Info
                   </button>
                 )}
               </div>
@@ -479,7 +483,7 @@ function ProfilePage() {
                     onClick={() => setIsOpenInfoModal(true)}
                     className="py-2 px-4 w-full rounded-md bg-gray-50 dark:bg-[#23233b] dark:text-white font-medium text-sm hover:bg-gray-100 dark:hover:bg-[#2b2b3d]"
                   >
-                    Thêm tiểu sử
+                    Add bio
                   </button>
                 )
               )}
@@ -491,7 +495,7 @@ function ProfilePage() {
                 <div className="space-y-2">
                   <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
                     <GraduationCap className="size-5 fill-gray-500 text-white dark:text-black" />
-                    Học vấn
+                    Education
                   </h2>
                   {displayedUser.education.map((edu, idx) => (
                     <div
@@ -519,11 +523,11 @@ function ProfilePage() {
                       const { position, company, duration } =
                         displayedUser.work;
                       if (position && company && duration)
-                        return `Làm ${position} tại ${company} (${duration})`;
+                        return `${position} at ${company} (${duration})`;
                       if (position && company)
-                        return `Làm ${position} tại ${company}`;
+                        return `${position} at ${company}`;
                       if (position) return position;
-                      if (company) return `Làm việc tại ${company}`;
+                      if (company) return `Work at ${company}`;
                       return null;
                     })()}
                   </span>
@@ -534,7 +538,7 @@ function ProfilePage() {
               {displayedUser?.address && (
                 <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
                   <MapPin className="fill-gray-500 text-white size-5 dark:text-black" />
-                  <span>Sống tại {displayedUser.address}</span>
+                  <span>Lives in {displayedUser.address}</span>
                 </div>
               )}
 
@@ -558,7 +562,7 @@ function ProfilePage() {
                 <div>
                   <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2 mb-2">
                     <Sparkles className="fill-gray-500 text-white size-5" />
-                    Kỹ năng
+                    Skills
                   </h2>
                   <div className="flex flex-wrap gap-2">
                     {displayedUser.skills.map((skill, idx) => (
@@ -578,7 +582,7 @@ function ProfilePage() {
                 <div>
                   <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2 mb-2">
                     <Heart className="fill-gray-500 text-white size-5 dark:text-black" />
-                    Sở thích
+                    Interests
                   </h2>
                   <div className="flex flex-wrap gap-2">
                     {displayedUser.interests.map((interest, idx) => (
@@ -598,7 +602,7 @@ function ProfilePage() {
                 <div>
                   <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2 mb-2">
                     <Link2 className="fill-gray-500 text-white size-5 dark:text-black" />
-                    Liên kết
+                    Social Links
                   </h2>
                   <div className="flex flex-col gap-1 text-sm">
                     {displayedUser.socialLinks.map((link, idx) => (
@@ -620,10 +624,10 @@ function ProfilePage() {
             <div className="rounded-md bg-white dark:bg-[#1e1e2f] border-2 border-gray-200 dark:border-[#2b2b3d] p-4 space-y-2">
               <div className="flex items-center justify-between gap-2">
                 <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-                  Ảnh
+                  Photos
                 </h1>
                 <h1 className="text-blue-500 rounded-md py-2 px-4 cursor-pointer hover:bg-gray-200 dark:hover:bg-[#23233b]">
-                  Xem tất cả ảnh
+                  View All Photos
                 </h1>
               </div>
               <div className="grid grid-cols-3 gap-2">
@@ -649,13 +653,15 @@ function ProfilePage() {
             <div className="rounded-md bg-white dark:bg-[#1e1e2f] border-2 border-gray-200 dark:border-[#2b2b3d] p-4 space-y-2">
               <div className="flex items-center justify-between gap-2">
                 <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-                  Bạn bè
+                  Friends
                 </h1>
                 <h1 className="text-blue-500 rounded-md py-2 px-4 cursor-pointer hover:bg-gray-200 dark:hover:bg-[#23233b]">
-                  Xem tất cả bạn bè
+                  View All Friends
                 </h1>
               </div>
-              <h1 className="text-gray-500 dark:text-gray-400 text-lg">{`${profile.friends.length} người bạn`}</h1>
+              <h1 className="text-gray-500 dark:text-gray-400 text-lg">{`${
+                profile.friends.length
+              } friend${profile.friends.length !== 1 ? "s" : ""}`}</h1>
               <div className="grid grid-cols-3 gap-2">
                 {profile.friends.map((friend) => (
                   <div key={friend._id} className="w-full rounded-md">
@@ -698,7 +704,7 @@ function ProfilePage() {
             )}
             <div className="py-2 px-4 bg-white dark:bg-[#1e1e2f] rounded-lg">
               <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-                Bài viết
+                Posts
               </h1>
             </div>
             {loading ? (
@@ -715,7 +721,7 @@ function ProfilePage() {
                   ))
                 ) : (
                   <p className="text-center text-2xl dark:text-white">
-                    Không có bài viết nào
+                    No posts available
                   </p>
                 )}
               </>

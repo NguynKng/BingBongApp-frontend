@@ -11,7 +11,7 @@ function PostModal({ onClose, onPostCreated, postedBy, postedByType, postedById,
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Ngăn reload trang
+    e.preventDefault(); // Prevent page reload
     setLoading(true);
 
     const formData = new FormData();
@@ -30,11 +30,11 @@ function PostModal({ onClose, onPostCreated, postedBy, postedByType, postedById,
         toast.success(response.message);
       } else {
         toast.error(response.message);
-        return; // Dừng nếu có lỗi
+        return; // Stop if there's an error
       }
 
       if (onPostCreated) {
-        onPostCreated(response.post); // Send it back to HomePage
+        onPostCreated(response.post); // Send new post back to HomePage
       }
 
       setContent("");
@@ -43,7 +43,7 @@ function PostModal({ onClose, onPostCreated, postedBy, postedByType, postedById,
       onClose();
     } catch (err) {
       const errorMessage =
-        err.response?.data?.message || "Có lỗi xảy ra. Vui lòng thử lại.";
+        err.response?.data?.message || "An error occurred. Please try again.";
       toast.error(errorMessage);
       console.error(err);
     } finally {
@@ -83,22 +83,20 @@ function PostModal({ onClose, onPostCreated, postedBy, postedByType, postedById,
         </button>
 
         <h2 className="text-2xl font-bold text-center mb-4 pb-2 border-b-2 dark:border-gray-600 border-gray-200">
-          Tạo bài viết
+          Create Post
         </h2>
 
         <div className="flex gap-3 items-center mb-4">
           <img
-            src={
-                getBackendImgURL(postedBy?.avatar)
-            }
+            src={getBackendImgURL(postedBy?.avatar)}
             className="w-10 h-10 rounded-full object-cover"
           />
           <div>
             <p className="font-medium">{postedBy.name}</p>
             <select className="text-sm text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded px-2 py-1">
-              <option>Bạn bè</option>
-              <option>Công khai</option>
-              <option>Chỉ mình tôi</option>
+              <option>Friends</option>
+              <option>Public</option>
+              <option>Only me</option>
             </select>
           </div>
         </div>
@@ -137,7 +135,7 @@ function PostModal({ onClose, onPostCreated, postedBy, postedByType, postedById,
             className="flex items-center gap-2 text-purple-600 cursor-pointer hover:text-purple-800"
           >
             <img src="/photos.png" className="w-6 h-6" alt="upload" />
-            <span className="dark:text-white">Ảnh</span>
+            <span className="dark:text-white">Photo</span>
           </label>
           <input
             id="uploadImage"
@@ -154,7 +152,7 @@ function PostModal({ onClose, onPostCreated, postedBy, postedByType, postedById,
           className="w-full mt-4 bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition duration-200 cursor-pointer"
           disabled={loading}
         >
-          {loading ? "Đang đăng..." : "Đăng"}
+          {loading ? "Posting..." : "Post"}
         </button>
       </form>
     </div>

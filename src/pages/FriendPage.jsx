@@ -30,10 +30,10 @@ const FriendPage = () => {
       setFriendRequests((prev) =>
         prev.filter((req) => req._id !== requesterId)
       );
-      toast.success("Đã chấp nhận lời mời kết bạn");
+      toast.success("Friend request accepted!");
     } catch (error) {
       console.error("Error accepting friend request:", error);
-      toast.error("Không thể chấp nhận lời mời");
+      toast.error("Unable to accept request");
     }
   };
 
@@ -55,7 +55,7 @@ const FriendPage = () => {
       <div className="dark:bg-[#181826] min-h-[92vh] pt-10">
         <div className="lg:w-[90%] w-full mx-auto px-4 sm:px-6 lg:px-8 py-4 overflow-x-hidden">
           <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-8">
-            Lời mời kết bạn ({friendRequests.length})
+            Friend Requests ({friendRequests.length})
           </h2>
 
           <div
@@ -64,7 +64,7 @@ const FriendPage = () => {
           >
             {friendRequests.length === 0 ? (
               <p className="text-gray-500 dark:text-gray-400 col-span-full">
-                Không có lời mời nào
+                No friend requests
               </p>
             ) : (
               friendRequests.map((requester) => (
@@ -100,7 +100,7 @@ const FriendPage = () => {
                     }}
                     className="text-sm font-medium bg-[#1b74e4] hover:bg-[#155fc3] text-white px-4 py-2 rounded-md w-full mb-2 transition shadow"
                   >
-                    Xác nhận
+                    Confirm
                   </button>
                   <button
                     onClick={(e) => {
@@ -111,7 +111,7 @@ const FriendPage = () => {
                     }}
                     className="text-sm font-medium border border-gray-300 dark:border-gray-500 text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-[#23233b] px-4 py-2 rounded-md w-full transition shadow"
                   >
-                    Xoá
+                    Delete
                   </button>
                 </div>
               ))
@@ -119,8 +119,9 @@ const FriendPage = () => {
           </div>
 
           <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-8">
-            Những người bạn có thể biết
+            People You May Know
           </h2>
+
           <div className="flex flex-wrap gap-4 items-center">
             {suggestions.map((user) => (
               <div
@@ -145,7 +146,7 @@ const FriendPage = () => {
                 </Link>
 
                 <button className="text-sm font-medium cursor-pointer bg-[#1b74e4] hover:bg-[#155fc3] text-white px-4 py-2 rounded-md w-full transition shadow">
-                  Thêm bạn bè
+                  Add Friend
                 </button>
               </div>
             ))}

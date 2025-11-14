@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { authAPI } from "../services/api";
-import { FaKey, FaInfoCircle, FaEnvelope, FaSpinner, FaPaperPlane, FaQuestionCircle, FaSignInAlt } from "react-icons/fa";
+import { FaKey, FaInfoCircle, FaEnvelope, FaSpinner, FaPaperPlane, FaQuestionCircle } from "react-icons/fa";
 
 function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -31,21 +31,22 @@ function ForgotPasswordPage() {
       }}
     >
       <div className="flex flex-col items-center gap-6 bg-white/50 backdrop-blur-md rounded-2xl py-8 px-10 w-[26rem] shadow-2xl border border-gray-300">
-        {/* Tiêu đề */}
+        {/* Title */}
         <h1 className="text-center text-3xl font-extrabold text-blue-700 flex items-center gap-3">
           <FaKey className="text-blue-500" />
-          Đặt lại mật khẩu
+          Reset Password
         </h1>
+
         <p className="text-sm text-center text-gray-600 leading-relaxed">
           <FaInfoCircle className="text-gray-400 mr-1 inline" />
-          Nhập địa chỉ email của bạn bên dưới và chúng tôi sẽ gửi cho bạn một liên kết để đặt lại mật khẩu.
+          Enter your email address below and we’ll send you a link to reset your password.
         </p>
 
-        {/* Input Email */}
+        {/* Email Field */}
         <div className="relative w-full">
           <input
             type="email"
-            placeholder="Nhập email của bạn"
+            placeholder="Enter your email address"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="w-full py-3 px-4 text-sm border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 placeholder-gray-400"
@@ -55,37 +56,36 @@ function ForgotPasswordPage() {
           </span>
         </div>
 
-        {/* Nút Submit */}
+        {/* Submit Button */}
         <button
-          className={`w-full py-3 rounded-lg text-white font-semibold shadow-md transition-all duration-300 ${loading
-            ? "bg-blue-400 cursor-not-allowed"
-            : "bg-blue-600 hover:bg-blue-700"
-            } flex items-center justify-center gap-2`}
+          className={`w-full py-3 rounded-lg text-white font-semibold shadow-md transition-all duration-300 ${
+            loading ? "bg-blue-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
+          } flex items-center justify-center gap-2`}
           onClick={handleSubmit}
           disabled={loading}
         >
           {loading ? (
             <>
-              <FaSpinner className="animate-spin" /> {/* Icon loading */}
-              Đang gửi...
+              <FaSpinner className="animate-spin" />
+              Sending...
             </>
           ) : (
             <>
-              <FaPaperPlane /> {/* Icon gửi */}
-              Gửi
+              <FaPaperPlane />
+              Send
             </>
           )}
         </button>
 
-        {/* Gợi ý */}
+        {/* Suggestion */}
         <p className="text-sm text-gray-600 text-center">
-          <FaQuestionCircle className="text-gray-400 mr-1 inline" /> {/* Icon câu hỏi */}
-          Nhớ mật khẩu?{" "}
+          <FaQuestionCircle className="text-gray-400 mr-1 inline" />
+          Remember your password?{" "}
           <span
             onClick={() => navigate("/login")}
             className="text-blue-600 font-medium cursor-pointer hover:underline"
           >
-            Đăng nhập
+            Login
           </span>
         </p>
       </div>

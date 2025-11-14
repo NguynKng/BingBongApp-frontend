@@ -909,9 +909,9 @@ export const notificationAPI = {
 
 //NEWS API services
 export const newsApi = {
-  getNews: async (page) => {
+  getNews: async () => {
     try {
-      const response = await api.get(`/crawlblog?pageNumber=${page}`);
+      const response = await api.get(`/blog/tech-news`);
 
       if (response.data.success === false) {
         throw new Error(response.data.message);
@@ -1467,6 +1467,27 @@ export const productAPI = {
       throw error;
     }
   },
+  rateProduct: async (productId, ratingForm) => {
+    try {
+      const response = await api.post(
+        `/product/rating/${productId}`,
+        ratingForm
+      );
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Đánh giá sản phẩm thất bại";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
 };
 
 export const cartAPI = {
@@ -1506,9 +1527,11 @@ export const cartAPI = {
       throw error;
     }
   },
-  removeFromCart: async (productId) => {
+  removeFromCart: async (productId, variantId) => {
     try {
-      const response = await api.delete(`/cart/remove/${productId}`);
+      const response = await api.delete(
+        `/cart/remove/${productId}/${variantId}`
+      );
       if (response.data.success === false) {
         toast.error(response.data.message);
         throw new Error(response.data.message);
@@ -1518,6 +1541,25 @@ export const cartAPI = {
       if (error.response) {
         const errorMessage =
           error.response.data.message || "Bỏ sản phẩm khỏi giỏ hàng thất bại";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  minusFromCart: async (productId, variantId) => {
+    try {
+      const response = await api.put(`/cart/minus`, { productId, variantId });
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message ||
+          "Giảm số lượng sản phẩm trong giỏ hàng thất bại";
         toast.error(errorMessage);
         throw new Error(errorMessage);
       }
@@ -1536,6 +1578,81 @@ export const cartAPI = {
       if (error.response) {
         const errorMessage =
           error.response.data.message || "Dọn giỏ hàng thất bại";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+};
+
+export const orderAPI = {
+  createOrder: async (shipping) => {
+    try {
+      const response = await api.post(`/order/create`, { shipping });
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Tạo đơn hàng thất bại";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getUserOrders: async () => {
+    try {
+      const response = await api.get(`/order/user-orders`);
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Lấy đơn hàng thất bại";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getShopOrders: async (shopId) => {
+    try {
+      const response = await api.get(`/order/shop-orders/${shopId}`);
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Lấy đơn hàng thất bại";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getOrderById: async (orderId) => {
+    try {
+      const response = await api.get(`/order/detail/${orderId}`);
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Lấy chi tiết đơn hàng thất bại";
         toast.error(errorMessage);
         throw new Error(errorMessage);
       }
