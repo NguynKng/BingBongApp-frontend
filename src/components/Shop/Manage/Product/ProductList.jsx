@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import Config from "../../../../envVars";
 import toast from "react-hot-toast";
 import { productAPI } from "../../../../services/api";
+import SpinnerLoading from "../../../SpinnerLoading";
 
 function ProductList({ shop }) {
   const [products, setProducts] = useState([]);
@@ -21,7 +22,7 @@ function ProductList({ shop }) {
         const response = await productAPI.getProductsByShop(shop._id);
         setProducts(response.data);
       } catch (error) {
-        toast.error(error.message || "Không thể tải danh sách sản phẩm");
+        toast.error(error.message || "Failed to load product list");
       } finally {
         setLoading(false);
       }
@@ -29,7 +30,20 @@ function ProductList({ shop }) {
     fetchProducts();
   }, [shop]);
 
-  // 🔍 Bộ lọc và sắp xếp
+  // Status counts
+  const statusCounts = useMemo(() => {
+    return products.reduce(
+      (acc, product) => {
+        acc.active += product.status === "active" ? 1 : 0;
+        acc.inactive += product.status === "inactive" ? 1 : 0;
+        acc.deleted += product.status === "deleted" ? 1 : 0;
+        return acc;
+      },
+      { active: 0, inactive: 0, deleted: 0 }
+    );
+  }, [products]);
+
+  // Filter & sort products
   const filteredProducts = useMemo(() => {
     let filtered = products.filter((product) => {
       const matchesQuery = query
@@ -73,7 +87,7 @@ function ProductList({ shop }) {
     return filtered;
   }, [products, query, selectedCategory, sortOption]);
 
-  // 🧾 Bảng hiển thị sản phẩm
+  // 🧾 Product table
   const ProductTable = () => {
     const config = {
       dataSource: filteredProducts.map((product, index) => ({
@@ -87,14 +101,14 @@ function ProductList({ shop }) {
       })),
       columns: [
         {
-          title: "STT",
+          title: "No",
           dataIndex: "no",
           key: "no",
           align: "center",
           width: "5rem",
         },
         {
-          title: "Hình ảnh",
+          title: "Image",
           dataIndex: "images",
           key: "images",
           render: (images) => {
@@ -103,7 +117,7 @@ function ProductList({ shop }) {
               <div className="flex justify-center">
                 <img
                   src={`${Config.BACKEND_URL}${thumbnail}`}
-                  alt="Ảnh sản phẩm"
+                  alt="Product"
                   className="size-12 object-cover rounded-md"
                 />
               </div>
@@ -113,49 +127,46 @@ function ProductList({ shop }) {
           width: "6rem",
         },
         {
-          title: "Tên sản phẩm",
+          title: "Product Name",
           dataIndex: "name",
           key: "name",
           align: "center",
           width: "14rem",
         },
         {
-          title: "Giá ($)",
+          title: "Price ($)",
           dataIndex: "price",
           key: "price",
           align: "center",
           width: "8rem",
         },
         {
-          title: "Trạng thái",
+          title: "Status",
           dataIndex: "status",
           key: "status",
           align: "center",
           render: (status) => {
-            const statusText = (status) => {
-              switch (status) {
-                case "active":
-                  return <span className="text-green-500 font-medium">Đang bán</span>;
-                case "inactive":
-                  return <span className="text-yellow-500 font-medium">Ngừng bán</span>;
-                case "deleted":
-                  return <span className="text-red-500 font-medium">Đã xóa</span>;
-                default:
-                  return <span className="text-gray-500 font-medium">Không xác định</span>;
-              }
-            };
-            return statusText(status);
+            switch (status) {
+              case "active":
+                return <span className="text-green-500 font-medium">Available</span>;
+              case "inactive":
+                return <span className="text-yellow-500 font-medium">Inactive</span>;
+              case "deleted":
+                return <span className="text-red-500 font-medium">Deleted</span>;
+              default:
+                return <span className="text-gray-500 font-medium">Unknown</span>;
+            }
           },
         },
         {
-          title: "Thao tác",
+          title: "Action",
           dataIndex: "id",
           key: "action",
           render: (id) => (
             <div className="flex justify-center gap-2">
               <Link to={`/shop/${shop.slug}/manage/products/edit/${id}`}>
                 <div className="px-4 py-2 rounded-md bg-blue-900 text-white hover:bg-blue-800 transition">
-                  Chỉnh sửa
+                  Edit
                 </div>
               </Link>
             </div>
@@ -179,22 +190,69 @@ function ProductList({ shop }) {
     );
   };
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center">
+        <SpinnerLoading />
+      </div>
+    );
+  }
+
   return (
     <div className="p-4">
-      {/* Thanh hành động */}
-      <div className="flex sm:flex-row flex-col items-center justify-between gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Total products */}
+        <div className="flex flex-col items-center justify-center p-4 rounded-lg bg-gray-100">
+          <span className="text-2xl font-bold">{products.length}</span>
+          <span className="text-sm text-gray-700">Total</span>
+        </div>
+
+        {[
+          {
+            label: "Active",
+            value: statusCounts.active,
+            bg: "bg-yellow-100",
+            text: "text-yellow-800",
+          },
+          {
+            label: "Inactive",
+            value: statusCounts.inactive,
+            bg: "bg-blue-100",
+            text: "text-blue-800",
+          },
+          {
+            label: "Deleted",
+            value: statusCounts.deleted,
+            bg: "bg-purple-100",
+            text: "text-purple-800",
+          },
+        ].map((item, index) => (
+          <div
+            key={index}
+            className={`flex flex-col items-center justify-center p-4 rounded-lg ${item.bg}`}
+          >
+            <span className={`text-2xl font-bold ${item.text}`}>
+              {item.value}
+            </span>
+            <span className="text-sm text-gray-700">{item.label}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* Action bar */}
+      <div className="flex sm:flex-row flex-col items-center justify-between gap-4 mt-4">
         <div className="flex items-center gap-2">
           <Link
             to={`/shop/${shop.slug}/manage/products/add`}
             className="px-4 py-2 rounded-md bg-blue-900 text-white text-center hover:bg-blue-800 transition"
           >
-            Thêm
+            Add
           </Link>
           <Link
             to={`/shop/${shop.slug}/manage/products`}
             className="px-4 py-2 rounded-md bg-gray-700 text-white text-center hover:bg-gray-600 transition"
           >
-            Quản lý
+            Manage
           </Link>
         </div>
         <div className="flex items-center gap-2">
@@ -202,7 +260,7 @@ function ProductList({ shop }) {
             type="text"
             name="query"
             className="rounded-md border-[1px] border-black px-4 py-2 w-full"
-            placeholder="Tìm kiếm..."
+            placeholder="Search..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
@@ -211,13 +269,13 @@ function ProductList({ shop }) {
       </div>
 
       <h1 className="text-4xl font-medium text-center mt-4">
-        Danh sách sản phẩm
+        Product List
       </h1>
 
-      {/* Bộ lọc */}
+      {/* Filters */}
       <div className="flex flex-wrap items-center justify-between gap-4 mt-4">
         <div className="flex flex-wrap gap-2 items-center">
-          {/* Lọc theo danh mục */}
+          {/* Category filter */}
           <div className="relative w-40 border-2 border-gray-200 rounded-md">
             <select
               className="size-full px-4 py-2 appearance-none"
@@ -226,7 +284,7 @@ function ProductList({ shop }) {
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
             >
-              <option value="default">Tất cả</option>
+              <option value="default">All</option>
               {shop.categories.map((category) => (
                 <option key={category._id} value={category.name}>
                   {category.name}
@@ -238,31 +296,31 @@ function ProductList({ shop }) {
             </div>
           </div>
 
-          {/* Sắp xếp */}
+          {/* Sort filter */}
           <div className="relative w-52 border-2 border-gray-200 rounded-md">
             <select
               className="size-full px-4 py-2 appearance-none"
               value={sortOption}
               onChange={(e) => setSortOption(e.target.value)}
             >
-              <option value="default">Sắp xếp theo...</option>
-              <option value="name-asc">Tên (A → Z)</option>
-              <option value="name-desc">Tên (Z → A)</option>
-              <option value="price-asc">Giá tăng dần</option>
-              <option value="price-desc">Giá giảm dần</option>
-              <option value="discounted">Đang giảm giá</option>
-              <option value="inactive">Ngừng kinh doanh</option>
-              <option value="deleted">Đã xóa</option>
+              <option value="default">Sort by...</option>
+              <option value="name-asc">Name (A → Z)</option>
+              <option value="name-desc">Name (Z → A)</option>
+              <option value="price-asc">Price: Low → High</option>
+              <option value="price-desc">Price: High → Low</option>
+              <option value="discounted">Discounted</option>
+              <option value="inactive">Inactive</option>
+              <option value="deleted">Deleted</option>
             </select>
             <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none">
               <ChevronDown className="w-5 h-5 text-gray-600" />
             </div>
           </div>
         </div>
-        <h2 className="text-xl font-medium">{`Tổng (${filteredProducts.length})`}</h2>
+        <h2 className="text-xl font-medium">{`Total (${filteredProducts.length})`}</h2>
       </div>
 
-      {/* Bảng sản phẩm */}
+      {/* Product table */}
       <div className="flex justify-center w-full">
         <ProductTable />
       </div>

@@ -21,7 +21,6 @@ export const useGetChats = () => {
         setLoading(false);
       }
     };
-
     fetchChats();
   }, [setMessages, user]);
 

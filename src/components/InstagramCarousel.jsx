@@ -34,7 +34,8 @@ export default function ImageCarousel({ media }) {
               <img
                 src={getBackendImgURL(img)}
                 alt={`post-img-${idx}`}
-                className="w-full h-[400px] object-cover"
+                className="w-full h-[400px] object-contain"
+                loading="lazy"
               />
             </div>
           ))}

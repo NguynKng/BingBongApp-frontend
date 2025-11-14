@@ -64,7 +64,7 @@ const CreateShopModal = ({ onClose, onCreated }) => {
         navigate(`/shop/${res.data.slug}`);
       }
     } catch (err) {
-      setError(err.message || "Tạo shop thất bại");
+      setError(err.message || "Failed to create shop");
     } finally {
       setLoading(false);
     }
@@ -83,30 +83,30 @@ const CreateShopModal = ({ onClose, onCreated }) => {
 
         {/* Header */}
         <h2 className="text-xl font-semibold text-center mb-5 text-gray-800 dark:text-gray-100">
-          Tạo cửa hàng mới
+          Create New Shop
         </h2>
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Tên cửa hàng */}
+          {/* Shop Name */}
           <div>
             <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">
-              Tên cửa hàng
+              Shop Name
             </label>
             <input
               type="text"
               value={formData.name}
               onChange={(e) => handleChange("name", e.target.value)}
               className="w-full p-2.5 rounded-lg border border-gray-300 dark:border-zinc-700 bg-gray-50 dark:bg-zinc-800 focus:ring-2 focus:ring-blue-400 outline-none transition"
-              placeholder="Nhập tên cửa hàng..."
+              placeholder="Enter shop name..."
               required
             />
           </div>
 
-          {/* Mô tả */}
+          {/* About */}
           <div>
             <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">
-              Giới thiệu
+              About
             </label>
             <textarea
               rows="3"
@@ -114,16 +114,16 @@ const CreateShopModal = ({ onClose, onCreated }) => {
               onChange={(e) =>
                 handleChange("description.about", e.target.value)
               }
-              placeholder="Giới thiệu ngắn gọn về cửa hàng của bạn..."
+              placeholder="Short description about your shop..."
               className="w-full p-2.5 rounded-lg border border-gray-300 dark:border-zinc-700 bg-gray-50 dark:bg-zinc-800 focus:ring-2 focus:ring-blue-400 outline-none transition resize-none"
             />
           </div>
 
-          {/* Thông tin liên hệ */}
+          {/* Contact Info */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <input
               type="text"
-              placeholder="Địa chỉ"
+              placeholder="Address"
               value={formData.description.address}
               onChange={(e) =>
                 handleChange("description.address", e.target.value)
@@ -132,7 +132,7 @@ const CreateShopModal = ({ onClose, onCreated }) => {
             />
             <input
               type="text"
-              placeholder="Số điện thoại"
+              placeholder="Phone"
               value={formData.description.phone}
               onChange={(e) =>
                 handleChange("description.phone", e.target.value)
@@ -159,15 +159,15 @@ const CreateShopModal = ({ onClose, onCreated }) => {
             />
           </div>
 
-          {/* Danh mục */}
+          {/* Categories */}
           <div>
             <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">
-              Danh mục sản phẩm
+              Product Categories
             </label>
             <div className="flex gap-2">
               <input
                 type="text"
-                placeholder="Nhập danh mục..."
+                placeholder="Enter category..."
                 value={categoryInput}
                 onChange={(e) => setCategoryInput(e.target.value)}
                 className="flex-1 p-2.5 rounded-lg border border-gray-300 dark:border-zinc-700 bg-gray-50 dark:bg-zinc-800 focus:ring-2 focus:ring-blue-400 outline-none"
@@ -181,7 +181,7 @@ const CreateShopModal = ({ onClose, onCreated }) => {
               </button>
             </div>
 
-            {/* Hiển thị danh mục */}
+            {/* Display categories */}
             <div className="flex flex-wrap gap-2 mt-2">
               {formData.categories.map((cat, i) => (
                 <span
@@ -210,7 +210,7 @@ const CreateShopModal = ({ onClose, onCreated }) => {
             disabled={loading}
             className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2.5 rounded-lg font-medium transition disabled:opacity-60"
           >
-            {loading ? <SpinnerLoading size="sm" /> : "Tạo cửa hàng"}
+            {loading ? <SpinnerLoading size="sm" /> : "Create Shop"}
           </button>
         </form>
       </div>

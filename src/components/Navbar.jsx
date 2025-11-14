@@ -25,19 +25,19 @@ function Navbar({ isCloseSidebar, setIsCloseSidebar }) {
   const fullName = user?.fullName || "User";
 
   const navbarData = [
-    { tab: "home", src: House, text: "Trang chủ", link: "/" },
+    { tab: "home", src: House, text: "Home", link: "/" },
     {
       tab: "profile",
       src: UserRound,
-      text: "Cá nhân",
+      text: "Profile",
       link: `/profile/${user.slug}`,
     },
     { tab: "quiz", src: Gamepad2, text: "Quiz", link: "/quiz" },
-    { tab: "news", src: Newspaper, text: "Tin tức", link: "/news" },
-    { tab: "friends", src: Handshake, text: "Bạn bè", link: "/friends" },
-    { tab: "movie", src: Film, text: "Phim", link: "/movie" },
+    { tab: "news", src: Newspaper, text: "News", link: "/news" },
+    { tab: "friends", src: Handshake, text: "Friends", link: "/friends" },
+    { tab: "movie", src: Film, text: "Movies", link: "/movie" },
     { tab: "shop", src: Store, text: "Shop", link: "/shop" },
-    { tab: "groups", src: UsersRound, text: "Nhóm", link: "#" },
+    { tab: "groups", src: UsersRound, text: "Groups", link: "#" },
   ];
 
   return (
@@ -59,10 +59,7 @@ function Navbar({ isCloseSidebar, setIsCloseSidebar }) {
         } h-[64px] p-2`}
       >
         {!isCloseSidebar && (
-          <Link
-            to="/"
-            className="absolute left-2 rounded-xl"
-          >
+          <Link to="/" className="absolute left-2 rounded-xl">
             <img
               src="/images/ico/logo_bingbong1.ico"
               className="w-12 h-12 object-cover"

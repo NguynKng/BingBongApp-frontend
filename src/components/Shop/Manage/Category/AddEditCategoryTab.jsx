@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 import { shopAPI } from "../../../../services/api";
 
 function AddEditCategoryTab({ shop }) {
-  const { id } = useParams(); // id của category (nếu có)
+  const { id } = useParams(); // category id (if editing)
   const navigate = useNavigate();
 
   const [category, setCategory] = useState({
@@ -13,7 +13,7 @@ function AddEditCategoryTab({ shop }) {
     isActive: true,
   });
 
-  // Nếu có id → tìm category để edit
+  // If there is an id → find category to edit
   useEffect(() => {
     if (shop?.categories) {
       if (id) {
@@ -35,7 +35,7 @@ function AddEditCategoryTab({ shop }) {
     }
   }, [id, shop]);
 
-  // Tạo slug tự động khi gõ tên
+  // Handle name change
   const handleNameChange = (e) => {
     const name = e.target.value;
     setCategory((prev) => ({ ...prev, name }));
@@ -45,9 +45,10 @@ function AddEditCategoryTab({ shop }) {
     e.preventDefault();
 
     if (!category.name.trim()) {
-      toast.error("Vui lòng nhập tên danh mục");
+      toast.error("Please enter a category name");
       return;
     }
+
     try {
       if (id) {
         const updatedCategory = {
@@ -60,7 +61,7 @@ function AddEditCategoryTab({ shop }) {
           updatedCategory
         );
         if (response.success) {
-          toast.success("Cập nhật danh mục thành công");
+          toast.success("Category updated successfully");
           navigate(`/shop/${shop.slug}/manage/categories`);
         }
       } else {
@@ -69,56 +70,56 @@ function AddEditCategoryTab({ shop }) {
           name: category.name,
           isActive: category.isActive,
         };
-
         const response = await shopAPI.addShopCategory(shop._id, newCategory);
-
         if (response.success) {
-          toast.success("Thêm danh mục thành công");
+          toast.success("Category added successfully");
           navigate(`/shop/${shop.slug}/manage/categories`);
         }
       }
     } catch (error) {
-      toast.error("Cập nhật danh mục thất bại");
+      toast.error("Failed to update category");
       return;
     }
   };
 
   return (
     <div className="p-4">
+      {/* Header with Add/Manage buttons */}
       <div className="flex items-center sm:flex-row flex-col justify-between gap-4">
         <div className="flex items-center gap-2">
           <Link
             to={`/shop/${shop.slug}/manage/categories/add`}
             className="px-4 py-2 rounded-md bg-blue-900 text-white text-center hover:bg-blue-800 transition"
           >
-            Thêm
+            Add
           </Link>
           <Link
             to={`/shop/${shop.slug}/manage/categories`}
             className="px-4 py-2 rounded-md bg-gray-700 text-white text-center hover:bg-gray-600 transition"
           >
-            Quản lý
+            Manage
           </Link>
         </div>
       </div>
+
       <h1 className="text-4xl font-medium text-center my-2">
-        {id ? "Chỉnh sửa danh mục" : "Thêm danh mục"}
+        {id ? "Edit Category" : "Add Category"}
       </h1>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        {/* Tên danh mục */}
+        {/* Category Name */}
         <div>
-          <label className="block font-medium mb-1">Tên danh mục</label>
+          <label className="block font-medium mb-1">Category Name</label>
           <input
             type="text"
             value={category.name}
             onChange={handleNameChange}
             className="w-full border px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Nhập tên danh mục..."
+            placeholder="Enter category name..."
           />
         </div>
 
-        {/* Trạng thái */}
+        {/* Status */}
         <div className="flex items-center gap-2">
           <input
             id="isActive"
@@ -129,23 +130,23 @@ function AddEditCategoryTab({ shop }) {
             }
             className="size-4"
           />
-          <label htmlFor="isActive">Hoạt động</label>
+          <label htmlFor="isActive">Active</label>
         </div>
 
-        {/* Nút */}
+        {/* Buttons */}
         <div className="flex justify-between mt-4">
           <button
             type="button"
             onClick={() => navigate(-1)}
             className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition"
           >
-            Hủy
+            Cancel
           </button>
           <button
             type="submit"
             className="px-4 py-2 bg-blue-900 text-white rounded-md hover:bg-blue-800 transition"
           >
-            {id ? "Cập nhật" : "Thêm mới"}
+            {id ? "Update" : "Add New"}
           </button>
         </div>
       </form>

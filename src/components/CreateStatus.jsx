@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import useAuthStore from "../store/authStore.js";
-import PostModal from "./PostModal"; // Bạn phải tạo PostModal.jsx theo hướng dẫn trước
+import PostModal from "./PostModal"; // You must create PostModal.jsx as instructed before
 import { getBackendImgURL } from "../utils/helper.js";
 
 function CreateStatus({ onPostCreated, postedBy, postedByType, postedById }) {
@@ -24,20 +24,20 @@ function CreateStatus({ onPostCreated, postedBy, postedByType, postedById }) {
   const placeholderText = () => {
     switch (postedByType) {
       case "User":
-        return `Bạn đang nghĩ gì thế, ${postedBy.name}?`;
+        return `What's on your mind, ${postedBy.name}?`;
       case "Shop":
-        return `Cửa hàng của bạn có gì mới không, ${postedBy.name}?`;
+        return `What's new in your shop, ${postedBy.name}?`;
       case "Group":
-        return `Nhóm của bạn có gì mới không, ${postedBy.name}?`;
+        return `What's happening in your group, ${postedBy.name}?`;
       default:
-        return `Bạn đang nghĩ gì thế, ${postedBy.name}?`;
+        return `What's on your mind, ${postedBy.name}?`;
     }
   };
 
   return (
     <>
       <div className="px-4 bg-white dark:bg-[#1b1f2b] dark:border dark:border-[#2b2b3d] rounded-lg">
-        {/* Dòng tạo status */}
+        {/* Status input row */}
         <div className="flex items-center gap-2 py-4 border-b-2 border-gray-200 dark:border-gray-700">
           <Link
             to={linkToProfile()}
@@ -60,7 +60,7 @@ function CreateStatus({ onPostCreated, postedBy, postedByType, postedById }) {
           </div>
         </div>
 
-        {/* Hàng icon: Live, Photo, Feeling */}
+        {/* Action row: Live, Photo, Feeling */}
         <div className="flex items-center py-2">
           {[
             { icon: "/video-player.png", label: "Live video" },
@@ -81,7 +81,7 @@ function CreateStatus({ onPostCreated, postedBy, postedByType, postedById }) {
         </div>
       </div>
 
-      {/* Modal tạo bài viết */}
+      {/* Post creation modal */}
       {isModalOpen && (
         <PostModal
           onPostCreated={onPostCreated}
@@ -89,7 +89,7 @@ function CreateStatus({ onPostCreated, postedBy, postedByType, postedById }) {
           postedByType={postedByType}
           postedById={postedById}
           onClose={() => setIsModalOpen(false)}
-            placeholder={placeholderText()}
+          placeholder={placeholderText()}
         />
       )}
     </>

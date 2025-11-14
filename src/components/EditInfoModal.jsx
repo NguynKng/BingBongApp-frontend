@@ -64,13 +64,14 @@ const EditInfoModal = ({ user, onClose, onUpdated, isMyProfile }) => {
     try {
       setLoading(true);
       const res = await userAPI.updateUserInfo(user._id, updatedUser);
-      toast.success("Cập nhật thông tin thành công!");
+      toast.success("Profile updated successfully!");
       onUpdated(res.data);
       onClose();
     } catch (error) {
       console.error(error);
       toast.error(
-        error.response?.data?.message || "Lỗi khi cập nhật thông tin"
+        error.response?.data?.message ||
+          "An error occurred while updating profile"
       );
     } finally {
       setLoading(false);
@@ -85,7 +86,7 @@ const EditInfoModal = ({ user, onClose, onUpdated, isMyProfile }) => {
         {/* Header */}
         <div className="flex justify-between items-center mb-4 p-2">
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-            Chỉnh sửa thông tin
+            Edit Information
           </h2>
           <button
             onClick={onClose}
@@ -96,25 +97,25 @@ const EditInfoModal = ({ user, onClose, onUpdated, isMyProfile }) => {
         </div>
 
         <div className="space-y-4 max-h-[70vh] overflow-y-auto p-2">
-          {/* Tiểu sử */}
+          {/* Bio */}
           <div>
             <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-              Tiểu sử
+              Bio
             </label>
             <textarea
               value={formData.bio}
               onChange={(e) => handleChange("bio", e.target.value)}
               className="w-full mt-1 p-2 rounded-md border border-gray-300 dark:border-[#2b2b3d] bg-gray-50 dark:bg-[#23233b] text-gray-900 dark:text-white"
               rows="2"
-              placeholder="Giới thiệu ngắn gọn về bạn..."
+              placeholder="Write a short introduction..."
             />
           </div>
 
-          {/* Địa chỉ & website */}
+          {/* Address & Website */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
               <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Địa chỉ
+                Address
               </label>
               <input
                 type="text"
@@ -139,14 +140,14 @@ const EditInfoModal = ({ user, onClose, onUpdated, isMyProfile }) => {
           {/* Education */}
           <div>
             <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
-              Học vấn
+              Education
             </h3>
             {!showEdu ? (
               <button
                 onClick={() => setShowEdu(true)}
                 className="text-sm text-blue-500 hover:underline"
               >
-                + Thêm học vấn
+                + Add education
               </button>
             ) : (
               <div className="space-y-2">
@@ -156,7 +157,7 @@ const EditInfoModal = ({ user, onClose, onUpdated, isMyProfile }) => {
                   onChange={(e) =>
                     handleNestedChange("education", "school", e.target.value)
                   }
-                  placeholder="Trường học"
+                  placeholder="School"
                   className="w-full p-2 rounded-md border border-gray-300 dark:border-[#2b2b3d] bg-gray-50 dark:bg-[#23233b] dark:text-white"
                 />
                 <input
@@ -165,7 +166,7 @@ const EditInfoModal = ({ user, onClose, onUpdated, isMyProfile }) => {
                   onChange={(e) =>
                     handleNestedChange("education", "major", e.target.value)
                   }
-                  placeholder="Ngành học"
+                  placeholder="Major"
                   className="w-full p-2 rounded-md border border-gray-300 dark:border-[#2b2b3d] bg-gray-50 dark:bg-[#23233b] dark:text-white"
                 />
                 <input
@@ -174,7 +175,7 @@ const EditInfoModal = ({ user, onClose, onUpdated, isMyProfile }) => {
                   onChange={(e) =>
                     handleNestedChange("education", "year", e.target.value)
                   }
-                  placeholder="Thời gian học (VD: 2019 - 2023)"
+                  placeholder="Study period (e.g., 2019 - 2023)"
                   className="w-full p-2 rounded-md border border-gray-300 dark:border-[#2b2b3d] bg-gray-50 dark:bg-[#23233b] dark:text-white"
                 />
               </div>
@@ -184,14 +185,14 @@ const EditInfoModal = ({ user, onClose, onUpdated, isMyProfile }) => {
           {/* Work */}
           <div>
             <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
-              Công việc
+              Work
             </h3>
             {!showWork ? (
               <button
                 onClick={() => setShowWork(true)}
                 className="text-sm text-blue-500 hover:underline"
               >
-                + Thêm công việc
+                + Add work
               </button>
             ) : (
               <div className="space-y-2">
@@ -201,7 +202,7 @@ const EditInfoModal = ({ user, onClose, onUpdated, isMyProfile }) => {
                   onChange={(e) =>
                     handleNestedChange("work", "company", e.target.value)
                   }
-                  placeholder="Công ty"
+                  placeholder="Company"
                   className="w-full p-2 rounded-md border border-gray-300 dark:border-[#2b2b3d] bg-gray-50 dark:bg-[#23233b] dark:text-white"
                 />
                 <input
@@ -210,7 +211,7 @@ const EditInfoModal = ({ user, onClose, onUpdated, isMyProfile }) => {
                   onChange={(e) =>
                     handleNestedChange("work", "position", e.target.value)
                   }
-                  placeholder="Vị trí"
+                  placeholder="Position"
                   className="w-full p-2 rounded-md border border-gray-300 dark:border-[#2b2b3d] bg-gray-50 dark:bg-[#23233b] dark:text-white"
                 />
                 <input
@@ -219,7 +220,7 @@ const EditInfoModal = ({ user, onClose, onUpdated, isMyProfile }) => {
                   onChange={(e) =>
                     handleNestedChange("work", "duration", e.target.value)
                   }
-                  placeholder="Thời gian làm việc (VD: 2021 - nay)"
+                  placeholder="Work period (e.g., 2021 - Present)"
                   className="w-full p-2 rounded-md border border-gray-300 dark:border-[#2b2b3d] bg-gray-50 dark:bg-[#23233b] dark:text-white"
                 />
               </div>
@@ -229,14 +230,14 @@ const EditInfoModal = ({ user, onClose, onUpdated, isMyProfile }) => {
           {/* Social links */}
           <div>
             <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
-              Mạng xã hội
+              Social Media
             </h3>
             {!showSocial ? (
               <button
                 onClick={addSocialLink}
                 className="text-sm text-blue-500 hover:underline"
               >
-                + Thêm liên kết
+                + Add social link
               </button>
             ) : (
               <>
@@ -248,7 +249,7 @@ const EditInfoModal = ({ user, onClose, onUpdated, isMyProfile }) => {
                       onChange={(e) =>
                         handleSocialChange(index, "platform", e.target.value)
                       }
-                      placeholder="Nền tảng (Facebook, Instagram...)"
+                      placeholder="Platform (Facebook, Instagram...)"
                       className="flex-1 p-2 rounded-md border border-gray-300 dark:border-[#2b2b3d] bg-gray-50 dark:bg-[#23233b] dark:text-white"
                     />
                     <input
@@ -257,7 +258,7 @@ const EditInfoModal = ({ user, onClose, onUpdated, isMyProfile }) => {
                       onChange={(e) =>
                         handleSocialChange(index, "url", e.target.value)
                       }
-                      placeholder="Liên kết"
+                      placeholder="Profile link"
                       className="flex-1 p-2 rounded-md border border-gray-300 dark:border-[#2b2b3d] bg-gray-50 dark:bg-[#23233b] dark:text-white"
                     />
                     <button
@@ -272,7 +273,7 @@ const EditInfoModal = ({ user, onClose, onUpdated, isMyProfile }) => {
                   onClick={addSocialLink}
                   className="text-sm text-blue-500 hover:underline"
                 >
-                  + Thêm liên kết khác
+                  + Add another link
                 </button>
               </>
             )}
@@ -285,7 +286,7 @@ const EditInfoModal = ({ user, onClose, onUpdated, isMyProfile }) => {
             onClick={onClose}
             className="px-4 py-2 rounded-md bg-gray-200 dark:bg-[#2b2b3d] text-gray-700 dark:text-gray-300"
           >
-            Hủy
+            Cancel
           </button>
           <button
             disabled={loading}
@@ -296,7 +297,7 @@ const EditInfoModal = ({ user, onClose, onUpdated, isMyProfile }) => {
                 : "bg-blue-600 hover:bg-blue-700"
             }`}
           >
-            {loading ? "Đang lưu..." : "Lưu thay đổi"}
+            {loading ? "Saving..." : "Save changes"}
           </button>
         </div>
       </div>

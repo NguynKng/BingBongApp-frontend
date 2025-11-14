@@ -82,7 +82,7 @@ export default function ListFriendBar({ onToggleChat }) {
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Tìm bạn bè"
+                placeholder="Search friends"
                 className="text-gray-900 dark:text-gray-200 font-medium w-full py-2 pl-8 pr-4 
                   bg-white/90 dark:bg-[#22263a] rounded-full focus:outline-none 
                   focus:ring-2 focus:ring-blue-500 dark:focus:ring-purple-400 
@@ -139,6 +139,7 @@ export default function ListFriendBar({ onToggleChat }) {
                     src={`${Config.BACKEND_URL}${friend.avatar}`}
                     alt={friend.fullName}
                     className="size-full rounded-full object-cover border border-gray-200 dark:border-gray-700"
+                    loading="lazy"
                   />
                   {isOnline(friend._id) && (
                     <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white dark:border-[#1b1f2b]"></div>

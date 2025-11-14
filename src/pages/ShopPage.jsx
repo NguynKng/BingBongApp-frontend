@@ -49,7 +49,9 @@ export default function ShopPage() {
         : activeTab === "my"
         ? myShops
         : followedShops;
+
     if (!value.trim()) return setFiltered(source);
+
     const lower = value.toLowerCase();
     setFiltered(
       source.filter(
@@ -72,9 +74,9 @@ export default function ShopPage() {
       <div className="bg-white dark:bg-[#1e1e2f] border border-gray-200 dark:border-[#2b2b3d] rounded-lg p-4 shadow-sm flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2 flex-wrap">
           {[
-            { key: "all", label: "Tất cả shop" },
-            { key: "my", label: "Shop của tôi" },
-            { key: "followed", label: "Shop đang theo dõi" },
+            { key: "all", label: "All Shops" },
+            { key: "my", label: "My Shops" },
+            { key: "followed", label: "Followed Shops" },
           ].map((tab) => (
             <button
               key={tab.key}
@@ -94,7 +96,7 @@ export default function ShopPage() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 size-5" />
           <input
             type="text"
-            placeholder="Tìm kiếm shop..."
+            placeholder="Search shops..."
             value={searchTerm}
             onChange={handleSearch}
             className="w-full bg-gray-50 dark:bg-[#2b2b3d] border border-gray-300 dark:border-gray-600 rounded-md pl-10 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
@@ -105,19 +107,19 @@ export default function ShopPage() {
           onClick={() => setShowModal(true)}
           className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-md font-medium hover:bg-blue-700 transition"
         >
-          <Plus className="size-4" /> Tạo shop
+          <Plus className="size-4" /> Create Shop
         </button>
       </div>
 
-      {/* Danh sách */}
+      {/* List */}
       <div>
         {loading ? (
           <div className="text-center py-10 text-gray-500 dark:text-gray-400">
-            Đang tải dữ liệu...
+            Loading shops...
           </div>
         ) : filtered.length === 0 ? (
           <div className="text-center py-10 text-gray-500 dark:text-gray-400">
-            Không tìm thấy shop nào.
+            No shops found.
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

@@ -215,7 +215,7 @@ function ChatBox({ onClose, userChat }) {
                 )}
                 {isOnline && (
                   <span className="text-green-300 block text-[13px]">
-                    Đang hoạt động
+                    Online
                   </span>
                 )}
               </div>

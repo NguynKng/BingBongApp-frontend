@@ -6,6 +6,8 @@ import { io } from "socket.io-client";
 import Config from "../envVars";
 import normalizeIceServers from "../utils/normalize";
 
+//let hasShownTokenExpired = false; // flag để toast chỉ 1 lần
+
 const useAuthStore = create(
   persist(
     (set, get) => ({
@@ -13,6 +15,7 @@ const useAuthStore = create(
       user: null,
       token: null,
       isAuthenticated: false,
+      tokenExpired: false,
 
       // Separate loading states
       isCheckingAuth: false,
@@ -111,7 +114,6 @@ const useAuthStore = create(
             isLoggingIn: false,
             error: null,
           });
-
           toast.success("Login successful!");
           get().connectSocket();
           return response;

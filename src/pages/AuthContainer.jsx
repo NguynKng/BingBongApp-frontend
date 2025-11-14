@@ -5,14 +5,13 @@ import LoginPage from "./LoginPage";
 import RegisterPage from "./RegisterPage";
 
 export default function AuthContainer() {
-const location = useLocation();
+  const location = useLocation();
   const isRegister = location.pathname === "/register";
 
   return (
     <>
       <style>
         {`
-
           @keyframes gradient-x {
             0%, 100% {
               background-position: 0% 50%;
@@ -30,7 +29,7 @@ const location = useLocation();
 
       <div className="flex items-center justify-center w-full min-h-screen animate-gradient-x bg-gradient-to-br from-blue-500 via-indigo-200 to-blue-200">
         <div className="relative bg-white/60 backdrop-blur-md rounded-2xl shadow-xl overflow-hidden max-w-4xl min-h-[650px] w-full">
-          {/* Logo & Slogan động */}
+          {/* Animated Logo & Slogan */}
           <motion.div
             className="hidden md:flex flex-col items-center justify-center absolute top-0 left-0 h-full w-1/2 z-10 bg-gradient-to-br from-blue-500 via-indigo-400 via-cyan-300 to-blue-200 animate-gradient-x text-white px-10 py-12"
             initial={false}
@@ -39,7 +38,7 @@ const location = useLocation();
             }}
             transition={{ duration: 0.7, ease: "easeInOut" }}
           >
-            {/* Logo động */}
+            {/* Animated Logo */}
             <motion.img
               src={
                 isRegister
@@ -56,24 +55,24 @@ const location = useLocation();
             />
 
             <h3 className="text-3xl font-bold mb-3 text-white drop-shadow text-center tracking-wide">
-              Bing Bong Website
+              BingBong
             </h3>
             <div className="w-full flex flex-col items-center justify-center mt-2">
               <span className="block text-base font-semibold text-blue-50 text-center tracking-wide">
-                Mạng xã hội của cảm xúc –{" "}
+                The social network of emotions –{" "}
                 <span className="text-yellow-200 font-bold">
-                  nhịp điệu của bạn
+                  your rhythm, your vibe
                 </span>
                 .
               </span>
               <span className="block text-base font-semibold text-blue-50 text-center tracking-wide mt-1">
-                Với <span className="text-yellow-200 font-bold">Bing Bong</span>
-                , mọi cảm xúc đều được ngân vang.
+                With <span className="text-yellow-200 font-bold">Bing Bong</span>
+                , every emotion resonates.
               </span>
             </div>
           </motion.div>
 
-          {/* Form desktop động */}
+          {/* Desktop Animated Form */}
           <div className="absolute top-0 h-full w-1/2 right-0 md:block hidden z-20">
             <AnimatePresence mode="wait">
               {location.pathname === "/login" && (
@@ -104,7 +103,7 @@ const location = useLocation();
             </AnimatePresence>
           </div>
 
-          {/* Form mobile động */}
+          {/* Mobile Animated Form */}
           <div className="md:hidden w-full p-4">
             <AnimatePresence mode="wait">
               {location.pathname === "/login" && (

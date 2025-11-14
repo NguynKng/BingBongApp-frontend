@@ -39,58 +39,58 @@ export default function PostTab({ shop }) {
 
   return (
     <div className="flex lg:flex-row flex-col gap-4">
-      {/* --- Cột Giới thiệu --- */}
+      {/* --- About Column --- */}
       <div className="lg:w-[40%] w-full space-y-4 lg:sticky top-[8.5vh] h-fit">
         <div className="rounded-xl bg-white dark:bg-[#1e1e2f] border border-gray-200 dark:border-[#2b2b3d] p-5 shadow-sm relative">
           <div className="flex justify-between items-center mb-3">
-            <h1 className="text-xl font-bold dark:text-white">Giới thiệu</h1>
+            <h1 className="text-xl font-bold dark:text-white">About</h1>
             {isShopOwner && (
               <button
                 onClick={() => setIsOpenEditModal(true)}
                 className="flex items-center gap-1 bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 rounded-lg text-sm"
               >
-                <Pencil size={16} /> Chỉnh sửa
+                <Pencil size={16} /> Edit
               </button>
             )}
           </div>
 
-          {/* Trạng thái hoạt động */}
+          {/* Shop status */}
           <div
             className={`inline-block text-sm px-3 py-1 rounded-full font-medium mb-3 ${
               statusColor[shop.status]
             }`}
           >
             {shop.status === "open"
-              ? "Đang hoạt động"
+              ? "Open"
               : shop.status === "closed"
-              ? "Đang đóng cửa"
-              : "Đang bảo trì"}
+              ? "Closed"
+              : "Maintenance"}
           </div>
 
-          {/* Mô tả */}
+          {/* Description */}
           <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
-            {shop.description.about || "Chưa có mô tả về cửa hàng."}
+            {shop.description.about || "No description available."}
           </p>
 
           <hr className="my-4 border-gray-200 dark:border-[#2b2b3d]" />
 
-          {/* Thông tin cơ bản */}
+          {/* Basic Info */}
           <div className="space-y-3 text-gray-600 dark:text-gray-300 text-base">
             <InfoItem
               icon={<CircleAlert className="fill-gray-500 text-white dark:text-black" />}
-              text={`Shop chuyên ${shop.mainCategory || "đa lĩnh vực"}`}
+              text={`Specializes in ${shop.mainCategory || "various fields"}`}
             />
             <InfoItem
               icon={<MapPin className="fill-gray-500 text-white dark:text-black" />}
-              text={shop.description.address || "Chưa có địa chỉ"}
+              text={shop.description.address || "No address provided"}
             />
             <InfoItem
               icon={<Phone className="fill-gray-500 text-white dark:text-black" />}
-              text={shop.description.phone || "Chưa có số điện thoại"}
+              text={shop.description.phone || "No phone number"}
             />
             <InfoItem
               icon={<Mail className="fill-gray-500 text-white dark:text-black" />}
-              text={shop.description.email || "Chưa có email"}
+              text={shop.description.email || "No email"}
             />
             <InfoItem
               icon={<Globe className="fill-gray-500 text-white dark:text-black" />}
@@ -103,7 +103,7 @@ export default function PostTab({ shop }) {
             />
           </div>
 
-          {/* Mạng xã hội */}
+          {/* Social media */}
           {(shop.socials?.facebook ||
             shop.socials?.instagram ||
             shop.socials?.youtube ||
@@ -139,20 +139,20 @@ export default function PostTab({ shop }) {
             </>
           )}
 
-          {/* Đánh giá & lượt xem */}
+          {/* Ratings & views */}
           <hr className="my-4 border-gray-200 dark:border-[#2b2b3d]" />
           <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-300">
             <div className="flex items-center gap-1">
               <Star className="text-yellow-500 fill-yellow-400" size={16} />
               <span>{shop.stats.rating.toFixed(1)} / 5</span>
             </div>
-            <span>{shop.stats.totalReviews} lượt đánh giá</span>
-            <span>{shop.stats.views} lượt xem</span>
+            <span>{shop.stats.totalReviews} reviews</span>
+            <span>{shop.stats.views} views</span>
           </div>
         </div>
       </div>
 
-      {/* --- Cột Bài viết --- */}
+      {/* --- Posts Column --- */}
       <div className="lg:w-[60%] w-full space-y-4">
         {isShopOwner && (
           <CreateStatus
@@ -170,7 +170,7 @@ export default function PostTab({ shop }) {
 
         <div className="py-2 px-4 bg-white dark:bg-[#1e1e2f] rounded-lg">
           <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-            Bài viết
+            Posts
           </h1>
         </div>
 
@@ -186,12 +186,12 @@ export default function PostTab({ shop }) {
           ))
         ) : (
           <p className="text-center text-2xl dark:text-white">
-            Không có bài viết nào
+            No posts available
           </p>
         )}
       </div>
 
-      {/* Modal chỉnh sửa */}
+      {/* Edit Modal */}
       {isOpenEditModal && (
         <EditShopInfoModal
           shop={shop}
@@ -203,7 +203,7 @@ export default function PostTab({ shop }) {
   );
 }
 
-// 🔹 Item thông tin
+// 🔹 Info item
 function InfoItem({ type, icon, text }) {
   return (
     <div className="flex items-center gap-2">
@@ -224,7 +224,7 @@ function InfoItem({ type, icon, text }) {
   );
 }
 
-// 🔹 Liên kết mạng xã hội
+// 🔹 Social link
 function SocialLink({ icon, url }) {
   return (
     <Link
