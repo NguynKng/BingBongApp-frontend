@@ -14,7 +14,7 @@ function MainLayout({ Element }) {
   const { addNotification } = useNotificationStore();
   const { socket, updateUser, user } = useAuthStore();
   const [showChat, setShowChat] = useState(false);
-  const [activeChatUser, setActiveChatUser] = useState();
+  const [activeChat, setActiveChat] = useState();
   const [isCloseSidebar, setIsCloseSidebar] = useState(true);
 
   const [popup, setPopup] = useState({
@@ -27,11 +27,11 @@ function MainLayout({ Element }) {
   });
 
   const handleGetNewMessage = useCallback(
-    (sender) => {
+    (chat) => {
       setShowChat(true);
-      setActiveChatUser(sender);
+      setActiveChat(chat.chat);
     },
-    [setShowChat, setActiveChatUser]
+    [setShowChat, setActiveChat]
   );
 
   const handleGetNotificationsAndPopup = useCallback(
@@ -78,14 +78,14 @@ function MainLayout({ Element }) {
     },
     [addNotification, setPopup, updateUser, user]
   ); // include dependencies if needed
-  const handleToggleChat = (friend) => {
-    setActiveChatUser(friend);
+  const handleToggleChat = (chat) => {
+    setActiveChat(chat);
     setShowChat(true); // ensure ChatBox shows when a friend is clicked
   };
 
   const handleCloseChat = () => {
     setShowChat(false);
-    setActiveChatUser(undefined);
+    setActiveChat(undefined);
   }; // giữ nguyên qua các route
 
   const handleClosePopup = () => {
@@ -103,10 +103,12 @@ function MainLayout({ Element }) {
     if (!socket) return;
 
     socket.on("getNewMessage", handleGetNewMessage);
+    socket.on("newGroupChatAdd", handleGetNewMessage);
     socket.on("new_notification", handleGetNotificationsAndPopup);
 
     return () => {
       socket.off("getNewMessage", handleGetNewMessage);
+      socket.off("newGroupChatAdd", handleGetNewMessage);
       socket.off("new_notification", handleGetNotificationsAndPopup);
     };
   }, [socket, handleGetNewMessage, handleGetNotificationsAndPopup]);
@@ -123,9 +125,7 @@ function MainLayout({ Element }) {
         <Element />
       </div>
       <IncomingCall />
-      {showChat && (
-        <ChatBox userChat={activeChatUser} onClose={handleCloseChat} />
-      )}
+      {showChat && <ChatBox chat={activeChat} onClose={handleCloseChat} />}
       {popup.isPopup && (
         <NotificationPopup content={popup.content} onClose={handleClosePopup} />
       )}

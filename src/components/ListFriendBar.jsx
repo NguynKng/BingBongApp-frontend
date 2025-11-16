@@ -4,6 +4,7 @@ import { useGetProfileBySlug } from "../hooks/useProfile";
 import useAuthStore from "../store/authStore";
 import SpinnerLoading from "./SpinnerLoading";
 import Config from "../envVars";
+import { chatAPI } from "../services/api";
 
 export default function ListFriendBar({ onToggleChat }) {
   const [isOpenBar, setIsOpenBar] = useState(false);
@@ -26,6 +27,11 @@ export default function ListFriendBar({ onToggleChat }) {
     );
   }, [search, friends]);
 
+  const handleToggleChat = async (userId) => {
+    const response = await chatAPI.getChatIdByUserId(userId);
+    onToggleChat(response.data);
+  };
+
   return (
     <div
       className={`fixed flex flex-col right-0 bottom-0 h-screen pt-[64px] shadow-lg
@@ -42,7 +48,9 @@ export default function ListFriendBar({ onToggleChat }) {
         <img src="/chat-ico-1.png" className="object-cover w-6 h-6" />
         <h2
           className={`text-sm text-gray-700 dark:text-gray-200 font-semibold transition-all duration-300 ease-in-out
-            ${isOpenBar ? "opacity-100 max-w-[150px]" : "opacity-0 max-w-0 ml-0"}
+            ${
+              isOpenBar ? "opacity-100 max-w-[150px]" : "opacity-0 max-w-0 ml-0"
+            }
           `}
         >
           Messenger
@@ -115,7 +123,11 @@ export default function ListFriendBar({ onToggleChat }) {
             {isOpenBar && (
               <h2
                 className={`text-sm text-gray-700 dark:text-gray-200 transition-all duration-300 ease-in-out
-                  ${isOpenBar ? "opacity-100 max-w-[150px]" : "opacity-0 max-w-0"}
+                  ${
+                    isOpenBar
+                      ? "opacity-100 max-w-[150px]"
+                      : "opacity-0 max-w-0"
+                  }
                 `}
               >
                 BingBong AI
@@ -132,7 +144,7 @@ export default function ListFriendBar({ onToggleChat }) {
                 key={friend._id}
                 className="flex gap-2 items-center py-2 px-4 rounded-lg cursor-pointer 
                   hover:bg-blue-100 dark:hover:bg-[#2a3142] transition-all"
-                onClick={() => onToggleChat(friend)}
+                onClick={() => handleToggleChat(friend._id)}
               >
                 <div className="size-8 relative">
                   <img
@@ -148,7 +160,11 @@ export default function ListFriendBar({ onToggleChat }) {
                 {isOpenBar && (
                   <h2
                     className={`text-sm text-gray-700 dark:text-gray-200 transition-all duration-300 ease-in-out
-                      ${isOpenBar ? "opacity-100 max-w-[150px]" : "opacity-0 max-w-0"}
+                      ${
+                        isOpenBar
+                          ? "opacity-100 max-w-[150px]"
+                          : "opacity-0 max-w-0"
+                      }
                     `}
                   >
                     {friend.fullName}

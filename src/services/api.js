@@ -670,25 +670,7 @@ export const postAPI = {
 };
 
 //CHAT API services
-export const chatApi = {
-  getChatList: async () => {
-    try {
-      const response = await api.get("/messages");
-
-      if (response.data.success === false) {
-        throw new Error(response.data.message);
-      }
-
-      return response.data;
-    } catch (error) {
-      if (error.response) {
-        const errorMessage =
-          error.response.data.message || "Failed to fetch chat list";
-        throw new Error(errorMessage);
-      }
-      throw error;
-    }
-  },
+export const messageAPI = {
   getAIResponse: async (prompt) => {
     try {
       const response = await api.post("/messages/generate-ai-response", {
@@ -744,6 +726,81 @@ export const chatApi = {
       if (error.response) {
         const errorMessage =
           error.response.data.message || "Failed to send message";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+};
+
+export const chatAPI = {
+  getChatIdByUserId: async (userId) => {
+    try {
+      const response = await api.get(`/chat/with/${userId}`);
+
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch chat ID";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getChatById: async (chatId) => {
+    try {
+      const response = await api.get(`/chat/${chatId}`);
+
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch chat";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getRecentChats: async () => {
+    try {
+      const response = await api.get(`/chat/recent`);
+
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch recent chats";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  createGroupChat: async (groupData) => {
+    try {
+      const response = await api.post(`/chat/group`, groupData);
+
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to create group chat";
         throw new Error(errorMessage);
       }
       throw error;

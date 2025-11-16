@@ -4,16 +4,14 @@ import Config from "../envVars";
 import useAuthStore from "../store/authStore";
 import { useGetChats, useGetHistoryChat } from "../hooks/useChats";
 import { Link } from "react-router-dom";
-import {
-  formatTimeToDateAndHour,
-  formatTimeToHourMinute,
-} from "../utils/timeUtils";
-import { chatApi } from "../services/api";
+import { formatTimeToDateAndHour, formatTimeToHourMinute } from "../utils/timeUtils";
+import { chatAPI, messageAPI } from "../services/api";
 import ReactMarkdown from "react-markdown";
 import { useImagePreview } from "../hooks/useImagePreview";
 import SpinnerLoading from "./SpinnerLoading";
+import { getBackendImgURL } from "../utils/helper";
 
-function ChatBox({ onClose, userChat }) {
+function ChatBox({ onClose, chat }) {
   const [isLoadingAIResponse, setIsLoadingAIResponse] = useState(false);
   const [images, setImages] = useState([]);
   const [imagesPreview, setImagesPreview] = useState([]);
@@ -21,108 +19,67 @@ function ChatBox({ onClose, userChat }) {
   const [isMinimized, setIsMinimized] = useState(false);
   const { user: currentUser, socket, onlineUsers } = useAuthStore();
   const messagesEndRef = useRef(null);
-  const isOnline = onlineUsers.includes(userChat?._id);
-  const isAIChat = userChat?._id === "bingbong-ai";
-  const { messages, setMessages, addAIMessage, loading } = useGetHistoryChat(
-    userChat?._id,
-    isAIChat
-  );
+  const isAIChat = chat?._id === "bingbong-ai";
+
+  const userChat = chat.isGroup ? null : chat.participants.find((p) => p._id !== currentUser._id);
+  const isOnline = userChat ? onlineUsers.includes(userChat._id) : false;
+
+  const { messages, setMessages, addAIMessage, loading } = useGetHistoryChat(chat?._id, isAIChat);
   const { updateMessage } = useGetChats();
   const { openImagePreview, ImagePreviewModal } = useImagePreview();
 
+  // Socket events
   useEffect(() => {
-    if (!socket || !currentUser || !userChat) return;
+    if (!socket || !currentUser || !chat) return;
 
-    const handleReceiveMessage = ({
-      _id,
-      senderId,
-      receiverId,
-      text,
-      media,
-      createdAt,
-    }) => {
-      const isRelevant =
-        (String(senderId) === String(currentUser._id) &&
-          String(receiverId) === String(userChat._id)) ||
-        (String(senderId) === String(userChat._id) &&
-          String(receiverId) === String(currentUser._id));
-
-      if (isRelevant) {
-        setMessages((prev) => [
-          ...prev,
-          {
-            _id,
-            senderId,
-            receiverId,
-            text,
-            media: media || [],
-            createdAt: new Date(createdAt),
-          },
-        ]);
+    const handleReceiveMessage = (message) => {
+      if (!message?.chatId?._id) return;
+      if (String(message.chatId._id) === String(chat._id)) {
+        setMessages((prev) => [...prev, message]);
       }
     };
 
+    const handleNewMessage = (payload) => {
+      updateMessage(payload.chat);
+    };
+
     socket.on("receiveMessage", handleReceiveMessage);
-    socket.on("newMessage", (newMessage) => {
-      updateMessage(newMessage, newMessage.senderId === currentUser._id);
-    });
+    socket.on("newMessage", handleNewMessage);
 
     return () => {
       socket.off("receiveMessage", handleReceiveMessage);
-      socket.off("newMessage");
+      socket.off("newMessage", handleNewMessage);
     };
-  }, [socket, currentUser, userChat, updateMessage, setMessages]);
+  }, [socket, currentUser, chat, updateMessage, setMessages]);
 
   useEffect(() => {
     if (!isMinimized) {
-      // Chờ 1 chút cho DOM render xong
-      const timer = setTimeout(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "auto" });
-      }, 50);
-
+      const timer = setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: "auto" }), 50);
       return () => clearTimeout(timer);
     }
   }, [messages, isMinimized]);
 
   const handleSend = useCallback(async () => {
-    if ((!message.trim() && !images.length) || !currentUser) return;
+    if ((!message.trim() && !images.length) || (!currentUser)) return;
 
-    const data = {
-      senderId: currentUser._id,
-      receiverId: userChat._id,
-      text: message,
-      createdAt: new Date(),
-    };
+    const data = { senderId: currentUser._id, receiverId: userChat?._id, text: message, createdAt: new Date() };
 
     if (isAIChat) {
       setIsLoadingAIResponse(true);
-      addAIMessage(data); // Cập nhật vào store
-      //setMessages(useChatStore.getState().AIMessages); // Cập nhật UI
+      addAIMessage(data);
       setMessage("");
-
-      const aiReply = await chatApi.getAIResponse(message);
+      const aiReply = await chatAPI.getAIResponse(message);
       if (aiReply.success) {
-        const aiMessage = {
-          senderId: "bingbong-ai",
-          receiverId: currentUser._id,
-          text: aiReply.data,
-          createdAt: new Date(),
-        };
-        addAIMessage(aiMessage); // Cập nhật vào store
-        //setMessages(useChatStore.getState().AIMessages); // Cập nhật UI
+        addAIMessage({ senderId: "bingbong-ai", receiverId: currentUser._id, text: aiReply.data, createdAt: new Date() });
       }
-
       setIsLoadingAIResponse(false);
     } else {
       try {
         const formSendMessage = new FormData();
-        formSendMessage.append("senderId", currentUser._id);
-        formSendMessage.append("receiverId", userChat._id);
+        formSendMessage.append("chatId", chat._id);
         formSendMessage.append("text", message);
-        images.forEach((img) => {
-          formSendMessage.append("images", img);
-        });
-        const response = await chatApi.sendMessage(formSendMessage);
+        images.forEach((img) => formSendMessage.append("images", img));
+        const response = await messageAPI.sendMessage(formSendMessage);
         if (response.success) {
           setMessage("");
           setImages([]);
@@ -132,49 +89,29 @@ function ChatBox({ onClose, userChat }) {
         console.error("❌ Error sending message:", error);
       }
     }
-  }, [message, currentUser, userChat._id, isAIChat, addAIMessage, images]);
+  }, [message, currentUser, userChat, isAIChat, addAIMessage, images, chat._id]);
 
-  const handleMinimize = () => {
-    setIsMinimized(!isMinimized);
-  };
-
+  const handleMinimize = () => setIsMinimized(!isMinimized);
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
-    const newPreviews = files.map((file) => URL.createObjectURL(file));
-
     setImages((prev) => [...prev, ...files]);
-    setImagesPreview((prev) => [...prev, ...newPreviews]);
+    setImagesPreview((prev) => [...prev, ...files.map((f) => URL.createObjectURL(f))]);
   };
-
-  const handleRemoveImage = (indexToRemove) => {
-    setImages((prev) => prev.filter((_, index) => index !== indexToRemove));
-    setImagesPreview((prev) =>
-      prev.filter((_, index) => index !== indexToRemove)
-    );
+  const handleRemoveImage = (index) => {
+    setImages((prev) => prev.filter((_, i) => i !== index));
+    setImagesPreview((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleToggleCall = () => {
-    if (!socket) return;
-
+    if (!socket || !userChat) return;
     const callId = `${currentUser._id}_${userChat._id}_${Date.now()}`;
-
-    const payload = {
+    socket.emit("call-user", {
       to: userChat._id,
       from: currentUser._id,
       callId,
-      metadata: {
-        fullName: currentUser.fullName,
-        avatar: currentUser.avatar,
-      },
-      toData: {
-        fullName: userChat.fullName,
-        avatar: userChat.avatar,
-      },
-    };
-
-    // emit to server — server should forward to callee and also emit "outgoing-call" back to caller
-    socket.emit("call-user", payload);
-    // do not open modal here — IncomingCall listens for "outgoing-call" / "incoming-call"
+      metadata: { fullName: currentUser.fullName, avatar: currentUser.avatar },
+      toData: { fullName: userChat.fullName, avatar: userChat.avatar },
+    });
   };
 
   return (
@@ -185,264 +122,118 @@ function ChatBox({ onClose, userChat }) {
           {/* Header */}
           <div className="p-2 font-semibold rounded-t-xl flex justify-between items-center bg-gradient-to-r from-blue-500 to-purple-500 text-white">
             <div className="flex items-center gap-2">
-              <Link
-                to={isAIChat ? `#` : `/profile/${userChat.slug}`}
-                className="relative rounded-full size-8"
-              >
-                <img
-                  src={
-                    userChat.avatar
-                      ? `${Config.BACKEND_URL}${userChat.avatar}`
-                      : "/user.png"
-                  }
-                  className="object-cover size-full rounded-full"
-                />
-                {isOnline && (
-                  <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
-                )}
-              </Link>
-              <div>
-                <Link
-                  to={isAIChat ? `#` : `/profile/${userChat.slug}`}
-                  className="text-[15px] text-white"
-                >
-                  {`${userChat.fullName}`}
-                </Link>
-                {isAIChat && (
-                  <span className="text-sm text-gray-300 block">
-                    dùng Gemini 2.5
-                  </span>
-                )}
-                {isOnline && (
-                  <span className="text-green-300 block text-[13px]">
-                    Online
-                  </span>
-                )}
-              </div>
+              {chat.isGroup ? (
+                <>
+                  <img src={getBackendImgURL(chat.avatar)} className="w-8 h-8 rounded-full object-cover" alt={chat.groupName} />
+                  <div>
+                    <span className="text-[15px]">{chat.groupName}</span>
+                    <span className="text-sm text-gray-300 block">{chat.participants.length} members</span>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <Link to={isAIChat ? "#" : `/profile/${userChat.slug}`} className="relative rounded-full size-8">
+                    <img src={getBackendImgURL(userChat?.avatar)} className="object-cover size-full rounded-full" />
+                    {isOnline && <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white" />}
+                  </Link>
+                  <div>
+                    <Link to={isAIChat ? "#" : `/profile/${userChat.slug}`} className="text-[15px]">{userChat?.fullName}</Link>
+                    {isOnline && <span className="text-green-300 block text-[13px]">Online</span>}
+                  </div>
+                </>
+              )}
             </div>
             <div className="flex items-center gap-1">
-              {!isAIChat && (
+              {!isAIChat && !chat.isGroup && (
                 <div className="flex items-center gap-1">
-                  <button
-                    className="p-1 rounded-full hover:bg-white/20 transition cursor-pointer"
-                    onClick={handleToggleCall}
-                  >
-                    <Phone className="size-5 fill-white" />
-                  </button>
-                  <button className="p-1 rounded-full hover:bg-white/20 transition cursor-pointer">
-                    <Video className="size-5 fill-white" />
-                  </button>
+                  <button onClick={handleToggleCall} className="p-1 rounded-full hover:bg-white/20 transition cursor-pointer"><Phone className="size-5 fill-white" /></button>
+                  <button className="p-1 rounded-full hover:bg-white/20 transition cursor-pointer"><Video className="size-5 fill-white" /></button>
                 </div>
               )}
-              <button
-                className="p-1 rounded-full hover:bg-white/20 transition cursor-pointer"
-                onClick={handleMinimize}
-              >
-                <Minus />
-              </button>
-              <button
-                className="p-1 rounded-full hover:bg-white/20 transition cursor-pointer"
-                onClick={onClose}
-              >
-                <X />
-              </button>
+              <button onClick={handleMinimize} className="p-1 rounded-full hover:bg-white/20 transition cursor-pointer"><Minus /></button>
+              <button onClick={onClose} className="p-1 rounded-full hover:bg-white/20 transition cursor-pointer"><X /></button>
             </div>
           </div>
 
           {/* Chat content */}
-          <div
-            className={`transition-all duration-300 ease-in-out ${
-              isMinimized ? "max-h-0 opacity-0" : "h-[26rem] opacity-100"
-            }`}
-          >
+          <div className={`transition-all duration-300 ease-in-out ${isMinimized ? "max-h-0 opacity-0" : "h-[26rem] opacity-100"}`}>
             <div className="flex flex-col h-full">
               <div className="flex-1 flex flex-col gap-2 p-2 overflow-y-auto text-sm dark:text-gray-200">
-                {loading ? (
-                  <SpinnerLoading />
-                ) : (
-                  messages.map((msg, index) => {
-                    const isMyMessage = msg.senderId === currentUser?._id;
+                {loading ? <SpinnerLoading /> : messages.map((msg, index) => {
+                  const isMyMessage = msg.sender._id === currentUser._id;
+                  const senderName = chat.isGroup ? msg.sender.fullName : null;
+                  const senderAvatar = chat.isGroup ? getBackendImgURL(msg.sender.avatar) : getBackendImgURL(userChat?.avatar);
 
-                    const formatDate = (dateStr) => {
-                      return new Date(dateStr).toLocaleDateString(); // or use dayjs(dateStr).format("YYYY-MM-DD")
-                    };
+                  const formatDate = (dateStr) => new Date(dateStr).toLocaleDateString();
+                  const currentDate = formatDate(msg.createdAt);
+                  const prevDate = index > 0 ? formatDate(messages[index - 1].createdAt) : null;
+                  const shouldShowDate = currentDate !== prevDate;
 
-                    const currentDate = formatDate(msg.createdAt);
-                    const prevDate =
-                      index > 0
-                        ? formatDate(messages[index - 1].createdAt)
-                        : null;
-                    const shouldShowDate = currentDate !== prevDate;
-
-                    return (
-                      <div key={msg._id + index}>
-                        {shouldShowDate && (
-                          <div className="text-center text-xs text-gray-500 mb-2 mt-1">
-                            {formatTimeToDateAndHour(msg.createdAt)}
-                          </div>
-                        )}
-                        <div
-                          className={`flex gap-2 ${
-                            isMyMessage ? "justify-end" : "justify-start"
-                          }`}
-                        >
-                          {!isMyMessage && (
-                            <img
-                              src={
-                                userChat.avatar
-                                  ? `${Config.BACKEND_URL}${userChat.avatar}`
-                                  : "/user.png"
-                              }
-                              className="w-8 h-8 rounded-full object-cover self-start"
-                              alt="Avatar"
-                            />
+                  return (
+                    <div key={msg._id + index}>
+                      {shouldShowDate && <div className="text-center text-xs text-gray-500 mb-2 mt-1">{formatTimeToDateAndHour(msg.createdAt)}</div>}
+                      <div className={`flex gap-2 ${isMyMessage ? "justify-end" : "justify-start"}`}>
+                        {!isMyMessage && <img src={senderAvatar} className="w-8 h-8 rounded-full object-cover self-start" alt="Avatar" />}
+                        <div className={`flex flex-col max-w-[75%] ${isMyMessage ? "self-end items-end" : "self-start items-start"}`}>
+                          {msg.text && (
+                            <div className={`px-4 py-2 rounded-2xl text-sm break-words ${isMyMessage ? "bg-blue-500 text-white" : "bg-gray-100 dark:bg-[rgb(52,52,52)] dark:text-white"}`}
+                              style={{ wordBreak: "break-word", whiteSpace: "pre-wrap", overflowWrap: "break-word" }}>
+                              {isAIChat && msg.senderId === "bingbong-ai" ? <ReactMarkdown>{msg.text}</ReactMarkdown> : msg.text}
+                            </div>
                           )}
-                          <div
-                            className={`flex flex-col max-w-[75%] ${
-                              isMyMessage
-                                ? "self-end items-end"
-                                : "self-start items-start"
-                            }`}
-                          >
-                            {msg.text && (
-                              <div
-                                className={`px-4 py-2 rounded-2xl text-sm break-words ${
-                                  isMyMessage
-                                    ? "bg-blue-500 text-white"
-                                    : "bg-gray-100 dark:bg-[rgb(52,52,52)] dark:text-white"
-                                }`}
-                                style={{
-                                  wordBreak: "break-word",
-                                  whiteSpace: "pre-wrap",
-                                  overflowWrap: "break-word",
-                                }}
-                              >
-                                {isAIChat && msg.senderId === "bingbong-ai" ? (
-                                  <ReactMarkdown>{msg.text}</ReactMarkdown>
-                                ) : (
-                                  msg.text
-                                )}
-                              </div>
-                            )}
-                            {msg.media && msg.media.length > 0 && (
-                              <div
-                                className={`gap-2 mt-2 ${
-                                  msg.media.length >= 3
-                                    ? "grid grid-cols-3" // 3 or more
-                                    : "flex flex-col" // 1 or 2 images
-                                }`}
-                              >
-                                {msg.media.map((src, index) => (
-                                  <img
-                                    onClick={() =>
-                                      openImagePreview(msg.media, index)
-                                    }
-                                    key={index}
-                                    src={`${Config.BACKEND_URL}${src}`}
-                                    alt={`preview-${index}`}
-                                    className={`object-cover cursor-pointer rounded-lg border border-gray-300 ${
-                                      msg.media.length >= 3
-                                        ? "w-full h-20"
-                                        : "w-full h-40"
-                                    }`}
-                                  />
-                                ))}
-                              </div>
-                            )}
-
-                            <span
-                              className={`text-xs mt-1 text-gray-400 ${
-                                isMyMessage ? "pr-1" : "pl-1"
-                              }`}
-                            >
-                              {formatTimeToHourMinute(msg.createdAt)}
-                            </span>
-                          </div>
+                          {msg.media && msg.media.length > 0 && (
+                            <div className={`gap-2 mt-2 ${msg.media.length >= 3 ? "grid grid-cols-3" : "flex flex-col"}`}>
+                              {msg.media.map((src, idx) => <img key={idx} onClick={() => openImagePreview(msg.media, idx)} src={getBackendImgURL(src)} alt={`preview-${idx}`} className={`object-cover cursor-pointer rounded-lg border border-gray-300 ${msg.media.length >= 3 ? "w-full h-20" : "w-full h-40"}`} />)}
+                            </div>
+                          )}
+                          <span className={`text-xs mt-1 text-gray-400 ${isMyMessage ? "pr-1" : "pl-1"}`}>{formatTimeToHourMinute(msg.createdAt)}</span>
                         </div>
                       </div>
-                    );
-                  })
-                )}
-                {/* 👇 Hiển thị khi đang đợi AI trả lời */}
+                    </div>
+                  );
+                })}
                 {isAIChat && isLoadingAIResponse && (
                   <div className="flex gap-2 justify-start items-start">
-                    <img
-                      src={`${Config.BACKEND_URL}/images/bingbong-ai.png`}
-                      className="w-8 h-8 rounded-full object-cover"
-                      alt="AI"
-                    />
+                    <img src={`${Config.BACKEND_URL}/images/bingbong-ai.png`} className="w-8 h-8 rounded-full object-cover" alt="AI" />
                     <div className="flex flex-col max-w-[75%] self-start items-start">
                       <div className="px-4 py-2 rounded-2xl text-sm bg-gray-100 dark:bg-[rgb(52,52,52)] text-gray-500 dark:text-gray-300">
                         <div className="flex space-x-1">
-                          <span className="animate-bounce [animation-delay:-0.3s]">
-                            .
-                          </span>
-                          <span className="animate-bounce [animation-delay:-0.15s]">
-                            .
-                          </span>
+                          <span className="animate-bounce [animation-delay:-0.3s]">.</span>
+                          <span className="animate-bounce [animation-delay:-0.15s]">.</span>
                           <span className="animate-bounce">.</span>
                         </div>
                       </div>
                     </div>
                   </div>
                 )}
-
                 <div ref={messagesEndRef} />
               </div>
-              {/* Preview ảnh cố định chiều cao, cuộn ngang */}
+
+              {/* Preview ảnh */}
               {imagesPreview.length > 0 && (
                 <div className="px-2 py-2 flex gap-2 overflow-x-auto border-t border-gray-200">
                   {imagesPreview.map((src, index) => (
-                    <div
-                      key={index}
-                      className="relative w-12 h-12 flex-shrink-0"
-                    >
-                      <img
-                        src={src}
-                        alt={`preview-${index}`}
-                        className="w-full h-full object-cover rounded-lg border border-gray-300"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveImage(index)}
-                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 cursor-pointer"
-                      >
+                    <div key={index} className="relative w-12 h-12 flex-shrink-0">
+                      <img src={src} alt={`preview-${index}`} className="w-full h-full object-cover rounded-lg border border-gray-300" />
+                      <button type="button" onClick={() => handleRemoveImage(index)} className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 cursor-pointer">
                         <X className="w-3 h-3" />
                       </button>
                     </div>
                   ))}
                 </div>
               )}
+
+              {/* Input */}
               <div className="p-2 flex items-center gap-2 border-t border-gray-200 dark:border-gray-700">
                 <div className="flex items-center gap-2">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    onChange={handleImageChange}
-                    className="hidden"
-                    id="image-upload"
-                  />
-                  <label
-                    htmlFor="image-upload"
-                    className="p-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 cursor-pointer transition"
-                  >
+                  <input type="file" accept="image/*" multiple onChange={handleImageChange} className="hidden" id="image-upload" />
+                  <label htmlFor="image-upload" className="p-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 cursor-pointer transition">
                     <ImageIcon className="size-4" />
                   </label>
                 </div>
 
-                <input
-                  type="text"
-                  placeholder="Nhập tin nhắn..."
-                  className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 rounded-full text-sm outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-600 text-black dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400"
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleSend()}
-                />
-                <button
-                  onClick={handleSend}
-                  className="p-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 cursor-pointer transition"
-                >
+                <input type="text" placeholder="Nhập tin nhắn..." className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 rounded-full text-sm outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-600 text-black dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400" value={message} onChange={(e) => setMessage(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleSend()} />
+                <button onClick={handleSend} className="p-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 cursor-pointer transition">
                   <Send className="size-4" />
                 </button>
               </div>
