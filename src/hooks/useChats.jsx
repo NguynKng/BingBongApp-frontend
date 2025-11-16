@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { chatApi } from "../services/api";
+import { chatAPI, messageAPI } from "../services/api";
 import useChatStore from "../store/chatStore";
 import useAuthStore from "../store/authStore";
 
@@ -13,7 +13,7 @@ export const useGetChats = () => {
     if (!user) return; // không tải nếu chưa đăng nhập
     const fetchChats = async () => {
       try {
-        const res = await chatApi.getChatList();
+        const res = await chatAPI.getRecentChats();
         setMessages(res.data);
       } catch (error) {
         console.error("Error fetching recent chats:", error);
@@ -53,7 +53,7 @@ export const useGetHistoryChat = (userChatId, isAIChat = false) => {
           }
         } else {
           // Chat thường
-          const res = await chatApi.getHistoryChat(userChatId);
+          const res = await messageAPI.getHistoryChat(userChatId);
           setMessages(res.data);
         }
       } catch (error) {

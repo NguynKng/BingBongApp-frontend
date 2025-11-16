@@ -12,15 +12,15 @@ function HomePage() {
   const { user } = useAuthStore();
   const { feed, setFeed, loading } = useGetFeed();
   const [showChat, setShowChat] = useState(false);
-  const [activeChatUser, setActiveChatUser] = useState();
-  const handleToggleChat = (friend) => {
-    setActiveChatUser(friend);
+  const [activeChat, setActiveChat] = useState();
+  const handleToggleChat = (chat) => {
+    setActiveChat(chat);
     setShowChat(true); // ensure ChatBox shows when a friend is clicked
   };
 
   const handleCloseChat = () => {
     setShowChat(false);
-    setActiveChatUser(undefined);
+    setActiveChat(undefined);
   }; // giữ nguyên qua các route
 
   const handleAddPost = (newPost) => {
@@ -66,12 +66,12 @@ function HomePage() {
           )}
         </div>
         <div className="md:w-[40%] md:block hidden">
-          <ListFriend onToggleChat={handleToggleChat} />
+          <ListFriend />
         </div>
         <ListFriendBar onToggleChat={handleToggleChat} />
       </div>
       {showChat && (
-        <ChatBox userChat={activeChatUser} onClose={handleCloseChat} />
+        <ChatBox chat={activeChat} onClose={handleCloseChat} />
       )}
     </>
   );

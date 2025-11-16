@@ -77,28 +77,48 @@ export default function PostTab({ shop }) {
           {/* Basic Info */}
           <div className="space-y-3 text-gray-600 dark:text-gray-300 text-base">
             <InfoItem
-              icon={<CircleAlert className="fill-gray-500 text-white dark:text-black" />}
+              icon={
+                <CircleAlert className="fill-gray-500 text-white dark:text-black" />
+              }
               text={`Specializes in ${shop.mainCategory || "various fields"}`}
             />
+            {shop.description.address && (
+              <InfoItem
+                icon={
+                  <MapPin className="fill-gray-500 text-white dark:text-black" />
+                }
+                text={shop.description.address || "No address provided"}
+              />
+            )}
+            {shop.description.phone && (
+              <InfoItem
+                icon={
+                  <Phone className="fill-gray-500 text-white dark:text-black" />
+                }
+                text={shop.description.phone || "No phone number"}
+              />
+            )}
+            {shop.description.email && (
+              <InfoItem
+                icon={
+                  <Mail className="fill-gray-500 text-white dark:text-black" />
+                }
+                text={shop.description.email || "No email"}
+              />
+            )}
+            {shop.description.website && (
+              <InfoItem
+                icon={
+                  <Globe className="fill-gray-500 text-white dark:text-black" />
+                }
+                text={shop.description.website}
+                type="link"
+              />
+            )}
             <InfoItem
-              icon={<MapPin className="fill-gray-500 text-white dark:text-black" />}
-              text={shop.description.address || "No address provided"}
-            />
-            <InfoItem
-              icon={<Phone className="fill-gray-500 text-white dark:text-black" />}
-              text={shop.description.phone || "No phone number"}
-            />
-            <InfoItem
-              icon={<Mail className="fill-gray-500 text-white dark:text-black" />}
-              text={shop.description.email || "No email"}
-            />
-            <InfoItem
-              icon={<Globe className="fill-gray-500 text-white dark:text-black" />}
-              text={shop.description.website}
-              type="link"
-            />
-            <InfoItem
-              icon={<Clock className="fill-gray-500 text-white dark:text-black" />}
+              icon={
+                <Clock className="fill-gray-500 text-white dark:text-black" />
+              }
               text={`${shop.openTime || "?"} - ${shop.closeTime || "?"}`}
             />
           </div>

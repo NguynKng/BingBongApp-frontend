@@ -20,7 +20,7 @@ export default function ImageCarousel({ media }) {
   return (
     <>
       <ImagePreviewModal />
-      <div className="relative w-full overflow-hidden mt-3">
+      <div className="relative w-full overflow-hidden mt-3 border-y-2 border-gray-200 dark:border-gray-500">
         {/* Container chứa tất cả ảnh */}
         <div
           className="flex transition-transform cursor-pointer duration-500 ease-in-out"
