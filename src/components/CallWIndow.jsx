@@ -16,9 +16,9 @@ import {
   X,
 } from "lucide-react";
 import useAuthStore from "../store/authStore";
-import Config from "../envVars";
 import { createBlankVideoTrack } from "../utils/helper";
 import toast from "react-hot-toast";
+import { getBackendImgURL } from "../utils/helper";
 
 export default function CallWindow({
   userCall,
@@ -450,7 +450,7 @@ export default function CallWindow({
         });
       } catch (e) {}
       try {
-        window.dispatchEvent(new Event('captions:mic-on'));
+        window.dispatchEvent(new Event("captions:mic-on"));
       } catch (e) {}
     } catch (err) {
       console.error("enableMic error", err);
@@ -513,7 +513,7 @@ export default function CallWindow({
       });
     } catch (e) {}
     try {
-      window.dispatchEvent(new Event('captions:mic-off'));
+      window.dispatchEvent(new Event("captions:mic-off"));
     } catch (e) {}
   }
 
@@ -703,7 +703,7 @@ export default function CallWindow({
     <div className="fixed inset-0 bg-black/90 flex flex-col items-center justify-center z-[999]">
       <div className="absolute top-4 left-4 flex items-center gap-2 text-white text-lg font-semibold">
         <img
-          src={`${Config.BACKEND_URL}${userCall.avatar}`}
+          src={getBackendImgURL(userCall.avatar)}
           alt={userCall.fullName}
           className="w-8 h-8 rounded-full object-cover"
         />
@@ -724,48 +724,8 @@ export default function CallWindow({
       </button>
 
       <div className="flex-1 flex items-center justify-center w-full">
-        <div className="w-[95%] h-[85%] bg-black rounded-2xl relative overflow-hidden flex items-center justify-center">
-          {/* REMOTE AREA: keep fixed box so layout never jumps */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            {/* Video always present, but toggle visibility via opacity -> prevents layout change */}
-            <video
-              ref={remoteVideoRef}
-              autoPlay
-              playsInline
-              muted={false}
-              style={{
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
-                display: "block",
-                // use opacity to hide/show video rather than remove it
-                opacity: hasRemoteVideo ? 1 : 0,
-                transition: "opacity 200ms ease",
-              }}
-            />
-            {/* Avatar fallback shown on top when no remote video */}
-            {!hasRemoteVideo && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <img
-                  src={
-                    userCall?.avatar
-                      ? `${Config.BACKEND_URL}${userCall.avatar}`
-                      : "/user.png"
-                  }
-                  alt={userCall?.fullName}
-                  className="w-36 h-36 rounded-full object-cover border-4 border-white"
-                />
-                <div className="mt-3 text-white text-sm">
-                  {userCall?.fullName}
-                </div>
-              </div>
-            )}
-            {/* Hidden audio element for audio-only streams */}
-            <audio ref={remoteAudioRef} autoPlay style={{ display: "none" }} />
-          </div>
-
-          {/* LOCAL PREVIEW in corner; keep box size stable */}
-          <div className="absolute bottom-4 right-4 w-44 h-32 overflow-hidden rounded-lg border-2 border-white bg-black">
+        <div className="w-[95%] h-[85%] flex gap-2 items-center justify-between">
+          <div className="w-1/2 h-full bg-black rounded-2xl relative overflow-hidden flex items-center justify-center">
             <video
               ref={localVideoRef}
               autoPlay
@@ -775,18 +735,57 @@ export default function CallWindow({
               style={{ display: videoOn ? "block" : "none" }}
             />
             {!videoOn && (
-              <div className="w-full h-full flex items-center justify-center bg-black">
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
                 <img
-                  src={
-                    currentUser?.avatar
-                      ? `${Config.BACKEND_URL}${currentUser.avatar}`
-                      : "/user.png"
-                  }
+                  src={getBackendImgURL(currentUser?.avatar)}
                   alt={currentUser?.fullName}
-                  className="w-16 h-16 object-cover rounded-full"
+                  className="w-36 h-36 rounded-full object-cover border-4 border-white"
                 />
+                <div className="mt-3 text-white text-sm">
+                  {currentUser?.fullName}
+                </div>
               </div>
             )}
+          </div>
+          <div className="w-1/2 h-full bg-black rounded-2xl relative overflow-hidden flex items-center justify-center">
+            {/* REMOTE AREA: keep fixed box so layout never jumps */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              {/* Video always present, but toggle visibility via opacity -> prevents layout change */}
+              <video
+                ref={remoteVideoRef}
+                autoPlay
+                playsInline
+                muted={false}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  display: "block",
+                  // use opacity to hide/show video rather than remove it
+                  opacity: hasRemoteVideo ? 1 : 0,
+                  transition: "opacity 200ms ease",
+                }}
+              />
+              {/* Avatar fallback shown on top when no remote video */}
+              {!hasRemoteVideo && (
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <img
+                    src={getBackendImgURL(userCall.avatar)}
+                    alt={userCall?.fullName}
+                    className="w-36 h-36 rounded-full object-cover border-4 border-white"
+                  />
+                  <div className="mt-3 text-white text-sm">
+                    {userCall?.fullName}
+                  </div>
+                </div>
+              )}
+              {/* Hidden audio element for audio-only streams */}
+              <audio
+                ref={remoteAudioRef}
+                autoPlay
+                style={{ display: "none" }}
+              />
+            </div>
           </div>
         </div>
       </div>

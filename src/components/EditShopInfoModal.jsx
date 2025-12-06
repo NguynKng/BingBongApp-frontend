@@ -8,6 +8,7 @@ const EditShopInfoModal = ({ shop, onClose, isShopOwner }) => {
   const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
+    name: shop?.name || "",
     about: shop?.description?.about || "",
     address: shop?.description?.address || "",
     phone: shop?.description?.phone || "",
@@ -37,6 +38,7 @@ const EditShopInfoModal = ({ shop, onClose, isShopOwner }) => {
 
   const handleSave = async () => {
     const updatedShop = {
+      name: formData.name,
       description: {
         about: formData.about,
         address: formData.address,
@@ -81,7 +83,7 @@ const EditShopInfoModal = ({ shop, onClose, isShopOwner }) => {
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+            className="text-gray-500 cursor-pointer hover:text-gray-700 dark:hover:text-gray-300"
           >
             <X size={22} />
           </button>
@@ -89,6 +91,11 @@ const EditShopInfoModal = ({ shop, onClose, isShopOwner }) => {
 
         {/* Content */}
         <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-2 custom-scroll p-2">
+          <InputField
+            label="Name"
+            value={formData.name}
+            onChange={(e) => handleChange("name", e.target.value)}
+          />
           {/* About */}
           <TextareaField
             label="About"
@@ -200,14 +207,14 @@ const EditShopInfoModal = ({ shop, onClose, isShopOwner }) => {
         <div className="mt-6 flex justify-end gap-3 border-t border-gray-200 dark:border-[#2b2b3d] pt-4">
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-md bg-gray-200 dark:bg-[#2b2b3d] text-gray-700 dark:text-gray-300"
+            className="px-4 py-2 cursor-pointer rounded-md bg-gray-200 dark:bg-[#2b2b3d] text-gray-700 dark:text-gray-300"
           >
             Cancel
           </button>
           <button
             disabled={loading}
             onClick={handleSave}
-            className={`px-4 py-2 rounded-md text-white transition ${
+            className={`px-4 py-2 cursor-pointer rounded-md text-white transition ${
               loading
                 ? "bg-blue-400 cursor-not-allowed"
                 : "bg-blue-600 hover:bg-blue-700"
@@ -248,8 +255,7 @@ const TextareaField = ({ label, value, onChange, placeholder }) => (
       onChange={onChange}
       rows="2"
       placeholder={placeholder}
-      className="w-full mt-1 p-2 rounded-md border border-gray-300 dark:border-[#2b2b3d] 
-      bg-gray-50 dark:bg-[#23233b] text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
+      className="w-full mt-1 p-2 rounded-md border border-gray-300 dark:border-[#2b2b3d] bg-gray-50 dark:bg-[#23233b] text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
     />
   </div>
 );

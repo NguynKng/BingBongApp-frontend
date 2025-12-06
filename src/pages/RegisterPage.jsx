@@ -9,7 +9,6 @@ import {
   FaPhone,
   FaEnvelope,
   FaLock,
-  FaVenusMars,
 } from "react-icons/fa";
 import Meta from "../components/Meta";
 
@@ -27,7 +26,7 @@ export default function RegisterPage() {
   const navigate = useNavigate();
   const { signup, isSigningUp: isLoading, resetError } = useAuthStore();
 
-  useEffect(() => {
+  useEffect(() => { 
     return () => resetError();
   }, [resetError]);
 

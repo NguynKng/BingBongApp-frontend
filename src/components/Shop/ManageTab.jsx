@@ -11,8 +11,10 @@ import {
   ChartNoAxesColumnIncreasing,
   Settings,
 } from "lucide-react";
+import useAuthStore from "../../store/authStore";
 
 export default function ManageTab({ shop }) {
+  const { user } = useAuthStore();
   const location = useLocation();
 
   const clean = (p) => p.replace(/\/+$/, "");
@@ -28,10 +30,9 @@ export default function ManageTab({ shop }) {
     { label: "Products", icon: Box, path: "products" },
     { label: "Categories", icon: Layers, path: "categories" },
     { label: "Orders", icon: ShoppingBag, path: "orders" },
-    { label: "Analytics", icon: ChartNoAxesColumnIncreasing, path: "#" },
     { label: "Settings", icon: Settings, path: "#" },
   ];
-
+  
   return (
     <div className="flex flex-col gap-4">
       {/* 🔹 Top Navbar luôn hiển thị */}
@@ -40,7 +41,9 @@ export default function ManageTab({ shop }) {
           {menuItems.map((item) => (
             <Link
               key={item.label}
-              to={`/shop/${shop.slug}/manage${item.path ? `/${item.path}` : ""}`}
+              to={`/shop/${shop.slug}/manage${
+                item.path ? `/${item.path}` : ""
+              }`}
               className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors
                 ${
                   isCurrentTab(item.path)

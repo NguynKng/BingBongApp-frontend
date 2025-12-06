@@ -69,9 +69,7 @@ function CommentInput({ postId, onSuccessRefresh }) {
 
 CommentInput.propTypes = {
   postId: PropTypes.string.isRequired,
-  onSuccessRefresh: PropTypes.func.isRequired,
-  postedByType: PropTypes.string.isRequired,
-  postedBy: PropTypes.object.isRequired,
+  onSuccessRefresh: PropTypes.func.isRequired
 };
 
 export default CommentInput;

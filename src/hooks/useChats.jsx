@@ -30,7 +30,7 @@ export const useGetChats = () => {
 export const useGetHistoryChat = (userChatId, isAIChat = false) => {
   const { user: currentUser } = useAuthStore();
   const addAIMessage = useChatStore((state) => state.addAIMessage);
-    const AIMessages = useChatStore((state) => state.AIMessages);
+  const AIMessages = useChatStore((state) => state.AIMessages);
   const [messages, setMessages] = useState([]); // chỉ dùng cho chat thường
   const [loading, setLoading] = useState(false);
 
@@ -45,8 +45,7 @@ export const useGetHistoryChat = (userChatId, isAIChat = false) => {
           if (!AIMessages.some((msg) => msg._id === 1)) {
             addAIMessage({
               _id: 1,
-              senderId: "bingbong-ai",
-              receiverId: currentUser._id,
+              sender: "bingbong-ai",
               text: "Tôi là BingBong AI. Tôi có thể giúp gì cho bạn hôm nay?",
               createdAt: new Date(),
             });

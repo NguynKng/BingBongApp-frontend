@@ -3,8 +3,10 @@ import Config from "../envVars.js";
 import { toast } from "react-hot-toast";
 import { postAPI } from "../services/api.js";
 import { getBackendImgURL } from "../utils/helper.js";
+import useAuthStore from "../store/authStore.js";
 
 function PostModal({ onClose, onPostCreated, postedBy, postedByType, postedById, placeholder }) {
+    const { user } = useAuthStore();
   const [content, setContent] = useState("");
   const [images, setImages] = useState([]);
   const [imagesPreview, setImagesPreview] = useState([]);
@@ -88,11 +90,11 @@ function PostModal({ onClose, onPostCreated, postedBy, postedByType, postedById,
 
         <div className="flex gap-3 items-center mb-4">
           <img
-            src={getBackendImgURL(postedBy?.avatar)}
+            src={getBackendImgURL(postedByType === "Group" ? user.avatar : postedBy.avatar)}
             className="w-10 h-10 rounded-full object-cover"
           />
           <div>
-            <p className="font-medium">{postedBy.name}</p>
+            <p className="font-medium">{postedByType === "Group" ? user.fullName : postedBy.name}</p>
             <select className="text-sm text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded px-2 py-1">
               <option>Friends</option>
               <option>Public</option>

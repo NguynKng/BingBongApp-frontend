@@ -1,21 +1,36 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, memo, useMemo } from "react";
 import { SMALL_IMG_BASE_URL } from "../utils/movie_constants";
 import { Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import useMovieStore from "../store/movieStore";
 import SpinnerLoading from "./SpinnerLoading";
 
-export default function MovieSlider({ category }) {
+const MovieSlider = memo(({ category }) => {
   const { movies, fetchMoviesByCategory, contentType, loading } =
     useMovieStore();
-  const formattedContentType = contentType === "movie" ? "Movies" : "TV Shows";
-  const formattedCategories =
-    category.replaceAll("_", " ")[0].toUpperCase() +
-    category.replaceAll("_", " ").slice(1);
-  const content = movies[contentType][category] || [];
-  const [loadedImages, setLoadedImages] = useState({}); // ✅ Lưu trạng thái từng ảnh
+  
+  const [loadedImages, setLoadedImages] = useState({});
   const [showArrows, setShowArrows] = useState(false);
   const sliderRef = useRef();
+
+  // ✅ Memoize formatted strings
+  const formattedContentType = useMemo(
+    () => (contentType === "movie" ? "Movies" : "TV Shows"),
+    [contentType]
+  );
+
+  const formattedCategories = useMemo(
+    () =>
+      category.replaceAll("_", " ")[0].toUpperCase() +
+      category.replaceAll("_", " ").slice(1),
+    [category]
+  );
+
+  // ✅ Memoize content array
+  const content = useMemo(
+    () => movies[contentType]?.[category] || [],
+    [movies, contentType, category]
+  );
 
   useEffect(() => {
     fetchMoviesByCategory(contentType, category);
@@ -115,4 +130,8 @@ export default function MovieSlider({ category }) {
       </div>
     </div>
   );
-}
+});
+
+MovieSlider.displayName = "MovieSlider";
+
+export default MovieSlider;

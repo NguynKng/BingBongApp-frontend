@@ -103,3 +103,26 @@ export const useGetAllUsers = () => {
 
   return { users, usersStats, loading, error };
 };
+
+export const useGetUserStats = () => {
+  const [userStats, setUserStats] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchUserStats = async () => {
+      try {
+        const data = await userAPI.getUserStats();
+        setUserStats(data.data);
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserStats();
+  }, []);
+
+  return { userStats, loading, error };
+};

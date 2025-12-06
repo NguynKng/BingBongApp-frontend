@@ -1,14 +1,14 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, memo, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import SpinnerLoading from "../components/SpinnerLoading";
 import { ORIGINAL_IMG_BASE_URL } from "../utils/movie_constants";
 import { formatReleaseDate } from "../utils/timeUtils";
 import { useGetSuggestion } from "../hooks/useProfile";
-import Config from "../envVars";
 import useMovieStore from "../store/movieStore";
+import { getBackendImgURL } from "../utils/helper";
 
-function ListFriend() {
+const ListFriend = memo(() => {
   const { movies, loading, fetchTrendingMovies, contentType } = useMovieStore();
   const { suggestions, loading: suggestionsLoading } = useGetSuggestion();
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -17,8 +17,9 @@ function ListFriend() {
     fetchTrendingMovies(contentType);
   }, [fetchTrendingMovies, contentType]);
 
+  // ✅ Memoize grouped movies
   const groupedMovies = useMemo(() => {
-    if (!movies[contentType].trending) return [];
+    if (!movies[contentType]?.trending) return [];
     const groups = [];
     for (let i = 0; i < movies[contentType].trending.length; i += 5) {
       groups.push(movies[contentType].trending.slice(i, i + 5));
@@ -26,11 +27,13 @@ function ListFriend() {
     return groups;
   }, [movies, contentType]);
 
+  // ✅ Memoize random suggestions
   const randomSuggestions = useMemo(() => {
     if (!suggestions) return [];
     return suggestions.slice(0, 5);
   }, [suggestions]);
 
+  // Auto slide
   useEffect(() => {
     if (!groupedMovies.length) return;
     const interval = setInterval(() => {
@@ -39,10 +42,10 @@ function ListFriend() {
       );
     }, 10000);
     return () => clearInterval(interval);
-  }, [groupedMovies]);
+  }, [groupedMovies.length]);
 
   return (
-    <div className="fixed w-92 min-h-[88vh] max-h-[88vh] overflow-y-auto flex flex-col gap-4 custom-scroll">
+    <div className="w-full space-y-4">
       {/* Friend Suggestions */}
       <div className="shadow-lg rounded-lg w-full p-4 bg-white dark:bg-[#1b1f2b] border border-gray-100 dark:border-gray-700 transition-all">
         <div className="flex items-center justify-between">
@@ -53,7 +56,7 @@ function ListFriend() {
             to="/friends"
             className="text-blue-500 dark:text-blue-400 hover:underline"
           >
-            See all <span className="ml-1">{`->`}</span>
+            See all
           </Link>
         </div>
 
@@ -62,34 +65,7 @@ function ListFriend() {
             <SpinnerLoading />
           ) : (
             randomSuggestions.map((user) => (
-              <div
-                key={user._id}
-                className="flex items-center gap-4 py-2 px-2 rounded-lg hover:bg-gray-50 dark:hover:bg-[#2a3142] transition-all"
-              >
-                <Link to={`/profile/${user.slug}`}>
-                  <img
-                    src={`${Config.BACKEND_URL}${user.avatar}`}
-                    alt={user.fullName}
-                    className="w-10 h-10 rounded-full object-cover border border-gray-200 dark:border-gray-700"
-                  />
-                </Link>
-
-                <div>
-                  <Link
-                    to={`/profile/${user.slug}`}
-                    className="font-semibold block text-gray-800 dark:text-gray-100 hover:text-blue-500 dark:hover:text-blue-400"
-                  >
-                    {user.fullName}
-                  </Link>
-                  <span className="text-sm text-gray-500 dark:text-gray-400 block">
-                    Suggested for you
-                  </span>
-                </div>
-
-                <button className="ml-auto px-3 py-1 text-sm bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-all">
-                  Add
-                </button>
-              </div>
+              <SuggestionCard key={user._id} user={user} />
             ))
           )}
         </div>
@@ -105,55 +81,121 @@ function ListFriend() {
             to="/movie"
             className="text-blue-500 dark:text-blue-400 hover:underline"
           >
-            View more <span className="ml-1">{`->`}</span>
+            View more
           </Link>
         </div>
 
-        {loading ? (
-          <SpinnerLoading />
-        ) : (
-          <div className="relative overflow-hidden">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={currentIndex}
-                initial={{ x: "100%", opacity: 0 }}
-                animate={{ x: "0%", opacity: 1 }}
-                exit={{ x: "-100%", opacity: 0 }}
-                transition={{ duration: 0.6 }}
-                className="flex flex-col divide-y divide-gray-100 dark:divide-gray-700 w-full"
-              >
-                {groupedMovies[currentIndex]?.map((movie, index) => (
-                  <Link
-                    to={`/movie/${movie.id}`}
-                    key={movie.id}
-                    className="flex items-center gap-4 py-3 px-2 hover:bg-gray-50 dark:hover:bg-[#2a3142] rounded-lg transition-all group"
-                  >
-                    <span className="text-lg font-bold text-gray-500 dark:text-gray-400 w-6">
-                      {index + 1}
-                    </span>
-                    <img
-                      src={`${ORIGINAL_IMG_BASE_URL}${movie.backdrop_path}`}
-                      alt={movie.title}
-                      className="w-20 h-14 rounded-lg object-cover shadow-sm group-hover:shadow-md group-hover:shadow-blue-500/20 transition-all"
-                      loading="lazy"
-                    />
-                    <div className="flex-1">
-                      <h2 className="text-base font-semibold text-gray-800 dark:text-gray-100 line-clamp-1 group-hover:text-blue-500 dark:group-hover:text-blue-400">
-                        {movie?.name || movie?.title}
-                      </h2>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        {`Release: ${formatReleaseDate(movie.release_date)}`}
-                      </p>
-                    </div>
-                  </Link>
-                ))}
-              </motion.div>
-            </AnimatePresence>
-          </div>
-        )}
+        <div className="mt-2">
+          {loading ? (
+            <SpinnerLoading />
+          ) : (
+            <div className="relative overflow-hidden">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={currentIndex}
+                  initial={{ x: "100%", opacity: 0 }}
+                  animate={{ x: "0%", opacity: 1 }}
+                  exit={{ x: "-100%", opacity: 0 }}
+                  transition={{ duration: 0.6 }}
+                  className="flex flex-col divide-y divide-gray-100 dark:divide-gray-700 w-full"
+                >
+                  {groupedMovies[currentIndex]?.map((movie, index) => (
+                    <MovieCard key={movie.id} movie={movie} index={index} />
+                  ))}
+                </motion.div>
+              </AnimatePresence>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
-}
+});
+
+ListFriend.displayName = "ListFriend";
+
+// ✅ Extract SuggestionCard with memo
+const SuggestionCard = memo(({ user }) => {
+  const handleAddFriend = useCallback(() => {
+    // TODO: Implement add friend logic
+    console.log("Add friend:", user._id);
+  }, [user._id]);
+
+  return (
+    <div className="flex items-center gap-4 py-2 px-2 rounded-lg hover:bg-gray-50 dark:hover:bg-[#2a3142] transition-all">
+      <Link to={`/profile/${user.slug}`}>
+        <img
+          src={getBackendImgURL(user.avatar)}
+          alt={user.fullName}
+          className="w-10 h-10 rounded-full object-cover border border-gray-200 dark:border-gray-700"
+          loading="lazy"
+        />
+      </Link>
+
+      <div className="flex-1">
+        <Link
+          to={`/profile/${user.slug}`}
+          className="font-semibold block text-gray-800 dark:text-gray-100 hover:text-blue-500 dark:hover:text-blue-400"
+        >
+          {user.fullName}
+        </Link>
+        <span className="text-sm text-gray-500 dark:text-gray-400 block">
+          Suggested for you
+        </span>
+      </div>
+
+      <button
+        onClick={handleAddFriend}
+        className="ml-auto px-3 py-1 text-sm bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-all"
+      >
+        Add
+      </button>
+    </div>
+  );
+});
+
+SuggestionCard.displayName = "SuggestionCard";
+
+// ✅ Extract MovieCard with memo
+const MovieCard = memo(({ movie, index }) => {
+  // ✅ Memoize image URL
+  const imageUrl = useMemo(
+    () => `${ORIGINAL_IMG_BASE_URL}${movie.backdrop_path}`,
+    [movie.backdrop_path]
+  );
+
+  // ✅ Memoize release date
+  const releaseDate = useMemo(
+    () => formatReleaseDate(movie.release_date),
+    [movie.release_date]
+  );
+
+  return (
+    <Link
+      to={`/movie/${movie.id}`}
+      className="flex items-center gap-4 py-3 px-2 hover:bg-gray-50 dark:hover:bg-[#2a3142] rounded-lg transition-all group"
+    >
+      <span className="text-lg font-bold text-gray-500 dark:text-gray-400 w-6">
+        {index + 1}
+      </span>
+      <img
+        src={imageUrl}
+        alt={movie.title || movie.name}
+        className="w-20 h-14 rounded-lg object-cover shadow-sm group-hover:shadow-md group-hover:shadow-blue-500/20 transition-all"
+        loading="lazy"
+      />
+      <div className="flex-1">
+        <h2 className="text-base font-semibold text-gray-800 dark:text-gray-100 line-clamp-1 group-hover:text-blue-500 dark:group-hover:text-blue-400">
+          {movie.name || movie.title}
+        </h2>
+        <p className="text-xs text-gray-500 dark:text-gray-400">
+          Release: {releaseDate}
+        </p>
+      </div>
+    </Link>
+  );
+});
+
+MovieCard.displayName = "MovieCard";
 
 export default ListFriend;

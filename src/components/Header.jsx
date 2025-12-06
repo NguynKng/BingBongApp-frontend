@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import {
   Bell,
   CircleUserRound,
@@ -13,7 +13,7 @@ import {
   ShoppingCart,
   Moon,
   Mail,
-  UserPlus,
+  Menu,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import useAuthStore from "../store/authStore";
@@ -28,6 +28,7 @@ import DropdownMenu from "./DropdownMenu";
 import { useGetNotifications } from "../hooks/useNotifications";
 import DropdownCart from "./DropdownCart";
 import { useGetCart } from "../hooks/useGetCart";
+import { getBackendImgURL } from "../utils/helper";
 
 function Header({ onToggleChat }) {
   const { notifications, unreadCount } = useGetNotifications();
@@ -73,7 +74,7 @@ function Header({ onToggleChat }) {
       id: "profile",
       icon: <CircleUserRound />,
       label: "Profile",
-      link: `/profile/${user._id}`,
+      link: `/profile/${user.slug}`,
     },
   ];
 
@@ -88,234 +89,161 @@ function Header({ onToggleChat }) {
   };
 
   return (
-    <header className="fixed top-0 left-0 w-full h-[64px] z-50 bg-white dark:bg-[#1b1f2b] backdrop-blur-xl shadow-md dark:border-gray-700">
-      <div className="w-full h-full flex items-center md:pl-[8rem] md:pr-4 justify-between gap-2">
-        {/* Logo + Search */}
-        <div className="flex items-center">
+    <header className="fixed top-0 left-0 w-full h-16 z-50 bg-white dark:bg-[#1b1f2b] border-b border-gray-200 dark:border-gray-700 shadow-sm">
+      <div className="max-w-[1920px] mx-auto h-full flex items-center justify-between px-4 gap-4">
+        {/* LEFT: Logo + Brand */}
+        <div className="flex items-center gap-2 flex-shrink-0">
           <Link
             to="/"
-            className="size-12 sm:size-14 hover:scale-110 transition-transform duration-300"
+            className="size-10 sm:size-12 hover:scale-110 transition-transform duration-300"
           >
             <img
               src="/images/ico/logo_bingbong1.ico"
-              alt="logo"
+              alt="BingBong Logo"
               className="size-full object-cover rounded-xl"
             />
           </Link>
-          <div className="text-xl font-semibold text-rose-500 dark:text-white">
+          <span className="hidden sm:block text-xl font-bold bg-gradient-to-r from-rose-500 to-pink-500 bg-clip-text text-transparent">
             BingBong
-          </div>
+          </span>
         </div>
-        <div className="flex items-center">
-          {/* Search */}
-          <div className="relative w-400 max-w-md hidden sm:block">
-            <Search className="absolute size-5 top-2.5 left-3 text-blue-700" />
+
+        {/* CENTER: Search Bar (Desktop) */}
+        <div className="hidden md:block flex-1 max-w-2xl mx-4">
+          <div className="relative">
+            <Search className="absolute size-5 top-2.5 left-3 text-gray-400 dark:text-gray-500" />
             <input
               type="text"
-              placeholder="Search on Bing Bong"
-              className="text-blue-900 dark:text-gray-200 font-medium w-full py-2 pl-10 bg-white/90 dark:bg-[#1f2233] rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-purple-400 shadow-md transition-all duration-300"
+              placeholder="Search on BingBong..."
+              className="w-full py-2.5 pl-10 pr-4 bg-gray-100 dark:bg-[#2a3142] border border-gray-200 dark:border-gray-700 rounded-full text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-purple-400 focus:border-transparent transition-all"
               onChange={(e) => debouncedSearch(e.target.value)}
             />
             {query.length > 0 && (
-              <div className="absolute top-[110%] right-0 w-full max-h-96 overflow-y-auto shadow-xl bg-white rounded-lg z-50 p-2 custom-scroll dark:bg-[#1f2233]">
+              <div className="absolute top-full mt-2 left-0 right-0 max-h-96 overflow-y-auto shadow-xl bg-white dark:bg-[#1b1f2b] border border-gray-200 dark:border-gray-700 rounded-lg z-50 p-2 custom-scroll">
                 {loading ? (
-                  <SpinnerLoading />
+                  <div className="flex justify-center py-4">
+                    <SpinnerLoading />
+                  </div>
                 ) : listUser.length === 0 ? (
-                  <div className="text-center text-gray-500 py-2 px-4 dark:text-white">
+                  <div className="text-center text-gray-500 dark:text-gray-400 py-4">
                     No users found
                   </div>
                 ) : (
-                  listUser.map((user) => (
+                  listUser.map((searchUser) => (
                     <Link
-                      to={`/profile/${user.slug}`}
-                      key={user._id}
+                      to={`/profile/${searchUser.slug}`}
+                      key={searchUser._id}
                       onClick={() => setQuery("")}
-                      className="w-full py-2 px-4 flex items-center justify-between gap-2 hover:bg-blue-100 rounded-md transition duration-200 dark:hover:bg-[#394056]"
+                      className="flex items-center gap-3 p-3 hover:bg-gray-100 dark:hover:bg-[#2a3142] rounded-lg transition-colors"
                     >
-                      <div className="flex items-center gap-2">
-                        <div className="rounded-full bg-blue-200 p-2">
-                          <Search className="size-5 text-blue-600" />
-                        </div>
-                        <span className="text-sm font-semibold text-gray-800 dark:text-white">
-                          {user.fullName}
-                        </span>
-                      </div>
                       <img
-                        src={
-                          user.avatar
-                            ? `${Config.BACKEND_URL}${user.avatar}`
-                            : "/user.png"
-                        }
-                        alt={user.fullName}
-                        className="size-8 object-cover rounded-lg shadow-sm"
+                        src={getBackendImgURL(searchUser.avatar)}
+                        alt={searchUser.fullName}
+                        className="size-10 object-cover rounded-full"
                       />
+                      <span className="text-sm font-medium text-gray-900 dark:text-white">
+                        {searchUser.fullName}
+                      </span>
                     </Link>
                   ))
                 )}
               </div>
             )}
           </div>
-
-          {/* Mobile Search Button */}
-          <div className="sm:hidden">
-            <button
-              className="p-2 bg-white/80 rounded-full shadow hover:scale-110 transition"
-              onClick={() => setShowSearch(!showSearch)}
-            >
-              <Search className="text-blue-800" />
-            </button>
-          </div>
-          {showSearch && (
-            <div className="absolute top-16 left-0 w-full flex justify-start px-4 z-50 sm:hidden">
-              <div className="w-full max-w-xs">
-                <div className="relative bg-white/90 rounded-xl shadow-lg p-2 flex items-center w-full">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-blue-700" />
-                  <input
-                    type="text"
-                    placeholder="Search on Bing Bong"
-                    className="w-full py-2 pl-10 pr-10 rounded-xl bg-white text-blue-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    onChange={(e) => setQuery(e.target.value)}
-                    value={query}
-                    autoFocus
-                  />
-                  <button
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
-                    onClick={() => {
-                      setShowSearch(false);
-                      setQuery("");
-                    }}
-                  >
-                    <X />
-                  </button>
-                </div>
-                {query.length > 0 && (
-                  <div className="bg-white rounded-lg shadow-lg mt-2 max-h-60 overflow-y-auto p-2 w-full">
-                    {loading ? (
-                      <SpinnerLoading />
-                    ) : listUser.length === 0 ? (
-                      <div className="text-center text-gray-500 py-2 px-4">
-                        No users found
-                      </div>
-                    ) : (
-                      listUser.map((user) => (
-                        <Link
-                          to={`/profile/${user._id}`}
-                          key={user._id}
-                          onClick={() => {
-                            setQuery("");
-                            setShowSearch(false);
-                          }}
-                          className="w-full py-2 px-4 flex items-center justify-between gap-2 hover:bg-blue-100 rounded-md transition duration-200"
-                        >
-                          <div className="flex items-center gap-2">
-                            <div className="rounded-full bg-blue-200 p-2">
-                              <Search className="size-5 text-blue-600" />
-                            </div>
-                            <span className="text-sm font-semibold text-gray-800">
-                              {user.fullName}
-                            </span>
-                          </div>
-                          <img
-                            src={
-                              user.avatar
-                                ? `${Config.BACKEND_URL}${user.avatar}`
-                                : "/user.png"
-                            }
-                            alt={user.fullName}
-                            className="size-8 object-cover rounded-lg shadow-sm"
-                          />
-                        </Link>
-                      ))
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
         </div>
 
-        {/* Right Icons */}
-        <div className="flex items-center gap-3">
+        {/* RIGHT: Action Icons */}
+        <div className="flex items-center gap-2">
+          {/* Mobile Search Button */}
+          <button
+            className="md:hidden p-2 hover:bg-gray-100 dark:hover:bg-[#2a3142] rounded-full transition-colors"
+            onClick={() => setShowSearch(!showSearch)}
+          >
+            <Search className="size-5 text-gray-600 dark:text-gray-300" />
+          </button>
+
+          {/* Theme Toggle */}
           <div
-            className="relative size-9 p-1 bg-white/70 dark:bg-[#2a2e3d] rounded-full flex items-center justify-center hover:scale-110 hover:ring-2 ring-blue-300 dark:ring-purple-400 hover:bg-blue-100 dark:hover:bg-[#394056] transition-all cursor-pointer group"
+            className="relative p-2 hover:bg-gray-100 dark:hover:bg-[#2a3142] rounded-full transition-colors cursor-pointer group"
             onClick={toggleTheme}
           >
             {theme === "dark" ? (
-              <Moon className="text-gray-600 dark:text-white" />
+              <Moon className="size-5 text-gray-600 dark:text-gray-300" />
             ) : (
-              <SunMedium className="text-gray-600 dark:text-white" />
+              <SunMedium className="size-5 text-gray-600 dark:text-gray-300" />
             )}
-            <div className="absolute -bottom-8 text-xs bg-black/80 text-white px-3 py-1 rounded shadow hidden group-hover:block z-50 text-center whitespace-nowrap">
-              {theme === "dark" ? "Dark Mode" : "Light Mode"}
+            <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 px-2 py-1 bg-gray-900 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+              {theme === "dark" ? "Light Mode" : "Dark Mode"}
             </div>
           </div>
 
+          {/* Messenger */}
           <div
-            className="relative size-9 p-1 bg-white/70 dark:bg-[#2a2e3d] rounded-full flex items-center justify-center hover:scale-110 hover:ring-2 ring-blue-300 dark:ring-purple-400 hover:bg-blue-100 dark:hover:bg-[#394056] transition-all cursor-pointer group"
+            className="relative p-2 hover:bg-gray-100 dark:hover:bg-[#2a3142] rounded-full transition-colors cursor-pointer group"
             onClick={() => toggleDropdown("chat")}
           >
-            <Mail className="text-gray-600 dark:text-white" />
-            <div className="absolute -bottom-8 text-xs bg-black/80 text-white px-3 py-1 rounded shadow hidden group-hover:block z-50 text-center whitespace-nowrap">
+            <Mail className="size-5 text-gray-600 dark:text-gray-300" />
+            <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 px-2 py-1 bg-gray-900 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
               Messenger
             </div>
           </div>
 
-          {/* Bell Icon */}
+          {/* Notifications */}
           <div
-            className="relative size-9 p-2 bg-white/70 dark:bg-[#2a2e3d] rounded-full flex items-center justify-center hover:scale-110 hover:ring-2 ring-blue-300 dark:ring-purple-400 hover:bg-blue-100 dark:hover:bg-[#394056] transition-all cursor-pointer group"
+            className="relative p-2 hover:bg-gray-100 dark:hover:bg-[#2a3142] rounded-full transition-colors cursor-pointer group"
             onClick={() => toggleDropdown("notification")}
           >
-            <Bell className="text-gray-600 dark:text-white dark:fill-white" />
-            <div className="absolute -bottom-8 text-xs bg-black/80 text-white px-3 py-1 rounded shadow hidden group-hover:block z-50 text-center whitespace-nowrap">
+            <Bell className="size-5 text-gray-600 dark:text-gray-300" />
+            {unreadCount > 0 && (
+              <div className="absolute -top-1 -right-1 bg-red-500 min-w-[18px] h-[18px] flex items-center justify-center rounded-full px-1">
+                <span className="text-white text-xs font-semibold">
+                  {unreadCount > 99 ? "99+" : unreadCount}
+                </span>
+              </div>
+            )}
+            <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 px-2 py-1 bg-gray-900 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
               Notifications
             </div>
-            {unreadCount > 0 && (
-              <div className="absolute -top-1.5 -right-0.5 bg-red-500 size-5 flex items-center justify-center rounded-full">
-                <span className="text-white text-xs font-semibold">
-                  {unreadCount}
-                </span>
-              </div>
-            )}
           </div>
 
+          {/* Shopping Cart */}
           <div
-            className="relative size-9 p-1 bg-white/70 dark:bg-[#2a2e3d] rounded-full flex items-center justify-center hover:scale-110 hover:ring-2 ring-blue-300 dark:ring-purple-400 hover:bg-blue-100 dark:hover:bg-[#394056] transition-all cursor-pointer group"
+            className="relative p-2 hover:bg-gray-100 dark:hover:bg-[#2a3142] rounded-full transition-colors cursor-pointer group"
             onClick={() => toggleDropdown("cart")}
           >
-            <ShoppingCart className="text-gray-600 dark:text-white" />
-            <div className="absolute -bottom-8 text-xs bg-black/80 text-white px-3 py-1 rounded shadow hidden group-hover:block z-50 text-center whitespace-nowrap">
-              Cart
-            </div>
+            <ShoppingCart className="size-5 text-gray-600 dark:text-gray-300" />
             {cart?.items?.length > 0 && (
-              <div className="absolute -top-1.5 -right-0.5 bg-red-500 size-5 flex items-center justify-center rounded-full">
+              <div className="absolute -top-1 -right-1 bg-red-500 min-w-[18px] h-[18px] flex items-center justify-center rounded-full px-1">
                 <span className="text-white text-xs font-semibold">
-                  {cart?.items.length}
+                  {cart.items.length > 99 ? "99+" : cart.items.length}
                 </span>
               </div>
             )}
+            <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 px-2 py-1 bg-gray-900 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+              Cart
+            </div>
           </div>
 
-          {/* User Dropdown */}
+          {/* User Avatar */}
           <div className="relative">
             <div
-              className="relative size-11 bg-white/70 rounded-full shadow-md hover:scale-110 hover:ring-2 ring-blue-300 transition-all cursor-pointer group"
+              className="size-10 rounded-full cursor-pointer hover:ring-2 ring-blue-500 dark:ring-purple-400 transition-all group"
               onClick={() => toggleDropdown("user")}
             >
               <img
-                src={
-                  user?.avatar
-                    ? `${Config.BACKEND_URL}${user.avatar}`
-                    : `/user.png`
-                }
+                src={getBackendImgURL(user?.avatar) || "/user.png"}
+                alt={user?.fullName}
                 className="size-full object-cover rounded-full"
               />
-              <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-xs bg-black/80 text-white px-3 py-1 rounded shadow hidden group-hover:block text-center whitespace-nowrap">
+              <div className="absolute -bottom-1 -right-1 bg-white dark:bg-[#1b1f2b] size-5 rounded-full flex items-center justify-center border-2 border-gray-200 dark:border-gray-700">
+                <ChevronDown className="size-3 text-gray-600 dark:text-gray-300" />
+              </div>
+              <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 px-2 py-1 bg-gray-900 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
                 Account
               </div>
-              <div className="absolute -bottom-1 -right-1 bg-white size-4 rounded-full flex items-center justify-center">
-                <ChevronDown className="size-3 text-black" />
-              </div>
             </div>
+
+            {/* Dropdowns */}
             {dropdown.user && <DropdownUser />}
             {dropdown.chat && <DropdownChat onToggleChat={onToggleChat} />}
             {dropdown.notification && (
@@ -327,24 +255,63 @@ function Header({ onToggleChat }) {
         </div>
       </div>
 
-      {/* Mobile Tabs */}
-      {showMobileMenu && (
-        <div className="md:hidden flex flex-col items-center bg-white/90 px-4 py-2 gap-2 shadow-lg border-t border-blue-200">
-          {tabs.map((tab) => (
-            <Link
-              to={tab.link}
-              key={tab.id}
-              className={`w-full text-center py-2 rounded-md font-medium transition
-                                ${
-                                  activeTab === tab.id
-                                    ? "bg-blue-500 text-white"
-                                    : "text-blue-800 hover:bg-blue-100"
-                                }`}
-              onClick={() => setShowMobileMenu(false)}
+      {/* Mobile Search Overlay */}
+      {showSearch && (
+        <div className="md:hidden absolute top-full left-0 right-0 bg-white dark:bg-[#1b1f2b] border-b border-gray-200 dark:border-gray-700 p-4 shadow-lg">
+          <div className="relative">
+            <Search className="absolute size-5 top-2.5 left-3 text-gray-400 dark:text-gray-500" />
+            <input
+              type="text"
+              placeholder="Search on BingBong..."
+              className="w-full py-2.5 pl-10 pr-10 bg-gray-100 dark:bg-[#2a3142] border border-gray-200 dark:border-gray-700 rounded-full text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-purple-400"
+              onChange={(e) => setQuery(e.target.value)}
+              value={query}
+              autoFocus
+            />
+            <button
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+              onClick={() => {
+                setShowSearch(false);
+                setQuery("");
+              }}
             >
-              {tab.label}
-            </Link>
-          ))}
+              <X className="size-5" />
+            </button>
+          </div>
+          {query.length > 0 && (
+            <div className="mt-2 max-h-60 overflow-y-auto bg-white dark:bg-[#1b1f2b] rounded-lg p-2">
+              {loading ? (
+                <div className="flex justify-center py-4">
+                  <SpinnerLoading />
+                </div>
+              ) : listUser.length === 0 ? (
+                <div className="text-center text-gray-500 dark:text-gray-400 py-4">
+                  No users found
+                </div>
+              ) : (
+                listUser.map((searchUser) => (
+                  <Link
+                    to={`/profile/${searchUser.slug}`}
+                    key={searchUser._id}
+                    onClick={() => {
+                      setQuery("");
+                      setShowSearch(false);
+                    }}
+                    className="flex items-center gap-3 p-3 hover:bg-gray-100 dark:hover:bg-[#2a3142] rounded-lg transition-colors"
+                  >
+                    <img
+                      src={getBackendImgURL(searchUser.avatar)}
+                      alt={searchUser.fullName}
+                      className="size-10 object-cover rounded-full"
+                    />
+                    <span className="text-sm font-medium text-gray-900 dark:text-white">
+                      {searchUser.fullName}
+                    </span>
+                  </Link>
+                ))
+              )}
+            </div>
+          )}
         </div>
       )}
     </header>

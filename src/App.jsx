@@ -12,6 +12,7 @@ import NewsPage from "./pages/newsPage";
 import Leaderboard from "./pages/Quiz/Leaderboard";
 import { Toaster } from "react-hot-toast";
 import useAuthStore from "./store/authStore";
+import { Howler } from "howler";
 import {
   ProtectedRoute,
   AuthRoute,
@@ -32,13 +33,27 @@ import DetailMoviePage from "./pages/DetailMoviePage";
 import NotFoundPage from "./pages/NotFoundPage";
 import DetailShopPage from "./pages/DetailShopPage";
 import ShopPage from "./pages/ShopPage";
-import SpinnerLoading from "./components/SpinnerLoading";
 import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import OrderPage from "./pages/OrderPage";
+import SplashScreen from "./components/SplashScreen";
+import OrderDetailPage from "./pages/OrderDetailPage";
+import GroupPage from "./pages/GroupPage";
+import DetailGroupPage from "./pages/DetailGroupPage";
 
 function App() {
   const { checkAuth, theme, isCheckingAuth } = useAuthStore();
+
+  useEffect(() => {
+    const unlock = () => {
+      const ctx = Howler.ctx;
+      if (ctx?.state === "suspended") ctx.resume();
+      window.removeEventListener("click", unlock);
+      window.removeEventListener("touchstart", unlock);
+    };
+    window.addEventListener("click", unlock);
+    window.addEventListener("touchstart", unlock);
+  }, []);
 
   useEffect(() => {
     if (!theme) return;
@@ -54,11 +69,7 @@ function App() {
   }, [checkAuth]);
 
   if (isCheckingAuth) {
-    return (
-      <div className="min-h-screen w-full flex items-center justify-center">
-        <SpinnerLoading />
-      </div>
-    );
+    return <SplashScreen />;
   }
 
   return (
@@ -122,7 +133,7 @@ function App() {
           }
         />
         <Route
-          path="/profile/:slug"
+          path="/profile/:slug/*"
           element={
             <ProtectedRoute>
               <MainLayout Element={ProfilePage} />
@@ -142,6 +153,22 @@ function App() {
           element={
             <ProtectedRoute>
               <MainLayout Element={DetailShopPage} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/group"
+          element={
+            <ProtectedRoute>
+              <MainLayout Element={GroupPage} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/group/:slug/*"
+          element={
+            <ProtectedRoute>
+              <MainLayout Element={DetailGroupPage} />
             </ProtectedRoute>
           }
         />
@@ -190,6 +217,14 @@ function App() {
           element={
             <ProtectedRoute>
               <MainLayout Element={OrderPage} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/order/:orderId"
+          element={
+            <ProtectedRoute>
+              <MainLayout Element={OrderDetailPage} />
             </ProtectedRoute>
           }
         />

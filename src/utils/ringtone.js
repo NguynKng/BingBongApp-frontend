@@ -1,41 +1,79 @@
-// src/utils/ringtone.js
-import { Howl } from "howler";
+import { getBackendImgURL } from "./helper";
 
-let soundId = null;
+let audio = null;
+let isFading = false;
+let currentSrc = null;
 
-const howl = new Howl({
-  src: ["/call-ring-sound/sound-1.mp3"],
-  loop: true,      // chuông lặp cho đến khi dừng
-  volume: 0.8,
-});
+const DEFAULT_RINGTONE = "/images/default-avatar/sound-1.mp3"; // nhạc chuông mặc định 
 
 export const Ringtone = {
-  play() {
-    // nếu đã phát thì bỏ qua để tránh chồng nhiều phiên phát
-    if (soundId && howl.playing(soundId)) return;
-    // stop mọi phiên phát cũ (nếu có) rồi play mới
-    this.stop();
-    soundId = howl.play();
+  play(src) {
+    // nếu không có activeRingtone → dùng default
+    const finalSrc = src || DEFAULT_RINGTONE;
+
+    // nếu đổi ringtone → tạo audio mới
+    if (!audio || currentSrc !== finalSrc) {
+      currentSrc = finalSrc;
+      audio = new Audio(getBackendImgURL(finalSrc));
+      audio.loop = true;
+      audio.volume = 0.8;
+      audio.preload = "auto";
+    }
+
+    // nếu đang phát rồi → bỏ qua
+    if (!audio.paused) return;
+
+    audio.currentTime = 0;
+    audio.play().catch(() => {});
   },
+
   stop() {
-    if (soundId !== null) {
-      howl.stop(soundId);
-      soundId = null;
-    } else {
-      // phòng hờ nếu bị phát không gán id (edge case)
-      howl.stop();
+    if (audio) {
+      audio.pause();
+      audio.currentTime = 0;
+      isFading = false;
     }
   },
+
   isPlaying() {
-    return soundId !== null && howl.playing(soundId);
+    return audio && !audio.paused;
   },
+
   fadeOutAndStop(durationMs = 200) {
-    if (!this.isPlaying()) return;
-    howl.fade(howl.volume(), 0, durationMs, soundId);
-    setTimeout(() => this.stop(), durationMs + 10);
+    if (!this.isPlaying() || isFading) return;
+    isFading = true;
+
+    const fadeSteps = 20;
+    const stepTime = durationMs / fadeSteps;
+    const initialVol = audio.volume;
+    let currentStep = 0;
+
+    const fadeInterval = setInterval(() => {
+      if (!audio) {
+        clearInterval(fadeInterval);
+        return;
+      }
+
+      currentStep++;
+      audio.volume = initialVol * (1 - currentStep / fadeSteps);
+
+      if (currentStep >= fadeSteps) {
+        clearInterval(fadeInterval);
+        this.stop();
+        audio.volume = initialVol;
+        isFading = false;
+      }
+    }, stepTime);
   },
+
   unload() {
-    this.stop();
-    howl.unload();
+    if (audio) {
+      audio.pause();
+      audio.src = "";
+      audio.load();
+      audio = null;
+      currentSrc = null;
+      isFading = false;
+    }
   },
 };

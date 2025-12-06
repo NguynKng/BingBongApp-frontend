@@ -3,8 +3,8 @@ import { useEffect, useMemo, useState } from "react";
 import { useGetProfileBySlug } from "../hooks/useProfile";
 import useAuthStore from "../store/authStore";
 import SpinnerLoading from "./SpinnerLoading";
-import Config from "../envVars";
 import { chatAPI } from "../services/api";
+import { getBackendImgURL } from "../utils/helper";
 
 export default function ListFriendBar({ onToggleChat }) {
   const [isOpenBar, setIsOpenBar] = useState(false);
@@ -22,19 +22,39 @@ export default function ListFriendBar({ onToggleChat }) {
   }, [profile]);
 
   const filteredFriends = useMemo(() => {
-    return friends.filter((friend) =>
+  return friends
+    .filter((friend) =>
       friend.fullName.toLowerCase().includes(search.toLowerCase())
-    );
-  }, [search, friends]);
+    )
+    .sort((a, b) => {
+      const aOnline = onlineUsers.includes(a._id);
+      const bOnline = onlineUsers.includes(b._id);
+
+      // online trước
+      if (aOnline && !bOnline) return -1;
+      if (!aOnline && bOnline) return 1;
+
+      // nếu đều online hoặc đều offline → sort theo tên
+      return a.fullName.localeCompare(b.fullName);
+    });
+}, [search, friends, onlineUsers]);
 
   const handleToggleChat = async (userId) => {
-    const response = await chatAPI.getChatIdByUserId(userId);
+    if (userId === "bingbong-ai") {
+      onToggleChat({
+        _id: "bingbong-ai",
+        avatar: "/images/bingbong-ai.png",
+        fullName: "BingBong AI",
+      });
+      return;
+    }
+    const response = await chatAPI.getChatIdByTypeId({ userId, type: "private" });
     onToggleChat(response.data);
   };
 
   return (
     <div
-      className={`fixed flex flex-col right-0 bottom-0 h-screen pt-[64px] shadow-lg
+      className={`fixed hidden lg:flex flex-col right-0 bottom-0 h-screen pt-[64px] shadow-lg
         bg-white dark:bg-[#1b1f2b] border-l border-gray-200 dark:border-gray-700
         transition-all duration-300 ease-in-out
         ${isOpenBar ? "w-60" : "w-20"}`}
@@ -103,19 +123,13 @@ export default function ListFriendBar({ onToggleChat }) {
         <div className="flex flex-col gap-2 mt-2">
           {/* BingBong AI */}
           <div
-            className="flex gap-2 items-center py-2 px-4 rounded-lg cursor-pointer 
-              hover:bg-blue-100 dark:hover:bg-[#2a3142] transition-all"
-            onClick={() =>
-              onToggleChat({
-                _id: "bingbong-ai",
-                fullName: "BingBong AI",
-                avatar: "/images/bingbong-ai.png",
-              })
-            }
+            className={`flex gap-2 items-center ${!isOpenBar && "justify-center"} p-2 rounded-lg cursor-pointer 
+              hover:bg-blue-100 dark:hover:bg-[#2a3142] transition-all`}
+            onClick={() => handleToggleChat("bingbong-ai")}
           >
-            <div className="size-8 relative">
+            <div className="size-9 relative">
               <img
-                src={`${Config.BACKEND_URL}/images/bingbong-ai.png`}
+                src={getBackendImgURL("/images/bingbong-ai.png")}
                 alt="ChatBot"
                 className="size-full rounded-full object-cover border border-gray-200 dark:border-gray-700"
               />
@@ -142,13 +156,13 @@ export default function ListFriendBar({ onToggleChat }) {
             filteredFriends.map((friend) => (
               <div
                 key={friend._id}
-                className="flex gap-2 items-center py-2 px-4 rounded-lg cursor-pointer 
-                  hover:bg-blue-100 dark:hover:bg-[#2a3142] transition-all"
+                className={`flex gap-2 items-center ${!isOpenBar && "justify-center"} p-2 rounded-lg cursor-pointer 
+                  hover:bg-blue-100 dark:hover:bg-[#2a3142] transition-all`}
                 onClick={() => handleToggleChat(friend._id)}
               >
-                <div className="size-8 relative">
+                <div className="size-9 relative">
                   <img
-                    src={`${Config.BACKEND_URL}${friend.avatar}`}
+                    src={getBackendImgURL(friend.avatar)}
                     alt={friend.fullName}
                     className="size-full rounded-full object-cover border border-gray-200 dark:border-gray-700"
                     loading="lazy"

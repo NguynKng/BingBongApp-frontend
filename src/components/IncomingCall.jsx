@@ -15,13 +15,16 @@ export default function IncomingCall() {
   const [peer, setPeer] = useState(null);
   const [status, setStatus] = useState("idle");
   const [isOpenLeavePopup, setIsOpenLeavePopup] = useState(false);
+  const activeUrlRingtone = currentUser?.ringtones?.find(
+    (r) => r._id === currentUser?.activeRingtone
+  )?.url;
 
   useEffect(() => {
     if (!socket) return;
 
     // ---------- Handlers ----------
     const handleIncomingCall = ({ from, callId: incomingCallId, metadata }) => {
-      Ringtone.play();
+      Ringtone.play(activeUrlRingtone);
       setMode("incoming");
       setCallId(incomingCallId);
       setPeer({
@@ -98,7 +101,7 @@ export default function IncomingCall() {
       socket.off("call-timeout", handleCallTimeout);
       socket.off("end-call", handleEndCall);
     };
-  }, [socket, currentUser, callId, status]);
+  }, [socket, currentUser, callId, status, activeUrlRingtone]);
 
   // ---------- Actions ----------
   const accept = () => {

@@ -52,7 +52,7 @@ const FriendPage = () => {
   return (
     <>
       <style>{cardBlinkStyle}</style>
-      <div className="dark:bg-[#181826] min-h-[92vh] pt-10">
+      <div className="min-h-[92vh] pt-10">
         <div className="lg:w-[90%] w-full mx-auto px-4 sm:px-6 lg:px-8 py-4 overflow-x-hidden">
           <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-8">
             Friend Requests ({friendRequests.length})
@@ -122,11 +122,11 @@ const FriendPage = () => {
             People You May Know
           </h2>
 
-          <div className="flex flex-wrap gap-4 items-center">
+          <div className="grid xl:grid-cols-6 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-4 items-center">
             {suggestions.map((user) => (
               <div
                 key={user._id}
-                className="bg-white dark:bg-[#1e1e2f] rounded-2xl border border-gray-200 dark:border-[#2b2b3d] shadow-lg transition-transform duration-300 p-4 flex flex-col items-center text-center card-blink w-50"
+                className="bg-white dark:bg-[#1e1e2f] rounded-2xl border border-gray-200 dark:border-[#2b2b3d] shadow-lg transition-transform duration-300 p-4 flex flex-col items-center text-center card-blink"
                 style={{
                   transformStyle: "preserve-3d",
                 }}

@@ -1,17 +1,9 @@
 import { Link } from "react-router-dom";
 import { formatTime } from "../utils/timeUtils";
+import { memo } from "react";
 
-const NewsCard = ({ news }) => {
-  const {
-    source,
-    author,
-    title,
-    description,
-    url,
-    urlToImage,
-    publishedAt,
-    content,
-  } = news; 
+const NewsCard = memo(({ news }) => {
+  const { source, author, title, url, urlToImage, publishedAt } = news;
   return (
     <div className="flex w-full h-[10rem] p-2 items-center group">
       <Link
@@ -25,6 +17,10 @@ const NewsCard = ({ news }) => {
           loading="lazy"
           className="w-full h-full object-cover rounded-lg transition-opacity duration-500 opacity-0"
           onLoad={(e) => e.currentTarget.classList.remove("opacity-0")}
+          onError={(e) => {
+            e.currentTarget.src = "/none-image.jfif";
+            e.currentTarget.classList.remove("opacity-0"); // đảm bảo hiện lên
+          }}
         />
       </Link>
       <div className="w-[75%] flex flex-col justify-center gap-1 px-6 py-4">
@@ -50,6 +46,6 @@ const NewsCard = ({ news }) => {
       </div>
     </div>
   );
-};
+});
 
 export default NewsCard;

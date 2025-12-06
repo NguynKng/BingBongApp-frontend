@@ -12,6 +12,7 @@ export default function DetailOrder() {
   const navigate = useNavigate();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [updating, setUpdating] = useState(false);
 
   useEffect(() => {
     if (!orderId) return;
@@ -31,14 +32,23 @@ export default function DetailOrder() {
 
   if (loading) return <SpinnerLoading />;
   if (!order)
-    return (
-      <div className="p-6 text-red-500 text-center">
-        Order not found
-      </div>
-    );
+    return <div className="p-6 text-red-500 text-center">Order not found</div>;
 
-  const handleConfirmOrder = async () => {
-    // TODO: Call API to confirm order here
+  const handleUpdateOrder = async (status) => {
+    if (updating) return; // tránh bấm nhiều lần
+    setUpdating(true);
+    try {
+      const response = await orderAPI.updateOrderStatus(order.orderId, status);
+      if (response.success) {
+        setOrder(response.data);
+        // delay nhẹ cho smooth transition
+        setTimeout(() => navigate(-1), 300);
+      }
+    } catch (error) {
+      console.error(`Failed to update order to ${status}:`, error);
+    } finally {
+      setUpdating(false);
+    }
   };
 
   return (
@@ -135,17 +145,29 @@ export default function DetailOrder() {
         </span>
       </div>
 
-      {/* --- Confirm Button --- */}
-      {order.orderStatus === "Pending" && (
-        <div className="text-right">
+      <div className="text-right space-x-2">
+        {order.orderStatus === "Pending" && (
           <button
-            onClick={handleConfirmOrder}
-            className="bg-green-600 text-white px-5 py-2.5 rounded-md hover:bg-green-700 transition"
+            onClick={() => handleUpdateOrder("Processing")}
+            disabled={updating}
+            className="flex items-center justify-center cursor-pointer gap-2 bg-green-600 text-white px-5 py-2.5 rounded-md hover:bg-green-700 transition disabled:opacity-60 disabled:cursor-not-allowed"
           >
+            {updating && <SpinnerLoading className="w-5 h-5" />}
             Confirm Order
           </button>
-        </div>
-      )}
+        )}
+
+        {order.orderStatus === "Processing" && (
+          <button
+            onClick={() => handleUpdateOrder("Shipping")}
+            disabled={updating}
+            className="flex items-center justify-center cursor-pointer gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-md hover:bg-blue-700 transition disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            {updating && <SpinnerLoading className="w-5 h-5" />}
+            Ready to Ship
+          </button>
+        )}
+      </div>
     </div>
   );
 }

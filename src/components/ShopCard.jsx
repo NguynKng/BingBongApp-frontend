@@ -1,8 +1,9 @@
 import { Link } from "react-router-dom";
 import { getBackendImgURL } from "../utils/helper";
 import { MapPin, Users, Tag } from "lucide-react";
+import { memo } from "react";
 
-export default function ShopCard({ shop }) {
+const ShopCard = memo(({ shop }) => {
   // Display up to 3 categories for cleaner layout
   const displayCategories = shop.categories?.slice(0, 3) || [];
 
@@ -64,7 +65,9 @@ export default function ShopCard({ shop }) {
               </span>
             ))}
             {shop.categories.length > 3 && (
-              <span className="text-xs text-gray-400">+{shop.categories.length - 3} more</span>
+              <span className="text-xs text-gray-400">
+                +{shop.categories.length - 3} more
+              </span>
             )}
           </div>
         )}
@@ -72,7 +75,7 @@ export default function ShopCard({ shop }) {
         {/* View Shop Button */}
         <div className="mt-3">
           <button
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm py-1.5 rounded-md transition"
+            className="w-full bg-blue-600 cursor-pointer hover:bg-blue-700 text-white text-sm py-1.5 rounded-md transition"
             type="button"
           >
             View Shop
@@ -81,4 +84,5 @@ export default function ShopCard({ shop }) {
       </div>
     </Link>
   );
-}
+});
+export default ShopCard;

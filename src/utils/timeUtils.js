@@ -128,13 +128,14 @@ export function formatDateTimeWithTime(dateString) {
   });
 
   const timeStr = date.toLocaleTimeString("en-US", {
-    hour: "numeric",
+    hour: "2-digit",
     minute: "2-digit",
-    hour12: true,
+    hour12: false, // dùng 24h
   });
 
   return `${dateStr} ${timeStr}`;
 }
+
 
 export const formatTimeToDateAndHour = (date) => {
   const d = new Date(date);

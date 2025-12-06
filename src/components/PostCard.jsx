@@ -1,9 +1,8 @@
 import PropTypes from "prop-types";
 import { Earth, Ellipsis, MessageCircle, ThumbsUp, Trash2 } from "lucide-react";
-import Config from "../envVars";
 import { formatTime } from "../utils/timeUtils";
 import { Link } from "react-router-dom";
-import { useState, useMemo, useCallback, useEffect } from "react";
+import { useState, useMemo, useCallback, useEffect, useRef, memo } from "react";
 import { postAPI } from "../services/api";
 import SpinnerLoading from "./SpinnerLoading";
 import CommentItem from "./CommentItem";
@@ -12,9 +11,11 @@ import useAuthStore from "../store/authStore";
 import emotions from "../data/emotion";
 import { toast } from "react-hot-toast";
 import InstagramCarousel from "./InstagramCarousel";
-import { getBackendImgURL } from "../utils/helper";
+import { getBackendImgURL, getEquippedBadge, getProfileLink } from "../utils/helper";
+import UserBadge from "./UserBadge";
+import HoverWrapper from "./HoverWrapper";
 
-function PostCard({ post, onDeletePost, showComment = false }) {
+const PostCard = memo(({ post, onDeletePost, showComment = false }) => {
   const [openComment, setOpenComment] = useState(showComment);
   const [isLoadingComments, setIsLoadingComments] = useState(false);
   const [isOpenPostDropdown, setIsOpenPostDropdown] = useState(false);
@@ -24,6 +25,11 @@ function PostCard({ post, onDeletePost, showComment = false }) {
   const [hoveredEmotion, setHoveredEmotion] = useState(null);
   const [hoveredEmotionUser, setHoveredEmotionUser] = useState(null);
   const [reactions, setReactions] = useState(post.reactions);
+  const equippedBadge = useMemo(() => getEquippedBadge(author), [author]);
+  const hoverDataRef = useRef({
+    type: null,
+    slug: null,
+  });
 
   const isShopPost = postedByType === "Shop";
   const isUserPost = postedByType === "User";
@@ -122,25 +128,10 @@ function PostCard({ post, onDeletePost, showComment = false }) {
     );
   }
 
-  // ✅ Helper: link profile theo loại
-  const getProfileLink = (entity, type) => {
-    if (!entity?.slug) return "#";
-    switch (type) {
-      case "User":
-        return `/profile/${entity.slug}`;
-      case "Shop":
-        return `/shop/${entity.slug}`;
-      case "Group":
-        return `/group/${entity.slug}`;
-      default:
-        return "#";
-    }
-  };
-
   return (
     <div className="bg-white py-5 rounded-xl shadow-md mb-4 dark:bg-[#1b1f2b] dark:border dark:border-[#2b2b3d]">
       <div className="flex items-start justify-between px-5 mb-3">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 relative">
           {/* Avatar */}
           {isUserPost && (
             <>
@@ -156,13 +147,13 @@ function PostCard({ post, onDeletePost, showComment = false }) {
               </Link>
             </>
           )}
-          {isShopPost && (
+          {(isShopPost || isGroupPost)  && (
             <div className="relative w-11 h-11 rounded-lg border border-gray-200">
               <Link to={getProfileLink(postedById, postedByType)}>
                 <img
                   src={getBackendImgURL(postedById.avatar)}
                   alt={postedById.name || postedById.fullName}
-                  className="object-cover w-full h-full hover:opacity-80"
+                  className="object-cover w-full h-full rounded-lg hover:opacity-80"
                   loading="lazy"
                 />
               </Link>
@@ -182,16 +173,30 @@ function PostCard({ post, onDeletePost, showComment = false }) {
           {/* Info */}
           <div className="flex flex-col">
             {/* Tên chính */}
-            <Link
-              to={getProfileLink(postedById, postedByType)}
-              className="font-semibold text-base hover:underline dark:text-white leading-tight"
-            >
-              {postedByType === "Shop" ? postedById.name : postedById.fullName}
-            </Link>
+            <div className="flex gap-2 items-center">
+              <HoverWrapper slug={postedById.slug} type={postedByType}>
+                <Link
+                  to={getProfileLink(postedById, postedByType)}
+                  className="font-semibold text-base hover:underline dark:text-white leading-tight"
+                  onMouseEnter={() => {
+                    hoverDataRef.current = {
+                      type: postedByType,
+                      slug: postedById.slug,
+                    };
+                  }}
+                >
+                  {(isShopPost || isGroupPost) 
+                    ? postedById.name
+                    : postedById.fullName}
+                </Link>
+              </HoverWrapper>
+
+              {equippedBadge && <UserBadge badge={equippedBadge} mode="mini" />}
+            </div>
 
             {/* Thời gian */}
-            <div className="flex items-center gap-1 text-sm text-gray-500 mt-0.5">
-              {isShopPost && (
+            <div className="flex items-center gap-1 text-sm text-gray-500">
+              {(isShopPost || isGroupPost)  && (
                 <>
                   <Link to={`/profile/${author.slug}`}>
                     {author._id === user?._id ? "Bạn" : author.fullName}
@@ -210,7 +215,7 @@ function PostCard({ post, onDeletePost, showComment = false }) {
         {author?._id === user?._id && (
           <div className="relative">
             <button
-              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-[rgb(56,56,56)]"
+              className="p-2 rounded-full cursor-pointer hover:bg-gray-100 dark:hover:bg-[rgb(56,56,56)]"
               onClick={() => setIsOpenPostDropdown(!isOpenPostDropdown)}
             >
               <Ellipsis className="w-5 h-5 text-gray-600 dark:text-gray-400" />
@@ -236,7 +241,7 @@ function PostCard({ post, onDeletePost, showComment = false }) {
         {content}
       </p>
 
-      <InstagramCarousel media={media} />
+      <InstagramCarousel media={media} postId={post._id} />
 
       {reactions.length > 0 && (
         <div className="flex items-center mt-3 px-5">
@@ -391,8 +396,8 @@ function PostCard({ post, onDeletePost, showComment = false }) {
       )}
     </div>
   );
-}
-
+});
+    
 PostCard.propTypes = {
   post: PropTypes.shape({
     likes: PropTypes.number,
