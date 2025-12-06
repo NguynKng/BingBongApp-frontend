@@ -2,8 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Routes, Route, useLocation, useParams, Link } from "react-router-dom";
 import { shopAPI } from "../services/api";
 import useAuthStore from "../store/authStore";
-import { ChevronDown } from "lucide-react";
-import Config from "../envVars";
+import { ChevronDown, Plus, Check } from "lucide-react";
 import PostTab from "../components/Shop/PostTab";
 import ProductTab from "../components/Shop/ProductTab";
 import AboutTab from "../components/Shop/AboutTab";
@@ -11,10 +10,12 @@ import PhotoTab from "../components/Shop/PhotoTab";
 import ManageTab from "../components/Shop/ManageTab";
 import DetailProductTab from "../components/DetailProductTab";
 import { toast } from "react-hot-toast";
-import { userAPI } from "../services/api";
+import { userAPI, chatAPI } from "../services/api";
 import { getBackendImgURL } from "../utils/helper";
+import SpinnerLoading from "../components/SpinnerLoading";
+import NotFoundPage from "./NotFoundPage";
 
-export default function DetailShopPage() {
+export default function DetailShopPage({ onToggleChat }) {
   const [isUploading, setIsUploading] = useState({
     avatar: false,
     coverPhoto: false,
@@ -24,12 +25,14 @@ export default function DetailShopPage() {
   const coverPhotoInputRef = useRef(null);
   const [shop, setShop] = useState(null);
   const [loading, setLoading] = useState(true);
-  const { user } = useAuthStore();
+  const { user, theme } = useAuthStore();
   const location = useLocation();
+  const [isFollowing, setIsFollowing] = useState(false);
 
   const clean = (p) => p.replace(/\/+$/, "");
   const isCurrentTab = (tabPath) =>
-    clean(location.pathname) === clean(`/shop/${shopSlug}${tabPath ? `/${tabPath.toLowerCase()}` : ""}`);
+    clean(location.pathname) ===
+    clean(`/shop/${shopSlug}${tabPath ? `/${tabPath.toLowerCase()}` : ""}`);
 
   const isMyShop = user && shop && user._id === shop.owner._id;
 
@@ -46,7 +49,12 @@ export default function DetailShopPage() {
       setLoading(true);
       try {
         const res = await shopAPI.getShopBySlug(shopSlug);
-        if (res.success) setShop(res.data);
+        if (res.success) {
+          setShop(res.data);
+
+          // Set trạng thái follow sau khi shop load xong
+          setIsFollowing(res.data.followers.includes(user?._id));
+        }
       } catch (err) {
         console.error(err);
       } finally {
@@ -54,7 +62,7 @@ export default function DetailShopPage() {
       }
     };
     fetchShop();
-  }, [shopSlug]);
+  }, [shopSlug, user?._id]);
 
   const handleAvatarUpload = async (event) => {
     const file = event.target.files[0];
@@ -88,9 +96,67 @@ export default function DetailShopPage() {
     }
   };
 
-  if (loading) return <div className="p-10 text-center">Loading shop...</div>;
+  const handleFollowToggle = async () => {
+    if (!user) return toast.error("Please login first!");
 
-  if (!shop) return <div className="p-10 text-center">Shop not found</div>;
+    const previous = isFollowing;
+
+    // ⭐ Optimistic UI
+    setIsFollowing(!previous);
+    setShop((prev) => ({
+      ...prev,
+      followers: previous
+        ? prev.followers.filter((id) => id !== user._id)
+        : [...prev.followers, user._id],
+    }));
+
+    try {
+      const response = previous
+        ? await shopAPI.unfollowShop(shop._id) // 🔥 unfollow API
+        : await shopAPI.followShop(shop._id); // 🔥 follow API
+
+      if (!response.success) {
+        // ❌ Revert UI
+        setIsFollowing(previous);
+        setShop((prev) => ({
+          ...prev,
+          followers: previous
+            ? [...prev.followers, user._id]
+            : prev.followers.filter((id) => id !== user._id),
+        }));
+        return;
+      }
+    } catch (err) {
+      console.log(err);
+
+      // ❌ Revert UI khi lỗi
+      setIsFollowing(previous);
+      setShop((prev) => ({
+        ...prev,
+        followers: previous
+          ? [...prev.followers, user._id]
+          : prev.followers.filter((id) => id !== user._id),
+      }));
+
+      toast.error("Something went wrong!");
+    }
+  };
+
+  const handleToggleChat = async () => {
+    const response = await chatAPI.getChatIdByTypeId({
+      shopId: shop._id,
+      type: "shop",
+    });
+    onToggleChat(response.data);
+  };
+
+  if (loading)
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <SpinnerLoading />
+      </div>
+    );
+  if (!shop) return <NotFoundPage />;
 
   return (
     <>
@@ -119,7 +185,9 @@ export default function DetailShopPage() {
                 >
                   <img src="/camera.png" className="size-4" />
                   <span className="lg:inline hidden">
-                    {isUploading.coverPhoto ? "Uploading..." : "Change cover photo"}
+                    {isUploading.coverPhoto
+                      ? "Uploading..."
+                      : "Change cover photo"}
                   </span>
                 </div>
                 <div className="absolute bottom-0 w-full bg-gradient-to-t from-black/50 to-transparent h-[30%] rounded-md"></div>
@@ -128,7 +196,7 @@ export default function DetailShopPage() {
 
             <div className="absolute bottom-0 lg:translate-y-1/2 translate-y-1/5 lg:left-10 left-4 bg-gray-200 dark:bg-[#23233b] rounded-full z-10 w-46 h-46 flex border-4 border-white items-center justify-center">
               <img
-                src={Config.BACKEND_URL + shop.avatar}
+                src={getBackendImgURL(shop.avatar)}
                 className="size-full rounded-full object-cover cursor-pointer hover:opacity-70"
                 alt="Avatar"
               />
@@ -172,8 +240,40 @@ export default function DetailShopPage() {
                     </div>
                   </div>
 
-                  <div className="flex flex-col justify-end items-end py-4 z-30">
-                    <div className="flex gap-2 items-center"></div>
+                  <div className="flex gap-2 justify-end items-center py-4 z-30">
+                    <button
+                      onClick={handleFollowToggle}
+                      className={`flex gap-2 items-center justify-center cursor-pointer rounded-md py-2 px-4 font-medium
+    ${
+      isFollowing
+        ? "bg-gray-200 hover:bg-gray-300 text-black"
+        : "bg-blue-500 hover:bg-blue-600 text-white"
+    }
+  `}
+                    >
+                      {isFollowing ? (
+                        <Check className="size-4" />
+                      ) : (
+                        <Plus className="size-4" />
+                      )}
+                      <span>{isFollowing ? "Following" : "Follow"}</span>
+                    </button>
+                    {!isMyShop && (
+                      <button
+                        className="flex gap-2 items-center justify-center bg-gray-200 dark:bg-[#23233b] hover:bg-gray-300 dark:hover:bg-[#262638] cursor-pointer rounded-md py-2 px-4 text-black dark:text-white font-medium"
+                        onClick={handleToggleChat}
+                      >
+                        <img
+                          src={
+                            theme === "light"
+                              ? "/messenger-icon.png"
+                              : "/messenger-icon-white.png"
+                          }
+                          className="object-cover size-5"
+                        />
+                        <span>Message</span>
+                      </button>
+                    )}
                   </div>
                 </div>
 
@@ -192,11 +292,6 @@ export default function DetailShopPage() {
                         {tab.name}
                       </Link>
                     ))}
-
-                    <div className="flex gap-2 items-center hover:bg-gray-200 cursor-pointer rounded-md py-1 px-2 lg:py-3 lg:px-4 text-gray-500 font-medium">
-                      <span>See more</span>
-                      <ChevronDown className="size-5" />
-                    </div>
                   </div>
                 </div>
               </div>
@@ -209,11 +304,19 @@ export default function DetailShopPage() {
         <Routes>
           <Route path="/" element={<PostTab shop={shop} />} />
           <Route path="product" element={<ProductTab shop={shop} />} />
-          <Route path="product/category/:category" element={<ProductTab shop={shop} />} />
-          <Route path="product/detail/:slug" element={<DetailProductTab shop={shop} />} />
+          <Route
+            path="product/category/:category"
+            element={<ProductTab shop={shop} />}
+          />
+          <Route
+            path="product/detail/:slug"
+            element={<DetailProductTab shop={shop} />}
+          />
           <Route path="about" element={<AboutTab shop={shop} />} />
           <Route path="photos" element={<PhotoTab shop={shop} />} />
-          {isMyShop && <Route path="manage/*" element={<ManageTab shop={shop} />} />}
+          {isMyShop && (
+            <Route path="manage/*" element={<ManageTab shop={shop} />} />
+          )}
         </Routes>
       </section>
     </>

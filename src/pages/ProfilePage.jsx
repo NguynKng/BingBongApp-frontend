@@ -1,62 +1,54 @@
 import { useState, useRef, useEffect } from "react";
-import {
-  ChevronDown,
-  Globe,
-  GraduationCap,
-  MapPin,
-  Pencil,
-  Plus,
-  Sparkles,
-  UserCheck,
-  UserPlus,
-  UserX,
-  Link2,
-  BriefcaseBusiness,
-} from "lucide-react";
-import CreateStatus from "../components/CreateStatus";
-import PostCard from "../components/PostCard";
-import { Link, useParams } from "react-router-dom";
+import { Pencil, UserCheck, UserPlus, UserX } from "lucide-react";
+import { Link, useParams, Routes, Route } from "react-router-dom";
 import useAuthStore from "../store/authStore";
-import Config from "../envVars";
 import { userAPI } from "../services/api";
 import { toast } from "react-hot-toast";
-import { useGetOwnerPosts } from "../hooks/usePosts";
 import { useGetProfileBySlug } from "../hooks/useProfile";
 import SpinnerLoading from "../components/SpinnerLoading";
-import ChatBox from "../components/ChatBox";
 import WarningDeleteFriend from "../components/WarningDeleteFriend";
-import EditInfoModal from "../components/EditInfoModal";
-import useUserStore from "../store/userStore";
 import { useMemo } from "react";
+import { getBackendImgURL, getEquippedBadge } from "../utils/helper";
+import { chatAPI } from "../services/api";
+import UserBadge from "../components/UserBadge";
+import PostTab from "../components/UserProfile/PostTab";
+import PhotoTab from "../components/UserProfile/PhotoTab";
+import AboutTab from "../components/UserProfile/AboutTab";
+import FriendTab from "../components/UserProfile/FriendTab";
+import MusicTab from "../components/UserProfile/MusicTab";
+import BadgeTab from "../components/UserProfile/BadgeTab";
 
-function ProfilePage() {
+function ProfilePage({ onToggleChat }) {
   const [isOpenFriendsDropdown, setIsOpenFriendsDropdown] = useState(false);
   const { slug } = useParams();
-  const { updateUserProfileInStore } = useUserStore();
-  const [activeTab, setActiveTab] = useState("Bài viết");
   const [isUploading, setIsUploading] = useState({
     avatar: false,
     coverPhoto: false,
   });
   const [isWarningDeleteFriend, setIsWarningDeleteFriend] = useState(false);
-  const [isOpenInfoModal, setIsOpenInfoModal] = useState(false);
   const { user, updateUser, theme } = useAuthStore();
   const avatarInputRef = useRef(null);
   const { profile } = useGetProfileBySlug(slug);
   const userId = useMemo(() => profile?._id ?? null, [profile]);
   const coverPhotoInputRef = useRef(null);
-  const { posts, setPosts, loading } = useGetOwnerPosts("User", userId);
+  const clean = (p) => p.replace(/\/+$/, "");
+  const isCurrentTab = (tabPath) =>
+    clean(location.pathname) ===
+    clean(`/profile/${slug}${tabPath ? `/${tabPath.toLowerCase()}` : ""}`);
 
   const isMyProfile = userId === user?._id;
 
   const displayedUser = profile ?? null;
 
+  const equippedBadge = useMemo(
+    () => getEquippedBadge(displayedUser),
+    [displayedUser]
+  );
+
   const [isFriend, setIsFriend] = useState(false);
   const [hasSentFriendRequest, setHasSentFriendRequest] = useState(false);
   const [isReceivingFriendRequest, setIsReceivingFriendRequest] =
     useState(false);
-  const [showChat, setShowChat] = useState(false);
-  const [activeChatUser, setActiveChatUser] = useState();
 
   useEffect(() => {
     if (!isMyProfile && displayedUser && user) {
@@ -79,28 +71,20 @@ function ProfilePage() {
   }
 
   const tabs = [
-    { name: "Posts" },
-    { name: "About" },
-    { name: "Friends" },
-    { name: "Photos" },
+    { name: "Posts", path: "" },
+    { name: "About", path: "about" },
+    { name: "Friends", path: "friends" },
+    { name: "Photos", path: "photos" },
+    { name: "Music", path: "music" },
+    { name: "Badge", path: "badge" },
   ];
 
-  const handleToggleChat = (friend) => {
-    setActiveChatUser(friend);
-    setShowChat(true); // ensure ChatBox shows when a friend is clicked
-  };
-
-  const handleCloseChat = () => {
-    setShowChat(false);
-    setActiveChatUser(undefined);
-  }; // giữ nguyên qua các route
-
-  const handleAddPost = (newPost) => {
-    setPosts((prev) => [newPost, ...prev]);
-  };
-
-  const handleRemovePost = (postId) => {
-    setPosts((prev) => prev.filter((post) => post._id !== postId));
+  const handleToggleChat = async (userId) => {
+    const response = await chatAPI.getChatIdByTypeId({
+      userId,
+      type: "private",
+    });
+    onToggleChat(response.data);
   };
 
   const handleAvatarUpload = async (event) => {
@@ -208,23 +192,13 @@ function ProfilePage() {
     }
   };
 
-  const handleUpdateUser = (updatedData) => {
-    if (isMyProfile) {
-      updateUserProfileInStore(user._id, updatedData);
-    }
-  };
-
   return (
     <>
       <div className="lg:px-[15%] bg-gray-100 dark:bg-[#181826]">
         <div className="relative w-full">
           <div className="relative w-full lg:h-[24rem] md:h-[22rem] sm:h-[20rem] h-[18rem] rounded-b-md">
             <img
-              src={
-                displayedUser?.coverPhoto
-                  ? `${Config.BACKEND_URL}${displayedUser.coverPhoto}`
-                  : "/background-gray.avif"
-              }
+              src={getBackendImgURL(displayedUser?.coverPhoto)}
               className="size-full lg:rounded-b-md object-cover"
               alt="Cover photo"
               loading="lazy"
@@ -254,11 +228,7 @@ function ProfilePage() {
             )}
             <div className="absolute bottom-0 lg:translate-y-1/2 translate-y-1/5 lg:left-10 left-4 bg-gray-200 dark:bg-[#23233b] hover:bg-gray-300 dark:hover:bg-[#23233b] rounded-full z-10 w-46 h-46 flex border-4 border-white items-center justify-center">
               <img
-                src={
-                  displayedUser?.avatar
-                    ? `${Config.BACKEND_URL}${displayedUser.avatar}`
-                    : "/user.png"
-                }
+                src={getBackendImgURL(displayedUser?.avatar)}
                 className="size-full rounded-full object-cover cursor-pointer hover:opacity-70"
                 alt="Avatar"
               />
@@ -290,25 +260,26 @@ function ProfilePage() {
               <div className="lg:px-8 px-4">
                 <div className="flex lg:flex-row flex-col lg:justify-between justify-center lg:items-end items-start border-b-2 border-gray-200 dark:border-[#2b2b3d] lg:pb-4 pb-1 lg:pl-[13rem] lg:pt-4 pt-10">
                   <div className="flex lg:flex-row flex-col gap-2 justify-center items-center self-start">
-                    <div className="flex flex-col justify-center items-start self-end">
-                      <h1 className="text-3xl font-bold not-[]:rounded dark:text-white">
-                        {displayedUser?.fullName || "Loading..."}
-                      </h1>
+                    <div className="flex flex-col justify-center items-start self-end gap-2">
+                      <div className="flex flex-wrap gap-2 items-center">
+                        <h1 className="text-3xl font-bold not-[]:rounded dark:text-white">
+                          {displayedUser?.fullName || "Loading..."}
+                        </h1>
+                      </div>
                       <p className="text-gray-500 dark:text-gray-400 rounded">{`${
                         displayedUser.friends.length || 0
                       } friend${
                         displayedUser.friends.length !== 1 ? "s" : ""
                       }`}</p>
+                      {equippedBadge && (
+                        <UserBadge badge={equippedBadge} mode="large" />
+                      )}
                     </div>
                   </div>
                   <div className="flex flex-col justify-end items-end py-4 z-30">
                     <div className="flex gap-2 items-center">
                       {isMyProfile ? (
                         <>
-                          <button className="flex lg:gap-2 gap-1 bg-blue-500 hover:bg-blue-600 cursor-pointer rounded-md py-2 lg:px-4 px-2 text-white items-center justify-center">
-                            <Plus className="size-4" />
-                            <span>Add to story</span>
-                          </button>
                           <button className="flex lg:gap-2 gap-1 items-center justify-center bg-gray-200 dark:bg-[#23233b] hover:bg-gray-300 dark:hover:bg-[#23233b] cursor-pointer rounded-md py-2 lg:px-4 px-2 text-black dark:text-white font-medium">
                             <Pencil className="size-4" />
                             <span>Edit profile</span>
@@ -344,7 +315,7 @@ function ProfilePage() {
                           </button>
                           <button
                             className="flex gap-2 items-center justify-center bg-gray-200 dark:bg-[#23233b] hover:bg-gray-300 dark:hover:bg-[#23233b] cursor-pointer rounded-md py-2 px-4 text-black dark:text-white font-medium"
-                            onClick={() => handleToggleChat(displayedUser)}
+                            onClick={() => handleToggleChat(displayedUser._id)}
                           >
                             <img
                               src={
@@ -373,7 +344,7 @@ function ProfilePage() {
                           </button>
                           <button
                             className="flex gap-2 items-center justify-center bg-gray-200 dark:bg-[#23233b] hover:bg-gray-300 dark:hover:bg-[#23233b] cursor-pointer rounded-md py-2 px-4 text-black dark:text-white font-medium"
-                            onClick={() => handleToggleChat(displayedUser)}
+                            onClick={() => handleToggleChat(displayedUser._id)}
                           >
                             <img
                               src={
@@ -409,7 +380,7 @@ function ProfilePage() {
                           </button>
                           <button
                             className="flex gap-2 items-center justify-center bg-gray-200 dark:bg-[#23233b] hover:bg-gray-300 dark:hover:bg-[#23233b] cursor-pointer rounded-md py-2 px-4 text-black dark:text-white font-medium"
-                            onClick={() => handleToggleChat(displayedUser)}
+                            onClick={() => handleToggleChat(displayedUser._id)}
                           >
                             <img
                               src={
@@ -429,22 +400,18 @@ function ProfilePage() {
                 <div className="flex justify-between items-center">
                   <div className="flex flex-wrap py-1">
                     {tabs.map((tab, index) => (
-                      <div
+                      <Link
+                        to={`/profile/${slug}/${tab.path}`}
                         key={index}
                         className={`cursor-pointer border-b-4 font-medium py-1 px-2 lg:py-3 lg:px-4 ${
-                          activeTab === tab.name
+                          isCurrentTab(tab.path)
                             ? "border-blue-500 text-blue-500 bg-transparent"
                             : "border-transparent text-gray-500 hover:bg-gray-200 rounded-md"
                         }`}
-                        onClick={() => setActiveTab(tab.name)}
                       >
                         {tab.name}
-                      </div>
+                      </Link>
                     ))}
-                    <div className="flex gap-2 items-center justify-center hover:bg-gray-200 cursor-pointer rounded-md py-1 px-2 lg:py-3 lg:px-4 text-gray-500 font-medium">
-                      <span>More</span>
-                      <ChevronDown className="size-5" />
-                    </div>
                   </div>
                 </div>
               </div>
@@ -454,299 +421,35 @@ function ProfilePage() {
       </div>
 
       <section className="bg-gray-200 dark:bg-[#181826] lg:px-[17%] px-2 py-4 min-h-screen">
-        <div className="flex lg:flex-row flex-col gap-4">
-          <div className="lg:w-[40%] w-full space-y-4 lg:sticky top-[8.5vh] h-fit">
-            <div className="rounded-xl bg-white dark:bg-[#1c1c28] border border-gray-200 dark:border-[#2c2c3a] p-5 space-y-2 shadow-sm transition-all duration-300">
-              {/* Header */}
-              <div className="flex justify-between items-center">
-                <h1 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  Intro
-                </h1>
-                {isMyProfile && (
-                  <button
-                    onClick={() => setIsOpenInfoModal(true)}
-                    className="text-sm px-3 py-1.5 rounded-md bg-gray-50 dark:bg-[#23233b] text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#2b2b3d] transition"
-                  >
-                    <Pencil className="inline w-4 h-4 mr-1" /> Edit Info
-                  </button>
-                )}
-              </div>
-
-              {/* Bio */}
-              {displayedUser?.bio ? (
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-center">
-                  {displayedUser.bio}
-                </p>
-              ) : (
-                isMyProfile && (
-                  <button
-                    onClick={() => setIsOpenInfoModal(true)}
-                    className="py-2 px-4 w-full rounded-md bg-gray-50 dark:bg-[#23233b] dark:text-white font-medium text-sm hover:bg-gray-100 dark:hover:bg-[#2b2b3d]"
-                  >
-                    Add bio
-                  </button>
-                )
-              )}
-
-              <hr className="border-gray-200 dark:border-[#2b2b3d]" />
-
-              {/* Education */}
-              {displayedUser?.education?.length > 0 && (
-                <div className="space-y-2">
-                  <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                    <GraduationCap className="size-5 fill-gray-500 text-white dark:text-black" />
-                    Education
-                  </h2>
-                  {displayedUser.education.map((edu, idx) => (
-                    <div
-                      key={idx}
-                      className="pl-7 text-gray-700 dark:text-gray-300 text-sm"
-                    >
-                      <p className="font-medium">{edu.school}</p>
-                      {edu.major && <p>{edu.major}</p>}
-                      {edu.year && (
-                        <p className="text-gray-500 dark:text-gray-400 text-xs">
-                          {edu.year}
-                        </p>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* Work */}
-              {displayedUser?.work && (
-                <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-                  <BriefcaseBusiness className="fill-gray-500 text-white size-5 dark:text-black" />
-                  <span>
-                    {(() => {
-                      const { position, company, duration } =
-                        displayedUser.work;
-                      if (position && company && duration)
-                        return `${position} at ${company} (${duration})`;
-                      if (position && company)
-                        return `${position} at ${company}`;
-                      if (position) return position;
-                      if (company) return `Work at ${company}`;
-                      return null;
-                    })()}
-                  </span>
-                </div>
-              )}
-
-              {/* Location */}
-              {displayedUser?.address && (
-                <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-                  <MapPin className="fill-gray-500 text-white size-5 dark:text-black" />
-                  <span>Lives in {displayedUser.address}</span>
-                </div>
-              )}
-
-              {/* Website */}
-              {displayedUser?.website && (
-                <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-                  <Globe className="fill-gray-500 text-white size-5 dark:text-black" />
-                  <Link
-                    to={displayedUser.website}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 dark:text-blue-400 hover:underline"
-                  >
-                    {displayedUser.website}
-                  </Link>
-                </div>
-              )}
-
-              {/* Skills */}
-              {displayedUser?.skills?.length > 0 && (
-                <div>
-                  <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2 mb-2">
-                    <Sparkles className="fill-gray-500 text-white size-5" />
-                    Skills
-                  </h2>
-                  <div className="flex flex-wrap gap-2">
-                    {displayedUser.skills.map((skill, idx) => (
-                      <span
-                        key={idx}
-                        className="px-3 py-1 text-sm bg-gray-100 dark:bg-[#23233b] text-gray-800 dark:text-gray-300 rounded-full"
-                      >
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Interests */}
-              {displayedUser?.interests?.length > 0 && (
-                <div>
-                  <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2 mb-2">
-                    <Heart className="fill-gray-500 text-white size-5 dark:text-black" />
-                    Interests
-                  </h2>
-                  <div className="flex flex-wrap gap-2">
-                    {displayedUser.interests.map((interest, idx) => (
-                      <span
-                        key={idx}
-                        className="px-3 py-1 text-sm bg-gray-100 dark:bg-[#23233b] text-gray-800 dark:text-gray-300 rounded-full"
-                      >
-                        {interest}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Social Links */}
-              {displayedUser?.socialLinks?.length > 0 && (
-                <div>
-                  <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2 mb-2">
-                    <Link2 className="fill-gray-500 text-white size-5 dark:text-black" />
-                    Social Links
-                  </h2>
-                  <div className="flex flex-col gap-1 text-sm">
-                    {displayedUser.socialLinks.map((link, idx) => (
-                      <Link
-                        key={idx}
-                        to={link.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-600 dark:text-blue-400 hover:underline"
-                      >
-                        {link.platform}
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <div className="rounded-md bg-white dark:bg-[#1e1e2f] border-2 border-gray-200 dark:border-[#2b2b3d] p-4 space-y-2">
-              <div className="flex items-center justify-between gap-2">
-                <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-                  Photos
-                </h1>
-                <h1 className="text-blue-500 rounded-md py-2 px-4 cursor-pointer hover:bg-gray-200 dark:hover:bg-[#23233b]">
-                  View All Photos
-                </h1>
-              </div>
-              <div className="grid grid-cols-3 gap-2">
-                {posts.map(
-                  (post) =>
-                    post.media &&
-                    post.media.length > 0 && (
-                      <div
-                        key={post._id}
-                        className="relative w-full lg:h-32 h-56 overflow-hidden rounded-md cursor-pointer hover:scale-105 transition-transform duration-300 border-2 border-gray-200"
-                      >
-                        <img
-                          src={`${Config.BACKEND_URL}${post.media[0]}`}
-                          alt="Post"
-                          className="w-full h-full object-cover rounded-md"
-                        />
-                      </div>
-                    )
-                )}
-              </div>
-            </div>
-
-            <div className="rounded-md bg-white dark:bg-[#1e1e2f] border-2 border-gray-200 dark:border-[#2b2b3d] p-4 space-y-2">
-              <div className="flex items-center justify-between gap-2">
-                <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-                  Friends
-                </h1>
-                <h1 className="text-blue-500 rounded-md py-2 px-4 cursor-pointer hover:bg-gray-200 dark:hover:bg-[#23233b]">
-                  View All Friends
-                </h1>
-              </div>
-              <h1 className="text-gray-500 dark:text-gray-400 text-lg">{`${
-                profile.friends.length
-              } friend${profile.friends.length !== 1 ? "s" : ""}`}</h1>
-              <div className="grid grid-cols-3 gap-2">
-                {profile.friends.map((friend) => (
-                  <div key={friend._id} className="w-full rounded-md">
-                    <Link to={`/profile/${friend.slug}`}>
-                      <img
-                        src={
-                          friend.avatar
-                            ? `${Config.BACKEND_URL}${friend.avatar}`
-                            : "/user.png"
-                        }
-                        alt="avatar"
-                        className="w-32 h-30 object-cover rounded-md border-2 border-gray-200 dark:border-[#2b2b3d]"
-                      />
-                    </Link>
-                    <Link
-                      to={`/profile/${friend.slug}`}
-                      className="font-medium dark:text-white text-sm hover:underline-offset-2 hover:underline"
-                    >
-                      {friend.fullName}
-                    </Link>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div className="lg:w-[60%] w-full space-y-4">
-            {isMyProfile && (
-              <CreateStatus
-                postedBy={{
-                  _id: user._id,
-                  name: user.fullName,
-                  avatar: user.avatar,
-                  slug: user.slug,
-                }}
-                onPostCreated={handleAddPost}
-                postedByType={"User"}
-                postedById={user?._id}
-              />
-            )}
-            <div className="py-2 px-4 bg-white dark:bg-[#1e1e2f] rounded-lg">
-              <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-                Posts
-              </h1>
-            </div>
-            {loading ? (
-              <SpinnerLoading />
-            ) : (
-              <>
-                {posts && posts.length > 0 ? (
-                  posts.map((post) => (
-                    <PostCard
-                      key={post._id}
-                      post={post}
-                      onDeletePost={handleRemovePost}
-                    />
-                  ))
-                ) : (
-                  <p className="text-center text-2xl dark:text-white">
-                    No posts available
-                  </p>
-                )}
-              </>
-            )}
-          </div>
-        </div>
+        <Routes>
+          <Route path="/" element={<PostTab displayedUser={displayedUser} />} />
+          <Route
+            path="about"
+            element={<AboutTab displayedUser={displayedUser} />}
+          />
+          <Route
+            path="photos"
+            element={<PhotoTab displayedUser={displayedUser} />}
+          />
+          <Route
+            path="friends"
+            element={<FriendTab displayedUser={displayedUser} />}
+          />
+          <Route
+            path="music"
+            element={<MusicTab displayedUser={displayedUser} />}
+          />
+          <Route
+            path="badge"
+            element={<BadgeTab displayedUser={displayedUser} />}
+          />
+        </Routes>
       </section>
       {isWarningDeleteFriend && (
         <WarningDeleteFriend
           onConfirm={handleDeleteFriend}
           onCancel={() => setIsWarningDeleteFriend(false)}
           displayedUser={displayedUser}
-        />
-      )}
-      {showChat && (
-        <ChatBox userChat={activeChatUser} onClose={handleCloseChat} />
-      )}
-
-      {/* Modal */}
-      {isOpenInfoModal && (
-        <EditInfoModal
-          onClose={() => setIsOpenInfoModal(false)}
-          user={displayedUser}
-          isMyProfile={isMyProfile}
-          onUpdated={handleUpdateUser}
         />
       )}
     </>

@@ -3,6 +3,7 @@ import { shopAPI } from "../services/api";
 import ShopCard from "../components/ShopCard";
 import CreateShopModal from "../components/CreateShopModal";
 import { Plus, Search } from "lucide-react";
+import SpinnerLoading from "../components/SpinnerLoading";
 
 export default function ShopPage() {
   const [shops, setShops] = useState([]);
@@ -81,7 +82,7 @@ export default function ShopPage() {
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
-              className={`px-3 py-1.5 rounded-md font-medium ${
+              className={`px-3 py-1.5 rounded-md cursor-pointer font-medium ${
                 activeTab === tab.key
                   ? "bg-blue-600 text-white"
                   : "bg-gray-100 dark:bg-[#2b2b3d] text-gray-700 dark:text-gray-300"
@@ -114,9 +115,7 @@ export default function ShopPage() {
       {/* List */}
       <div>
         {loading ? (
-          <div className="text-center py-10 text-gray-500 dark:text-gray-400">
-            Loading shops...
-          </div>
+            <SpinnerLoading />
         ) : filtered.length === 0 ? (
           <div className="text-center py-10 text-gray-500 dark:text-gray-400">
             No shops found.

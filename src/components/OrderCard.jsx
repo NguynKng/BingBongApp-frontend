@@ -4,8 +4,9 @@ import { formatDateTimeWithTime } from "../utils/timeUtils";
 import { formatPriceWithDollar } from "../utils/formattedFunction";
 import { Store } from "lucide-react";
 import { Link } from "react-router-dom";
+import { memo } from "react";
 
-export default function OrderCard({ order }) {
+const OrderCard = memo(({ order }) => {
   return (
     <div className="shadow-sm rounded-lg w-full bg-white dark:bg-[#1b1f2b] transition-colors duration-300 mb-4 border border-gray-100 dark:border-gray-700">
       {/* Header: Order ID + Status + Shop */}
@@ -84,14 +85,17 @@ export default function OrderCard({ order }) {
           </span>
         </div>
         <div className="flex flex-col sm:flex-row gap-2">
-          <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500 transition w-full sm:w-auto text-sm">
-            View Details
-          </button>
-          <button className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-400 transition w-full sm:w-auto text-sm">
+          <Link to={`/order/${order.orderId}`}>
+            <button className="px-4 py-2 bg-blue-600 cursor-pointer text-white rounded hover:bg-blue-500 transition w-full sm:w-auto text-sm">
+              View Details
+            </button>
+          </Link>
+          <button className="px-4 py-2 bg-red-500 cursor-pointer text-white rounded hover:bg-red-400 transition w-full sm:w-auto text-sm">
             Cancel
           </button>
         </div>
       </div>
     </div>
   );
-}
+});
+export default OrderCard;

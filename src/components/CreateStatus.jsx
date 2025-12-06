@@ -15,7 +15,7 @@ function CreateStatus({ onPostCreated, postedBy, postedByType, postedById }) {
       case "Shop":
         return `/shop/${postedBy.slug}`;
       case "Group":
-        return `/group/${postedBy.slug}`;
+        return `/profile/${user.slug}`;
       default:
         return `/profile/${user.slug}`;
     }
@@ -28,7 +28,7 @@ function CreateStatus({ onPostCreated, postedBy, postedByType, postedById }) {
       case "Shop":
         return `What's new in your shop, ${postedBy.name}?`;
       case "Group":
-        return `What's happening in your group, ${postedBy.name}?`;
+        return `Share something with your group, ${user.fullName}?`;
       default:
         return `What's on your mind, ${postedBy.name}?`;
     }
@@ -44,7 +44,7 @@ function CreateStatus({ onPostCreated, postedBy, postedByType, postedById }) {
             className="size-12 rounded-full border-[1px] border-gray-300 dark:border-gray-600 cursor-pointer hover:opacity-[70%]"
           >
             <img
-              src={getBackendImgURL(postedBy?.avatar)}
+              src={getBackendImgURL(postedByType === "Group" ? user.avatar : postedBy.avatar)}
               alt="user-avatar"
               className="object-cover rounded-full size-full"
             />

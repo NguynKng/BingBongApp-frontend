@@ -4,9 +4,17 @@ import SpinnerLoading from "../components/SpinnerLoading";
 
 // Protects routes that require authentication
 export const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated, user, token, isCheckingAuth } = useAuthStore();
 
-  if (!isAuthenticated) {
+  if (isCheckingAuth) {
+    return (
+      <div className="min-h-screen w-full flex items-center justify-center">
+        <SpinnerLoading />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated || !user || !token) {
     return <Navigate to="/login" />;
   }
 
@@ -14,16 +22,30 @@ export const ProtectedRoute = ({ children }) => {
 };
 
 export const AdminRoute = ({ children }) => {
-  const { isAuthenticated, user } = useAuthStore();
-  if (!isAuthenticated || user?.role !== "admin") {
+  const { isAuthenticated, user, token, isCheckingAuth } = useAuthStore();
+  if (isCheckingAuth) {
+    return (
+      <div className="min-h-screen w-full flex items-center justify-center">
+        <SpinnerLoading />
+      </div>
+    );
+  }
+  if (!isAuthenticated || !user || user?.role !== "admin" || !token) {
     return <Navigate to="/admin/login" />;
   }
   return children;
 };
 
 export const AdminAuthRoute = ({ children }) => {
-  const { isAuthenticated, user } = useAuthStore();
-  if (isAuthenticated && user?.role === "admin") {
+  const { isAuthenticated, user, isCheckingAuth, token } = useAuthStore();
+  if (isCheckingAuth) {
+    return (
+      <div className="min-h-screen w-full flex items-center justify-center">
+        <SpinnerLoading />
+      </div>
+    );
+  }
+  if (isAuthenticated && user?.role === "admin" && token) {
     return <Navigate to="/admin" />;
   }
   return children;
@@ -31,11 +53,20 @@ export const AdminAuthRoute = ({ children }) => {
 
 // Redirects authenticated users from auth pages (login/register)
 export const AuthRoute = ({ children }) => {
-  const { isAuthenticated } = useAuthStore();
-  
-  if (isAuthenticated) {
+  const { isAuthenticated, user, token, isCheckingAuth } = useAuthStore();
+
+  if (isCheckingAuth) {
+    return (
+      <div className="min-h-screen w-full flex items-center justify-center">
+        <SpinnerLoading />
+      </div>
+    );
+  }
+
+  if (isAuthenticated && user && token) {
     return <Navigate to="/" />;
   }
 
   return children;
 };
+

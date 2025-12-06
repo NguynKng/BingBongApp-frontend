@@ -21,7 +21,7 @@ const useUserStore = create((set, get) => ({
     try {
       const response = await userAPI.getUserProfileBySlug(slug);
       if (response.success) {
-        const user = response.user;
+        const user = response.data;
         set((state) => ({
           users: { ...state.users, [slug]: user },
         }));

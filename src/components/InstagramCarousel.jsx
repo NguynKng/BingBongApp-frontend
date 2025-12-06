@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { memo, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useImagePreview } from "../hooks/useImagePreview";
 import { getBackendImgURL } from "../utils/helper";
 
-export default function ImageCarousel({ media }) {
+const ImageCarousel = memo(({ media, postId }) => {
   const [currentIndex, setCurrentIndex] = useState(0); // Dùng state thay vì ref
   const { openImagePreview, ImagePreviewModal } = useImagePreview();
 
@@ -27,7 +27,7 @@ export default function ImageCarousel({ media }) {
           style={{
             transform: `translateX(-${currentIndex * 100}%)`,
           }}
-          onClick={() => openImagePreview(media, currentIndex)}
+          onClick={() => openImagePreview(media, currentIndex, postId)}
         >
           {media.map((img, idx) => (
             <div key={idx} className="w-full flex-shrink-0">
@@ -45,7 +45,7 @@ export default function ImageCarousel({ media }) {
         {currentIndex > 0 && (
           <button
             onClick={handlePrev}
-            className="absolute top-1/2 cursor-pointer left-3 hover:bg-white/70 -translate-y-1/2 bg-white/50 text-gray-600 p-1 rounded-full"
+            className="absolute top-1/2 cursor-pointer left-3 dark:hover:bg-white/70 hover:bg-black/30 -translate-y-1/2 dark:bg-white/50 bg-black/20 text-gray-600 p-1 rounded-full"
           >
             <ChevronLeft />
           </button>
@@ -53,7 +53,7 @@ export default function ImageCarousel({ media }) {
         {currentIndex < media.length - 1 && (
           <button
             onClick={handleNext}
-            className="absolute top-1/2 right-3 cursor-pointer hover:bg-white/70 -translate-y-1/2 bg-white/50 text-gray-600 p-1 rounded-full"
+            className="absolute top-1/2 right-3 cursor-pointer -translate-y-1/2 dark:bg-white/50 bg-black/20 dark:hover:bg-white/70 hover:bg-black/30 text-gray-600 p-1 rounded-full"
           >
             <ChevronRight />
           </button>
@@ -81,4 +81,5 @@ export default function ImageCarousel({ media }) {
       </div>
     </>
   );
-}
+});
+export default ImageCarousel;

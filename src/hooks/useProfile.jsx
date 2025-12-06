@@ -3,7 +3,7 @@ import { userAPI } from "../services/api";
 import useAuthStore from "../store/authStore";
 import useUserStore from "../store/userStore";
 
-export const useGetProfileBySlug = (slug, options = {}) => {
+export const  useGetProfileBySlug = (slug, options = {}) => {
   const [profile, setProfile] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);

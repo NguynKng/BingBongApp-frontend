@@ -159,6 +159,7 @@ const useAuthStore = create(
             user: null,
             isAuthenticated: false,
             isCheckingAuth: false,
+            token: null,
           });
         }
       },

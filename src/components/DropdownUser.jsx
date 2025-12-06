@@ -1,6 +1,7 @@
 import Config from "../envVars";
 import { Link } from "react-router-dom";
 import useAuthStore from "../store/authStore";
+import { getBackendImgURL } from "../utils/helper";
 
 function DropdownUser() {
   const { logout, user, theme, toggleTheme } = useAuthStore();
@@ -29,7 +30,7 @@ function DropdownUser() {
         >
           <img
             src={
-              user?.avatar ? `${Config.BACKEND_URL}${user.avatar}` : "/user.png"
+              getBackendImgURL(user.avatar)
             }
             className="size-9 object-cover rounded-full border border-gray-200"
           />

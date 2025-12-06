@@ -9,6 +9,7 @@ import NotificationPopup from "./NotificationPopup";
 import { useCallback } from "react";
 import IncomingCall from "./IncomingCall";
 import Navbar from "./Navbar";
+import { NotificationSound } from "../utils/notificationSound";
 
 function MainLayout({ Element }) {
   const { addNotification } = useNotificationStore();
@@ -36,8 +37,8 @@ function MainLayout({ Element }) {
 
   const handleGetNotificationsAndPopup = useCallback(
     (notification1) => {
+      NotificationSound.play();
       const { notification } = notification1;
-      console.log("[NEW NOTIFICATION]", notification);
       if (notification.type === "friend_request") {
         const newFriendRequests = [
           ...user.friendRequests,
@@ -122,7 +123,7 @@ function MainLayout({ Element }) {
       />
       <Header onToggleChat={handleToggleChat} />
       <div className="relative mt-[64px] bg-gradient-to-br from-[#f0f4ff] to-[#fff1f7] dark:from-[#1c1f2a] dark:to-[#2a2e3d] min-h-[92vh]">
-        <Element />
+        <Element onToggleChat={handleToggleChat} />
       </div>
       <IncomingCall />
       {showChat && <ChatBox chat={activeChat} onClose={handleCloseChat} />}

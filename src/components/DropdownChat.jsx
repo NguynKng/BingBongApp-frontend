@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { Ellipsis, Expand, Search, SquarePen } from "lucide-react";
 import { useGetChats } from "../hooks/useChats";
 import SpinnerLoading from "./SpinnerLoading";
-import { useAuthStore } from "../store/authStore";
+import useAuthStore from "../store/authStore";
 import { getBackendImgURL } from "../utils/helper";
 import CreateGroupChatDropdown from "./CreateGroupChatDropdown";
 
@@ -11,18 +11,63 @@ function DropdownChat({ onToggleChat }) {
   const { onlineUsers, user } = useAuthStore();
   const [searchTerm, setSearchTerm] = useState("");
   const [showGroupModal, setShowGroupModal] = useState(false);
-  const [activeTab, setActiveTab] = useState("inbox"); // inbox | community
+  const [activeTab, setActiveTab] = useState("inbox");
+  const isPrivateChat = (chat) => chat.type === "private";
 
   const filteredMessages = useMemo(() => {
     return messages.filter((chat) => {
-      const participant = chat.isGroup ? null : chat.participants.find((p) => p._id !== user._id);
-      if (chat.isGroup) return chat.groupName.toLowerCase().includes(searchTerm.toLowerCase());
-      return participant?.fullName.toLowerCase().includes(searchTerm.toLowerCase());
+      let userChat = null;
+
+      switch (chat.type) {
+        case "private":
+          userChat = chat.participants.find((p) => p._id !== user._id);
+          return userChat?.fullName
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase());
+
+        case "group":
+          userChat = chat;
+          return chat.groupName
+            ?.toLowerCase()
+            .includes(searchTerm.toLowerCase());
+
+        case "shop":
+          userChat = chat.shopId;
+          return userChat?.name
+            ?.toLowerCase()
+            .includes(searchTerm.toLowerCase());
+
+        case "shop_channel":
+          userChat = chat.shopId;
+          return userChat?.name
+            ?.toLowerCase()
+            .includes(searchTerm.toLowerCase());
+        case "fanpage":
+          userChat = chat.fanpageId;
+          return userChat?.name
+            ?.toLowerCase()
+            .includes(searchTerm.toLowerCase());
+
+        case "AI":
+          userChat = chat;
+          return chat.groupName
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase());
+
+        default:
+          return false;
+      }
     });
   }, [messages, searchTerm, user._id]);
 
-  const inboxMessages = useMemo(() => filteredMessages.filter((chat) => !chat.isGroup), [filteredMessages]);
-  const groupMessages = useMemo(() => filteredMessages.filter((chat) => chat.isGroup), [filteredMessages]);
+  const inboxMessages = useMemo(
+    () => filteredMessages.filter((chat) => isPrivateChat(chat)),
+    [filteredMessages]
+  );
+  const groupMessages = useMemo(
+    () => filteredMessages.filter((chat) => !isPrivateChat(chat)),
+    [filteredMessages]
+  );
 
   function renderChats(list) {
     if (!list || list.length === 0)
@@ -33,13 +78,86 @@ function DropdownChat({ onToggleChat }) {
       );
 
     return list.map((chat) => {
-      const participant = chat.isGroup ? null : chat.participants.find((p) => p._id !== user._id);
+      let displayAvatar = "";
+      let displayName = "";
+      let onlineIndicator = false;
+
+      // ------------------------------------------------------
+      // Xác định người còn lại nếu là private
+      // ------------------------------------------------------
+      const otherUser =
+        chat.type === "private"
+          ? chat.participants.find((p) => p._id !== user._id)
+          : null;
+
       const isSentByMe = chat.lastMessage?.sender._id === user._id;
 
-      const avatar = chat.isGroup
-        ? getBackendImgURL(chat.avatar)
-        : getBackendImgURL(participant?.avatar);
-      const onlineIndicator = participant && onlineUsers.includes(participant._id);
+      switch (chat.type) {
+        // ===============================
+        // PRIVATE
+        // ===============================
+        case "private":
+          displayAvatar = getBackendImgURL(otherUser?.avatar);
+          displayName = otherUser?.fullName;
+          onlineIndicator = otherUser && onlineUsers.includes(otherUser._id);
+          break;
+
+        // ===============================
+        // GROUP
+        // ===============================
+        case "group":
+          displayAvatar = getBackendImgURL(chat.avatar);
+          displayName = chat.groupName;
+          break;
+
+        // ===============================
+        // SHOP
+        // ===============================
+        case "shop": {
+          const shop = chat.shopId;
+
+          const ownerId = shop.owner;
+          const otherPerson =
+            chat.participants.find((p) => p._id !== ownerId) || null;
+
+          if (user._id === ownerId) {
+            // ---- Bạn là chủ shop ----
+            displayAvatar = getBackendImgURL(otherPerson?.avatar);
+            displayName = `${otherPerson.fullName} • ${shop.name}`;
+            onlineIndicator =
+              otherPerson && onlineUsers.includes(otherPerson._id);
+          } else {
+            // ---- Bạn là khách ----
+            displayAvatar = getBackendImgURL(shop.avatar);
+            displayName = shop.name;
+          }
+          break;
+        }
+
+        // ===============================
+        // SHOP CHANNEL
+        // ===============================
+        case "shop_channel":
+          displayAvatar = getBackendImgURL(chat.shopId.avatar);
+          displayName = `${chat.shopId.name} (channel)`;
+          break;
+
+        // ===============================
+        // FANPAGE
+        // ===============================
+        case "fanpage":
+          displayAvatar = getBackendImgURL(chat.fanpageId.avatar);
+          displayName = chat.fanpageId.name;
+          break;
+
+        // ===============================
+        // AI
+        // ===============================
+        case "AI":
+          displayAvatar = getBackendImgURL(chat.avatar);
+          displayName = chat.groupName;
+          break;
+      }
 
       return (
         <div
@@ -47,14 +165,23 @@ function DropdownChat({ onToggleChat }) {
           onClick={() => onToggleChat(chat)}
           className="flex items-center gap-3 hover:bg-gray-100 rounded-xl px-3 py-2 cursor-pointer transition-all duration-200 transform hover:scale-[1.02] hover:shadow-md dark:hover:bg-[rgb(52,52,52)]"
         >
+          {/* Avatar */}
           <div className="relative size-10 rounded-full">
-            <img src={avatar} className="size-full rounded-full object-cover" />
-            {onlineIndicator && <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white" />}
+            <img
+              src={displayAvatar}
+              className="size-full rounded-full object-cover"
+            />
+
+            {/* Online indicator — chỉ private + shop (nếu owner) */}
+            {onlineIndicator && (
+              <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white" />
+            )}
           </div>
 
+          {/* Info */}
           <div className="flex-1">
             <h2 className="text-sm font-semibold text-gray-800 dark:text-white">
-              {chat.isGroup ? chat.groupName : participant?.fullName}
+              {displayName}
             </h2>
             <p className="text-xs text-gray-500 truncate dark:text-white">
               {isSentByMe ? "You: " : ""}
@@ -114,14 +241,22 @@ function DropdownChat({ onToggleChat }) {
           <h1
             onClick={() => setActiveTab("inbox")}
             className={`py-2 px-4 font-medium cursor-pointer rounded-full shadow-sm transition 
-              ${activeTab === "inbox" ? "bg-blue-100 text-blue-600 hover:bg-blue-200" : "bg-transparent text-gray-800 hover:bg-gray-200 dark:text-white dark:hover:bg-[rgb(52,52,52)]"}`}
+              ${
+                activeTab === "inbox"
+                  ? "bg-blue-100 text-blue-600 hover:bg-blue-200"
+                  : "bg-transparent text-gray-800 hover:bg-gray-200 dark:text-white dark:hover:bg-[rgb(52,52,52)]"
+              }`}
           >
             Inbox
           </h1>
           <h1
             onClick={() => setActiveTab("community")}
             className={`py-2 px-4 font-medium cursor-pointer rounded-full shadow-sm transition 
-              ${activeTab === "community" ? "bg-blue-100 text-blue-600 hover:bg-blue-200" : "bg-transparent text-gray-800 hover:bg-gray-200 dark:text-white dark:hover:bg-[rgb(52,52,52)]"}`}
+              ${
+                activeTab === "community"
+                  ? "bg-blue-100 text-blue-600 hover:bg-blue-200"
+                  : "bg-transparent text-gray-800 hover:bg-gray-200 dark:text-white dark:hover:bg-[rgb(52,52,52)]"
+              }`}
           >
             Community
           </h1>
@@ -129,10 +264,14 @@ function DropdownChat({ onToggleChat }) {
 
         {/* Chat List */}
         <div className="space-y-2 min-h-[28rem] custom-scroll overflow-y-auto pr-1 custom-scrollbar">
-          {loading ? <SpinnerLoading /> : <>
-            {activeTab === "inbox" && renderChats(inboxMessages)}
-            {activeTab === "community" && renderChats(groupMessages)}
-          </>}
+          {loading ? (
+            <SpinnerLoading />
+          ) : (
+            <>
+              {activeTab === "inbox" && renderChats(inboxMessages)}
+              {activeTab === "community" && renderChats(groupMessages)}
+            </>
+          )}
         </div>
       </div>
     </>

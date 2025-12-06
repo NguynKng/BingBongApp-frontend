@@ -3,12 +3,13 @@ import { productAPI } from "../../services/api";
 import ProductCard from "../ProductCard";
 import { Link, useParams } from "react-router-dom";
 import SpinnerLoading from "../SpinnerLoading";
-import { Search } from "lucide-react";
+import { Grid2x2, List, Search } from "lucide-react";
 
 export default function ProductTab({ shop }) {
   const { category } = useParams();
   const [allProducts, setAllProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [viewMode, setViewMode] = useState("grid");
 
   const selectedCategory = shop.categories.find((c) => c.slug === category);
 
@@ -52,13 +53,19 @@ export default function ProductTab({ shop }) {
     }
 
     return result;
-  }, [allProducts, selectedCategory, minPrice, maxPrice, isDiscounted, searchTerm]);
+  }, [
+    allProducts,
+    selectedCategory,
+    minPrice,
+    maxPrice,
+    isDiscounted,
+    searchTerm,
+  ]);
 
   return (
-    <div className="bg-white dark:bg-[#1e1e2f] p-4 rounded-lg">
+    <div className="bg-white dark:bg-[#1e1e2f] p-4 rounded-lg min-h-screen">
       {/* Filter bar */}
       <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 mb-6 border-b border-gray-300 dark:border-[#2b2b3d] pb-4">
-
         {/* Category filter */}
         <div className="flex flex-wrap items-center gap-2">
           <Link
@@ -88,7 +95,6 @@ export default function ProductTab({ shop }) {
 
         {/* Price filter + discount + search */}
         <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto">
-
           {/* Price filter */}
           <div className="flex items-center gap-2">
             <label className="text-sm dark:text-gray-200">Price:</label>
@@ -132,6 +138,31 @@ export default function ProductTab({ shop }) {
                          dark:bg-[#1e1e2f] dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
             />
           </div>
+          <div className="flex items-center gap-2">
+            {/* GRID BUTTON */}
+            <button
+              onClick={() => setViewMode("grid")}
+              className={`p-2 rounded-full cursor-pointer transition border-[1px] ${
+                viewMode === "grid"
+                  ? "bg-blue-500 text-white border-blue-500"
+                  : "bg-gray-100 dark:bg-[#2b2b3d] dark:text-gray-200 border-gray-300 hover:bg-gray-200 dark:hover:bg-[#3b3b4f]"
+              }`}
+            >
+              <Grid2x2 />
+            </button>
+
+            {/* LIST BUTTON */}
+            <button
+              onClick={() => setViewMode("list")}
+              className={`p-2 rounded-full border-[1px] cursor-pointer transition ${
+                viewMode === "list"
+                  ? "bg-blue-500 text-white border-blue-500"
+                  : "bg-gray-100 dark:bg-[#2b2b3d] border-gray-300 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-[#3b3b4f]"
+              }`}
+            >
+              <List />
+            </button>
+          </div>
         </div>
       </div>
 
@@ -139,9 +170,20 @@ export default function ProductTab({ shop }) {
       {loading ? (
         <SpinnerLoading />
       ) : filteredProducts.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div
+          className={`grid ${
+            viewMode === "list"
+              ? "grid-cols-1 lg:grid-cols-2"
+              : "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+          } gap-4`}
+        >
           {filteredProducts.map((product) => (
-            <ProductCard key={product._id} product={product} shop={shop} />
+            <ProductCard
+              key={product._id}
+              product={product}
+              shop={shop}
+              viewMode={viewMode}
+            />
           ))}
         </div>
       ) : (

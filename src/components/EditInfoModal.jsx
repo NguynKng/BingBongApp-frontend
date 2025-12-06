@@ -90,7 +90,7 @@ const EditInfoModal = ({ user, onClose, onUpdated, isMyProfile }) => {
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+            className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 cursor-pointer"
           >
             <X size={22} />
           </button>
@@ -284,14 +284,14 @@ const EditInfoModal = ({ user, onClose, onUpdated, isMyProfile }) => {
         <div className="mt-5 flex justify-end gap-3 border-t border-gray-200 dark:border-[#2b2b3d] pt-4">
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-md bg-gray-200 dark:bg-[#2b2b3d] text-gray-700 dark:text-gray-300"
+            className="px-4 py-2 cursor-pointer rounded-md bg-gray-200 dark:bg-[#2b2b3d] text-gray-700 dark:text-gray-300"
           >
             Cancel
           </button>
           <button
             disabled={loading}
             onClick={handleSave}
-            className={`px-4 py-2 rounded-md text-white ${
+            className={`px-4 py-2 cursor-pointer rounded-md text-white ${
               loading
                 ? "bg-blue-400 cursor-not-allowed"
                 : "bg-blue-600 hover:bg-blue-700"
