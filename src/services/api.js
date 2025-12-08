@@ -693,7 +693,25 @@ export const postAPI = {
             throw error;
         }
     },
+// Get user feed (posts from user and their friends)
+    markPostAsViewed: async (postId) => {
+        try {
+            const response = await api.post(`/posts/mark-viewed/${postId}`);
 
+            if (response.data.success === false) {
+                throw new Error(response.data.message);
+            }
+
+            return response.data;
+        } catch (error) {
+            if (error.response) {
+                const errorMessage =
+                    error.response.data.message || "Failed to mark post as viewed";
+                throw new Error(errorMessage);
+            }
+            throw error;
+        }
+    },
     // Get posts by owner
     getPostsByOwner: async (type, id, page = 1, limit = 10) => {
         try {
@@ -1434,6 +1452,28 @@ export const tmdbAPI = {
             const response = await api.get(
                 `/tmdb/tv/detail/${id}/season/${season_number}`
             );
+
+            if (response.data.success === false) {
+                throw new Error(response.data.message);
+            }
+
+            return response.data;
+        } catch (error) {
+            if (error.response) {
+                const errorMessage =
+                    error.response.data.message || "Failed to fetch tmdb trending movies";
+                throw new Error(errorMessage);
+            }
+            throw error;
+        }
+    },
+    getSearchContent: async (content, query) => {
+        try {
+            const response = await api.get(
+                `/tmdb/search`
+            , {
+                params: { content, query },
+            });
 
             if (response.data.success === false) {
                 throw new Error(response.data.message);

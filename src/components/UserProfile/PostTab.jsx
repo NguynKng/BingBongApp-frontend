@@ -2,15 +2,10 @@ import { useGetOwnerPosts } from "../../hooks/usePosts";
 import { getBackendImgURL } from "../../utils/helper";
 import useAuthStore from "../../store/authStore";
 import {
-  ChevronDown,
   Globe,
   GraduationCap,
   MapPin,
-  Pencil,
   Sparkles,
-  UserCheck,
-  UserPlus,
-  UserX,
   Link2,
   BriefcaseBusiness,
 } from "lucide-react";
@@ -223,39 +218,43 @@ const PostTab = memo(({ displayedUser }) => {
               <h1 className="text-xl font-bold text-gray-900 dark:text-white">
                 Photos
               </h1>
-              <h1 className="text-blue-500 rounded-md py-2 px-4 cursor-pointer hover:bg-gray-200 dark:hover:bg-[#23233b]">
+              <Link to={`/profile/${displayedUser.slug}/photos`} className="text-blue-500 rounded-md py-2 px-4 cursor-pointer hover:bg-gray-200 dark:hover:bg-[#23233b]">
                 View All Photos
-              </h1>
+              </Link>
             </div>
-            <div className="grid grid-cols-3 gap-2">
-              {(() => {
-                let count = 0; // đếm số ảnh hiển thị tối đa
-                const maxImages = 9;
+            {loading ? (
+              <SpinnerLoading />
+            ) : (
+              <div className="grid grid-cols-3 gap-2">
+                {(() => {
+                  let count = 0; // đếm số ảnh hiển thị tối đa
+                  const maxImages = 9;
 
-                return posts.map((post) => {
-                  if (!post.media || post.media.length === 0) return null;
+                  return posts.map((post) => {
+                    if (!post.media || post.media.length === 0) return null;
 
-                  return post.media.map((img, idx) => {
-                    if (count >= maxImages) return null; // dừng khi đạt 9 ảnh
-                    count++;
+                    return post.media.map((img, idx) => {
+                      if (count >= maxImages) return null; // dừng khi đạt 9 ảnh
+                      count++;
 
-                    return (
-                      <Link
-                        key={`${post._id}-${idx}`}
-                        to={`/posts/${post._id}`} // link đến post tương ứng
-                        className="relative w-full lg:h-32 h-56 overflow-hidden rounded-md cursor-pointer hover:scale-105 transition-transform duration-300 border-2 border-gray-200"
-                      >
-                        <img
-                          src={getBackendImgURL(img)}
-                          alt="Post"
-                          className="w-full h-full object-cover rounded-md"
-                        />
-                      </Link>
-                    );
+                      return (
+                        <Link
+                          key={`${post._id}-${idx}`}
+                          to={`/posts/${post._id}`} // link đến post tương ứng
+                          className="relative w-full lg:h-32 h-56 overflow-hidden rounded-md cursor-pointer hover:scale-105 transition-transform duration-300 border-2 border-gray-200"
+                        >
+                          <img
+                            src={getBackendImgURL(img)}
+                            alt="Post"
+                            className="w-full h-full object-cover rounded-md"
+                          />
+                        </Link>
+                      );
+                    });
                   });
-                });
-              })()}
-            </div>
+                })()}
+              </div>
+            )}
           </div>
 
           <div className="rounded-md bg-white dark:bg-[#1e1e2f] border-2 border-gray-200 dark:border-[#2b2b3d] p-4 space-y-2">
@@ -263,15 +262,15 @@ const PostTab = memo(({ displayedUser }) => {
               <h1 className="text-xl font-bold text-gray-900 dark:text-white">
                 Friends
               </h1>
-              <h1 className="text-blue-500 rounded-md py-2 px-4 cursor-pointer hover:bg-gray-200 dark:hover:bg-[#23233b]">
+              <Link to={`/profile/${displayedUser.slug}/friends`} className="text-blue-500 rounded-md py-2 px-4 cursor-pointer hover:bg-gray-200 dark:hover:bg-[#23233b]">
                 View All Friends
-              </h1>
+              </Link>
             </div>
             <h1 className="text-gray-500 dark:text-gray-400 text-lg">{`${
               displayedUser.friends.length
             } friend${displayedUser.friends.length !== 1 ? "s" : ""}`}</h1>
             <div className="grid grid-cols-3 gap-2">
-              {displayedUser.friends.map((friend) => (
+              {displayedUser.friends.slice(0, 6).map((friend) => (
                 <div key={friend._id} className="w-full rounded-md">
                   <Link to={`/profile/${friend.slug}`}>
                     <img
@@ -345,6 +344,6 @@ const PostTab = memo(({ displayedUser }) => {
       )}
     </>
   );
-})
+});
 
 export default PostTab;

@@ -124,36 +124,74 @@ const FriendPage = () => {
 
           <div className="grid xl:grid-cols-6 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-4 items-center">
             {suggestions.map((user) => (
-              <div
-                key={user._id}
-                className="bg-white dark:bg-[#1e1e2f] rounded-2xl border border-gray-200 dark:border-[#2b2b3d] shadow-lg transition-transform duration-300 p-4 flex flex-col items-center text-center card-blink"
-                style={{
-                  transformStyle: "preserve-3d",
-                }}
-              >
-                <Link
-                  to={`/profile/${user.slug}`}
-                  className="flex flex-col items-center"
-                >
-                  <img
-                    src={`${Config.BACKEND_URL}${user.avatar}`}
-                    alt={user.fullName}
-                    className="w-24 h-24 aspect-square rounded-full object-cover mb-3 shadow-md"
-                  />
-                  <p className="text-sm font-semibold text-gray-900 dark:text-white mb-2 truncate w-full">
-                    {user.fullName}
-                  </p>
-                </Link>
-
-                <button className="text-sm font-medium cursor-pointer bg-[#1b74e4] hover:bg-[#155fc3] text-white px-4 py-2 rounded-md w-full transition shadow">
-                  Add Friend
-                </button>
-              </div>
+              <SuggestionCard key={user._id} user={user} />
             ))}
           </div>
         </div>
       </div>
     </>
+  );
+};
+
+const SuggestionCard = ({ user }) => {
+  const [isRequestSent, setIsRequestSent] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleToggleFriendRequest = async () => {
+    setIsLoading(true);
+    try {
+      if (isRequestSent) {
+        // Cancel friend request
+        await userAPI.cancelFriendRequest(user._id);
+        setIsRequestSent(false);
+        toast.success("Friend request cancelled");
+      } else {
+        // Send friend request
+        await userAPI.sendFriendRequest(user._id);
+        setIsRequestSent(true);
+        toast.success("Friend request sent");
+      }
+    } catch (error) {
+      console.error("Error toggling friend request:", error);
+      toast.error("Unable to process request");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div
+      className="bg-white dark:bg-[#1e1e2f] rounded-2xl border border-gray-200 dark:border-[#2b2b3d] shadow-lg transition-transform duration-300 p-4 flex flex-col items-center text-center card-blink"
+      style={{
+        transformStyle: "preserve-3d",
+      }}
+    >
+      <Link
+        to={`/profile/${user.slug}`}
+        className="flex flex-col items-center"
+      >
+        <img
+          src={`${Config.BACKEND_URL}${user.avatar}`}
+          alt={user.fullName}
+          className="w-24 h-24 aspect-square rounded-full object-cover mb-3 shadow-md"
+        />
+        <p className="text-sm font-semibold text-gray-900 dark:text-white mb-2 truncate w-full">
+          {user.fullName}
+        </p>
+      </Link>
+
+      <button
+        onClick={handleToggleFriendRequest}
+        disabled={isLoading}
+        className={`text-sm font-medium cursor-pointer px-4 py-2 rounded-md w-full transition shadow disabled:opacity-50 disabled:cursor-not-allowed ${
+          isRequestSent
+            ? "bg-gray-500 hover:bg-gray-600 text-white"
+            : "bg-[#1b74e4] hover:bg-[#155fc3] text-white"
+        }`}
+      >
+        {isLoading ? "..." : isRequestSent ? "Cancel Request" : "Add Friend"}
+      </button>
+    </div>
   );
 };
 

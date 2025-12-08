@@ -52,7 +52,7 @@ const GroupCard = memo(({ group }) => {
           <div className="mt-4">
             <Link to={`/group/${group.slug}`}>
               <button
-                className="w-full flex items-center cursor-pointer justify-center gap-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold py-2.5 rounded-lg cursor-default"
+                className="w-full flex items-center cursor-pointer justify-center gap-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold py-2.5 rounded-lg"
               >
                 View Group
               </button>

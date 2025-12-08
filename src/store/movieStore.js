@@ -59,7 +59,7 @@ const useMovieStore = create((set, get) => ({
       if (contentType === "movie") {
         res = await tmdbAPI.getMoviesByCategory(category);
       } else if (contentType === "tv") {
-        res = await tmdbAPI.getTVShowsByCategory(category);
+        res = await tmdbAPI.getTVShowByCategory(category);
       }
       if (res.success) {
         set({

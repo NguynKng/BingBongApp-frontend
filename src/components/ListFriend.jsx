@@ -7,6 +7,7 @@ import { formatReleaseDate } from "../utils/timeUtils";
 import { useGetSuggestion } from "../hooks/useProfile";
 import useMovieStore from "../store/movieStore";
 import { getBackendImgURL } from "../utils/helper";
+import { userAPI } from "../services/api";
 
 const ListFriend = memo(() => {
   const { movies, loading, fetchTrendingMovies, contentType } = useMovieStore();
@@ -116,10 +117,27 @@ ListFriend.displayName = "ListFriend";
 
 // ✅ Extract SuggestionCard with memo
 const SuggestionCard = memo(({ user }) => {
-  const handleAddFriend = useCallback(() => {
-    // TODO: Implement add friend logic
-    console.log("Add friend:", user._id);
-  }, [user._id]);
+  const [isRequestSent, setIsRequestSent] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleToggleFriendRequest = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      if (isRequestSent) {
+        // Cancel friend request
+        await userAPI.cancelFriendRequest(user._id);
+        setIsRequestSent(false);
+      } else {
+        // Send friend request
+        await userAPI.sendFriendRequest(user._id);
+        setIsRequestSent(true);
+      }
+    } catch (error) {
+      console.error("Error toggling friend request:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [user._id, isRequestSent]);
 
   return (
     <div className="flex items-center gap-4 py-2 px-2 rounded-lg hover:bg-gray-50 dark:hover:bg-[#2a3142] transition-all">
@@ -145,10 +163,15 @@ const SuggestionCard = memo(({ user }) => {
       </div>
 
       <button
-        onClick={handleAddFriend}
-        className="ml-auto px-3 py-1 text-sm bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-all"
+        onClick={handleToggleFriendRequest}
+        disabled={isLoading}
+        className={`ml-auto px-3 cursor-pointer py-1 text-sm rounded-lg transition-all ${
+          isRequestSent
+            ? "bg-gray-500 hover:bg-gray-600 text-white"
+            : "bg-blue-500 hover:bg-blue-600 text-white"
+        } disabled:opacity-50 disabled:cursor-not-allowed`}
       >
-        Add
+        {isLoading ? "..." : isRequestSent ? "Cancel" : "Add"}
       </button>
     </div>
   );

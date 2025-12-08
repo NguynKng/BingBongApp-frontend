@@ -99,7 +99,7 @@ function Navbar({ isCloseSidebar, setIsCloseSidebar }) {
                 title={item.text}
                 to={item.link}
                 key={index}
-                className={`relative flex items-center gap-3 py-3 px-4 rounded-xl group transition-all
+                className={`relative flex items-center gap-2 py-3 px-4 rounded-xl group transition-all
                 ${
                   isActive
                     ? "bg-blue-800 text-white shadow-md shadow-blue-500/30"

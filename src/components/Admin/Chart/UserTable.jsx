@@ -1,6 +1,6 @@
 import { Table, Button, Tooltip } from "antd";
 import { CheckCircleFilled } from "@ant-design/icons";
-import Config from "../../../envVars";
+import { getBackendImgURL } from "../../../utils/helper";
 import { Check, X } from "lucide-react";
 
 export default function UserTable({ data, loading }) {
@@ -29,9 +29,7 @@ export default function UserTable({ data, loading }) {
           <div className="flex items-center gap-2">
             <img
               src={
-                record.avatar
-                  ? `${Config.BACKEND_URL}${record.avatar}`
-                  : "/user.png"
+                getBackendImgURL(record.avatar)
               }
               className="w-8 h-8 rounded-full object-cover"
             />

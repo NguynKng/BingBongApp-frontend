@@ -16,7 +16,6 @@ import { getBackendImgURL } from "../utils/helper";
 import { v4 as uuidv4 } from "uuid";
 
 function ChatBox({ onClose, chat }) {
-    console.log(chat)
   const [isLoadingAIResponse, setIsLoadingAIResponse] = useState(false);
   const [images, setImages] = useState([]);
   const [imagesPreview, setImagesPreview] = useState([]);

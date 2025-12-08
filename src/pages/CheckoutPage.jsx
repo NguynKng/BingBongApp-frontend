@@ -312,7 +312,7 @@ function CheckoutPage() {
           <div className="w-full max-w-xl lg:ml-10 p-6 pb-10 mt-8 flex flex-col">
             {/* Cart Items */}
             <div className="flex flex-col gap-4 py-6 border-b-2 border-gray-200 dark:border-gray-700 overflow-y-auto max-h-[32rem] custom-scroll">
-              {!cart || cart.items.length === 0 ? (
+              {!cart || cart.items?.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-12">
                   <div className="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mb-4">
                     <svg

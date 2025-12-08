@@ -1,4 +1,5 @@
 import PropTypes from "prop-types";
+import { Link } from "react-router-dom";
 
 export default function PlaceOrderModal({ isOpen, onClose }) {
   if (!isOpen) return null;
@@ -17,13 +18,23 @@ export default function PlaceOrderModal({ isOpen, onClose }) {
           <h2 className="text-2xl font-semibold text-green-600">
             Order placed successfully!
           </h2>
-          <p className="mt-2 text-gray-600">Thank you for shopping with us. Your order is currently being processed.</p>
-          <button
-            onClick={onClose}
-            className="mt-6 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
-          >
-            Close
-          </button>
+          <p className="mt-2 text-gray-600">
+            Thank you for shopping with us. Your order is currently being
+            processed.
+          </p>
+          <div className="flex gap-2 items-center justify-between">
+            <Link to="/order">
+              <button className="mt-6 px-4 cursor-pointer py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition">
+                Go to Orders
+              </button>
+            </Link>
+            <button
+              onClick={onClose}
+              className="mt-6 px-4 py-2 cursor-pointer bg-red-600 text-white rounded-md hover:bg-red-700 transition"
+            >
+              Close
+            </button>
+          </div>
         </div>
       </div>
     </div>

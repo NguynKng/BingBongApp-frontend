@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import {
   CircleCheck,
   CircleX,
@@ -8,12 +8,12 @@ import {
   PackageCheck,
   Truck,
 } from "lucide-react";
-import { orderAPI } from "../services/api";
+import { chatAPI, orderAPI } from "../services/api";
 import { formatPriceWithDollar } from "../utils/formattedFunction";
 import { getBackendImgURL } from "../utils/helper";
 import { formatDateTimeWithTime } from "../utils/timeUtils";
 
-export default function OrderDetailPage() {
+export default function OrderDetailPage({ onToggleChat }) {
   const { orderId } = useParams();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -36,6 +36,14 @@ export default function OrderDetailPage() {
     };
     fetchOrder();
   }, [orderId]);
+
+  const handleToggleChat = async () => {
+      const response = await chatAPI.getChatIdByTypeId({
+        shopId: order.shop._id,
+        type: "shop",
+      });
+      onToggleChat(response.data);
+    };
 
   if (loading)
     return (
@@ -248,7 +256,7 @@ export default function OrderDetailPage() {
                   <p className="text-base font-semibold text-gray-900 dark:text-white">
                     Delivery attempt should be made by 05-01-2023
                   </p>
-                  <button className="rounded-lg cursor-pointer bg-gray-900 dark:bg-gray-800 hover:bg-gray-800 dark:hover:bg-gray-700 py-2 px-4 text-white transition-colors font-medium w-fit">
+                  <button onClick={handleToggleChat} className="rounded-lg cursor-pointer bg-gray-900 dark:bg-gray-800 hover:bg-gray-800 dark:hover:bg-gray-700 py-2 px-4 text-white transition-colors font-medium w-fit">
                     Chat with customer support
                   </button>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
