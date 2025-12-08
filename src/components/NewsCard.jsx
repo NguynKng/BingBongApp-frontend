@@ -8,6 +8,8 @@ const NewsCard = memo(({ news }) => {
     <div className="flex w-full h-[10rem] p-2 items-center group">
       <Link
         to={url}
+        target="_blank"
+        rel="noopener noreferrer"
         className="w-[25%] h-32 group-hover:scale-105 transition-transform duration-300"
       >
         <img

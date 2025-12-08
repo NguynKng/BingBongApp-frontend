@@ -14,6 +14,7 @@ import { formatDateTimeWithTime } from "../../../utils/timeUtils";
 import { getBackendImgURL } from "../../../utils/helper";
 import OrderStatus from "../../OrderStatus";
 import { formatPriceWithDollar } from "../../../utils/formattedFunction";
+import { Link } from "react-router-dom";
 
 // ✅ All sub-components already have memo - GOOD!
 const TopProductsTable = memo(({ data }) => {
@@ -32,7 +33,7 @@ const TopProductsTable = memo(({ data }) => {
               className="size-14 object-cover rounded-lg"
               loading="lazy"
             />
-            <span>{product.name}</span>
+            <span className="text-gray-900 dark:text-white">{product.name}</span>
           </div>
         ),
       },
@@ -161,7 +162,7 @@ StatArea.displayName = "StatArea";
 
 const StatCard = memo(
   ({ icon: Icon, color, title, value, percent, fill, stroke }) => (
-    <div className="border border-gray-300 bg-white p-4 rounded-md">
+    <div className="border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 p-4 rounded-md">
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <div
@@ -170,17 +171,17 @@ const StatCard = memo(
             <Icon className="text-white" />
           </div>
           <div>
-            <span className="text-gray-600 block">{title}</span>
-            <span className="text-2xl font-bold">{value}</span>
+            <span className="text-gray-600 dark:text-gray-400 block">{title}</span>
+            <span className="text-2xl font-bold text-gray-900 dark:text-white">{value}</span>
           </div>
         </div>
 
         <div>
           <div className="flex items-center gap-1">
             <TrendingUp className={color.replace("bg-", "text-")} />
-            <span>{percent}%</span>
+            <span className="text-gray-900 dark:text-white">{percent}%</span>
           </div>
-          <span className="text-sm text-gray-400">Since last week</span>
+          <span className="text-sm text-gray-400 dark:text-gray-500">Since last week</span>
         </div>
       </div>
 
@@ -207,11 +208,10 @@ const RecentOrdersTable = memo(({ data }) => {
               className="size-10 object-cover rounded-full"
               loading="lazy"
             />
-            <span>{customer.fullName}</span>
+            <span className="text-gray-900 dark:text-white">{customer.fullName}</span>
           </div>
         ),
       },
-      { title: "Email", dataIndex: "email" },
       { title: "Total", dataIndex: "total" },
       {
         title: "Status",
@@ -219,6 +219,21 @@ const RecentOrdersTable = memo(({ data }) => {
         render: (status) => <OrderStatus status={status} />,
       },
       { title: "Created At", dataIndex: "createdAt" },
+      {
+        title: "Details",
+        dataIndex: "details",
+        align: "center",
+        render: (_, record) => (
+          <Link
+            to={`/order/${record.id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-500 dark:text-blue-400 hover:underline"
+          >
+            View
+          </Link>
+        ),
+      },
     ],
     []
   );
@@ -231,7 +246,6 @@ const RecentOrdersTable = memo(({ data }) => {
         id: order.orderId,
         total: formatPriceWithDollar(order.total),
         customer: order.orderBy,
-        email: order.orderBy.email,
         status: order.orderStatus,
         createdAt: formatDateTimeWithTime(order.createdAt),
       })),
@@ -239,7 +253,12 @@ const RecentOrdersTable = memo(({ data }) => {
   );
 
   return (
-    <Table columns={columns} dataSource={recentOrdersData} pagination={false} />
+    <Table
+      columns={columns}
+      dataSource={recentOrdersData}
+      pagination={false}
+      scroll={{ x: "max-content" }}
+    />
   );
 });
 
@@ -260,7 +279,7 @@ const TopCustomersTable = memo(({ data }) => {
               className="size-10 object-cover rounded-full"
               loading="lazy"
             />
-            <span>{customer.fullName}</span>
+            <span className="text-gray-900 dark:text-white">{customer.fullName}</span>
           </div>
         ),
       },
@@ -300,7 +319,7 @@ const TopReviews = memo(({ reviews }) => {
   }
 
   return (
-    <div className="flex flex-col divide-y divide-gray-200 dark:divide-[#2b2b3d]">
+    <div className="flex flex-col divide-y divide-gray-200 dark:divide-gray-700">
       {reviews.slice(0, 5).map((r, idx) => (
         <ReviewCard key={`${r._id || idx}`} review={r} />
       ))}
@@ -312,7 +331,7 @@ TopReviews.displayName = "TopReviews";
 
 // ✅ Extract ReviewCard
 const ReviewCard = memo(({ review: r }) => (
-  <div className="flex gap-3 py-4 px-3 hover:bg-gray-50 dark:hover:bg-[#2a2a3c] transition rounded-md">
+  <div className="flex gap-3 py-4 px-3 hover:bg-gray-50 dark:hover:bg-gray-800 transition rounded-md">
     {r.postedBy && (
       <img
         src={getBackendImgURL(r.postedBy.avatar)}
@@ -489,40 +508,40 @@ const DashboardTab = memo(({ shop }) => {
             ))}
           </div>
 
-          <div className="mt-4 bg-white p-4 rounded-md border border-gray-300">
-            <h1 className="text-2xl mb-4">Income Statistics</h1>
+          <div className="mt-4 bg-white dark:bg-gray-900 p-4 rounded-md border border-gray-300 dark:border-gray-700">
+            <h1 className="text-2xl mb-4 text-gray-900 dark:text-white">Income Statistics</h1>
             <IncomeColumnChart data={dashboardData.income} />
           </div>
 
           <div className="mt-4 grid lg:grid-cols-2 gap-4">
-            <div className="bg-white p-4 rounded-md border border-gray-300">
-              <h1 className="text-xl mb-4">Product Category Breakdown</h1>
+            <div className="bg-white dark:bg-gray-900 p-4 rounded-md border border-gray-300 dark:border-gray-700">
+              <h1 className="text-xl mb-4 text-gray-900 dark:text-white">Product Category Breakdown</h1>
               <CategoryDistributionPie data={dashboardData.categories} />
             </div>
-            <div className="bg-white p-4 rounded-md border border-gray-300">
-              <h1 className="text-xl mb-4">Top Selling Products</h1>
+            <div className="bg-white dark:bg-gray-900 p-4 rounded-md border border-gray-300 dark:border-gray-700">
+              <h1 className="text-xl mb-4 text-gray-900 dark:text-white">Top Selling Products</h1>
               <TopProductsTable data={dashboardData.topProducts} />
             </div>
           </div>
 
           <div className="mt-4 grid lg:grid-cols-2 gap-4">
-            <div className="bg-white p-4 rounded-md border border-gray-300">
-              <h1 className="text-xl mb-4">Top Customer</h1>
+            <div className="bg-white dark:bg-gray-900 p-4 rounded-md border border-gray-300 dark:border-gray-700">
+              <h1 className="text-xl mb-4 text-gray-900 dark:text-white">Top Customer</h1>
               <TopCustomersTable data={dashboardData.topCustomers} />
             </div>
-            <div className="bg-white p-4 rounded-md border border-gray-300">
-              <h1 className="text-xl mb-4">Top Reviews</h1>
+            <div className="bg-white dark:bg-gray-900 p-4 rounded-md border border-gray-300 dark:border-gray-700">
+              <h1 className="text-xl mb-4 text-gray-900 dark:text-white">Top Reviews</h1>
               <TopReviews reviews={dashboardData.topReviewedProducts} />
             </div>
           </div>
 
-          <div className="bg-white p-4 rounded-md border border-gray-300 mt-4">
-            <h1 className="text-xl mb-4">Followers Growth</h1>
+          <div className="bg-white dark:bg-gray-900 p-4 rounded-md border border-gray-300 dark:border-gray-700 mt-4">
+            <h1 className="text-xl mb-4 text-gray-900 dark:text-white">Followers Growth</h1>
             <FollowUnfollowChart data={dashboardData.followUnfollowStats} />
           </div>
 
-          <div className="mt-4 bg-white p-4 rounded-md border border-gray-300">
-            <h1 className="text-2xl mb-4">Recent Orders</h1>
+          <div className="mt-4 bg-white dark:bg-gray-900 p-4 rounded-md border border-gray-300 dark:border-gray-700">
+            <h1 className="text-2xl mb-4 text-gray-900 dark:text-white">Recent Orders</h1>
             <RecentOrdersTable data={dashboardData.recentOrders} />
           </div>
         </>

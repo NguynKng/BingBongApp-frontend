@@ -30,10 +30,47 @@ const PostCard = memo(({ post, onDeletePost, showComment = false }) => {
     type: null,
     slug: null,
   });
+  
+  // ✅ Ref để track post element và việc đã mark viewed
+  const postRef = useRef(null);
+  const hasMarkedViewed = useRef(false);
 
   const isShopPost = postedByType === "Shop";
   const isUserPost = postedByType === "User";
   const isGroupPost = postedByType === "Group";
+
+//   // ✅ Mark post as viewed khi user nhìn thấy bài viết
+//   useEffect(() => {
+//     if (!post?._id || !user || hasMarkedViewed.current) return;
+
+//     const observer = new IntersectionObserver(
+//       (entries) => {
+//         entries.forEach((entry) => {
+//           if (entry.isIntersecting) {
+//             // ✅ Đợi 3 giây trước khi mark viewed
+//             const timer = setTimeout(async () => {
+//               try {
+//                 await postAPI.markPostAsViewed(post._id);
+//                 hasMarkedViewed.current = true;
+//               } catch (error) {
+//                 console.error("❌ Failed to mark post as viewed:", error);
+//               }
+//             }, 3000);
+
+//             // Cleanup nếu user scroll đi trước 3 giây
+//             return () => clearTimeout(timer);
+//           }
+//         });
+//       },
+//       { threshold: 0.5 } // 50% bài viết hiển thị
+//     );
+
+//     if (postRef.current) {
+//       observer.observe(postRef.current);
+//     }
+
+//     return () => observer.disconnect();
+//   }, [post?._id, user]);
 
   useEffect(() => {
     if (!post) return;
@@ -75,10 +112,8 @@ const PostCard = memo(({ post, onDeletePost, showComment = false }) => {
         if (onDeletePost) {
           onDeletePost(post._id);
         }
-        // Xử lý sau khi xóa thành công, ví dụ: thông báo cho người dùng
         toast.success("Post deleted successfully");
       } else {
-        // Xử lý nếu có lỗi xảy ra
         toast.error("Failed to delete post");
       }
     } catch (error) {
@@ -99,22 +134,19 @@ const PostCard = memo(({ post, onDeletePost, showComment = false }) => {
         const serverReaction = response.data;
 
         if (myReaction?.type === type) {
-          // Nếu cùng loại → xóa
           const updated = reactions.filter((r) => r.user._id !== user._id);
           setReactions(updated);
         } else if (myReaction) {
-          // Nếu đã từng react khác loại → cập nhật
           const updated = reactions.map((r) =>
             r.user._id === user._id ? serverReaction : r
           );
           setReactions(updated);
         } else {
-          // Nếu chưa react → thêm mới
           setReactions([...reactions, serverReaction]);
         }
       } catch (error) {
         console.error("❌ Failed to react to post:", error);
-        setReactions(prevReactions); // rollback nếu lỗi
+        setReactions(prevReactions);
       }
     },
     [post._id, user, reactions, myReaction]
@@ -129,7 +161,10 @@ const PostCard = memo(({ post, onDeletePost, showComment = false }) => {
   }
 
   return (
-    <div className="bg-white py-5 rounded-xl shadow-md mb-4 dark:bg-[#1b1f2b] dark:border dark:border-[#2b2b3d]">
+    <div 
+      ref={postRef}
+      className="bg-white py-5 rounded-xl shadow-md mb-4 dark:bg-[#1b1f2b] dark:border dark:border-[#2b2b3d]"
+    >
       <div className="flex items-start justify-between px-5 mb-3">
         <div className="flex items-center gap-2 relative">
           {/* Avatar */}
@@ -137,7 +172,7 @@ const PostCard = memo(({ post, onDeletePost, showComment = false }) => {
             <>
               <Link
                 to={getProfileLink(postedById, postedByType)}
-                className="w-10 h-10 rounded-full overflow-hidden border border-gray-200 hover:opacity-80 shrink-0"
+                className="w-10 h-10 rounded-full overflow-hidden border border-gray-200 dark:border-gray-700 hover:opacity-80 shrink-0"
               >
                 <img
                   src={getBackendImgURL(postedById.avatar)}
@@ -147,8 +182,8 @@ const PostCard = memo(({ post, onDeletePost, showComment = false }) => {
               </Link>
             </>
           )}
-          {(isShopPost || isGroupPost)  && (
-            <div className="relative w-11 h-11 rounded-lg border border-gray-200">
+          {(isShopPost || isGroupPost) && (
+            <div className="relative w-11 h-11 rounded-lg border border-gray-200 dark:border-gray-700">
               <Link to={getProfileLink(postedById, postedByType)}>
                 <img
                   src={getBackendImgURL(postedById.avatar)}
@@ -157,7 +192,7 @@ const PostCard = memo(({ post, onDeletePost, showComment = false }) => {
                   loading="lazy"
                 />
               </Link>
-              <div className="absolute bottom-0 right-0 w-7 h-7 translate-1 rounded-full  border border-gray-200 hover:opacity-80">
+              <div className="absolute bottom-0 right-0 w-7 h-7 translate-1 rounded-full border border-gray-200 dark:border-gray-700 hover:opacity-80">
                 <Link to={`/profile/${author.slug}`}>
                   <img
                     src={getBackendImgURL(author.avatar)}
@@ -185,7 +220,7 @@ const PostCard = memo(({ post, onDeletePost, showComment = false }) => {
                     };
                   }}
                 >
-                  {(isShopPost || isGroupPost) 
+                  {(isShopPost || isGroupPost)
                     ? postedById.name
                     : postedById.fullName}
                 </Link>
@@ -195,10 +230,10 @@ const PostCard = memo(({ post, onDeletePost, showComment = false }) => {
             </div>
 
             {/* Thời gian */}
-            <div className="flex items-center gap-1 text-sm text-gray-500">
-              {(isShopPost || isGroupPost)  && (
+            <div className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400">
+              {(isShopPost || isGroupPost) && (
                 <>
-                  <Link to={`/profile/${author.slug}`}>
+                  <Link to={`/profile/${author.slug}`} className="hover:underline">
                     {author._id === user?._id ? "Bạn" : author.fullName}
                   </Link>
                   <span>•</span>
@@ -224,7 +259,7 @@ const PostCard = memo(({ post, onDeletePost, showComment = false }) => {
               <div className="absolute right-0 mt-2 w-60 bg-white dark:bg-[rgb(36,36,36)] border border-gray-200 dark:border-gray-700 rounded-xl shadow-md z-50">
                 <ul className="p-1">
                   <li
-                    className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 dark:hover:bg-[rgb(64,64,64)] rounded-lg cursor-pointer"
+                    className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 dark:hover:bg-[rgb(64,64,64)] rounded-lg cursor-pointer dark:text-white"
                     onClick={handleDeletePost}
                   >
                     <Trash2 className="w-4 h-4" />
@@ -330,18 +365,15 @@ const PostCard = memo(({ post, onDeletePost, showComment = false }) => {
                 <div
                   key={emotion.id}
                   className="relative size-12 transition-transform transform hover:scale-125 cursor-pointer"
-                  onMouseEnter={() => setHoveredEmotion(emotion.name)} // Show tooltip on hover
+                  onMouseEnter={() => setHoveredEmotion(emotion.name)}
                   onMouseLeave={() => setHoveredEmotion(null)}
-                  onClick={() => handleReactPost(emotion.name)} // Handle click event
+                  onClick={() => handleReactPost(emotion.name)}
                 >
                   <img
                     src={emotion.icon}
                     alt={emotion.name}
                     className="w-full h-full object-contain"
                   />
-                  {/* Tooltip */}
-
-                  {/* Tooltip */}
                   {hoveredEmotion === emotion.name && (
                     <div className="absolute -top-5 left-1/2 -translate-x-1/2 opacity-100 transition-all bg-black text-gray-300 text-xs px-2 py-1 rounded-md whitespace-nowrap pointer-events-none">
                       {emotion.name}
@@ -364,7 +396,7 @@ const PostCard = memo(({ post, onDeletePost, showComment = false }) => {
         </button>
       </div>
       {openComment && (
-        <div className="py-2 px-4 border-t-2 mt-2 border-gray-200 dark:border-gray-500">
+        <div className="py-2 px-4 border-t-2 mt-2 border-gray-200 dark:border-gray-700">
           <h1 className="text-lg dark:text-gray-400">All comments</h1>
           <CommentInput
             postId={post._id}
@@ -397,11 +429,13 @@ const PostCard = memo(({ post, onDeletePost, showComment = false }) => {
     </div>
   );
 });
-    
+
 PostCard.propTypes = {
   post: PropTypes.shape({
+    _id: PropTypes.string,
     likes: PropTypes.number,
     comments: PropTypes.array,
+    reactions: PropTypes.array,
     createdAt: PropTypes.string,
     content: PropTypes.string,
     media: PropTypes.array,
@@ -413,6 +447,8 @@ PostCard.propTypes = {
       avatar: PropTypes.string,
     }),
   }).isRequired,
+  onDeletePost: PropTypes.func,
+  showComment: PropTypes.bool,
 };
 
 export default PostCard;

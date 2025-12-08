@@ -10,7 +10,7 @@ export default function AdminLayout({ Element }) {
       <Navbar isOpenNavbar={isOpenNavbar} setIsOpenNavbar={setIsOpenNavbar} />
       <Header isOpenNavbar={isOpenNavbar} setIsOpenNavbar={setIsOpenNavbar} />
       <div
-        className={`absolute w-full bg-[#F7F7F7] top-12 right-0 ${
+        className={`absolute w-full bg-gray-50 top-12 right-0 transition-all duration-300 ease-in-out ${
           isOpenNavbar ? "lg:w-[85%]" : "lg:w-[93%]"
         }`}
       >

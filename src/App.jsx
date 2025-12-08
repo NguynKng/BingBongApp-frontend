@@ -40,6 +40,8 @@ import SplashScreen from "./components/SplashScreen";
 import OrderDetailPage from "./pages/OrderDetailPage";
 import GroupPage from "./pages/GroupPage";
 import DetailGroupPage from "./pages/DetailGroupPage";
+import MovieSearchPage from "./pages/MovieSearchPage";
+import MagnifyingTranslator from "./components/MagnifyingTranslator";
 
 function App() {
   const { checkAuth, theme, isCheckingAuth } = useAuthStore();
@@ -245,6 +247,14 @@ function App() {
           }
         />
         <Route
+          path="/movie/search"
+          element={
+            <ProtectedRoute>
+              <MainLayout Element={MovieSearchPage} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/movie/:id"
           element={
             <ProtectedRoute>
@@ -319,6 +329,7 @@ function App() {
         />
       </Routes>
       <Toaster />
+      <MagnifyingTranslator />
     </>
   );
 }

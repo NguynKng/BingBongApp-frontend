@@ -51,8 +51,6 @@ const useUserStore = create((set, get) => ({
 
   // ✅ Fetch user suggestions (with caching)
   fetchSuggestions: async () => {
-
-
     try {
       const res = await userAPI.getSuggestions();
       if (res.success) {
