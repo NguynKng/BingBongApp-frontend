@@ -15,7 +15,6 @@ function PostModal({ onClose, onPostCreated, postedBy, postedByType, postedById,
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent page reload
     setLoading(true);
-
     const formData = new FormData();
     formData.append("content", content);
     formData.append("time", new Date().toISOString());

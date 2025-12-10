@@ -6,6 +6,7 @@ import Config from "../../../../envVars";
 import toast from "react-hot-toast";
 import { productAPI } from "../../../../services/api";
 import SpinnerLoading from "../../../SpinnerLoading";
+import { getBackendImgURL } from "../../../../utils/helper";
 
 function ProductList({ shop }) {
   const [products, setProducts] = useState([]);
@@ -116,7 +117,7 @@ function ProductList({ shop }) {
             return (
               <div className="flex justify-center">
                 <img
-                  src={`${Config.BACKEND_URL}${thumbnail}`}
+                  src={getBackendImgURL(thumbnail)}
                   alt="Product"
                   className="size-12 object-cover rounded-md"
                 />

@@ -11,17 +11,7 @@ export default function Navbar({ isOpenNavbar, setIsOpenNavbar }) {
 
   const menuItems = [
     { label: "Dashboard", icon: "/layout.png", link: "/admin" },
-    { label: "Users", icon: "/user-admin.png", link: "/admin/users" },
-    { label: "Marketing", icon: "/market-analysis.png", link: "#" },
-    { label: "Chat", icon: "/chat.png", link: "#" },
-    { label: "Enquiries", icon: "/questions.png", link: "#" },
-    {
-      label: "Calendar",
-      icon: "/calendar.png",
-      link: "#",
-    },
-    { label: "Analytics", icon: "/bar-graph.png", link: "#", dropdown: true },
-    { label: "Settings", icon: "/cogwheel.png", link: "#", dropdown: true },
+    { label: "Users", icon: "/user-admin.png", link: "/admin/users" }
   ];
 
   const toggleDropdown = (tabName) => {
@@ -94,7 +84,7 @@ export default function Navbar({ isOpenNavbar, setIsOpenNavbar }) {
           return (
             <div
               key={item.label}
-              className={`py-4 px-6 transition-all duration-200 ${
+              className={`py-4 px-6 cursor-pointer transition-all duration-200 ${
                 isActive
                   ? "bg-blue-50 text-blue-600 rounded-xl shadow-md font-semibold w-full block border border-blue-200"
                   : "text-gray-600 hover:bg-gray-100 rounded-xl"
@@ -107,7 +97,7 @@ export default function Navbar({ isOpenNavbar, setIsOpenNavbar }) {
                       !isOpenNavbar
                         ? "flex-col justify-center"
                         : "justify-between"
-                    } items-center gap-2 hover:text-gray-800 cursor-pointer ${
+                    } items-center gap-2 hover:text-gray-800 ${
                       isActive ? "text-blue-600" : "text-gray-600"
                     }`}
                     onClick={() => toggleDropdown(item.label)}

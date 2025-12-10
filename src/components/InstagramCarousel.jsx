@@ -2,6 +2,7 @@ import { memo, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useImagePreview } from "../hooks/useImagePreview";
 import { getBackendImgURL } from "../utils/helper";
+import CloudinaryImage from "./CloudinaryImage";
 
 const ImageCarousel = memo(({ media, postId }) => {
   const [currentIndex, setCurrentIndex] = useState(0); // Dùng state thay vì ref

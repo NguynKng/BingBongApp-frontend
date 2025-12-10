@@ -1,5 +1,6 @@
 // helper: create a black (blank) video track to replace camera when user "turns off" video
 import Config from "../envVars";
+import { cld } from "./cloudinary";
 
 export const createBlankVideoTrack = (width = 640, height = 480) => {
   const canvas = document.createElement("canvas");
@@ -17,8 +18,14 @@ export const createBlankVideoTrack = (width = 640, height = 480) => {
 };
 
 export const getBackendImgURL = (imgPath) => {
-  return `${Config.BACKEND_URL}${imgPath}`;
+    const image = cld.image(imgPath);
+    return image.toURL();
 };
+
+export const getBackendVideoURL = (videoPath) => {
+    const video = cld.video(videoPath);
+    return video.toURL();
+}
 
 export const getProfileLink = (entity, type) => {
     if (!entity?.slug) return "#";

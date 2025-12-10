@@ -15,7 +15,6 @@ const MagnifyingTranslator = () => {
   const toggleMagnifier = useCallback(() => {
     setIsActive((prev) => {
       const newState = !prev;
-      console.log("🔄 Toggle magnifier:", newState);
       if (!newState) {
         setHoveredText("");
         setTranslation("");
@@ -27,7 +26,6 @@ const MagnifyingTranslator = () => {
 
   // ✅ Get word at mouse position
   const getWordAtPosition = useCallback((x, y) => {
-    console.log("🎯 Getting word at position:", { x, y });
     
     // Firefox & Chrome support
     let range;
@@ -42,14 +40,12 @@ const MagnifyingTranslator = () => {
     }
 
     if (!range) {
-      console.log("⚠️ No range found");
       return "";
     }
 
     const textNode = range.startContainer;
     
     if (textNode.nodeType !== Node.TEXT_NODE) {
-      console.log("⚠️ Not a text node");
       return "";
     }
 
@@ -71,36 +67,24 @@ const MagnifyingTranslator = () => {
     }
 
     const word = text.slice(start, end).trim();
-    console.log("✂️ Extracted word:", `"${word}"`);
     return word;
   }, []);
 
   // ✅ Fetch translation
   const fetchTranslation = useCallback(async (text) => {
     if (!text) {
-      console.log("⚠️ No text to translate");
       return;
     }
 
-    console.log("🌐 Starting translation for:", text);
     setLoading(true);
     
     try {
-      console.log("📡 Calling translateAPI.translateText...");
       const response = await translateAPI.translateText(text, "vi");
-      console.log("✅ Translation response:", response);
       
       const translatedText = response.translated_text || response.translatedText || "Không thể dịch";
-      console.log("📝 Setting translation:", translatedText);
       setTranslation(translatedText);
     } catch (error) {
-      console.error("❌ Translation error:", error);
-      console.error("❌ Error details:", {
-        message: error.message,
-        response: error.response?.data,
-        status: error.response?.status
-      });
-      setTranslation("Lỗi: " + (error.response?.data?.error || error.message));
+      setTranslation("Không thể dịch")
     } finally {
       setLoading(false);
     }
@@ -109,11 +93,8 @@ const MagnifyingTranslator = () => {
   // ✅ Handle mouse move - Debounced detection
   useEffect(() => {
     if (!isActive) {
-      console.log("⏸️ Magnifier not active");
       return;
     }
-
-    console.log("✅ Adding mousemove listener");
 
     const handleMouseMove = (e) => {
       // Update position immediately
@@ -127,16 +108,13 @@ const MagnifyingTranslator = () => {
       // Debounce word detection (300ms)
       debounceTimerRef.current = setTimeout(() => {
         const word = getWordAtPosition(e.clientX, e.clientY);
-        console.log("🔍 Detected word:", `"${word}"`, "Last:", `"${lastWordRef.current}"`);
         
         if (word && word !== lastWordRef.current) {
-          console.log("🆕 New word, translating...");
           lastWordRef.current = word;
           setHoveredText(word);
           setTranslation("");
           fetchTranslation(word);
         } else if (!word && lastWordRef.current) {
-          console.log("🚫 No word, clearing...");
           lastWordRef.current = "";
           setHoveredText("");
           setTranslation("");
@@ -148,7 +126,6 @@ const MagnifyingTranslator = () => {
     document.addEventListener("mousemove", handleMouseMove);
     
     return () => {
-      console.log("🧹 Cleanup");
       document.removeEventListener("mousemove", handleMouseMove);
       if (debounceTimerRef.current) {
         clearTimeout(debounceTimerRef.current);

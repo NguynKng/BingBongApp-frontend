@@ -276,7 +276,7 @@ const PostTab = memo(({ displayedUser }) => {
                     <img
                       src={getBackendImgURL(friend.avatar)}
                       alt="avatar"
-                      className="w-32 h-30 object-cover rounded-md border-2 border-gray-200 dark:border-[#2b2b3d]"
+                      className="size-30 object-cover rounded-full border-2 border-gray-200 dark:border-[#2b2b3d]"
                     />
                   </Link>
                   <Link

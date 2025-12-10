@@ -24,10 +24,10 @@ import VerifyEmailPage from "./pages/VerifyEmailPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ChangePasswordPage from "./pages/ChangePasswordPage";
 import UserBadgePage from "./pages/UserBadgePage";
-import AdminLoginPage from "./pages/Admin/AdminLoginPage";
-import AdminDashboardPage from "./pages/Admin/AdminDashboardPage";
+import LoginPage from "./pages/Admin/LoginPage";
+import DashboardPage from "./pages/Admin/DashboardPage";
+import ListUserPage from "./pages/Admin/ListUserPage";
 import AdminLayout from "./components/Admin/AdminLayout";
-import AdminUser from "./pages/Admin/AdminUser";
 import MoviePage from "./pages/MoviePage";
 import DetailMoviePage from "./pages/DetailMoviePage";
 import NotFoundPage from "./pages/NotFoundPage";
@@ -42,6 +42,7 @@ import GroupPage from "./pages/GroupPage";
 import DetailGroupPage from "./pages/DetailGroupPage";
 import MovieSearchPage from "./pages/MovieSearchPage";
 import MagnifyingTranslator from "./components/MagnifyingTranslator";
+import ShortsPage from "./pages/ShortsPage";
 
 function App() {
   const { checkAuth, theme, isCheckingAuth } = useAuthStore();
@@ -199,6 +200,14 @@ function App() {
           }
         />
         <Route
+          path="/shorts"
+          element={
+            <ProtectedRoute>
+              <MainLayout Element={ShortsPage} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/cart"
           element={
             <ProtectedRoute>
@@ -307,7 +316,7 @@ function App() {
           path="/admin/login"
           element={
             <AdminAuthRoute>
-              <AdminLoginPage />
+              <LoginPage />
             </AdminAuthRoute>
           }
         />
@@ -315,7 +324,7 @@ function App() {
           path="/admin"
           element={
             <AdminRoute>
-              <AdminLayout Element={AdminDashboardPage} />
+              <AdminLayout Element={DashboardPage} />
             </AdminRoute>
           }
         />
@@ -323,7 +332,7 @@ function App() {
           path="/admin/users"
           element={
             <AdminRoute>
-              <AdminLayout Element={AdminUser} />
+              <AdminLayout Element={ListUserPage} />
             </AdminRoute>
           }
         />

@@ -4,6 +4,7 @@ import useAuthStore from "../store/authStore";
 import CallWindow from "./CallWIndow";
 import Config from "../envVars";
 import { Ringtone } from "../utils/ringtone";
+import { getBackendImgURL } from "../utils/helper";
 
 export default function IncomingCall() {
   const socket = useAuthStore((s) => s.socket);
@@ -246,7 +247,7 @@ export default function IncomingCall() {
                 {peer && (
                   <div className="flex items-center gap-4 mb-4">
                     <img
-                      src={`${Config.BACKEND_URL}${peer.avatar}` || "/user.png"}
+                      src={getBackendImgURL(peer.avatar)}
                       alt={peer.fullName}
                       className="w-12 h-12 rounded-full object-cover"
                     />
