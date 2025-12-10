@@ -1282,9 +1282,9 @@ export const statsAPI = {
             throw error;
         }
     },
-    getUserPostsStats: async () => {
+    getUserGroupShopStats: async () => {
         try {
-            const response = await api.get("/stats/user-posts");
+            const response = await api.get("/stats/user-group-shop");
 
             if (response.data.success === false) {
                 throw new Error(response.data.message);
@@ -1295,6 +1295,114 @@ export const statsAPI = {
             if (error.response) {
                 const errorMessage =
                     error.response.data.message || "Failed to fetch stats";
+                throw new Error(errorMessage);
+            }
+            throw error;
+        }
+    },
+    getPostCommentReactionStats: async () => {
+        try {
+            const response = await api.get("/stats/post-comment-reaction");
+
+            if (response.data.success === false) {
+                throw new Error(response.data.message);
+            }
+
+            return response.data;
+        } catch (error) {
+            if (error.response) {
+                const errorMessage =
+                    error.response.data.message || "Failed to fetch stats";
+                throw new Error(errorMessage);
+            }
+            throw error;
+        }
+    },
+    getTopUsers: async () => {
+        try {
+            const response = await api.get("/stats/top-users");
+
+            if (response.data.success === false) {
+                throw new Error(response.data.message);
+            }
+
+            return response.data;
+        } catch (error) {
+            if (error.response) {
+                const errorMessage =
+                    error.response.data.message || "Failed to fetch top users";
+                throw new Error(errorMessage);
+            }
+            throw error;
+        }
+    },
+    getTopPosts: async () => {
+        try {
+            const response = await api.get("/stats/top-posts");
+
+            if (response.data.success === false) {
+                throw new Error(response.data.message);
+            }
+
+            return response.data;
+        } catch (error) {
+            if (error.response) {
+                const errorMessage =
+                    error.response.data.message || "Failed to fetch top posts";
+                throw new Error(errorMessage);
+            }
+            throw error;
+        }
+    },
+    getRecentActivity: async () => {
+        try {
+            const response = await api.get("/stats/recent-activity");
+
+            if (response.data.success === false) {
+                throw new Error(response.data.message);
+            }
+
+            return response.data;
+        } catch (error) {
+            if (error.response) {
+                const errorMessage =
+                    error.response.data.message || "Failed to fetch recent activity";
+                throw new Error(errorMessage);
+            }
+            throw error;
+        }
+    },
+    getGroupStats: async () => {
+        try {
+            const response = await api.get("/stats/groups");
+
+            if (response.data.success === false) {
+                throw new Error(response.data.message);
+            }
+
+            return response.data;
+        } catch (error) {
+            if (error.response) {
+                const errorMessage =
+                    error.response.data.message || "Failed to fetch group stats";
+                throw new Error(errorMessage);
+            }
+            throw error;
+        }
+    },
+    getShopStats: async () => {
+        try {
+            const response = await api.get("/stats/shops");
+
+            if (response.data.success === false) {
+                throw new Error(response.data.message);
+            }
+
+            return response.data;
+        } catch (error) {
+            if (error.response) {
+                const errorMessage =
+                    error.response.data.message || "Failed to fetch shop stats";
                 throw new Error(errorMessage);
             }
             throw error;

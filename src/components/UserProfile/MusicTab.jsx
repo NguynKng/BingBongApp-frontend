@@ -14,7 +14,8 @@ import {
   Save,
 } from "lucide-react";
 import propTypes from "prop-types";
-import { getBackendImgURL } from "../../utils/helper";
+import { getBackendVideoURL } from "../../utils/helper";
+
 import SpinnerLoading from "../SpinnerLoading";
 import useAuthStore from "../../store/authStore";
 import toast from "react-hot-toast";
@@ -133,7 +134,7 @@ const MusicTab = memo(({ displayedUser }) => {
         setPlayingId(null);
       } else {
         if (audioRef.current) {
-          audioRef.current.src = getBackendImgURL(url);
+          audioRef.current.src = getBackendVideoURL(url);
           audioRef.current.play();
           setPlayingId(ringtoneId);
         }

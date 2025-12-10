@@ -1,7 +1,9 @@
 import { Link, useLocation } from "react-router-dom";
 import {
+    Award,
   Badge,
   ChevronLeft,
+  Clapperboard,
   Film,
   Gamepad2,
   Handshake,
@@ -39,8 +41,9 @@ function Navbar({ isCloseSidebar, setIsCloseSidebar }) {
     { tab: "movie", src: Film, text: "Movies", link: "/movie" },
     { tab: "shop", src: Store, text: "Shop", link: "/shop" },
     { tab: "group", src: UsersRound, text: "Group", link: "/group" },
-    { tab: "badge", src: Badge, text: "Badge", link: "/user/badges" },
+    { tab: "badge", src: Award, text: "Badge", link: "/user/badges" },
     { tab: "order", src: ShoppingBag, text: "Order", link: "/order" },
+    { tab: "short", src: Clapperboard, text: "Shorts", link: "/shorts" },
   ];
 
   return (

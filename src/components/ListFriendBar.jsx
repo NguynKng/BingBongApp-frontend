@@ -43,7 +43,7 @@ export default function ListFriendBar({ onToggleChat }) {
     if (userId === "bingbong-ai") {
       onToggleChat({
         _id: "bingbong-ai",
-        avatar: "/images/bingbong-ai.png",
+        avatar: "/bingbong-ai",
         fullName: "BingBong AI",
       });
       return;
@@ -129,7 +129,7 @@ export default function ListFriendBar({ onToggleChat }) {
           >
             <div className="size-9 relative">
               <img
-                src={getBackendImgURL("/images/bingbong-ai.png")}
+                src={getBackendImgURL("bingbong-ai")}
                 alt="ChatBot"
                 className="size-full rounded-full object-cover border border-gray-200 dark:border-gray-700"
               />

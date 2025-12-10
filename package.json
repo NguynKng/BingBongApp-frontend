@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@ant-design/charts": "^2.6.4",
+    "@cloudinary/react": "^1.14.3",
+    "@cloudinary/url-gen": "^1.22.0",
     "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
     "@esbuild-plugins/node-modules-polyfill": "^0.2.2",
     "@tailwindcss/vite": "^4.0.15",

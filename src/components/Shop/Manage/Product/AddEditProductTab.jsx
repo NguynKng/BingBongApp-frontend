@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import Config from "../../../../envVars";
 import { productAPI } from "../../../../services/api";
+import { getBackendImgURL } from "../../../../utils/helper";
 
 function AddEditProductTab({ shop }) {
   const { id } = useParams();
@@ -361,7 +362,7 @@ function AddEditProductTab({ shop }) {
                             src={
                               src.fromFile
                                 ? src.path
-                                : `${Config.BACKEND_URL}${src.path}`
+                                : getBackendImgURL(src.path)
                             }
                             alt={`Preview ${index}`}
                             className="size-full object-cover rounded-md"
@@ -698,7 +699,7 @@ function AddEditProductTab({ shop }) {
                                         src={
                                           variant.image.fromFile
                                             ? variant.image.path
-                                            : `${Config.BACKEND_URL}${variant.image.path}`
+                                            : getBackendImgURL(variant.image.path)
                                         }
                                         alt={`Variant ${index + 1}`}
                                         className="w-full h-full object-cover"

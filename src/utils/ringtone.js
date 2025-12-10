@@ -1,10 +1,10 @@
-import { getBackendImgURL } from "./helper";
+import { getBackendVideoURL } from "./helper";
 
 let audio = null;
 let isFading = false;
 let currentSrc = null;
 
-const DEFAULT_RINGTONE = "/images/default-avatar/sound-1.mp3"; // nhạc chuông mặc định 
+const DEFAULT_RINGTONE = "default-sound"; // nhạc chuông mặc định 
 
 export const Ringtone = {
   play(src) {
@@ -14,7 +14,7 @@ export const Ringtone = {
     // nếu đổi ringtone → tạo audio mới
     if (!audio || currentSrc !== finalSrc) {
       currentSrc = finalSrc;
-      audio = new Audio(getBackendImgURL(finalSrc));
+      audio = new Audio(getBackendVideoURL(finalSrc));
       audio.loop = true;
       audio.volume = 0.8;
       audio.preload = "auto";

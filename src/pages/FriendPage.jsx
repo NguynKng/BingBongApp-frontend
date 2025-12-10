@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
-import Header from "../components/Header";
 import useAuthStore from "../store/authStore";
 import { useGetProfileBySlug } from "../hooks/useProfile";
 import { userAPI } from "../services/api";
 import toast from "react-hot-toast";
-import Config from "../envVars";
 import { Link } from "react-router-dom";
 import { useGetSuggestion } from "../hooks/useProfile";
+import { getBackendImgURL } from "../utils/helper";
 
 const FriendPage = () => {
   const { suggestions } = useGetSuggestion();
@@ -81,9 +80,7 @@ const FriendPage = () => {
                   >
                     <img
                       src={
-                        requester.avatar
-                          ? `${Config.BACKEND_URL}${requester.avatar}`
-                          : "/user.png"
+                        getBackendImgURL(requester.avatar)
                       }
                       alt={requester.fullName}
                       className="w-24 h-24 aspect-square rounded-full object-cover mb-3 shadow-md"
@@ -171,7 +168,7 @@ const SuggestionCard = ({ user }) => {
         className="flex flex-col items-center"
       >
         <img
-          src={`${Config.BACKEND_URL}${user.avatar}`}
+          src={getBackendImgURL(user.avatar)}
           alt={user.fullName}
           className="w-24 h-24 aspect-square rounded-full object-cover mb-3 shadow-md"
         />
