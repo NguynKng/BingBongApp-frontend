@@ -131,7 +131,8 @@ const FriendPage = () => {
 };
 
 const SuggestionCard = ({ user }) => {
-  const [isRequestSent, setIsRequestSent] = useState(false);
+    const {user: currentUser} = useAuthStore();
+  const [isRequestSent, setIsRequestSent] = useState(user.friendRequests.includes(currentUser._id));
   const [isLoading, setIsLoading] = useState(false);
 
   const handleToggleFriendRequest = async () => {

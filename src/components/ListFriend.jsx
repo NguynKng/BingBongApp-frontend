@@ -8,6 +8,7 @@ import { useGetSuggestion } from "../hooks/useProfile";
 import useMovieStore from "../store/movieStore";
 import { getBackendImgURL } from "../utils/helper";
 import { userAPI } from "../services/api";
+import useAuthStore from "../store/authStore";
 
 const ListFriend = memo(() => {
   const { movies, loading, fetchTrendingMovies, contentType } = useMovieStore();
@@ -117,7 +118,10 @@ ListFriend.displayName = "ListFriend";
 
 // ✅ Extract SuggestionCard with memo
 const SuggestionCard = memo(({ user }) => {
-  const [isRequestSent, setIsRequestSent] = useState(false);
+  const { user: currentUser } = useAuthStore();
+  const [isRequestSent, setIsRequestSent] = useState(
+    user.friendRequests.includes(currentUser._id)
+  );
   const [isLoading, setIsLoading] = useState(false);
 
   const handleToggleFriendRequest = useCallback(async () => {

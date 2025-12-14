@@ -43,6 +43,9 @@ import DetailGroupPage from "./pages/DetailGroupPage";
 import MovieSearchPage from "./pages/MovieSearchPage";
 import MagnifyingTranslator from "./components/MagnifyingTranslator";
 import ShortsPage from "./pages/ShortsPage";
+import CreateShortPage from "./pages/CreateShortPage";
+import MyShortPage from "./pages/MyShortPage";
+import DetailShortPage from "./pages/DetailShortPage";
 
 function App() {
   const { checkAuth, theme, isCheckingAuth } = useAuthStore();
@@ -204,6 +207,30 @@ function App() {
           element={
             <ProtectedRoute>
               <MainLayout Element={ShortsPage} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/shorts/:shortId"
+          element={
+            <ProtectedRoute>
+              <MainLayout Element={DetailShortPage} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/shorts/me"
+          element={
+            <ProtectedRoute>
+              <MainLayout Element={MyShortPage} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/shorts/create"
+          element={
+            <ProtectedRoute>
+              <MainLayout Element={CreateShortPage} />
             </ProtectedRoute>
           }
         />

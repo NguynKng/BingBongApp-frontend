@@ -76,7 +76,6 @@ export default function DetailGroupPage({ onToggleChat }) {
       toast.success("Avatar updated successfully");
     } catch (error) {
       console.error("Avatar upload error:", error);
-      toast.error("Failed to update avatar");
     } finally {
       setIsUploading((prev) => ({ ...prev, avatar: false }));
     }
@@ -93,7 +92,6 @@ export default function DetailGroupPage({ onToggleChat }) {
       toast.success("Cover photo updated successfully");
     } catch (error) {
       console.error("Cover photo upload error:", error);
-      toast.error("Failed to update cover photo");
     } finally {
       setIsUploading((prev) => ({ ...prev, coverPhoto: false }));
     }

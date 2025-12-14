@@ -12,13 +12,16 @@ import { chatAPI, orderAPI } from "../services/api";
 import { formatPriceWithDollar } from "../utils/formattedFunction";
 import { getBackendImgURL } from "../utils/helper";
 import { formatDateTimeWithTime } from "../utils/timeUtils";
+import useAuthStore from "../store/authStore";
 
 export default function OrderDetailPage({ onToggleChat }) {
+  const { user } = useAuthStore();
   const { orderId } = useParams();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
-  
+  const isShopOwner = user && order && user._id === order.shop.owner;
+
   const fullName = order
     ? `${order.shipping.lastName} ${order.shipping.firstName}`
     : "";
@@ -38,12 +41,25 @@ export default function OrderDetailPage({ onToggleChat }) {
   }, [orderId]);
 
   const handleToggleChat = async () => {
-      const response = await chatAPI.getChatIdByTypeId({
-        shopId: order.shop._id,
-        type: "shop",
-      });
-      onToggleChat(response.data);
-    };
+    const response = await chatAPI.getChatIdByTypeId({
+      shopId: order.shop._id,
+      type: "shop",
+    });
+    onToggleChat(response.data);
+  };
+
+  const handleReceiveOrder = async () => {
+    if (updating) return;
+    setUpdating(true);
+    try {
+      const updatedOrder = await orderAPI.receiveOrder(order.orderId);
+      setOrder(updatedOrder.data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setUpdating(false);
+    }
+  };
 
   if (loading)
     return (
@@ -55,7 +71,9 @@ export default function OrderDetailPage({ onToggleChat }) {
   if (!order)
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-[#0f1419] flex items-center justify-center">
-        <p className="text-center text-red-500 dark:text-red-400">Order not found.</p>
+        <p className="text-center text-red-500 dark:text-red-400">
+          Order not found.
+        </p>
       </div>
     );
 
@@ -68,16 +86,21 @@ export default function OrderDetailPage({ onToggleChat }) {
             Order Details
           </h1>
           <p className="text-gray-500 dark:text-gray-400 mt-1 text-sm">
-            Order ID: <span className="font-medium text-blue-600 dark:text-purple-400">{order.orderId}</span>
+            Order ID:{" "}
+            <span className="font-medium text-blue-600 dark:text-purple-400">
+              {order.orderId}
+            </span>
           </p>
         </div>
 
         <div className="flex lg:flex-row flex-col lg:gap-6 gap-4">
           {/* LEFT SIDE - ORDER SUMMARY */}
           <div className="lg:w-[35%] w-full h-fit shadow-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#1b1f2b] rounded-lg p-4 space-y-4">
-            <h2 className="font-semibold text-xl text-gray-900 dark:text-white">Your Order</h2>
+            <h2 className="font-semibold text-xl text-gray-900 dark:text-white">
+              Your Order
+            </h2>
             <hr className="border-gray-200 dark:border-gray-700" />
-            
+
             {/* Products List */}
             <div className="flex flex-col gap-4">
               {order.products.map((product) => {
@@ -85,7 +108,10 @@ export default function OrderDetailPage({ onToggleChat }) {
                   (v) => v._id === product.variant
                 );
                 return (
-                  <div key={product._id} className="flex gap-3 items-center p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                  <div
+                    key={product._id}
+                    className="flex gap-3 items-center p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
+                  >
                     <img
                       src={getBackendImgURL(variant.image)}
                       alt={variant.name}
@@ -93,9 +119,15 @@ export default function OrderDetailPage({ onToggleChat }) {
                     />
                     <div className="flex-1 flex gap-2 items-center justify-between">
                       <div className="space-y-1">
-                        <p className="font-medium text-gray-900 dark:text-white line-clamp-1">{product.product.name}</p>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">{variant.name}</p>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">Qty: {product.quantity}</p>
+                        <p className="font-medium text-gray-900 dark:text-white line-clamp-1">
+                          {product.product.name}
+                        </p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                          {variant.name}
+                        </p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                          Qty: {product.quantity}
+                        </p>
                       </div>
                       <p className="font-semibold text-orange-500 dark:text-orange-400">
                         {formatPriceWithDollar(variant.price)}
@@ -116,7 +148,9 @@ export default function OrderDetailPage({ onToggleChat }) {
               </div>
               <div className="flex items-center justify-between text-gray-700 dark:text-gray-300">
                 <span className="font-medium">Shipping</span>
-                <span className="text-green-600 dark:text-green-400 font-medium">Free</span>
+                <span className="text-green-600 dark:text-green-400 font-medium">
+                  Free
+                </span>
               </div>
             </div>
 
@@ -124,7 +158,9 @@ export default function OrderDetailPage({ onToggleChat }) {
 
             {/* Total */}
             <div className="flex items-center justify-between text-lg">
-              <span className="font-bold text-gray-900 dark:text-white">Total</span>
+              <span className="font-bold text-gray-900 dark:text-white">
+                Total
+              </span>
               <span className="font-bold text-blue-600 dark:text-purple-400">
                 {formatPriceWithDollar(order.total)}
               </span>
@@ -204,7 +240,11 @@ export default function OrderDetailPage({ onToggleChat }) {
                           : "bg-gray-200 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-400 dark:text-gray-500"
                       }`}
                     >
-                      {order.cancelledAt ? <CircleX className="w-6 h-6" /> : <CircleCheck className="w-6 h-6" />}
+                      {order.cancelledAt ? (
+                        <CircleX className="w-6 h-6" />
+                      ) : (
+                        <CircleCheck className="w-6 h-6" />
+                      )}
                     </div>
                   </div>
                 </div>
@@ -212,7 +252,9 @@ export default function OrderDetailPage({ onToggleChat }) {
                 {/* Step Labels */}
                 <div className="flex items-center justify-between">
                   <div className="w-1/4 text-center">
-                    <p className="text-sm font-medium text-gray-900 dark:text-white">Order Placed</p>
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">
+                      Order Placed
+                    </p>
                     {order.createdAt && (
                       <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                         {formatDateTimeWithTime(order.createdAt)}
@@ -220,7 +262,9 @@ export default function OrderDetailPage({ onToggleChat }) {
                     )}
                   </div>
                   <div className="w-1/4 text-center">
-                    <p className="text-sm font-medium text-gray-900 dark:text-white">Confirmed</p>
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">
+                      Confirmed
+                    </p>
                     {order.confirmedAt && (
                       <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                         {formatDateTimeWithTime(order.confirmedAt)}
@@ -228,7 +272,9 @@ export default function OrderDetailPage({ onToggleChat }) {
                     )}
                   </div>
                   <div className="w-1/4 text-center">
-                    <p className="text-sm font-medium text-gray-900 dark:text-white">Shipping</p>
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">
+                      Shipping
+                    </p>
                     {order.shippingAt && (
                       <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                         {formatDateTimeWithTime(order.shippingAt)}
@@ -241,7 +287,9 @@ export default function OrderDetailPage({ onToggleChat }) {
                     </p>
                     {(order.completedAt || order.cancelledAt) && (
                       <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                        {formatDateTimeWithTime(order.completedAt || order.cancelledAt)}
+                        {formatDateTimeWithTime(
+                          order.completedAt || order.cancelledAt
+                        )}
                       </p>
                     )}
                   </div>
@@ -256,31 +304,43 @@ export default function OrderDetailPage({ onToggleChat }) {
                   <p className="text-base font-semibold text-gray-900 dark:text-white">
                     Delivery attempt should be made by 05-01-2023
                   </p>
-                  <button onClick={handleToggleChat} className="rounded-lg cursor-pointer bg-gray-900 dark:bg-gray-800 hover:bg-gray-800 dark:hover:bg-gray-700 py-2 px-4 text-white transition-colors font-medium w-fit">
-                    Chat with customer support
-                  </button>
+                  {!isShopOwner && (
+                    <button
+                      onClick={handleToggleChat}
+                      className="rounded-lg cursor-pointer bg-gray-900 dark:bg-gray-800 hover:bg-gray-800 dark:hover:bg-gray-700 py-2 px-4 text-white transition-colors font-medium w-fit"
+                    >
+                      Chat with customer support
+                    </button>
+                  )}
                   <p className="text-sm text-gray-500 dark:text-gray-400">
-                    Confirm order receive after you receive the goods successfully
+                    Confirm order receive after you receive the goods
+                    successfully
                   </p>
                 </div>
-                <div className="lg:w-[35%] w-full flex flex-col gap-3">
-                  <button className="w-full h-12 cursor-pointer text-white text-center rounded-lg bg-blue-600 dark:bg-purple-600 hover:bg-blue-700 dark:hover:bg-purple-700 transition-colors font-medium shadow-md">
-                    Order Received
-                  </button>
-                  <button className="w-full h-12 cursor-pointer text-blue-600 dark:text-purple-400 border-2 border-blue-600 dark:border-purple-600 hover:bg-blue-50 dark:hover:bg-purple-900/20 text-center rounded-lg bg-white dark:bg-transparent transition-colors font-medium">
-                    Request Return/Refund
-                  </button>
-                </div>
+                {order.orderStatus === "Shipping" && (
+                  <div className="lg:w-[35%] w-full flex flex-col gap-3">
+                    <button
+                      className="w-full h-12 cursor-pointer text-white text-center rounded-lg bg-blue-600 dark:bg-purple-600 hover:bg-blue-700 dark:hover:bg-purple-700 transition-colors font-medium shadow-md"
+                      disabled={updating || order.orderStatus !== "Shipping"} onClick={handleReceiveOrder}
+                    >
+                      Order Received
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
 
             {/* Delivery Address */}
             <div className="bg-white dark:bg-[#1b1f2b] p-6 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
-              <h2 className="font-bold text-lg text-gray-900 dark:text-white mb-4">Delivery Address</h2>
+              <h2 className="font-bold text-lg text-gray-900 dark:text-white mb-4">
+                Delivery Address
+              </h2>
               <div className="flex lg:flex-row flex-col gap-6">
                 {/* Address Info */}
                 <div className="lg:w-[35%] w-full space-y-1 text-gray-700 dark:text-gray-300">
-                  <p className="font-semibold text-gray-900 dark:text-white">{fullName}</p>
+                  <p className="font-semibold text-gray-900 dark:text-white">
+                    {fullName}
+                  </p>
                   <p>{order.shipping.phoneNumber}</p>
                   <p>{`${order.shipping.address}, ${order.shipping.city}`}</p>
                   <p>{order.shipping.country}</p>
@@ -305,7 +365,9 @@ export default function OrderDetailPage({ onToggleChat }) {
                           <Package className="size-4" />
                         </div>
                       </div>
-                      <p className="text-sm w-[40%] text-gray-900 dark:text-white font-medium">Order placed</p>
+                      <p className="text-sm w-[40%] text-gray-900 dark:text-white font-medium">
+                        Order placed
+                      </p>
                     </div>
 
                     {order.confirmedAt && (
@@ -318,7 +380,9 @@ export default function OrderDetailPage({ onToggleChat }) {
                             <PackageCheck className="size-4" />
                           </div>
                         </div>
-                        <p className="text-sm w-[40%] text-gray-900 dark:text-white font-medium">Shop confirmed</p>
+                        <p className="text-sm w-[40%] text-gray-900 dark:text-white font-medium">
+                          Shop confirmed
+                        </p>
                       </div>
                     )}
 
@@ -332,7 +396,9 @@ export default function OrderDetailPage({ onToggleChat }) {
                             <Truck className="size-4" />
                           </div>
                         </div>
-                        <p className="text-sm w-[40%] text-gray-900 dark:text-white font-medium">Shipping</p>
+                        <p className="text-sm w-[40%] text-gray-900 dark:text-white font-medium">
+                          Shipping
+                        </p>
                       </div>
                     )}
 
@@ -346,7 +412,9 @@ export default function OrderDetailPage({ onToggleChat }) {
                             <CircleCheck className="size-4" />
                           </div>
                         </div>
-                        <p className="text-sm w-[40%] text-gray-900 dark:text-white font-medium">Completed</p>
+                        <p className="text-sm w-[40%] text-gray-900 dark:text-white font-medium">
+                          Completed
+                        </p>
                       </div>
                     )}
                   </div>

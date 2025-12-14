@@ -42,6 +42,10 @@ const DropdownNotification = memo(({ notifications }) => {
         return `/order`;
       case "new_shop_follower":
         return `/shop/${noti.data.shopSlug}`;
+      case "group_new_member":
+        return `/group/${noti.data.groupSlug}`;
+        case "group_join_request":
+        return `/group/${noti.data.groupSlug}/manage`;
       default:
         return "#";
     }
