@@ -8,7 +8,7 @@ import QuizPage from "./pages/Quiz/QuizPage";
 import QuizPlayPage from "./pages/Quiz/QuizPlayPage";
 import CreateQuizPage from "./pages/Quiz/CreateQuizPage";
 import DetailPostPage from "./pages/DetailPostPage";
-import NewsPage from "./pages/newsPage";
+import NewsPage from "./pages/NewsPage";    
 import Leaderboard from "./pages/Quiz/Leaderboard";
 import { Toaster } from "react-hot-toast";
 import useAuthStore from "./store/authStore";
