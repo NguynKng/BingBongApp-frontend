@@ -26,6 +26,7 @@ function ChatBox({ onClose, chat }) {
   const isAIChat = chat?._id === "bingbong-ai";
   const isGroupChat = chat && chat.type === "group";
   const isFanpageChat = chat && chat.type === "fanpage"
+  console.log(chat)
 
   const userChat = (() => {
     if (isAIChat) return chat;

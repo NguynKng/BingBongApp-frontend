@@ -5,2515 +5,2751 @@ import useAuthStore from "../store/authStore";
 
 // Create axios instance with default config
 const api = axios.create({
-    baseURL: `${Config.BACKEND_URL}/api/v1`,
-    withCredentials: true,
-    headers: {
-        "Content-Type": "application/json",
-    },
+  baseURL: `${Config.BACKEND_URL}/api/v1`,
+  withCredentials: true,
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
 
 api.interceptors.request.use((config) => {
-    const token = useAuthStore.getState().token;
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
+  const token = useAuthStore.getState().token;
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
 });
 
 api.interceptors.response.use(
-    (response) => response,
-    (error) => {
-        if (error.response?.status === 401) {
-            // Token hết hạn hoặc không hợp lệ
-            const logout = useAuthStore.getState().logout(false);
-            logout();
-        }
-        return Promise.reject(error);
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Token hết hạn hoặc không hợp lệ
+      const logout = useAuthStore.getState().logout(false);
+      logout();
     }
+    return Promise.reject(error);
+  }
 );
 
 //AUTH API services
 export const authAPI = {
-    // Register a new user
-    signup: async (userData) => {
-        try {
-            const response = await api.post("/auth/signup", userData);
+  // Register a new user
+  signup: async (userData) => {
+    try {
+      const response = await api.post("/auth/signup", userData);
 
-            // Check if response indicates failure
-            if (response.data.success === false) {
-                toast.error(response.data.message);
-                throw new Error(response.data.message);
-            }
+      // Check if response indicates failure
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            // Handle axios error
-            if (error.response) {
-                const errorMessage = error.response.data.message || "Signup failed";
-                toast.error(errorMessage);
-                throw new Error(errorMessage);
-            }
+      return response.data;
+    } catch (error) {
+      // Handle axios error
+      if (error.response) {
+        const errorMessage = error.response.data.message || "Signup failed";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
 
-            // Handle other errors
-            toast.error(error.message || "Signup failed");
-            throw error;
-        }
-    },
+      // Handle other errors
+      toast.error(error.message || "Signup failed");
+      throw error;
+    }
+  },
 
-    // Login user
-    login: async (credentials) => {
-        try {
-            const response = await api.post("/auth/login", credentials);
+  // Login user
+  login: async (credentials) => {
+    try {
+      const response = await api.post("/auth/login", credentials);
 
-            // Check if response indicates failure
-            if (response.data.success === false) {
-                toast.error(response.data.message);
-                throw new Error(response.data.message);
-            }
+      // Check if response indicates failure
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            // Handle axios error
-            if (error.response) {
-                const errorMessage = error.response.data.message || "Login failed";
-                toast.error(errorMessage);
-                throw new Error(errorMessage);
-            }
+      return response.data;
+    } catch (error) {
+      // Handle axios error
+      if (error.response) {
+        const errorMessage = error.response.data.message || "Login failed";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
 
-            // Handle other errors
-            toast.error(error.message || "Login failed");
-            throw error;
-        }
-    },
-    adminLogin: async (credentials) => {
-        try {
-            const response = await api.post("/auth/admin/login", credentials);
+      // Handle other errors
+      toast.error(error.message || "Login failed");
+      throw error;
+    }
+  },
+  adminLogin: async (credentials) => {
+    try {
+      const response = await api.post("/auth/admin/login", credentials);
 
-            // Check if response indicates failure
-            if (response.data.success === false) {
-                toast.error(response.data.message);
-                throw new Error(response.data.message);
-            }
+      // Check if response indicates failure
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            // Handle axios error
-            if (error.response) {
-                const errorMessage = error.response.data.message || "Login failed";
-                toast.error(errorMessage);
-                throw new Error(errorMessage);
-            }
+      return response.data;
+    } catch (error) {
+      // Handle axios error
+      if (error.response) {
+        const errorMessage = error.response.data.message || "Login failed";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
 
-            // Handle other errors
-            toast.error(error.message || "Login failed");
-            throw error;
-        }
-    },
+      // Handle other errors
+      toast.error(error.message || "Login failed");
+      throw error;
+    }
+  },
 
-    // Logout user
-    logout: async () => {
-        try {
-            const response = await api.post("/auth/logout");
+  // Logout user
+  logout: async () => {
+    try {
+      const response = await api.post("/auth/logout");
 
-            // Check if response indicates failure
-            if (response.data.success === false) {
-                toast.error(response.data.message);
-                throw new Error(response.data.message);
-            }
+      // Check if response indicates failure
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            // Handle axios error
-            if (error.response) {
-                const errorMessage = error.response.data.message || "Logout failed";
-                toast.error(errorMessage);
-                throw new Error(errorMessage);
-            }
+      return response.data;
+    } catch (error) {
+      // Handle axios error
+      if (error.response) {
+        const errorMessage = error.response.data.message || "Logout failed";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
 
-            // Handle other errors
-            toast.error(error.message || "Logout failed");
-            throw error;
-        }
-    },
+      // Handle other errors
+      toast.error(error.message || "Logout failed");
+      throw error;
+    }
+  },
 
-    // Check authentication status
-    checkAuth: async () => {
-        try {
-            const response = await api.get("/auth/authCheck");
+  // Check authentication status
+  checkAuth: async () => {
+    try {
+      const response = await api.get("/auth/authCheck");
 
-            // Check if response indicates failure
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      // Check if response indicates failure
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            // Don't show error toast for auth check failures since this is often expected
-            if (error.response && error.response.status !== 401) {
-                toast.error(
-                    error.response.data.message || "Authentication check failed"
-                );
-            }
-            throw error;
-        }
-    },
-    verifyCode: async (email, code, action) => {
-        try {
-            const response = await api.post("/auth/verify-code", {
-                email,
-                code,
-                action,
-            });
+      return response.data;
+    } catch (error) {
+      // Don't show error toast for auth check failures since this is often expected
+      if (error.response && error.response.status !== 401) {
+        toast.error(
+          error.response.data.message || "Authentication check failed"
+        );
+      }
+      throw error;
+    }
+  },
+  verifyCode: async (email, code, action) => {
+    try {
+      const response = await api.post("/auth/verify-code", {
+        email,
+        code,
+        action,
+      });
 
-            // Check if response indicates failure
-            if (response.data.success === false) {
-                toast.error(response.data.message);
-                throw new Error(response.data.message);
-            }
+      // Check if response indicates failure
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            // Handle axios error
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Verification failed";
-                toast.error(errorMessage);
-                throw new Error(errorMessage);
-            }
+      return response.data;
+    } catch (error) {
+      // Handle axios error
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Verification failed";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
 
-            // Handle other errors
-            toast.error(error.message || "Verification failed");
-            throw error;
-        }
-    },
-    forgotPassword: async (email) => {
-        try {
-            const response = await api.post("/auth/forgot-password", { email });
+      // Handle other errors
+      toast.error(error.message || "Verification failed");
+      throw error;
+    }
+  },
+  forgotPassword: async (email) => {
+    try {
+      const response = await api.post("/auth/forgot-password", { email });
 
-            // Check if response indicates failure
-            if (response.data.success === false) {
-                toast.error(response.data.message);
-                throw new Error(response.data.message);
-            }
+      // Check if response indicates failure
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            // Handle axios error
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Forgot password failed";
-                toast.error(errorMessage);
-                throw new Error(errorMessage);
-            }
+      return response.data;
+    } catch (error) {
+      // Handle axios error
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Forgot password failed";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
 
-            // Handle other errors
-            toast.error(error.message || "Forgot password failed");
-            throw error;
-        }
-    },
-    resetPassword: async (email, newPassword) => {
-        try {
-            const response = await api.post("/auth/reset-password", {
-                email,
-                newPassword,
-            });
+      // Handle other errors
+      toast.error(error.message || "Forgot password failed");
+      throw error;
+    }
+  },
+  resetPassword: async (email, newPassword) => {
+    try {
+      const response = await api.post("/auth/reset-password", {
+        email,
+        newPassword,
+      });
 
-            // Check if response indicates failure
-            if (response.data.success === false) {
-                toast.error(response.data.message);
-                throw new Error(response.data.message);
-            }
+      // Check if response indicates failure
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            // Handle axios error
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Reset password failed";
-                toast.error(errorMessage);
-                throw new Error(errorMessage);
-            }
+      return response.data;
+    } catch (error) {
+      // Handle axios error
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Reset password failed";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
 
-            // Handle other errors
-            toast.error(error.message || "Reset password failed");
-            throw error;
-        }
-    },
+      // Handle other errors
+      toast.error(error.message || "Reset password failed");
+      throw error;
+    }
+  },
 };
 
 //USER API services
 export const userAPI = {
-    getAllUsers: async () => {
-        try {
-            const response = await api.get(`/user/get-all`);
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to get user posts";
-                toast.error(errorMessage);
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    updateUserInfo: async (userId, userData) => {
-        try {
-            const response = await api.post(`/user/update-info/${userId}`, userData);
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to update user info";
-                toast.error(errorMessage);
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    // Upload user avatar
-    uploadAvatar: async (file, type, id) => {
-        try {
-            const formData = new FormData();
-            formData.append("avatar", file);
-            formData.append("type", type);
-            formData.append("id", id);
+  getAllUsers: async () => {
+    try {
+      const response = await api.get(`/user/get-all`);
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to get user posts";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  updateUserInfo: async (userId, userData) => {
+    try {
+      const response = await api.post(`/user/update-info/${userId}`, userData);
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to update user info";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  // Upload user avatar
+  uploadAvatar: async (file, type, id) => {
+    try {
+      const formData = new FormData();
+      formData.append("avatar", file);
+      formData.append("type", type);
+      formData.append("id", id);
 
-            const response = await api.post("/user/avatar", formData, {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
-            });
+      const response = await api.post("/user/avatar", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
-            if (response.data.success === false) {
-                toast.error(response.data.message);
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to upload avatar";
-                toast.error(errorMessage);
-                throw new Error(errorMessage);
-            }
-            toast.error(error.message || "Failed to upload avatar");
-            throw error;
-        }
-    },
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to upload avatar";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      toast.error(error.message || "Failed to upload avatar");
+      throw error;
+    }
+  },
 
-    // Upload user cover photo
-    uploadCoverPhoto: async (file, type, id) => {
-        try {
-            const formData = new FormData();
-            formData.append("coverPhoto", file);
-            formData.append("type", type);
-            formData.append("id", id);
+  // Upload user cover photo
+  uploadCoverPhoto: async (file, type, id) => {
+    try {
+      const formData = new FormData();
+      formData.append("coverPhoto", file);
+      formData.append("type", type);
+      formData.append("id", id);
 
-            const response = await api.post("/user/cover-photo", formData, {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
-            });
+      const response = await api.post("/user/cover-photo", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
-            if (response.data.success === false) {
-                toast.error(response.data.message);
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to upload cover photo";
-                toast.error(errorMessage);
-                throw new Error(errorMessage);
-            }
-            toast.error(error.message || "Failed to upload cover photo");
-            throw error;
-        }
-    },
-    // Upload user cover photo
-    addUserRingtone: async (file, name) => {
-        try {
-            const formData = new FormData();
-            formData.append("ringtone", file);
-            formData.append("name", name);
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to upload cover photo";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      toast.error(error.message || "Failed to upload cover photo");
+      throw error;
+    }
+  },
+  // Upload user cover photo
+  addUserRingtone: async (file, name) => {
+    try {
+      const formData = new FormData();
+      formData.append("ringtone", file);
+      formData.append("name", name);
 
-            const response = await api.post("/user/ringtones", formData, {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
-            });
+      const response = await api.post("/user/ringtones", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
-            if (response.data.success === false) {
-                toast.error(response.data.message);
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to upload ringtone";
-                toast.error(errorMessage);
-                throw new Error(errorMessage);
-            }
-            toast.error(error.message || "Failed to upload ringtone");
-            throw error;
-        }
-    },
-    // Upload user cover photo
-    deleteUserRingtone: async (ringtoneId) => {
-        try {
-            const response = await api.delete(`/user/ringtones/${ringtoneId}`);
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to upload ringtone";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      toast.error(error.message || "Failed to upload ringtone");
+      throw error;
+    }
+  },
+  // Upload user cover photo
+  deleteUserRingtone: async (ringtoneId) => {
+    try {
+      const response = await api.delete(`/user/ringtones/${ringtoneId}`);
 
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
 
-            if (response.data.success === false) {
-                toast.error(response.data.message);
-                throw new Error(response.data.message);
-            }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to delete ringtone";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      toast.error(error.message || "Failed to delete ringtone");
+      throw error;
+    }
+  },
+  // Upload user cover photo
+  setActiveRingtone: async (ringtoneId) => {
+    try {
+      const response = await api.put(`/user/ringtones/active/${ringtoneId}`);
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to delete ringtone";
-                toast.error(errorMessage);
-                throw new Error(errorMessage);
-            }
-            toast.error(error.message || "Failed to delete ringtone");
-            throw error;
-        }
-    },
-    // Upload user cover photo
-    setActiveRingtone: async (ringtoneId) => {
-        try {
-            const response = await api.put(`/user/ringtones/active/${ringtoneId}`);
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
 
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to set active ringtone";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      toast.error(error.message || "Failed to set active ringtone");
+      throw error;
+    }
+  },
+  // Upload user cover photo
+  renameUserRingtone: async (ringtoneId, newName) => {
+    try {
+      const response = await api.put(`/user/ringtones/rename/${ringtoneId}`, {
+        name: newName,
+      });
 
-            if (response.data.success === false) {
-                toast.error(response.data.message);
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to set active ringtone";
-                toast.error(errorMessage);
-                throw new Error(errorMessage);
-            }
-            toast.error(error.message || "Failed to set active ringtone");
-            throw error;
-        }
-    },
-    // Upload user cover photo
-    renameUserRingtone : async (ringtoneId, newName) => {
-        try {
-            const response = await api.put(`/user/ringtones/rename/${ringtoneId}`, { name: newName });
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to rename ringtone";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      toast.error(error.message || "Failed to rename ringtone");
+      throw error;
+    }
+  },
+  // Get user profile
+  getUserProfile: async (userId) => {
+    try {
+      // Use different endpoints based on whether userId is provided
+      const url = userId ? `/user/profile/${userId}` : "/user/profile";
+      const response = await api.get(url);
 
-            if (response.data.success === false) {
-                toast.error(response.data.message);
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to rename ringtone";
-                toast.error(errorMessage);
-                throw new Error(errorMessage);
-            }
-            toast.error(error.message || "Failed to rename ringtone");
-            throw error;
-        }
-    },
-    // Get user profile
-    getUserProfile: async (userId) => {
-        try {
-            // Use different endpoints based on whether userId is provided
-            const url = userId ? `/user/profile/${userId}` : "/user/profile";
-            const response = await api.get(url);
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to get user profile";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getUserProfileBySlug: async (slug) => {
+    try {
+      // Use different endpoints based on whether userId is provided
+      const response = await api.get(`/user/profile/slug/${slug}`);
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to get user profile";
-                toast.error(errorMessage);
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    getUserProfileBySlug: async (slug) => {
-        try {
-            // Use different endpoints based on whether userId is provided
-            const response = await api.get(`/user/profile/slug/${slug}`);
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to get user profile";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getUserProfileByName: async (name) => {
+    try {
+      // Use different endpoints based on whether userId is provided
+      const url = `/user/search?name=${name}`;
+      const response = await api.get(url);
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to get user profile";
-                toast.error(errorMessage);
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    getUserProfileByName: async (name) => {
-        try {
-            // Use different endpoints based on whether userId is provided
-            const url = `/user/search?name=${name}`;
-            const response = await api.get(url);
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to get user profile";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  // Add friend-related actions
+  acceptFriendRequest: async (userId) => {
+    try {
+      const response = await api.post(`/user/friend-request/accept/${userId}`);
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || "Failed to accept friend request";
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
+    }
+  },
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+  sendFriendRequest: async (userId) => {
+    try {
+      const response = await api.post(`/user/friend-request/${userId}`);
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || "Failed to send friend request";
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
+    }
+  },
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to get user profile";
-                toast.error(errorMessage);
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    // Add friend-related actions
-    acceptFriendRequest: async (userId) => {
-        try {
-            const response = await api.post(`/user/friend-request/accept/${userId}`);
-            if (response.data.success === false) {
-                toast.error(response.data.message);
-                throw new Error(response.data.message);
-            }
-            return response.data;
-        } catch (error) {
-            const errorMessage =
-                error.response?.data?.message || "Failed to accept friend request";
-            toast.error(errorMessage);
-            throw new Error(errorMessage);
-        }
-    },
+  cancelFriendRequest: async (userId) => {
+    try {
+      const response = await api.delete(`/user/friend-request/${userId}`);
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || "Failed to cancel friend request";
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
+    }
+  },
 
-    sendFriendRequest: async (userId) => {
-        try {
-            const response = await api.post(`/user/friend-request/${userId}`);
-            if (response.data.success === false) {
-                toast.error(response.data.message);
-                throw new Error(response.data.message);
-            }
-            return response.data;
-        } catch (error) {
-            const errorMessage =
-                error.response?.data?.message || "Failed to send friend request";
-            toast.error(errorMessage);
-            throw new Error(errorMessage);
-        }
-    },
+  declineFriendRequest: async (userId) => {
+    try {
+      const response = await api.delete(
+        `/user/friend-request/decline/${userId}`
+      );
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || "Failed to decline friend request";
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
+    }
+  },
 
-    cancelFriendRequest: async (userId) => {
-        try {
-            const response = await api.delete(`/user/friend-request/${userId}`);
-            if (response.data.success === false) {
-                toast.error(response.data.message);
-                throw new Error(response.data.message);
-            }
-            return response.data;
-        } catch (error) {
-            const errorMessage =
-                error.response?.data?.message || "Failed to cancel friend request";
-            toast.error(errorMessage);
-            throw new Error(errorMessage);
-        }
-    },
-
-    declineFriendRequest: async (userId) => {
-        try {
-            const response = await api.delete(
-                `/user/friend-request/decline/${userId}`
-            );
-            if (response.data.success === false) {
-                toast.error(response.data.message);
-                throw new Error(response.data.message);
-            }
-            return response.data;
-        } catch (error) {
-            const errorMessage =
-                error.response?.data?.message || "Failed to decline friend request";
-            toast.error(errorMessage);
-            throw new Error(errorMessage);
-        }
-    },
-
-    removeFriend: async (userId) => {
-        try {
-            const response = await api.delete(`/user/friend/${userId}`);
-            if (response.data.success === false) {
-                toast.error(response.data.message);
-                throw new Error(response.data.message);
-            }
-            return response.data;
-        } catch (error) {
-            const errorMessage =
-                error.response?.data?.message || "Failed to remove friend";
-            toast.error(errorMessage);
-            throw new Error(errorMessage);
-        }
-    },
-    getSuggestions: async () => {
-        try {
-            const response = await api.get(`/user/suggestions`);
-            if (response.data.success === false) {
-                toast.error(response.data.message);
-                throw new Error(response.data.message);
-            }
-            return response.data;
-        } catch (error) {
-            const errorMessage =
-                error.response?.data?.message || "Failed to get suggestions";
-            toast.error(errorMessage);
-            throw new Error(errorMessage);
-        }
-    },
-    getUserStats: async () => {
-        try {
-            const response = await api.get(`/user/stats`);
-            if (response.data.success === false) {
-                toast.error(response.data.message);
-                throw new Error(response.data.message);
-            }
-            return response.data;
-        } catch (error) {
-            const errorMessage =
-                error.response?.data?.message || "Failed to get user stats";
-            toast.error(errorMessage);
-            throw new Error(errorMessage);
-        }
-    },
+  removeFriend: async (userId) => {
+    try {
+      const response = await api.delete(`/user/friend/${userId}`);
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || "Failed to remove friend";
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
+    }
+  },
+  getSuggestions: async () => {
+    try {
+      const response = await api.get(`/user/suggestions`);
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || "Failed to get suggestions";
+      throw new Error(errorMessage);
+    }
+  },
+  getUserStats: async () => {
+    try {
+      const response = await api.get(`/user/stats`);
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || "Failed to get user stats";
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
+    }
+  },
 };
 
 //POST API services
 export const postAPI = {
-    createPost: async (postData) => {
-        try {
-            const response = await api.post("/posts", postData, {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
-            });
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+  createPost: async (postData) => {
+    try {
+      const response = await api.post("/posts", postData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            console.log(error);
-            return {
-                success: false,
-                message:
-                    error.response?.data?.message || "Đã có lỗi xảy ra khi tạo bài viết",
-                data: {},
-            };
-        }
-    },
-    getPostById: async (postId) => {
-        try {
-            const response = await api.get(`/posts/${postId}`);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+      return {
+        success: false,
+        message:
+          error.response?.data?.message || "Đã có lỗi xảy ra khi tạo bài viết",
+        data: {},
+      };
+    }
+  },
+  getPostById: async (postId) => {
+    try {
+      const response = await api.get(`/posts/${postId}`);
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to fetch post";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    reactToPost: async (postId, type) => {
-        try {
-            const response = await api.post(`/posts/react`, { postId, type });
-            return {
-                success: true,
-                message: response.data.message, // Thông điệp có thể tuỳ chỉnh
-                data: response.data.data || {}, // Dữ liệu thả cảm xúc
-            };
-        } catch (error) {
-            console.log(error);
-            return {
-                success: false,
-                message: "Đã có lỗi xảy ra khi thả cảm xúc",
-                data: {},
-            };
-        }
-    },
-    // Get user feed (posts from user and their friends)
-    getFeed: async () => {
-        try {
-            const response = await api.get(`/posts`);
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch post";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  reactToPost: async (postId, type) => {
+    try {
+      const response = await api.post(`/posts/react`, { postId, type });
+      return {
+        success: true,
+        message: response.data.message, // Thông điệp có thể tuỳ chỉnh
+        data: response.data.data || {}, // Dữ liệu thả cảm xúc
+      };
+    } catch (error) {
+      console.log(error);
+      return {
+        success: false,
+        message: "Đã có lỗi xảy ra khi thả cảm xúc",
+        data: {},
+      };
+    }
+  },
+  // Get user feed (posts from user and their friends)
+  getFeed: async () => {
+    try {
+      const response = await api.get(`/posts`);
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to fetch feed";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-// Get user feed (posts from user and their friends)
-    markPostAsViewed: async (postId) => {
-        try {
-            const response = await api.post(`/posts/mark-viewed/${postId}`);
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch feed";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  // Get user feed (posts from user and their friends)
+  markPostAsViewed: async (postId) => {
+    try {
+      const response = await api.post(`/posts/mark-viewed/${postId}`);
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to mark post as viewed";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    // Get posts by owner
-    getPostsByOwner: async (type, id, page = 1, limit = 10) => {
-        try {
-            const response = await api.get(
-                `/posts/by/${type}/${id}?page=${page}&limit=${limit}`
-            );
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to mark post as viewed";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  // Get posts by owner
+  getPostsByOwner: async (type, id, page = 1, limit = 10) => {
+    try {
+      const response = await api.get(
+        `/posts/by/${type}/${id}?page=${page}&limit=${limit}`
+      );
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to fetch user posts";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    addComment: async (postId, commentData) => {
-        try {
-            const response = await api.post(`/posts/${postId}/comments`, {
-                content: commentData,
-            });
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch user posts";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  addComment: async (postId, commentData) => {
+    try {
+      const response = await api.post(`/posts/${postId}/comments`, {
+        content: commentData,
+      });
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to add comment";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    addReply: async (commentId, replyData) => {
-        try {
-            const response = await api.post(`/posts/comments/${commentId}/replies`, {
-                content: replyData,
-            });
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to add comment";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  addReply: async (commentId, replyData) => {
+    try {
+      const response = await api.post(`/posts/comments/${commentId}/replies`, {
+        content: replyData,
+      });
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to add reply";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    getComments: async (postId) => {
-        try {
-            const response = await api.get(`/posts/${postId}/comments`);
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to add reply";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getComments: async (postId) => {
+    try {
+      const response = await api.get(`/posts/${postId}/comments`);
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to fetch comments";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    deletePost: async (postId) => {
-        try {
-            const response = await api.delete(`/posts/${postId}`);
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch comments";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  deletePost: async (postId) => {
+    try {
+      const response = await api.delete(`/posts/${postId}`);
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to delete post";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to delete post";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
 };
 
 //CHAT API services
 export const messageAPI = {
-    getAIResponse: async (prompt) => {
-        try {
-            const response = await api.post("/messages/generate-ai-response", {
-                prompt,
-            });
+  getAIResponse: async (prompt) => {
+    try {
+      const response = await api.post("/messages/generate-ai-response", {
+        prompt,
+      });
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to get AI response";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    sendMessage: async (data) => {
-        try {
-            const response = await api.post("/messages/send-message", data, {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
-            });
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to get AI response";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  sendMessage: async (data) => {
+    try {
+      const response = await api.post("/messages/send-message", data, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to send message";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    getHistoryChat: async (userChatId) => {
-        try {
-            const response = await api.get(`/messages/history/${userChatId}`);
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to send message";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getHistoryChat: async (userChatId) => {
+    try {
+      const response = await api.get(`/messages/history/${userChatId}`);
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to send message";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to send message";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
 };
 
 export const chatAPI = {
-    getChatIdByTypeId: async (params) => {
-        try {
-            const response = await api.get(`/chat/with`, { params });
+  getChatIdByTypeId: async (params) => {
+    try {
+      const response = await api.get(`/chat/with`, { params });
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to fetch chat ID";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    getChatById: async (chatId) => {
-        try {
-            const response = await api.get(`/chat/${chatId}`);
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch chat ID";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getChatById: async (chatId) => {
+    try {
+      const response = await api.get(`/chat/${chatId}`);
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to fetch chat";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    getRecentChats: async () => {
-        try {
-            const response = await api.get(`/chat/recent`);
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch chat";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getRecentChats: async () => {
+    try {
+      const response = await api.get(`/chat/recent`);
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to fetch recent chats";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    createGroupChat: async (groupData) => {
-        try {
-            const response = await api.post(`/chat/group`, groupData);
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch recent chats";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  createGroupChat: async (groupData) => {
+    try {
+      const response = await api.post(`/chat/group`, groupData);
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to create group chat";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to create group chat";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
 };
 
 //QUIZ API services
 export const quizAPI = {
-    // Create a new quiz
-    createQuiz: async (quizData) => {
-        try {
-            const response = await api.post("/quiz", quizData);
+  // Create a new quiz
+  createQuiz: async (quizData) => {
+    try {
+      const response = await api.post("/quiz", quizData);
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to create quiz";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to create quiz";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
 
-    // Get all quizzes
-    getAllQuizzes: async (name) => {
-        try {
-            const url = name ? `/quiz?name=${name}` : "/quiz";
-            const response = await api.get(url);
+  // Get all quizzes
+  getAllQuizzes: async (name) => {
+    try {
+      const url = name ? `/quiz?name=${name}` : "/quiz";
+      const response = await api.get(url);
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to fetch quizzes";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    getQuizById: async (quizId) => {
-        try {
-            const response = await api.get(`/quiz/${quizId}`);
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch quizzes";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getQuizById: async (quizId) => {
+    try {
+      const response = await api.get(`/quiz/${quizId}`);
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to fetch quiz";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    deleteQuiz: async (quizId) => {
-        try {
-            const response = await api.delete(`/quiz/${quizId}`);
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch quiz";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  deleteQuiz: async (quizId) => {
+    try {
+      const response = await api.delete(`/quiz/${quizId}`);
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to delete quiz";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    getLeaderboard: async () => {
-        try {
-            const response = await api.get("/quizScore/leaderboard");
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to delete quiz";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getLeaderboard: async () => {
+    try {
+      const response = await api.get("/quizScore/leaderboard");
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to fetch leaderboard";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    submitScore: async (scoreData) => {
-        try {
-            const response = await api.post("/quizScore/submit", scoreData);
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch leaderboard";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  submitScore: async (scoreData) => {
+    try {
+      const response = await api.post("/quizScore/submit", scoreData);
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to submit score";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to submit score";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
 };
 
 //NOTIFICATION API services
 export const notificationAPI = {
-    getNotifications: async (page = 1) => {
-        try {
-            const response = await api.get(`/notifications?page=${page}`);
+  getNotifications: async (page = 1) => {
+    try {
+      const response = await api.get(`/notifications?page=${page}`);
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to fetch notifications";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    markAllAsRead: async () => {
-        try {
-            const response = await api.put("/notifications/mark-as-all-read");
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch notifications";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  markAllAsRead: async () => {
+    try {
+      const response = await api.put("/notifications/mark-as-all-read");
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to mark notifications as read";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to mark notifications as read";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
 };
 
 //NEWS API services
 export const newsApi = {
-    getNews: async () => {
-        try {
-            const response = await api.get(`/blog/tech-news`);
+  getNews: async () => {
+    try {
+      const response = await api.get(`/blog/tech-news`);
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to fetch news";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch news";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
 };
 
 //Badges API
 export const badgesAPI = {
-    getAllBadges: async () => {
-        try {
-            const response = await api.get(`/badges`);
+  getAllBadges: async () => {
+    try {
+      const response = await api.get(`/badges`);
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to fetch news";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    getUserBadgeInventory: async () => {
-        try {
-            const response = await api.get(`/badges/user-inventory`);
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch news";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getUserBadgeInventory: async () => {
+    try {
+      const response = await api.get(`/badges/user-inventory`);
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to fetch news";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    equipBadge: async (badgeId) => {
-        try {
-            const response = await api.post(`/badges/equip`, { badgeId });
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch news";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  equipBadge: async (badgeId) => {
+    try {
+      const response = await api.post(`/badges/equip`, { badgeId });
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to equip badge";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    unequipBadge: async (badgeId) => {
-        try {
-            const response = await api.post(`/badges/unequip`, { badgeId });
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to equip badge";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  unequipBadge: async (badgeId) => {
+    try {
+      const response = await api.post(`/badges/unequip`, { badgeId });
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to unequip badge";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    claimBadge: async (badgeId) => {
-        try {
-            const response = await api.post(`/badges/claim`, {
-                badgeId
-            });
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to unequip badge";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  claimBadge: async (badgeId) => {
+    try {
+      const response = await api.post(`/badges/claim`, {
+        badgeId,
+      });
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to claim badge";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to claim badge";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
 };
 
 export const translateAPI = {
-    translateText: async (text, to) => {
-        try {
-            const response = await api.post("/translate", { text, to });
+  translateText: async (text, to) => {
+    try {
+      const response = await api.post("/translate", { text, to });
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to translate text";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to translate text";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
 };
 
 export const statsAPI = {
-    getStats: async () => {
-        try {
-            const response = await api.get("/stats");
+  getStats: async () => {
+    try {
+      const response = await api.get("/stats");
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to fetch stats";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    getUserGenderStats: async () => {
-        try {
-            const response = await api.get("/stats/user-gender");
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch stats";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getUserGenderStats: async () => {
+    try {
+      const response = await api.get("/stats/user-gender");
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to fetch stats";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    getUserGroupShopStats: async () => {
-        try {
-            const response = await api.get("/stats/user-group-shop");
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch stats";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getUserGroupShopStats: async () => {
+    try {
+      const response = await api.get("/stats/user-group-shop");
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to fetch stats";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    getPostCommentReactionStats: async () => {
-        try {
-            const response = await api.get("/stats/post-comment-reaction");
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch stats";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getPostCommentReactionStats: async () => {
+    try {
+      const response = await api.get("/stats/post-comment-reaction");
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to fetch stats";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    getTopUsers: async () => {
-        try {
-            const response = await api.get("/stats/top-users");
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch stats";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getTopUsers: async () => {
+    try {
+      const response = await api.get("/stats/top-users");
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to fetch top users";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    getTopPosts: async () => {
-        try {
-            const response = await api.get("/stats/top-posts");
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch top users";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getTopPosts: async () => {
+    try {
+      const response = await api.get("/stats/top-posts");
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to fetch top posts";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    getRecentActivity: async () => {
-        try {
-            const response = await api.get("/stats/recent-activity");
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch top posts";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getRecentActivity: async () => {
+    try {
+      const response = await api.get("/stats/recent-activity");
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to fetch recent activity";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    getGroupStats: async () => {
-        try {
-            const response = await api.get("/stats/groups");
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch recent activity";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getGroupStats: async () => {
+    try {
+      const response = await api.get("/stats/groups");
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to fetch group stats";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    getShopStats: async () => {
-        try {
-            const response = await api.get("/stats/shops");
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch group stats";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getShopStats: async () => {
+    try {
+      const response = await api.get("/stats/shops");
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to fetch shop stats";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch shop stats";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
 };
 
 export const tmdbAPI = {
-    getTrendingMovie: async () => {
-        try {
-            const response = await api.get("/tmdb/movie/trending");
+  getTrendingMovie: async () => {
+    try {
+      const response = await api.get("/tmdb/movie/trending");
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to fetch tmdb trending movies";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    getContentTrailer: async (id, contentType) => {
-        try {
-            const response = await api.get(`/tmdb/${contentType}/trailer/${id}`);
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch tmdb trending movies";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getContentTrailer: async (id, contentType) => {
+    try {
+      const response = await api.get(`/tmdb/${contentType}/trailer/${id}`);
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to fetch tmdb trending movies";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    getContentDetail: async (id, contentType) => {
-        try {
-            const response = await api.get(`/tmdb/${contentType}/detail/${id}`);
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch tmdb trending movies";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getContentDetail: async (id, contentType) => {
+    try {
+      const response = await api.get(`/tmdb/${contentType}/detail/${id}`);
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to fetch tmdb trending movies";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    getContentCredit: async (id, contentType) => {
-        try {
-            const response = await api.get(`/tmdb/${contentType}/credit/${id}`);
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch tmdb trending movies";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getContentCredit: async (id, contentType) => {
+    try {
+      const response = await api.get(`/tmdb/${contentType}/credit/${id}`);
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to fetch tmdb trending movies";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    getSimilarContent: async (id, contentType) => {
-        try {
-            const response = await api.get(`/tmdb/${contentType}/similar/${id}`);
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch tmdb trending movies";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getSimilarContent: async (id, contentType) => {
+    try {
+      const response = await api.get(`/tmdb/${contentType}/similar/${id}`);
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to fetch tmdb trending movies";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    getMoviesByCategory: async (category) => {
-        try {
-            const response = await api.get(`/tmdb/movie/${category}`);
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch tmdb trending movies";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getMoviesByCategory: async (category) => {
+    try {
+      const response = await api.get(`/tmdb/movie/${category}`);
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to fetch tmdb trending movies";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    getTrendingTVShow: async () => {
-        try {
-            const response = await api.get(`/tmdb/tv/trending`);
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch tmdb trending movies";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getTrendingTVShow: async () => {
+    try {
+      const response = await api.get(`/tmdb/tv/trending`);
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to fetch tmdb trending movies";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    getTVShowByCategory: async (category) => {
-        try {
-            const response = await api.get(`/tmdb/tv/${category}`);
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch tmdb trending movies";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getTVShowByCategory: async (category) => {
+    try {
+      const response = await api.get(`/tmdb/tv/${category}`);
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to fetch tmdb trending movies";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    getTVShowEpisode: async (id, season_number) => {
-        try {
-            const response = await api.get(
-                `/tmdb/tv/detail/${id}/season/${season_number}`
-            );
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch tmdb trending movies";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getTVShowEpisode: async (id, season_number) => {
+    try {
+      const response = await api.get(
+        `/tmdb/tv/detail/${id}/season/${season_number}`
+      );
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to fetch tmdb trending movies";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    getSearchContent: async (content, query) => {
-        try {
-            const response = await api.get(
-                `/tmdb/search`
-            , {
-                params: { content, query },
-            });
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch tmdb trending movies";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getSearchContent: async (content, query) => {
+    try {
+      const response = await api.get(`/tmdb/search`, {
+        params: { content, query },
+      });
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Failed to fetch tmdb trending movies";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to fetch tmdb trending movies";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
 };
 
 export const shopAPI = {
-    createShop: async (shopData) => {
-        try {
-            const response = await api.post(`/shop/create-shop`, shopData);
+  createShop: async (shopData) => {
+    try {
+      const response = await api.post(`/shop/create-shop`, shopData);
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage = error.response.data.message || "Tạo shop thất bại";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    getAllShops: async () => {
-        try {
-            const response = await api.get(`/shop`);
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage = error.response.data.message || "Tạo shop thất bại";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getAllShops: async () => {
+    try {
+      const response = await api.get(`/shop`);
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Lấy danh sách shop thất bại";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    getFollowedShops: async () => {
-        try {
-            const response = await api.get(`/shop/followed-shops`);
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Lấy danh sách shop thất bại";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getFollowedShops: async () => {
+    try {
+      const response = await api.get(`/shop/followed-shops`);
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Lấy danh sách shop theo dõi thất bại";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    getMyShops: async () => {
-        try {
-            const response = await api.get(`/shop/my-shops`);
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Lấy danh sách shop theo dõi thất bại";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getMyShops: async () => {
+    try {
+      const response = await api.get(`/shop/my-shops`);
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Lấy thất bại shop của tôi";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    getShopBySlug: async (slug) => {
-        try {
-            const response = await api.get(`/shop/${slug}`);
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Lấy thất bại shop của tôi";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getShopBySlug: async (slug) => {
+    try {
+      const response = await api.get(`/shop/${slug}`);
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Lấy thông tin shop thất bại";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    addShopCategory: async (shopId, categoryData) => {
-        try {
-            const response = await api.post(`/shop/category/${shopId}`, categoryData);
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Lấy thông tin shop thất bại";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  addShopCategory: async (shopId, categoryData) => {
+    try {
+      const response = await api.post(`/shop/category/${shopId}`, categoryData);
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Lấy thông tin shop thất bại";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    updateShopCategory: async (shopId, updatedCategory) => {
-        try {
-            const response = await api.put(
-                `/shop/category/${shopId}`,
-                updatedCategory
-            );
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Lấy thông tin shop thất bại";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  updateShopCategory: async (shopId, updatedCategory) => {
+    try {
+      const response = await api.put(
+        `/shop/category/${shopId}`,
+        updatedCategory
+      );
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Lấy thông tin shop thất bại";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    updateShopInfo: async (shopId, updatedInfo) => {
-        try {
-            const response = await api.put(`/shop/info/${shopId}`, updatedInfo);
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Lấy thông tin shop thất bại";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  updateShopInfo: async (shopId, updatedInfo) => {
+    try {
+      const response = await api.put(`/shop/info/${shopId}`, updatedInfo);
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Lấy thông tin shop thất bại";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    getShopStats: async (shopId) => {
-        try {
-            const response = await api.get(`/shop/stats/${shopId}`);
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Lấy thông tin shop thất bại";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getShopStats: async (shopId) => {
+    try {
+      const response = await api.get(`/shop/stats/${shopId}`);
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Lấy thông tin thống kê shop thất bại";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    getShopIncome: async (shopId) => {
-        try {
-            const response = await api.get(`/shop/income/${shopId}`);
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Lấy thông tin thống kê shop thất bại";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getShopIncome: async (shopId) => {
+    try {
+      const response = await api.get(`/shop/income/${shopId}`);
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Lấy thông tin doanh thu shop thất bại";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    getShopCategoryDistribution: async (shopId) => {
-        try {
-            const response = await api.get(`/shop/category-distribution/${shopId}`);
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message ||
+          "Lấy thông tin doanh thu shop thất bại";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getShopCategoryDistribution: async (shopId) => {
+    try {
+      const response = await api.get(`/shop/category-distribution/${shopId}`);
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Lấy thông tin đơn hàng tháng của shop thất bại";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    getShopTopProduct: async (shopId) => {
-        try {
-            const response = await api.get(`/shop/top-products/${shopId}`);
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message ||
+          "Lấy thông tin đơn hàng tháng của shop thất bại";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getShopTopProduct: async (shopId) => {
+    try {
+      const response = await api.get(`/shop/top-products/${shopId}`);
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Lấy thông tin sản phẩm bán chạy của shop thất bại";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    getShopRecentOrders: async (shopId) => {
-        try {
-            const response = await api.get(`/shop/recent-orders/${shopId}`);
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message ||
+          "Lấy thông tin sản phẩm bán chạy của shop thất bại";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getShopRecentOrders: async (shopId) => {
+    try {
+      const response = await api.get(`/shop/recent-orders/${shopId}`);
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Lấy thông tin đơn hàng gần đây của shop thất bại";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    followShop: async (shopId) => {
-        try {
-            const response = await api.post(`/shop/follow/${shopId}`);
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message ||
+          "Lấy thông tin đơn hàng gần đây của shop thất bại";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  followShop: async (shopId) => {
+    try {
+      const response = await api.post(`/shop/follow/${shopId}`);
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Theo dõi shop thất bại";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    unfollowShop: async (shopId) => {
-        try {
-            const response = await api.post(`/shop/unfollow/${shopId}`);
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Theo dõi shop thất bại";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  unfollowShop: async (shopId) => {
+    try {
+      const response = await api.post(`/shop/unfollow/${shopId}`);
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Hủy theo dõi shop thất bại";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    getShopProductRatings: async (shopId) => {
-        try {
-            const response = await api.get(`/shop/ratings/${shopId}`);
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Hủy theo dõi shop thất bại";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getShopProductRatings: async (shopId) => {
+    try {
+      const response = await api.get(`/shop/ratings/${shopId}`);
 
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Lấy đánh giá sản phẩm của shop thất bại";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    getShopNewProducts: async (shopId) => {
-        try {
-            const response = await api.get(`/shop/new-products/${shopId}`);
-            if (response.data.success === false) {
-                toast.error(response.data.message);
-                throw new Error(response.data.message);
-            }
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Lấy sản phẩm mới thất bại";
-                toast.error(errorMessage);
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    getShopTopCustomers: async (shopId) => {
-        try {
-            const response = await api.get(`/shop/top-customers/${shopId}`);
-            if (response.data.success === false) {
-                toast.error(response.data.message);
-                throw new Error(response.data.message);
-            }
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Lấy sản phẩm mới thất bại";
-                toast.error(errorMessage);
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    getShopFollowStats: async (shopId) => {
-        try {
-            const response = await api.get(`/shop/follow-stats/${shopId}`);
-            if (response.data.success === false) {
-                toast.error(response.data.message);
-                throw new Error(response.data.message);
-            }
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Lấy sản phẩm mới thất bại";
-                toast.error(errorMessage);
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message ||
+          "Lấy đánh giá sản phẩm của shop thất bại";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getShopNewProducts: async (shopId) => {
+    try {
+      const response = await api.get(`/shop/new-products/${shopId}`);
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Lấy sản phẩm mới thất bại";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getShopTopCustomers: async (shopId) => {
+    try {
+      const response = await api.get(`/shop/top-customers/${shopId}`);
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Lấy sản phẩm mới thất bại";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getShopFollowStats: async (shopId) => {
+    try {
+      const response = await api.get(`/shop/follow-stats/${shopId}`);
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Lấy sản phẩm mới thất bại";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
 };
 
 export const productAPI = {
-    addProduct: async (productData) => {
-        try {
-            const response = await api.post("/product/add", productData, {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
-            });
+  addProduct: async (productData) => {
+    try {
+      const response = await api.post("/product/add", productData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
-            if (response.data.success === false) {
-                toast.error(response.data.message);
-                throw new Error(response.data.message);
-            }
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
 
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Thêm sản phẩm thất bại";
-                toast.error(errorMessage);
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    getProductsByShop: async (shopId, query) => {
-        try {
-            const response = await api.get(`/product/shop/${shopId}`, {
-                params: query,
-            });
-            if (response.data.success === false) {
-                toast.error(response.data.message);
-                throw new Error(response.data.message);
-            }
-
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Lấy sản phẩm thất bại";
-                toast.error(errorMessage);
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    getProductBySlug: async (slug, shopId) => {
-        try {
-            const response = await api.get(`/product/slug/${slug}/${shopId}`);
-            if (response.data.success === false) {
-                toast.error(response.data.message);
-                throw new Error(response.data.message);
-            }
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Lấy sản phẩm thất bại";
-                toast.error(errorMessage);
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    getProductById: async (id) => {
-        try {
-            const response = await api.get(`/product/id/${id}`);
-            if (response.data.success === false) {
-                toast.error(response.data.message);
-                throw new Error(response.data.message);
-            }
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Lấy sản phẩm thất bại";
-                toast.error(errorMessage);
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    updateProductById: async (id, productData) => {
-        try {
-            const response = await api.put(`/product/id/${id}`, productData, {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
-            });
-            if (response.data.success === false) {
-                toast.error(response.data.message);
-                throw new Error(response.data.message);
-            }
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Lấy sản phẩm thất bại";
-                toast.error(errorMessage);
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    rateProduct: async (productId, ratingForm) => {
-        try {
-            const response = await api.post(
-                `/product/rating/${productId}`,
-                ratingForm
-            );
-            if (response.data.success === false) {
-                toast.error(response.data.message);
-                throw new Error(response.data.message);
-            }
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Đánh giá sản phẩm thất bại";
-                toast.error(errorMessage);
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Thêm sản phẩm thất bại";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
     }
+  },
+  getProductsByShop: async (shopId, query) => {
+    try {
+      const response = await api.get(`/product/shop/${shopId}`, {
+        params: query,
+      });
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Lấy sản phẩm thất bại";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getProductBySlug: async (slug, shopId) => {
+    try {
+      const response = await api.get(`/product/slug/${slug}/${shopId}`);
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Lấy sản phẩm thất bại";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getProductById: async (id) => {
+    try {
+      const response = await api.get(`/product/id/${id}`);
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Lấy sản phẩm thất bại";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  updateProductById: async (id, productData) => {
+    try {
+      const response = await api.put(`/product/id/${id}`, productData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Lấy sản phẩm thất bại";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  rateProduct: async (productId, ratingForm) => {
+    try {
+      const response = await api.post(
+        `/product/rating/${productId}`,
+        ratingForm
+      );
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Đánh giá sản phẩm thất bại";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
 };
 
 export const cartAPI = {
-    addToCart: async (productId, variantId) => {
-        try {
-            const response = await api.post(`/cart/add`, { productId, variantId });
-            if (response.data.success === false) {
-                toast.error(response.data.message);
-                throw new Error(response.data.message);
-            }
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Thêm giỏ hàng thất bại";
-                toast.error(errorMessage);
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    getUserCart: async () => {
-        try {
-            const response = await api.get(`/cart`);
-            if (response.data.success === false) {
-                toast.error(response.data.message);
-                throw new Error(response.data.message);
-            }
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Lấy giỏ hàng thất bại";
-                toast.error(errorMessage);
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    removeFromCart: async (productId, variantId) => {
-        try {
-            const response = await api.delete(
-                `/cart/remove/${productId}/${variantId}`
-            );
-            if (response.data.success === false) {
-                toast.error(response.data.message);
-                throw new Error(response.data.message);
-            }
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Bỏ sản phẩm khỏi giỏ hàng thất bại";
-                toast.error(errorMessage);
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    minusFromCart: async (productId, variantId) => {
-        try {
-            const response = await api.put(`/cart/minus`, { productId, variantId });
-            if (response.data.success === false) {
-                toast.error(response.data.message);
-                throw new Error(response.data.message);
-            }
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message ||
-                    "Giảm số lượng sản phẩm trong giỏ hàng thất bại";
-                toast.error(errorMessage);
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    clearCart: async () => {
-        try {
-            const response = await api.delete(`/cart/clear`);
-            if (response.data.success === false) {
-                toast.error(response.data.message);
-                throw new Error(response.data.message);
-            }
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Dọn giỏ hàng thất bại";
-                toast.error(errorMessage);
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
+  addToCart: async (productId, variantId) => {
+    try {
+      const response = await api.post(`/cart/add`, { productId, variantId });
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Thêm giỏ hàng thất bại";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getUserCart: async () => {
+    try {
+      const response = await api.get(`/cart`);
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Lấy giỏ hàng thất bại";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  removeFromCart: async (productId, variantId) => {
+    try {
+      const response = await api.delete(
+        `/cart/remove/${productId}/${variantId}`
+      );
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Bỏ sản phẩm khỏi giỏ hàng thất bại";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  minusFromCart: async (productId, variantId) => {
+    try {
+      const response = await api.put(`/cart/minus`, { productId, variantId });
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message ||
+          "Giảm số lượng sản phẩm trong giỏ hàng thất bại";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  clearCart: async () => {
+    try {
+      const response = await api.delete(`/cart/clear`);
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Dọn giỏ hàng thất bại";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
 };
 
 export const orderAPI = {
-    createOrder: async (shipping) => {
-        try {
-            const response = await api.post(`/order/create`, { shipping });
-            if (response.data.success === false) {
-                toast.error(response.data.message);
-                throw new Error(response.data.message);
-            }
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Tạo đơn hàng thất bại";
-                toast.error(errorMessage);
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    getUserOrders: async () => {
-        try {
-            const response = await api.get(`/order/user-orders`);
-            if (response.data.success === false) {
-                toast.error(response.data.message);
-                throw new Error(response.data.message);
-            }
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Lấy đơn hàng thất bại";
-                toast.error(errorMessage);
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    getShopOrders: async (shopId) => {
-        try {
-            const response = await api.get(`/order/shop-orders/${shopId}`);
-            if (response.data.success === false) {
-                toast.error(response.data.message);
-                throw new Error(response.data.message);
-            }
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Lấy đơn hàng thất bại";
-                toast.error(errorMessage);
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    getOrderById: async (orderId) => {
-        try {
-            const response = await api.get(`/order/detail/${orderId}`);
-            if (response.data.success === false) {
-                toast.error(response.data.message);
-                throw new Error(response.data.message);
-            }
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Lấy chi tiết đơn hàng thất bại";
-                toast.error(errorMessage);
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    updateOrderStatus: async (orderId, status) => {
-        try {
-            const response = await api.post(`/order/shop-update-status`, { orderId, status });
-            if (response.data.success === false) {
-                toast.error(response.data.message);
-                throw new Error(response.data.message);
-            }
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Cập nhật trạng thái đơn hàng thất bại";
-                toast.error(errorMessage);
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    cancelOrder: async (orderId) => {
-        try {
-            const response = await api.post(`/order/user-cancel`, { orderId });
-            if (response.data.success === false) {
-                toast.error(response.data.message);
-                throw new Error(response.data.message);
-            }
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Cập nhật trạng thái đơn hàng thất bại";
-                toast.error(errorMessage);
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
+  createOrder: async (shipping) => {
+    try {
+      const response = await api.post(`/order/create`, { shipping });
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Tạo đơn hàng thất bại";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getUserOrders: async () => {
+    try {
+      const response = await api.get(`/order/user-orders`);
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Lấy đơn hàng thất bại";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getShopOrders: async (shopId) => {
+    try {
+      const response = await api.get(`/order/shop-orders/${shopId}`);
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Lấy đơn hàng thất bại";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getOrderById: async (orderId) => {
+    try {
+      const response = await api.get(`/order/detail/${orderId}`);
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Lấy chi tiết đơn hàng thất bại";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  updateOrderStatus: async (orderId, status) => {
+    try {
+      const response = await api.post(`/order/shop-update-status`, {
+        orderId,
+        status,
+      });
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message ||
+          "Cập nhật trạng thái đơn hàng thất bại";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  cancelOrder: async (orderId) => {
+    try {
+      const response = await api.post(`/order/user-cancel`, { orderId });
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message ||
+          "Cập nhật trạng thái đơn hàng thất bại";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  receiveOrder: async (orderId) => {
+    try {
+      const response = await api.post(`/order/user-receive`, { orderId });
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message ||
+          "Cập nhật trạng thái đơn hàng thất bại";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
 };
 
 export const groupAPI = {
-    createGroup: async (groupData) => {
-        try {
-            const response = await api.post(`/group`, groupData);
-            if (response.data.success === false) {
-                toast.error(response.data.message);
-                throw new Error(response.data.message);
-            }
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Tạo nhóm thất bại";
-                toast.error(errorMessage);
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    getAllGroups: async () => {
-        try {
-            const response = await api.get(`/group`);
-            if (response.data.success === false) {
-                toast.error(response.data.message);
-                throw new Error(response.data.message);
-            }
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Lấy danh sách nhóm thất bại";
-                toast.error(errorMessage);
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    getMyGroups: async () => {
-        try {
-            const response = await api.get(`/group/my-groups`);
-            if (response.data.success === false) {
-                toast.error(response.data.message);
-                throw new Error(response.data.message);
-            }
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Lấy nhóm của tôi thất bại";
-                toast.error(errorMessage);
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    getJoinedGroups: async () => {
-        try {
-            const response = await api.get(`/group/joined-groups`);
-            if (response.data.success === false) {
-                toast.error(response.data.message);
-                throw new Error(response.data.message);
-            }
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Lấy nhóm đã tham gia thất bại";
-                toast.error(errorMessage);
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    getGroupBySlug: async (slug) => {
-        try {
-            const response = await api.get(`/group/${slug}`);
-            if (response.data.success === false) {
-                throw new Error(response.data.message);
-            }
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Lấy thông tin nhóm thất bại";
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    joinGroup: async (groupId) => {
-        try {
-            const response = await api.post(`/group/${groupId}/join`);
-            if (response.data.success === false) {
-                toast.error(response.data.message);
-                throw new Error(response.data.message);
-            }
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Tham gia nhóm thất bại";
-                toast.error(errorMessage);
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    approveMember: async (groupId, userId) => {
-        try {
-            const response = await api.post(`/group/${groupId}/approve/${userId}`);
-            if (response.data.success === false) {
-                toast.error(response.data.message);
-                throw new Error(response.data.message);
-            }
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Duyệt thành viên nhóm thất bại";
-                toast.error(errorMessage);
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    rejectMember: async (groupId, userId) => {
-        try {
-            const response = await api.post(`/group/${groupId}/reject/${userId}`);
-            if (response.data.success === false) {
-                toast.error(response.data.message);
-                throw new Error(response.data.message);
-            }
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Lấy danh sách nhóm thất bại";
-                toast.error(errorMessage);
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    leaveGroup: async (groupId) => {
-        try {
-            const response = await api.post(`/group/${groupId}/leave`);
-            if (response.data.success === false) {
-                toast.error(response.data.message);
-                throw new Error(response.data.message);
-            }
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Rời nhóm thất bại";
-                toast.error(errorMessage);
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    removeMember: async (groupId, userId) => {
-        try {
-            const response = await api.post(`/group/${groupId}/remove/${userId}`);
-            if (response.data.success === false) {
-                toast.error(response.data.message);
-                throw new Error(response.data.message);
-            }
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Xóa thành viên nhóm thất bại";
-                toast.error(errorMessage);
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    updateGroup: async (groupId, groupData) => {
-        try {
-            const response = await api.put(`/group/${groupId}`, groupData);
-            if (response.data.success === false) {
-                toast.error(response.data.message);
-                throw new Error(response.data.message);
-            }
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Cập nhật nhóm thất bại";
-                toast.error(errorMessage);
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    deleteGroup: async (groupId) => {
-        try {
-            const response = await api.delete(`/group/${groupId}`);
-            if (response.data.success === false) {
-                toast.error(response.data.message);
-                throw new Error(response.data.message);
-            }
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Xóa nhóm thất bại";
-                toast.error(errorMessage);
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-    manageRole: async (groupId, userId, role, action) => {
-        try {
-            const response = await api.post(`/group/${groupId}/manage-role/${userId}`, { role, action });
-            if (response.data.success === false) {
-                toast.error(response.data.message);
-                throw new Error(response.data.message);
-            }
-            return response.data;
-        } catch (error) {
-            if (error.response) {
-                const errorMessage =
-                    error.response.data.message || "Quản lý vai trò thất bại";
-                toast.error(errorMessage);
-                throw new Error(errorMessage);
-            }
-            throw error;
-        }
-    },
-}
+  createGroup: async (groupData) => {
+    try {
+      const response = await api.post(`/group`, groupData);
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage = error.response.data.message || "Tạo nhóm thất bại";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getAllGroups: async () => {
+    try {
+      const response = await api.get(`/group`);
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Lấy danh sách nhóm thất bại";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getMyGroups: async () => {
+    try {
+      const response = await api.get(`/group/my-groups`);
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Lấy nhóm của tôi thất bại";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getJoinedGroups: async () => {
+    try {
+      const response = await api.get(`/group/joined-groups`);
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Lấy nhóm đã tham gia thất bại";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getGroupBySlug: async (slug) => {
+    try {
+      const response = await api.get(`/group/${slug}`);
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Lấy thông tin nhóm thất bại";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  joinGroup: async (groupId) => {
+    try {
+      const response = await api.post(`/group/${groupId}/join`);
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Tham gia nhóm thất bại";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  approveMember: async (groupId, userId) => {
+    try {
+      const response = await api.post(`/group/${groupId}/approve/${userId}`);
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Duyệt thành viên nhóm thất bại";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  rejectMember: async (groupId, userId) => {
+    try {
+      const response = await api.post(`/group/${groupId}/reject/${userId}`);
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Lấy danh sách nhóm thất bại";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  leaveGroup: async (groupId) => {
+    try {
+      const response = await api.post(`/group/${groupId}/leave`);
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage = error.response.data.message || "Rời nhóm thất bại";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  removeMember: async (groupId, userId) => {
+    try {
+      const response = await api.post(`/group/${groupId}/remove/${userId}`);
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Xóa thành viên nhóm thất bại";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  updateGroup: async (groupId, groupData) => {
+    try {
+      const response = await api.put(`/group/${groupId}`, groupData);
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Cập nhật nhóm thất bại";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  deleteGroup: async (groupId) => {
+    try {
+      const response = await api.delete(`/group/${groupId}`);
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage = error.response.data.message || "Xóa nhóm thất bại";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  manageRole: async (groupId, userId, role, action) => {
+    try {
+      const response = await api.post(
+        `/group/${groupId}/manage-role/${userId}`,
+        { role, action }
+      );
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Quản lý vai trò thất bại";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+};
+
+export const shortAPI = {
+  createShort: async (formData) => {
+    try {
+      const response = await api.post(`/shorts`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Tạo short thất bại";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getMyShorts: async (params) => {
+    try {
+      const response = await api.get(`/shorts/my-shorts`, { params });
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Lấy shorts thất bại";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getShortsFeed: async (params) => {
+    try {
+      const response = await api.get(`/shorts/feed`, { params });
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Lấy shorts feed thất bại";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getShortById: async (shortId) => {
+    try {
+      const response = await api.get(`/shorts/${shortId}`);
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Lấy short thất bại";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  deleteShort: async (shortId) => {
+    try {
+      const response = await api.delete(`/shorts/${shortId}`);
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Xóa short thất bại";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  toggleLikeShort: async (shortId) => {
+    try {
+      const response = await api.post(`/shorts/${shortId}/like`);
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Thích short thất bại";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  incrementViews: async (shortId) => {
+    try {
+      const response = await api.post(`/shorts/${shortId}/view`);
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Tăng lượt xem short thất bại";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  addComment: async (shortId, content) => {
+    try {
+      const response = await api.post(`/shorts/${shortId}/comments`, {
+        content
+      });
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Thêm bình luận thất bại";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  getComments: async (shortId, params) => {
+    try {
+      const response = await api.get(`/shorts/${shortId}/comments`, {
+        params
+      });
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Lấy bình luận thất bại";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  deleteComment: async (commentId) => {
+    try {
+      const response = await api.delete(`/shorts/comments/${commentId}`);
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Xóa bình luận thất bại";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  toggleLikeComment: async (commentId) => {
+    try {
+      const response = await api.post(`/shorts/comments/${commentId}/like`);
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Thích bình luận thất bại";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  addReply: async (commentId, content) => {
+    try {
+      const response = await api.post(`/shorts/comments/${commentId}/reply`, {
+        content
+      });
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Thêm phản hồi thất bại";
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+};
 
 // Export the axios instance for use in other API services
 export default api;
