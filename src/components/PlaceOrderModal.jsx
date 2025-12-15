@@ -28,12 +28,6 @@ export default function PlaceOrderModal({ isOpen, onClose }) {
                 Go to Orders
               </button>
             </Link>
-            <button
-              onClick={onClose}
-              className="mt-6 px-4 py-2 cursor-pointer bg-red-600 text-white rounded-md hover:bg-red-700 transition"
-            >
-              Close
-            </button>
           </div>
         </div>
       </div>

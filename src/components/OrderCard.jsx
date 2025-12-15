@@ -5,8 +5,47 @@ import { formatPriceWithDollar } from "../utils/formattedFunction";
 import { Store } from "lucide-react";
 import { Link } from "react-router-dom";
 import { memo } from "react";
+import Swal from "sweetalert2";
+import { orderAPI } from "../services/api";
 
-const OrderCard = memo(({ order }) => {
+const OrderCard = memo(({ order, onOrderCancelled }) => {
+  const handleCancelOrder = async () => {
+    const result = await Swal.fire({
+      title: "Cancel Order?",
+      text: "Are you sure you want to cancel this order?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#ef4444",
+      cancelButtonColor: "#6b7280",
+      confirmButtonText: "Yes, cancel it!",
+      cancelButtonText: "No, keep it",
+    });
+
+    if (result.isConfirmed) {
+      try {
+        const response = await orderAPI.cancelOrder(order.orderId);
+        if (response.success) {
+          await Swal.fire({
+            title: "Cancelled!",
+            text: "Your order has been cancelled successfully.",
+            icon: "success",
+            confirmButtonColor: "#3b82f6",
+          });
+          if (onOrderCancelled) {
+            onOrderCancelled();
+          }
+        }
+      } catch (error) {
+        Swal.fire({
+          title: "Error!",
+          text: error.message || "Failed to cancel order",
+          icon: "error",
+          confirmButtonColor: "#3b82f6",
+        });
+      }
+    }
+  };
+
   return (
     <div className="shadow-sm rounded-lg w-full bg-white dark:bg-[#1b1f2b] transition-colors duration-300 mb-4 border border-gray-100 dark:border-gray-700">
       {/* Header: Order ID + Status + Shop */}
@@ -90,9 +129,14 @@ const OrderCard = memo(({ order }) => {
               View Details
             </button>
           </Link>
-          <button className="px-4 py-2 bg-red-500 cursor-pointer text-white rounded hover:bg-red-400 transition w-full sm:w-auto text-sm">
-            Cancel
-          </button>
+          {order.orderStatus === "Pending" && (
+            <button
+              onClick={handleCancelOrder}
+              className="px-4 py-2 bg-red-500 cursor-pointer text-white rounded hover:bg-red-400 transition w-full sm:w-auto text-sm"
+            >
+              Cancel
+            </button>
+          )}
         </div>
       </div>
     </div>

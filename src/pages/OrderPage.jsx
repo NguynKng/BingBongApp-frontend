@@ -19,17 +19,19 @@ export default function OrderPage() {
     "Cancelled",
   ];
 
+  const fetchOrders = async () => {
+    try {
+      setLoading(true);
+      const response = await orderAPI.getUserOrders();
+      setOrders(response.data);
+    } catch (error) {
+      console.error("Failed to fetch orders:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const response = await orderAPI.getUserOrders();
-        setOrders(response.data);
-      } catch (error) {
-        console.error("Failed to fetch orders:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchOrders();
   }, []);
 
@@ -105,7 +107,7 @@ export default function OrderPage() {
             </div>
           ) : (
             filteredOrders.map((order) => (
-              <OrderCard key={order.orderId} order={order} />
+              <OrderCard key={order.orderId} order={order} onOrderCancelled={fetchOrders} />
             ))
           )}
         </div>

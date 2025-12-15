@@ -417,6 +417,22 @@ export default function OrderDetailPage({ onToggleChat }) {
                         </p>
                       </div>
                     )}
+
+                    {order.cancelledAt && (
+                      <div className="flex items-center justify-between">
+                        <p className="text-sm w-[40%] text-right text-gray-600 dark:text-gray-400">
+                          {formatDateTimeWithTime(order.cancelledAt)}
+                        </p>
+                        <div className="w-[20%] flex justify-center relative">
+                          <div className="size-8 rounded-full flex items-center justify-center border-2 bg-red-600 dark:bg-red-700 border-red-700 dark:border-red-800 text-white z-10 shadow-md">
+                            <CircleX className="size-4" />
+                          </div>
+                        </div>
+                        <p className="text-sm w-[40%] text-red-600 dark:text-red-400 font-medium">
+                          Order Cancelled
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
