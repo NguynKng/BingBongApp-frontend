@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import {
   ChevronUp,
   ChevronDown,
@@ -20,6 +20,13 @@ export default function ShortsPage() {
   const videoRefs = useRef([]);
   const containerRef = useRef(null);
   const isScrollingRef = useRef(false);
+
+  // Memoize current short to avoid unnecessary re-renders
+  const currentShort = useMemo(() => shorts[currentIndex], [shorts, currentIndex]);
+
+  // Memoize navigation button states
+  const canNavigateUp = useMemo(() => currentIndex > 0, [currentIndex]);
+  const canNavigateDown = useMemo(() => currentIndex < shorts.length - 1, [currentIndex, shorts.length]);
 
   // Fetch shorts feed
   useEffect(() => {
@@ -229,14 +236,14 @@ export default function ShortsPage() {
       <div className="absolute top-1/2 right-6 z-10 flex flex-col gap-2">
         <button
           onClick={() => navigateVideo("up")}
-          disabled={currentIndex === 0}
+          disabled={!canNavigateUp}
           className="p-2 rounded-full cursor-pointer bg-black dark:bg-gray-800/50 backdrop-blur-sm disabled:opacity-30 hover:bg-black/60 dark:hover:bg-gray-700/50 transition disabled:cursor-not-allowed"
         >
           <ChevronUp className="w-6 h-6 text-white dark:text-gray-100" />
         </button>
         <button
           onClick={() => navigateVideo("down")}
-          disabled={currentIndex === shorts.length - 1}
+          disabled={!canNavigateDown}
           className="p-2 rounded-full cursor-pointer bg-black  dark:bg-gray-800/50 backdrop-blur-sm disabled:opacity-30 hover:bg-black/60 dark:hover:bg-gray-700/50 transition disabled:cursor-not-allowed"
         >
           <ChevronDown className="w-6 h-6 text-white dark:text-gray-100" />
@@ -258,9 +265,9 @@ export default function ShortsPage() {
       </div>
 
       {/* Comments Sidebar */}
-      {showComments && shorts[currentIndex] && (
+      {showComments && currentShort && (
         <CommentsSidebar
-          shortId={shorts[currentIndex]._id}
+          shortId={currentShort._id}
           onClose={() => setShowComments(false)}
         />
       )}

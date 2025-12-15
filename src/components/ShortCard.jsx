@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import {
   Heart,
@@ -28,6 +28,14 @@ export default function ShortCard({
   const [isMuted, setIsMuted] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(0);
+
+  // Memoize expensive computations
+  const videoUrl = useMemo(() => getBackendVideoURL(short.videoUrl), [short.videoUrl]);
+  const thumbnailUrl = useMemo(() => getBackendImgURL(short.thumbnailUrl), [short.thumbnailUrl]);
+  const avatarUrl = useMemo(() => getBackendImgURL(short.user?.avatar), [short.user?.avatar]);
+  const formattedViews = useMemo(() => formatNumber(short.views || 0), [short.views]);
+  const formattedLikes = useMemo(() => formatNumber(likesCount), [likesCount]);
+  const formattedComments = useMemo(() => formatNumber(short.commentsCount || 0), [short.commentsCount]);
 
   useEffect(() => {
     if (short) {
@@ -101,14 +109,14 @@ export default function ShortCard({
       {/* Video Player */}
       <video
         ref={internalVideoRef}
-        src={getBackendVideoURL(short.videoUrl)}
+        src={videoUrl}
         className="w-full h-full object-contain"
         loop
         muted={isMuted}
         playsInline
         onClick={togglePlay}
         onEnded={() => setIsPlaying(false)}
-        poster={getBackendImgURL(short.thumbnailUrl)}
+        poster={thumbnailUrl}
       />
 
       {/* Play/Pause Overlay */}
@@ -135,12 +143,9 @@ export default function ShortCard({
             <div className="flex items-center gap-3 mb-2">
               <Link to={`/profile/${short.user.slug}`}>
                 <img
-                  src={
-                    getBackendImgURL(short.user?.avatar) ||
-                    "/default-avatar.png"
-                  }
+                  src={avatarUrl}
                   alt={short.user?.fullName}
-                  className="w-10 h-10 rounded-full border-2 border-white dark:border-gray-300"
+                  className="w-10 h-10 rounded-full object-cover border-2 border-white dark:border-gray-300"
                   onError={(e) => {
                     e.target.src = "/default-avatar.png";
                   }}
@@ -186,7 +191,7 @@ export default function ShortCard({
             )}
 
             <p className="text-white/60 dark:text-gray-300 text-xs">
-              {formatNumber(short.views || 0)} views
+              {formattedViews} views
             </p>
           </div>
 
@@ -210,7 +215,7 @@ export default function ShortCard({
                 />
               </div>
               <span className="text-white dark:text-gray-100 text-xs mt-1">
-                {formatNumber(likesCount)}
+                {formattedLikes}
               </span>
             </button>
 
@@ -223,7 +228,7 @@ export default function ShortCard({
                 <MessageCircle className="w-6 h-6 text-white dark:text-gray-100" />
               </div>
               <span className="text-white dark:text-gray-100 text-xs mt-1">
-                {formatNumber(short.commentsCount || 0)}
+                {formattedComments}
               </span>
             </button>
 
@@ -240,7 +245,7 @@ export default function ShortCard({
                 <Eye className="w-6 h-6 text-white dark:text-gray-100" />
               </div>
               <span className="text-white dark:text-gray-100 text-xs mt-1">
-                {formatNumber(short.views || 0)}
+                {formattedViews}
               </span>
             </div>
           </div>

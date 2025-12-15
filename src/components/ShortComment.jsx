@@ -85,9 +85,9 @@ export default function ShortComment({
       <div className="flex gap-3">
         <Link to={`/profile/${comment.user.slug}`}>
           <img
-            src={getBackendImgURL(comment.user?.avatar) || "/default-avatar.png"}
+            src={getBackendImgURL(comment.user?.avatar)}
             alt={comment.user?.fullName}
-            className="w-9 h-9 rounded-full flex-shrink-0"
+            className="w-9 h-9 rounded-full flex-shrink-0 object-cover"
             onError={(e) => {
               e.target.src = "/default-avatar.png";
             }}
@@ -201,7 +201,7 @@ export default function ShortComment({
                         getBackendImgURL(reply.user?.avatar)
                       }
                       alt={reply.user?.fullName}
-                      className="w-7 h-7 rounded-full flex-shrink-0"
+                      className="w-7 h-7 rounded-full flex-shrink-0 object-cover"
                       onError={(e) => {
                         e.target.src = "/default-avatar.png";
                       }}

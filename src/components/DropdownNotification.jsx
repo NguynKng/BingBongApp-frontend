@@ -30,22 +30,36 @@ const DropdownNotification = memo(({ notifications }) => {
         return `/posts/${noti.data.postId}`;
       case "comment_post":
         return `/posts/${noti.data.postId}`;
+      case "new_post":
+        return `/posts/${noti.data.postId}`;
       case "friend_request":
         return `/profile/${noti.actor.slug}`;
       case "accepted_request":
         return `/profile/${noti.actor.slug}`;
-      case "new_post":
-        return `/posts/${noti.data.postId}`;
+      case "new_shop_follower":
+        return `/shop/${noti.data.shopSlug}`;
       case "new_order":
         return `/shop/${noti.data.shopSlug}/manage/orders/${noti.data.orderId}`;
       case "accepted_order":
-        return `/order`;
-      case "new_shop_follower":
-        return `/shop/${noti.data.shopSlug}`;
+        return `/order/${noti.data.orderId}`;
+      case "shipping_order":
+        return `/order/${noti.data.orderId}`;
+      case "received_order":
+        return `/order/${noti.data.orderId}`;
+      case "shop_cancelled_order":
+        return `/order/${noti.data.orderId}`;
+      case "user_cancelled_order":
+        return `/shop/${noti.data.shopSlug}/manage/orders/${noti.data.orderId}`;
+      case "group_join_request":
+        return `/group/${noti.data.groupSlug}/manage`;
       case "group_new_member":
         return `/group/${noti.data.groupSlug}`;
-        case "group_join_request":
-        return `/group/${noti.data.groupSlug}/manage`;
+      case "accepted_join_request":
+        return `/group/${noti.data.groupSlug}`;
+      case "like_short":
+        return `/shorts/${noti.data.shortId}`;
+      case "comment_short":
+        return `/shorts/${noti.data.shortId}`;
       default:
         return "#";
     }
@@ -102,7 +116,10 @@ EmptyState.displayName = "EmptyState";
 const NotificationItem = memo(({ noti, getLink, isShopNotification }) => {
   // ✅ Memoize computed values
   const link = useMemo(() => getLink(noti), [getLink, noti]);
-  const isShop = useMemo(() => isShopNotification(noti), [isShopNotification, noti]);
+  const isShop = useMemo(
+    () => isShopNotification(noti),
+    [isShopNotification, noti]
+  );
   const actorAvatar = useMemo(
     () => getBackendImgURL(noti.actor?.avatar),
     [noti.actor?.avatar]
@@ -115,6 +132,17 @@ const NotificationItem = memo(({ noti, getLink, isShopNotification }) => {
     () => formatTime(noti.createdAt),
     [noti.createdAt]
   );
+
+  const actorDisplayName = useMemo(() => {
+    switch (noti.type) {
+      case "accepted_order":
+      case "shipping_order":
+      case "shop_cancelled_order":
+        return `${noti.data.shopName}`;
+      default:
+        return noti.actor.fullName;
+    }
+  }, [noti]);
 
   return (
     <Link
@@ -140,7 +168,7 @@ const NotificationItem = memo(({ noti, getLink, isShopNotification }) => {
       <div className="flex-1">
         <p className="text-base leading-tight">
           <span className="dark:text-white font-medium">
-            {noti.actor.fullName}{" "}
+            {actorDisplayName}{" "}
           </span>
           <span className="dark:text-gray-300 text-gray-800">
             {noti.content}

@@ -107,9 +107,9 @@ export default function CommentsSidebar({
         <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
           <form onSubmit={handleSubmit} className="flex gap-3 items-center">
             <img
-              src={getBackendImgURL(user?.avatar) || "/default-avatar.png"}
+              src={getBackendImgURL(user?.avatar)}
               alt="Your avatar"
-              className="w-9 h-9 rounded-full flex-shrink-0"
+              className="w-9 h-9 rounded-full flex-shrink-0 object-cover"
               onError={(e) => {
                 e.target.src = "/default-avatar.png";
               }}

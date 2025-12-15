@@ -1,5 +1,5 @@
 import { ChevronLeft } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import useAuthStore from "../store/authStore";
 import { formatPriceWithDollar } from "../utils/formattedFunction";
@@ -14,7 +14,6 @@ import toast from "react-hot-toast";
 function CheckoutPage() {
   const { user } = useAuthStore();
   const { cart, clearCart } = useCartStore();
-  const navigate = useNavigate();
 
   const [cities, setCities] = useState([]);
   const [isGetCities, setIsGetCities] = useState(false);
