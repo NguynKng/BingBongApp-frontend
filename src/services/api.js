@@ -946,6 +946,65 @@ export const chatAPI = {
       throw error;
     }
   },
+  updateGroupChat: async (chatId, updateData) => {
+    try {
+      const response = await api.put(`/chat/group/${chatId}`, updateData);
+
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to update group chat";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  addGroupMembers: async (chatId, userIds) => {
+    try {
+      const response = await api.post(`/chat/group/${chatId}/members`, {
+        userIds,
+      });
+
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to add members";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
+  leaveGroupChat: async (chatId) => {
+    try {
+      const response = await api.delete(`/chat/group/${chatId}/leave`);
+
+      if (response.data.success === false) {
+        throw new Error(response.data.message);
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || "Failed to leave group";
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+      throw error;
+    }
+  },
 };
 
 //QUIZ API services

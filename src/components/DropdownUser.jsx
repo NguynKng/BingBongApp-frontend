@@ -1,10 +1,10 @@
-import Config from "../envVars";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import useAuthStore from "../store/authStore";
 import { getBackendImgURL } from "../utils/helper";
 
 function DropdownUser() {
   const { logout, user, theme, toggleTheme } = useAuthStore();
+  const navigate = useNavigate()
 
   const handleLogout = async () => {
     await logout();
@@ -40,9 +40,9 @@ function DropdownUser() {
           <div className="w-full border-1 border-gray-300 dark:border-gray-500"></div>
         </div>
         <div className="w-full p-2">
-          <button className="rounded-md bg-gray-200 dark:bg-[rgb(52,52,52)] hover:bg-gray-300 flex items-center justify-center gap-2 w-full cursor-pointer py-2 px-4 dark:hover:bg-[rgb(56,56,56)]">
+          <button className="rounded-md bg-gray-200 dark:bg-[rgb(52,52,52)] hover:bg-gray-300 flex items-center justify-center gap-2 w-full cursor-pointer py-2 px-4 dark:hover:bg-[rgb(56,56,56)]" onClick={() => navigate(`/profile/${user.slug}`)}>
             <img src="/change-account.png" className="size-5 object-cover" />
-            <span className="font-medium dark:text-white">View all profiles</span>
+            <span className="font-medium dark:text-white">View profile</span>
           </button>
         </div>
       </div>

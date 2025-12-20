@@ -79,9 +79,7 @@ const FriendPage = () => {
                     className="flex flex-col items-center"
                   >
                     <img
-                      src={
-                        getBackendImgURL(requester.avatar)
-                      }
+                      src={getBackendImgURL(requester.avatar)}
                       alt={requester.fullName}
                       className="w-24 h-24 aspect-square rounded-full object-cover mb-3 shadow-md"
                     />
@@ -131,8 +129,10 @@ const FriendPage = () => {
 };
 
 const SuggestionCard = ({ user }) => {
-    const {user: currentUser} = useAuthStore();
-  const [isRequestSent, setIsRequestSent] = useState(user.friendRequests.includes(currentUser._id));
+  const { user: currentUser } = useAuthStore();
+  const [isRequestSent, setIsRequestSent] = useState(
+    user.friendRequests.includes(currentUser._id)
+  );
   const [isLoading, setIsLoading] = useState(false);
 
   const handleToggleFriendRequest = async () => {
@@ -164,10 +164,7 @@ const SuggestionCard = ({ user }) => {
         transformStyle: "preserve-3d",
       }}
     >
-      <Link
-        to={`/profile/${user.slug}`}
-        className="flex flex-col items-center"
-      >
+      <Link to={`/profile/${user.slug}`} className="flex flex-col items-center">
         <img
           src={getBackendImgURL(user.avatar)}
           alt={user.fullName}

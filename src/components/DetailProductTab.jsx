@@ -366,9 +366,6 @@ function DetailProductTab({ shop }) {
                 >
                   Add to Cart
                 </button>
-                <button className="text-white bg-orange-500 dark:bg-orange-600 hover:bg-orange-600 dark:hover:bg-orange-700 rounded-md py-2 px-4 transition-colors font-medium shadow-md">
-                  Buy Now
-                </button>
               </>
             )}
           </div>

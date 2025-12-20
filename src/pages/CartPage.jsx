@@ -167,7 +167,7 @@ export default function CartPage() {
 
           <div className="pt-4">
             <Link to="/checkout">
-              <button className="text-white text-lg bg-blue-600 dark:bg-blue-500 mt-4 w-full rounded-full p-4 hover:bg-blue-700 dark:hover:bg-blue-400 transition">
+              <button className="text-white cursor-pointer text-lg bg-blue-600 dark:bg-blue-500 mt-4 w-full rounded-full p-4 hover:bg-blue-700 dark:hover:bg-blue-400 transition">
                 Checkout
               </button>
             </Link>

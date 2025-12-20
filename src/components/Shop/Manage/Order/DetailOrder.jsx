@@ -35,13 +35,12 @@ export default function DetailOrder() {
     return <div className="p-6 text-red-500 text-center">Order not found</div>;
 
   const handleUpdateOrder = async (status) => {
-    if (updating) return; // tránh bấm nhiều lần
+    if (updating) return;
     setUpdating(true);
     try {
       const response = await orderAPI.updateOrderStatus(order.orderId, status);
       if (response.success) {
         setOrder(response.data);
-        // delay nhẹ cho smooth transition
         setTimeout(() => navigate(-1), 300);
       }
     } catch (error) {
@@ -52,105 +51,81 @@ export default function DetailOrder() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto bg-white p-8 rounded-2xl shadow-lg mt-10 space-y-6">
-      {/* --- Header --- */}
-      <div className="flex justify-between items-center border-b pb-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-800">
-            Order #{order.orderId}
-          </h1>
-          <p className="text-sm text-gray-500 mt-1">
-            Order Date: {formatDateTimeWithTime(order.createdAt)}
-          </p>
-        </div>
+    <div className="max-w-5xl mx-auto p-6 space-y-6">
+      {/* Back Button */}
+      <button
+        onClick={() => navigate(-1)}
+        className="flex items-center gap-2 cursor-pointer text-gray-600 hover:text-gray-900"
+      >
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+        </svg>
+        Back
+      </button>
 
-        <div className="flex items-center gap-2">
-          <span className="font-medium text-gray-700">Status:</span>
+      {/* Header */}
+      <div className="bg-white rounded-lg shadow p-6">
+        <div className="flex justify-between items-center mb-4">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-800">Order #{order.orderId}</h1>
+            <p className="text-sm text-gray-500 mt-1">{formatDateTimeWithTime(order.createdAt)}</p>
+          </div>
           <OrderStatus status={order.orderStatus} />
         </div>
-      </div>
 
-      {/* --- Customer Info --- */}
-      <div className="border rounded-lg p-4 bg-gray-50">
-        <h2 className="text-lg font-semibold mb-3 text-gray-800">
-          Customer Information
-        </h2>
-        <div className="flex flex-col gap-y-2 text-gray-700">
-          <p>
-            <strong>Name:</strong>{" "}
-            {`${order.shipping.firstName} ${order.shipping.lastName}`}
-          </p>
-          <p>
-            <strong>Phone:</strong> {order.shipping.phoneNumber}
-          </p>
-          <p>
-            <strong>Email:</strong> {order.orderBy.email}
-          </p>
-          <p>
-            <strong>Address:</strong>{" "}
-            {`${order.shipping.address}, ${order.shipping.city}, ${order.shipping.country}`}
-          </p>
+        {/* Customer Info */}
+        <div className="border-t pt-4 space-y-2">
+          <h2 className="font-semibold text-gray-700 mb-3">Customer Information</h2>
+          <div className="grid md:grid-cols-2 gap-3 text-sm">
+            <p><span className="font-medium">Name:</span> {order.shipping.firstName} {order.shipping.lastName}</p>
+            <p><span className="font-medium">Phone:</span> {order.shipping.phoneNumber}</p>
+            <p><span className="font-medium">Email:</span> {order.orderBy.email}</p>
+            <p><span className="font-medium">Address:</span> {order.shipping.address}, {order.shipping.city}, {order.shipping.country}</p>
+          </div>
         </div>
       </div>
 
-      {/* --- Products --- */}
-      <div>
-        <h2 className="text-lg font-semibold mb-3 text-gray-800">Products</h2>
-        <div className="overflow-x-auto rounded-lg border">
-          <table className="w-full text-sm border-collapse">
-            <thead className="bg-gray-100 text-gray-700">
-              <tr>
-                <th className="p-3 text-left border">Image</th>
-                <th className="p-3 text-left border">Product Name</th>
-                <th className="p-3 text-center border">Quantity</th>
-                <th className="p-3 text-right border">Price</th>
-                <th className="p-3 text-right border">Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              {order.products.map((item, idx) => {
-                const variant = item.product.variants.find(
-                  (v) => v._id === item.variant
-                );
-                return (
-                  <tr key={idx} className="hover:bg-gray-50">
-                    <td className="border p-2">
-                      <img
-                        src={getBackendImgURL(variant.image)}
-                        alt={variant.name}
-                        className="w-14 h-14 object-cover rounded-md"
-                      />
-                    </td>
-                    <td className="border p-2">{variant.name}</td>
-                    <td className="border text-center p-2">{item.quantity}</td>
-                    <td className="border text-right p-2">
-                      {formatPriceWithDollar(variant.price)}
-                    </td>
-                    <td className="border text-right p-2">
-                      {formatPriceWithDollar(variant.price * item.quantity)}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+      {/* Products */}
+      <div className="bg-white rounded-lg shadow p-6">
+        <h2 className="font-semibold text-gray-700 mb-4">Order Items</h2>
+        <div className="space-y-3">
+          {order.products.map((item, idx) => {
+            const variant = item.product.variants.find((v) => v._id === item.variant);
+            return (
+              <div key={idx} className="flex items-center gap-4 border-b pb-3 last:border-b-0">
+                <img
+                  src={getBackendImgURL(variant.image)}
+                  alt={variant.name}
+                  className="w-16 h-16 object-cover rounded"
+                />
+                <div className="flex-1">
+                  <p className="font-medium text-gray-800">{variant.name}</p>
+                  <p className="text-sm text-gray-500">Qty: {item.quantity} × {formatPriceWithDollar(variant.price)}</p>
+                </div>
+                <p className="font-semibold text-gray-800">
+                  {formatPriceWithDollar(variant.price * item.quantity)}
+                </p>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Total */}
+        <div className="border-t mt-4 pt-4 flex justify-between items-center">
+          <span className="text-lg font-semibold">Total</span>
+          <span className="text-2xl font-bold text-green-600">
+            {formatPriceWithDollar(order.total)}
+          </span>
         </div>
       </div>
 
-      {/* --- Total --- */}
-      <div className="text-right text-lg font-semibold text-gray-800">
-        Total:{" "}
-        <span className="text-green-600">
-          {formatPriceWithDollar(order.total)}
-        </span>
-      </div>
-
-      <div className="text-right space-x-2">
+      {/* Action Buttons */}
+      <div className="flex justify-end gap-3">
         {order.orderStatus === "Pending" && (
           <button
             onClick={() => handleUpdateOrder("Processing")}
             disabled={updating}
-            className="flex items-center justify-center cursor-pointer gap-2 bg-green-600 text-white px-5 py-2.5 rounded-md hover:bg-green-700 transition disabled:opacity-60 disabled:cursor-not-allowed"
+            className="flex items-center gap-2 bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 disabled:opacity-50"
           >
             {updating && <SpinnerLoading className="w-5 h-5" />}
             Confirm Order
@@ -161,7 +136,7 @@ export default function DetailOrder() {
           <button
             onClick={() => handleUpdateOrder("Shipping")}
             disabled={updating}
-            className="flex items-center justify-center cursor-pointer gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-md hover:bg-blue-700 transition disabled:opacity-60 disabled:cursor-not-allowed"
+            className="flex items-center gap-2 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50"
           >
             {updating && <SpinnerLoading className="w-5 h-5" />}
             Ready to Ship

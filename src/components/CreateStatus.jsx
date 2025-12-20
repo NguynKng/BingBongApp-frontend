@@ -44,40 +44,29 @@ function CreateStatus({ onPostCreated, postedBy, postedByType, postedById }) {
             className="size-12 rounded-full border-[1px] border-gray-300 dark:border-gray-600 cursor-pointer hover:opacity-[70%]"
           >
             <img
-              src={getBackendImgURL(postedByType === "Group" ? user.avatar : postedBy.avatar)}
+              src={getBackendImgURL(
+                postedByType === "Group" ? user.avatar : postedBy.avatar
+              )}
               alt="user-avatar"
               className="object-cover rounded-full size-full"
             />
           </Link>
 
           <div
-            className="py-2 px-4 rounded-full bg-gray-100 dark:bg-[#2a2e3d] hover:bg-gray-200 dark:hover:bg-[#3a3e4d] w-full cursor-pointer"
+            className="py-2 px-4 rounded-full bg-gray-100 dark:bg-[#2a2e3d] hover:bg-gray-200 dark:hover:bg-[#3a3e4d] flex-1 cursor-pointer"
             onClick={() => setIsModalOpen(true)}
           >
             <span className="text-gray-500 dark:text-gray-300 lg:text-[1.1rem] text-sm">
               {placeholderText()}
             </span>
           </div>
-        </div>
-
-        {/* Action row: Live, Photo, Feeling */}
-        <div className="flex items-center py-2">
-          {[
-            { icon: "/video-player.png", label: "Live video" },
-            { icon: "/photos.png", label: "Photo/video" },
-            { icon: "/smiling-face.png", label: "Feeling/activity" },
-          ].map(({ icon, label }, index) => (
-            <div
-              key={index}
-              className="flex flex-wrap items-center justify-center w-1/3 gap-2 hover:bg-gray-100 dark:hover:bg-[#2f3344] cursor-pointer rounded-md py-2 px-4"
-              onClick={() => setIsModalOpen(true)}
-            >
-              <img src={icon} className="object-cover size-6" alt={label} />
-              <span className="text-gray-600 dark:text-gray-300 text-center">
-                {label}
-              </span>
-            </div>
-          ))}
+          <button className="rounded-lg hover:bg-gray-200 cursor-pointer p-2" onClick={() => setIsModalOpen(true)}>
+            <img
+              src="/photos.png"
+              alt="Photos"
+              className="object-cover size-6"
+            />
+          </button>
         </div>
       </div>
 

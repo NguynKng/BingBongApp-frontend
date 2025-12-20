@@ -105,11 +105,13 @@ function MainLayout({ Element }) {
 
     socket.on("getNewMessage", handleGetNewMessage);
     socket.on("newGroupChatAdd", handleGetNewMessage);
+    socket.on("groupMembersAdded", handleGetNewMessage);
     socket.on("new_notification", handleGetNotificationsAndPopup);
 
     return () => {
       socket.off("getNewMessage", handleGetNewMessage);
       socket.off("newGroupChatAdd", handleGetNewMessage);
+      socket.off("groupMembersAdded", handleGetNewMessage);
       socket.off("new_notification", handleGetNotificationsAndPopup);
     };
   }, [socket, handleGetNewMessage, handleGetNotificationsAndPopup]);

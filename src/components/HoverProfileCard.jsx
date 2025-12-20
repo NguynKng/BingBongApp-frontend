@@ -111,13 +111,13 @@ export default function HoverProfileCard({ slug, type }) {
     if (!website) return null;
 
     return (
-      <div className="flex items-center gap-1 text-gray-700 dark:text-gray-300">
-        <Globe className="fill-gray-500 text-white size-5 dark:text-black flex-shrink-0" />
+      <div className="flex items-start gap-1 text-gray-700 dark:text-gray-300">
+        <Globe className="fill-gray-500 text-white size-5 dark:text-black flex-shrink-0 mt-0.5" />
         <a
           href={website}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-blue-600 dark:text-blue-400 hover:underline"
+          className="text-blue-600 dark:text-blue-400 hover:underline break-all"
         >
           {website}
         </a>
@@ -136,7 +136,7 @@ export default function HoverProfileCard({ slug, type }) {
       >
         <div className="flex items-start gap-2">
           {/* Avatar */}
-          <div>
+          <div className="w-1/4">
             <Link to={getProfileLink(data, type)}>
               <img
                 src={getBackendImgURL(data.avatar)}
@@ -147,7 +147,7 @@ export default function HoverProfileCard({ slug, type }) {
 
             {/* Bio */}
             {data.bio && (
-              <p className="text-sm text-center text-gray-600 dark:text-gray-300 mt-3 line-clamp-3">
+              <p className="text-sm text-center text-gray-600 dark:text-gray-300 mt-3 line-clamp-2 overflow-hidden">
                 {data.bio}
               </p>
             )}

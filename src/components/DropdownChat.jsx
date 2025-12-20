@@ -185,7 +185,9 @@ function DropdownChat({ onToggleChat }) {
             </h2>
             <p className="text-xs text-gray-500 truncate dark:text-white">
               {isSentByMe ? "You: " : ""}
-              {chat.lastMessage?.media.length > 0 ? `sent ${chat.lastMessage.media.length} media` : chat.lastMessage?.text || "No messages yet."}
+              {chat.lastMessage?.media.length > 0
+                ? `sent ${chat.lastMessage.media.length} media`
+                : chat.lastMessage?.text || "No messages yet."}
             </p>
           </div>
         </div>
