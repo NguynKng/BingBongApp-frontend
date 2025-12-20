@@ -61,7 +61,7 @@ function CommentInput({ postId, onSuccessRefresh }) {
         className="p-3 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors duration-200 ease-in-out flex items-center justify-center cursor-pointer"
         disabled={loading}
       >
-        <Send className="w-5 h-5" />
+        <Send className="w-4 h-4" />
       </button>
     </form>
   );

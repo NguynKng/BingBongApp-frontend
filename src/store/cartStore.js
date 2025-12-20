@@ -3,7 +3,7 @@ import useAuthStore from "./authStore";
 import { toast } from "react-hot-toast";
 import { cartAPI } from "../services/api";
 
-const useCartStore = create((set, get) => ({
+const useCartStore = create((set) => ({
   cart: {},
   loading: false,
   setCart: (cart) => set({ cart }),
@@ -15,9 +15,9 @@ const useCartStore = create((set, get) => ({
       const res = await cartAPI.addToCart(productId, variantId);
       if (res.success) {
         set({ cart: res.data });
-        toast.success("Thêm sản phẩm vào giỏ hàng thành công!");
+        toast.success(res.message);
       } else {
-        toast.error("Thêm sản phẩm vào giỏ hàng thất bại!");
+        toast.error(res.message);
       }
     } catch (error) {
       toast.error(error?.message);
@@ -31,9 +31,9 @@ const useCartStore = create((set, get) => ({
       const res = await cartAPI.minusFromCart(productId, variantId);
       if (res.success) {
         set({ cart: res.data });
-        toast.success("Giảm số lượng sản phẩm trong giỏ hàng thành công!");
+        toast.success(res.message);
       } else {
-        toast.error("Giảm số lượng sản phẩm trong giỏ hàng thất bại!");
+        toast.error(res.message);
       }
     } catch (error) {
       toast.error(error?.message);
@@ -47,9 +47,9 @@ const useCartStore = create((set, get) => ({
       const res = await cartAPI.removeFromCart(productId, variantId);
       if (res.success) {
         set({ cart: res.data });
-        toast.success("Bỏ sản phẩm khỏi giỏ hàng thành công!");
+        toast.success(res.message);
       } else {
-        toast.error("Bỏ sản phẩm khỏi giỏ hàng thất bại!");
+        toast.error(res.message);
       }
     } catch (error) {
       toast.error(error?.message);

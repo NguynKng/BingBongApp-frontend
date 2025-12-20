@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import {
   Bell,
   CircleUserRound,
@@ -15,9 +15,8 @@ import {
   Mail,
   Menu,
 } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import useAuthStore from "../store/authStore";
-import Config from "../envVars";
 import DropdownUser from "./DropdownUser";
 import DropdownChat from "./DropdownChat";
 import DropdownNotification from "./DropdownNotification";
@@ -45,38 +44,12 @@ function Header({ onToggleChat }) {
     menu: false,
     cart: false,
   });
-  const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const { user, theme, toggleTheme } = useAuthStore();
-  const location = useLocation();
 
   const debouncedSearch = debounce((query) => {
     setQuery(query);
   }, 500);
-
-  const activeTab = useMemo(() => {
-    const path = location.pathname;
-    if (path.startsWith("/friends")) return "friends";
-    else if (path.startsWith("/watch")) return "watch";
-    else if (path.startsWith("/quiz")) return "quiz";
-    else if (path.startsWith("/profile")) return "profile";
-    else if (path.startsWith("/news")) return "news";
-    else if (path === "/") return "home";
-    return "home";
-  }, [location.pathname]);
-
-  const tabs = [
-    { id: "home", icon: <House />, label: "Home", link: "/" },
-    { id: "friends", icon: <UsersRound />, label: "Friends", link: "/friends" },
-    { id: "news", icon: <Newspaper />, label: "News", link: "/news" },
-    { id: "quiz", icon: <Gamepad2 />, label: "Quiz", link: "/quiz" },
-    {
-      id: "profile",
-      icon: <CircleUserRound />,
-      label: "Profile",
-      link: `/profile/${user.slug}`,
-    },
-  ];
 
   const toggleDropdown = (type) => {
     setDropdown((prev) => ({
@@ -103,9 +76,9 @@ function Header({ onToggleChat }) {
               className="size-full object-cover rounded-xl"
             />
           </Link>
-          <span className="hidden sm:block text-xl font-bold bg-gradient-to-r from-rose-500 to-pink-500 bg-clip-text text-transparent">
+          <Link to="/" className="hidden sm:block text-xl font-bold bg-gradient-to-r from-rose-500 to-pink-500 bg-clip-text text-transparent">
             BingBong
-          </span>
+          </Link>
         </div>
 
         {/* CENTER: Search Bar (Desktop) */}

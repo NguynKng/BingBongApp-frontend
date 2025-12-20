@@ -165,7 +165,7 @@ const MagnifyingTranslator = () => {
       {/* Toggle Button */}
       <button
         onClick={toggleMagnifier}
-        className={`fixed bottom-6 right-6 z-[9998] p-4 rounded-full shadow-2xl transition-all duration-300 ${
+        className={`fixed bottom-1 right-12 z-[9998] p-4 rounded-full shadow-2xl transition-all duration-300 ${
           isActive
             ? "bg-blue-500 text-white scale-110 ring-4 ring-blue-300"
             : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"

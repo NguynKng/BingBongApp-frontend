@@ -46,6 +46,10 @@ function Navbar({ isCloseSidebar, setIsCloseSidebar }) {
     { tab: "short", src: Clapperboard, text: "Shorts", link: "/shorts" },
   ];
 
+  const handleLinkClick = () => {
+    setIsCloseSidebar(true);
+  };
+
   return (
     <>
       {/* Overlay */}
@@ -102,6 +106,7 @@ function Navbar({ isCloseSidebar, setIsCloseSidebar }) {
                 title={item.text}
                 to={item.link}
                 key={index}
+                onClick={handleLinkClick}
                 className={`relative flex items-center gap-2 py-3 px-4 rounded-xl group transition-all
                 ${
                   isActive
@@ -149,6 +154,7 @@ function Navbar({ isCloseSidebar, setIsCloseSidebar }) {
         <div className="p-2">
           <Link
             to={`/profile/${user.slug}`}
+            onClick={handleLinkClick}
             className={`flex items-center gap-3 py-2 rounded-xl cursor-pointer transition-all
             hover:bg-blue-500/10 dark:hover:bg-blue-600/20 ${
               isCloseSidebar ? "justify-center px-2" : "px-4"

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Config from "../../envVars";
 import useAuthStore from "../../store/authStore";
 import { quizAPI } from "../../services/api";
+import { getBackendImgURL } from "../../utils/helper";
 
 function Leaderboard() {
   const { user } = useAuthStore();
@@ -68,7 +69,6 @@ function Leaderboard() {
     (entry) => entry.user?._id === user?._id
   );
   const isUserInLeaderboard = currentUserIndex !== -1;
-  console.log(currentUserEntry);
 
   return (
     <div className="dark:bg-[#181826] min-h-screen">
@@ -129,8 +129,7 @@ function Leaderboard() {
                         <div className="flex items-center gap-2 min-w-[10rem] sm:min-w-[15rem] max-w-xs mx-auto">
                           <img
                             src={
-                              player.user?.avatar
-                                && `${Config.BACKEND_URL}${player.user.avatar}`
+                              getBackendImgURL(player.user?.avatar)
                             }
                             alt="avatar"
                             className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover"
@@ -175,9 +174,7 @@ function Leaderboard() {
                           <div className="flex items-center gap-2 min-w-[10rem] sm:min-w-[15rem] max-w-xs mx-auto">
                             <img
                               src={
-                                currentUserEntry.user?.avatar
-                                  ? `${Config.BACKEND_URL}${currentUserEntry.user.avatar}`
-                                  : "/user.png"
+                                getBackendImgURL(currentUserEntry.user?.avatar)
                               }
                               alt="avatar"
                               className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover"

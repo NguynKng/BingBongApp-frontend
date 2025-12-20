@@ -17,6 +17,7 @@ import { groupAPI } from "../../services/api";
 import toast from "react-hot-toast";
 import useAuthStore from "../../store/authStore";
 import { getBackendImgURL } from "../../utils/helper";
+import Swal from "sweetalert2";
 
 export default function ManageTab({ group }) {
   const { user } = useAuthStore();
@@ -98,7 +99,16 @@ export default function ManageTab({ group }) {
 
   // Remove member
   const handleRemoveMember = async (userId) => {
-    if (!confirm("Are you sure you want to remove this member?")) return;
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "Do you really want to remove this member?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, remove",
+      cancelButtonText: "Cancel",
+    });
+
+    if (!result.isConfirmed) return;
 
     setLoading(true);
     try {
@@ -123,11 +133,12 @@ export default function ManageTab({ group }) {
   const handleManageRole = async (userId, action, role) => {
     setLoading(true);
     try {
-      const response = await groupAPI.manageRole(localGroup._id, userId, {
-        action,
+      const response = await groupAPI.manageRole(
+        localGroup._id,
+        userId,
         role,
-      });
-      toast.success(`${role} ${action}ed successfully!`);
+        action
+      );
 
       // Update local state
       setLocalGroup(response.data);
@@ -233,7 +244,8 @@ export default function ManageTab({ group }) {
                 filteredMembers.map((member) => {
                   const role = getMemberRole(member._id);
                   const isCurrentUser = member._id === user?._id;
-                  const isMemberCreator = member._id === localGroup.createdBy._id;
+                  const isMemberCreator =
+                    member._id === localGroup.createdBy._id;
 
                   return (
                     <div
@@ -270,9 +282,15 @@ export default function ManageTab({ group }) {
                                     : "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
                                 }`}
                               >
-                                {role === "Creator" && <Crown className="inline size-3 mr-1" />}
-                                {role === "Admin" && <ShieldCheck className="inline size-3 mr-1" />}
-                                {role === "Moderator" && <Shield className="inline size-3 mr-1" />}
+                                {role === "Creator" && (
+                                  <Crown className="inline size-3 mr-1" />
+                                )}
+                                {role === "Admin" && (
+                                  <ShieldCheck className="inline size-3 mr-1" />
+                                )}
+                                {role === "Moderator" && (
+                                  <Shield className="inline size-3 mr-1" />
+                                )}
                                 {role}
                               </span>
                             )}
@@ -316,7 +334,11 @@ export default function ManageTab({ group }) {
                               {isCreator && role === "Admin" && (
                                 <button
                                   onClick={() =>
-                                    handleManageRole(member._id, "remove", "admin")
+                                    handleManageRole(
+                                      member._id,
+                                      "remove",
+                                      "admin"
+                                    )
                                   }
                                   disabled={loading}
                                   className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2 disabled:opacity-50"
@@ -345,29 +367,32 @@ export default function ManageTab({ group }) {
                                   </button>
                                 )}
 
-                              {(isCreator || isAdmin) && role === "Moderator" && (
-                                <button
-                                  onClick={() =>
-                                    handleManageRole(
-                                      member._id,
-                                      "remove",
-                                      "moderator"
-                                    )
-                                  }
-                                  disabled={loading}
-                                  className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2 disabled:opacity-50"
-                                >
-                                  <X className="size-4" />
-                                  Remove Moderator
-                                </button>
-                              )}
+                              {(isCreator || isAdmin) &&
+                                role === "Moderator" && (
+                                  <button
+                                    onClick={() =>
+                                      handleManageRole(
+                                        member._id,
+                                        "remove",
+                                        "moderator"
+                                      )
+                                    }
+                                    disabled={loading}
+                                    className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2 disabled:opacity-50"
+                                  >
+                                    <X className="size-4" />
+                                    Remove Moderator
+                                  </button>
+                                )}
 
                               {/* Remove Member */}
                               {canRemoveMembers && (
                                 <>
                                   <div className="border-t border-gray-200 dark:border-gray-600" />
                                   <button
-                                    onClick={() => handleRemoveMember(member._id)}
+                                    onClick={() =>
+                                      handleRemoveMember(member._id)
+                                    }
                                     disabled={loading}
                                     className="w-full px-4 py-2 text-left text-sm hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 flex items-center gap-2 disabled:opacity-50"
                                   >
@@ -407,11 +432,7 @@ export default function ManageTab({ group }) {
                   >
                     <div className="flex items-center gap-3 flex-1">
                       <img
-                        src={
-                          member.avatar
-                            ? getBackendImgURL(member.avatar)
-                            : "/default-avatar.png"
-                        }
+                        src={getBackendImgURL(member.avatar)}
                         alt={member.fullName}
                         className="size-12 rounded-full object-cover border-2 border-yellow-300 dark:border-yellow-600"
                       />

@@ -1,14 +1,16 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import { productAPI } from "../../services/api";
 import ProductCard from "../ProductCard";
 import { Link, useParams } from "react-router-dom";
 import SpinnerLoading from "../SpinnerLoading";
 import { Grid2x2, List, Search } from "lucide-react";
+import useDebounce from "../../hooks/useDebounce";
 
 export default function ProductTab({ shop }) {
   const { category } = useParams();
-  const [allProducts, setAllProducts] = useState([]);
+  const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [viewMode, setViewMode] = useState("grid");
 
   const selectedCategory = shop.categories.find((c) => c.slug === category);
@@ -17,50 +19,73 @@ export default function ProductTab({ shop }) {
   const [maxPrice, setMaxPrice] = useState(0);
   const [isDiscounted, setIsDiscounted] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
-  // Fetch all products once
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
+  const [totalCount, setTotalCount] = useState(0);
+
+  // Fetch products with pagination
   useEffect(() => {
     const fetchProducts = async () => {
+      if (page === 1) {
+        setLoading(true);
+      } else {
+        setLoadingMore(true);
+      }
+      
       try {
-        const response = await productAPI.getProductsByShop(shop._id);
-        if (response.success) setAllProducts(response.data);
+        const params = {
+          page,
+          limit: 20,
+        };
+
+        if (debouncedSearchTerm.trim()) {
+          params.name = debouncedSearchTerm.trim();
+        }
+        if (selectedCategory) {
+          params.category = selectedCategory.slug;
+        }
+        if (minPrice > 0) {
+          params.minPrice = minPrice;
+        }
+        if (maxPrice > 0) {
+          params.maxPrice = maxPrice;
+        }
+        if (isDiscounted) {
+          params.isDiscounted = "true";
+        }
+
+        const response = await productAPI.getProductsByShop(shop._id, params);
+        
+        if (response.success) {
+          if (page === 1) {
+            setProducts(response.data);
+          } else {
+            setProducts((prev) => [...prev, ...response.data]);
+          }
+          setHasMore(response.hasMore);
+          setTotalCount(response.totalCount);
+        }
       } catch (error) {
         console.error("❌ Failed to fetch products:", error);
       } finally {
         setLoading(false);
+        setLoadingMore(false);
       }
     };
+    
     if (shop) fetchProducts();
-  }, [shop]);
+  }, [shop, page, debouncedSearchTerm, selectedCategory, minPrice, maxPrice, isDiscounted]);
 
-  // Filter products
-  const filteredProducts = useMemo(() => {
-    let result = allProducts;
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearchTerm, category, minPrice, maxPrice, isDiscounted]);
 
-    if (selectedCategory) {
-      result = result.filter(
-        (p) => p.category && p.category === selectedCategory.name
-      );
-    }
-
-    if (minPrice > 0) result = result.filter((p) => p.basePrice >= minPrice);
-    if (maxPrice > 0) result = result.filter((p) => p.basePrice <= maxPrice);
-    if (isDiscounted) result = result.filter((p) => p.discount > 0);
-
-    if (searchTerm.trim() !== "") {
-      const search = searchTerm.toLowerCase();
-      result = result.filter((p) => p.name.toLowerCase().includes(search));
-    }
-
-    return result;
-  }, [
-    allProducts,
-    selectedCategory,
-    minPrice,
-    maxPrice,
-    isDiscounted,
-    searchTerm,
-  ]);
+  const handleLoadMore = () => {
+    setPage((prev) => prev + 1);
+  };
 
   return (
     <div className="bg-white dark:bg-[#1e1e2f] p-4 rounded-lg min-h-screen">
@@ -169,23 +194,47 @@ export default function ProductTab({ shop }) {
       {/* Product list */}
       {loading ? (
         <SpinnerLoading />
-      ) : filteredProducts.length > 0 ? (
-        <div
-          className={`grid ${
-            viewMode === "list"
-              ? "grid-cols-1 lg:grid-cols-2"
-              : "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
-          } gap-4`}
-        >
-          {filteredProducts.map((product) => (
-            <ProductCard
-              key={product._id}
-              product={product}
-              shop={shop}
-              viewMode={viewMode}
-            />
-          ))}
-        </div>
+      ) : products.length > 0 ? (
+        <>
+          <div
+            className={`grid ${
+              viewMode === "list"
+                ? "grid-cols-1 lg:grid-cols-2"
+                : "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+            } gap-4`}
+          >
+            {products.map((product) => (
+              <ProductCard
+                key={product._id}
+                product={product}
+                shop={shop}
+                viewMode={viewMode}
+              />
+            ))}
+          </div>
+
+          {/* Load More Button */}
+          {hasMore && (
+            <div className="flex justify-center mt-6">
+              <button
+                onClick={handleLoadMore}
+                disabled={loadingMore}
+                className="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg 
+                          font-medium transition disabled:opacity-50 disabled:cursor-not-allowed
+                          flex items-center gap-2"
+              >
+                {loadingMore ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    Loading...
+                  </>
+                ) : (
+                  `Load More (${products.length}/${totalCount})`
+                )}
+              </button>
+            </div>
+          )}
+        </>
       ) : (
         <p className="text-gray-500 dark:text-gray-400 text-center py-10">
           No matching products found.

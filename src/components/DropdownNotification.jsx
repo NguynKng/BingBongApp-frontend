@@ -30,6 +30,8 @@ const DropdownNotification = memo(({ notifications }) => {
         return `/posts/${noti.data.postId}`;
       case "comment_post":
         return `/posts/${noti.data.postId}`;
+      case "reply_comment":
+        return `/posts/${noti.data.postId}`;
       case "new_post":
         return `/posts/${noti.data.postId}`;
       case "friend_request":
@@ -59,6 +61,8 @@ const DropdownNotification = memo(({ notifications }) => {
       case "like_short":
         return `/shorts/${noti.data.shortId}`;
       case "comment_short":
+        return `/shorts/${noti.data.shortId}`;
+      case "reply_comment_short":
         return `/shorts/${noti.data.shortId}`;
       default:
         return "#";
