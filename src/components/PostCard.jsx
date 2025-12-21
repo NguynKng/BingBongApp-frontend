@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { Earth, Ellipsis, MessageCircle, ThumbsUp, Trash2 } from "lucide-react";
+import { Check, Earth, Ellipsis, MessageCircle, ThumbsUp, Trash2 } from "lucide-react";
 import { formatTime } from "../utils/timeUtils";
 import { Link } from "react-router-dom";
 import { useState, useMemo, useCallback, useEffect, useRef, memo } from "react";
@@ -11,7 +11,11 @@ import useAuthStore from "../store/authStore";
 import emotions from "../data/emotion";
 import { toast } from "react-hot-toast";
 import InstagramCarousel from "./InstagramCarousel";
-import { getBackendImgURL, getEquippedBadge, getProfileLink } from "../utils/helper";
+import {
+  getBackendImgURL,
+  getEquippedBadge,
+  getProfileLink,
+} from "../utils/helper";
 import UserBadge from "./UserBadge";
 import HoverWrapper from "./HoverWrapper";
 
@@ -30,7 +34,7 @@ const PostCard = memo(({ post, onDeletePost, showComment = false }) => {
     type: null,
     slug: null,
   });
-  
+
   // ✅ Ref để track post element và việc đã mark viewed
   const postRef = useRef(null);
   const hasMarkedViewed = useRef(false);
@@ -39,38 +43,38 @@ const PostCard = memo(({ post, onDeletePost, showComment = false }) => {
   const isUserPost = postedByType === "User";
   const isGroupPost = postedByType === "Group";
 
-//   // ✅ Mark post as viewed khi user nhìn thấy bài viết
-//   useEffect(() => {
-//     if (!post?._id || !user || hasMarkedViewed.current) return;
+  //   // ✅ Mark post as viewed khi user nhìn thấy bài viết
+  //   useEffect(() => {
+  //     if (!post?._id || !user || hasMarkedViewed.current) return;
 
-//     const observer = new IntersectionObserver(
-//       (entries) => {
-//         entries.forEach((entry) => {
-//           if (entry.isIntersecting) {
-//             // ✅ Đợi 3 giây trước khi mark viewed
-//             const timer = setTimeout(async () => {
-//               try {
-//                 await postAPI.markPostAsViewed(post._id);
-//                 hasMarkedViewed.current = true;
-//               } catch (error) {
-//                 console.error("❌ Failed to mark post as viewed:", error);
-//               }
-//             }, 3000);
+  //     const observer = new IntersectionObserver(
+  //       (entries) => {
+  //         entries.forEach((entry) => {
+  //           if (entry.isIntersecting) {
+  //             // ✅ Đợi 3 giây trước khi mark viewed
+  //             const timer = setTimeout(async () => {
+  //               try {
+  //                 await postAPI.markPostAsViewed(post._id);
+  //                 hasMarkedViewed.current = true;
+  //               } catch (error) {
+  //                 console.error("❌ Failed to mark post as viewed:", error);
+  //               }
+  //             }, 3000);
 
-//             // Cleanup nếu user scroll đi trước 3 giây
-//             return () => clearTimeout(timer);
-//           }
-//         });
-//       },
-//       { threshold: 0.5 } // 50% bài viết hiển thị
-//     );
+  //             // Cleanup nếu user scroll đi trước 3 giây
+  //             return () => clearTimeout(timer);
+  //           }
+  //         });
+  //       },
+  //       { threshold: 0.5 } // 50% bài viết hiển thị
+  //     );
 
-//     if (postRef.current) {
-//       observer.observe(postRef.current);
-//     }
+  //     if (postRef.current) {
+  //       observer.observe(postRef.current);
+  //     }
 
-//     return () => observer.disconnect();
-//   }, [post?._id, user]);
+  //     return () => observer.disconnect();
+  //   }, [post?._id, user]);
 
   useEffect(() => {
     if (!post) return;
@@ -161,7 +165,7 @@ const PostCard = memo(({ post, onDeletePost, showComment = false }) => {
   }
 
   return (
-    <div 
+    <div
       ref={postRef}
       className="bg-white py-5 rounded-xl shadow-md mb-4 dark:bg-[#1b1f2b] dark:border dark:border-[#2b2b3d]"
     >
@@ -220,11 +224,17 @@ const PostCard = memo(({ post, onDeletePost, showComment = false }) => {
                     };
                   }}
                 >
-                  {(isShopPost || isGroupPost)
+                  {isShopPost || isGroupPost
                     ? postedById.name
                     : postedById.fullName}
                 </Link>
               </HoverWrapper>
+
+              {postedById.isVerifiedAccount && (
+                <div className="p-1 rounded-full bg-green-500">
+                  <Check className="text-white size-3" />
+                </div>
+              )}
 
               {equippedBadge && <UserBadge badge={equippedBadge} mode="mini" />}
             </div>
@@ -233,7 +243,10 @@ const PostCard = memo(({ post, onDeletePost, showComment = false }) => {
             <div className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400">
               {(isShopPost || isGroupPost) && (
                 <>
-                  <Link to={`/profile/${author.slug}`} className="hover:underline">
+                  <Link
+                    to={`/profile/${author.slug}`}
+                    className="hover:underline"
+                  >
                     {author._id === user?._id ? "Bạn" : author.fullName}
                   </Link>
                   <span>•</span>

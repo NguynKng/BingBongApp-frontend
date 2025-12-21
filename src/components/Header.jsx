@@ -76,7 +76,10 @@ function Header({ onToggleChat }) {
               className="size-full object-cover rounded-xl"
             />
           </Link>
-          <Link to="/" className="hidden sm:block text-xl font-bold bg-gradient-to-r from-rose-500 to-pink-500 bg-clip-text text-transparent">
+          <Link
+            to="/"
+            className="hidden sm:block text-xl font-bold bg-gradient-to-r from-rose-500 to-pink-500 bg-clip-text text-transparent"
+          >
             BingBong
           </Link>
         </div>
@@ -217,12 +220,17 @@ function Header({ onToggleChat }) {
             </div>
 
             {/* Dropdowns */}
-            {dropdown.user && <DropdownUser />}
-            {dropdown.chat && <DropdownChat onToggleChat={onToggleChat} />}
-            {dropdown.notification && (
-              <DropdownNotification notifications={notifications} />
+            {dropdown.user && <DropdownUser onClose={() => toggleDropdown("user")} />}
+            {dropdown.chat && (
+              <DropdownChat
+                onToggleChat={onToggleChat}
+                onClose={() => toggleDropdown("chat")}
+              />
             )}
-            {dropdown.cart && <DropdownCart />}
+            {dropdown.notification && (
+              <DropdownNotification notifications={notifications} onClose={() => toggleDropdown("notification")} />
+            )}
+            {dropdown.cart && <DropdownCart onClose={() => toggleDropdown("cart")} />}
             {dropdown.menu && <DropdownMenu />}
           </div>
         </div>

@@ -1,5 +1,12 @@
 import { useState, useRef, useEffect } from "react";
-import { Pencil, UserCheck, UserPlus, UserX } from "lucide-react";
+import {
+    Check,
+  CircleCheckBig,
+  Pencil,
+  UserCheck,
+  UserPlus,
+  UserX,
+} from "lucide-react";
 import { Link, useParams, Routes, Route } from "react-router-dom";
 import useAuthStore from "../store/authStore";
 import { userAPI } from "../services/api";
@@ -140,12 +147,12 @@ function ProfilePage({ onToggleChat }) {
 
   const handleAddFriendRequest = async () => {
     try {
-      await userAPI.sendFriendRequest(userId);
+      const response = await userAPI.sendFriendRequest(userId);
       setHasSentFriendRequest(true);
-      toast.success("Đã gửi lời mời kết bạn");
+      toast.success(response.message);
     } catch (error) {
       console.error("Error sending friend request:", error);
-      toast.error("Không thể gửi lời mời kết bạn");
+      toast.error("Cannot send friend request.");
     }
   };
 
@@ -153,10 +160,10 @@ function ProfilePage({ onToggleChat }) {
     try {
       await userAPI.cancelFriendRequest(userId);
       setHasSentFriendRequest(false);
-      toast.success("Đã huỷ lời mời kết bạn");
+      toast.success("Friend request cancelled successfully");
     } catch (error) {
       console.error("Error cancel friend request:", error);
-      toast.error("Không thể huỷ lời mời kết bạn");
+      toast.error("Cannot cancel friend request");
     }
   };
 
@@ -185,10 +192,10 @@ function ProfilePage({ onToggleChat }) {
       });
       setIsFriend(true);
       setIsReceivingFriendRequest(false);
-      toast.success("Đã chấp nhận lời mời kết bạn");
+      toast.success("Friend request accepted successfully");
     } catch (error) {
       console.error("Error accepting friend request:", error);
-      toast.error("Không thể chấp nhận lời mời");
+      toast.error("Cannot accept friend request");
     }
   };
 
@@ -265,6 +272,11 @@ function ProfilePage({ onToggleChat }) {
                         <h1 className="text-3xl font-bold not-[]:rounded dark:text-white">
                           {displayedUser?.fullName || "Loading..."}
                         </h1>
+                        {displayedUser.isVerifiedAccount && (
+                          <div className="p-2 rounded-full bg-green-500">
+                            <Check className="text-white size-4" />
+                          </div>
+                        )}
                       </div>
                       <p className="text-gray-500 dark:text-gray-400 rounded">{`${
                         displayedUser.friends.length || 0

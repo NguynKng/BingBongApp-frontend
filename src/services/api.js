@@ -673,9 +673,11 @@ export const postAPI = {
     }
   },
   // Get user feed (posts from user and their friends)
-  getFeed: async () => {
+  getFeed: async (pageNum, limit) => {
     try {
-      const response = await api.get(`/posts`);
+      const response = await api.get(`/posts`, {
+        params: { page: pageNum, limit },
+      });
 
       if (response.data.success === false) {
         throw new Error(response.data.message);

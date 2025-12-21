@@ -7,7 +7,7 @@ import { formatTime } from "../utils/timeUtils";
 import propTypes from "prop-types";
 import { getBackendImgURL } from "../utils/helper";
 
-const DropdownNotification = memo(({ notifications }) => {
+const DropdownNotification = memo(({ notifications, onClose }) => {
   const { markAsAllRead } = useNotificationStore();
   const { loading, loadMore, hasMore } = useGetNotifications();
 
@@ -91,6 +91,7 @@ const DropdownNotification = memo(({ notifications }) => {
               noti={noti}
               getLink={getLink}
               isShopNotification={isShopNotification}
+              onClose={onClose}
             />
           ))}
 
@@ -117,7 +118,7 @@ const EmptyState = memo(() => (
 EmptyState.displayName = "EmptyState";
 
 // ✅ Extract NotificationItem component
-const NotificationItem = memo(({ noti, getLink, isShopNotification }) => {
+const NotificationItem = memo(({ noti, getLink, isShopNotification, onClose }) => {
   // ✅ Memoize computed values
   const link = useMemo(() => getLink(noti), [getLink, noti]);
   const isShop = useMemo(
@@ -152,6 +153,7 @@ const NotificationItem = memo(({ noti, getLink, isShopNotification }) => {
     <Link
       to={link}
       className="flex items-start gap-3 py-3 px-2 last:border-none rounded-xl transition-all duration-300 ease-out transform hover:scale-[1.02] hover:shadow-lg dark:hover:bg-[rgb(56,56,56)]"
+      onClick={onClose}
     >
       <div className="rounded-full size-10 relative shadow-sm border border-blue-100">
         <img

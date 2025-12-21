@@ -38,7 +38,7 @@ function CreateStatus({ onPostCreated, postedBy, postedByType, postedById }) {
     <>
       <div className="px-4 bg-white dark:bg-[#1b1f2b] dark:border dark:border-[#2b2b3d] rounded-lg">
         {/* Status input row */}
-        <div className="flex items-center gap-2 py-4 border-b-2 border-gray-200 dark:border-gray-700">
+        <div className="flex items-center gap-2 py-4">
           <Link
             to={linkToProfile()}
             className="size-12 rounded-full border-[1px] border-gray-300 dark:border-gray-600 cursor-pointer hover:opacity-[70%]"
