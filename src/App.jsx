@@ -1,15 +1,5 @@
-import { useEffect } from "react";
+import { useEffect, lazy, Suspense } from "react";
 import { Route, Routes } from "react-router-dom";
-import HomePage from "./pages/HomePage";
-import MainLayout from "./components/MainLayout";
-import FriendPage from "./pages/FriendPage";
-import ProfilePage from "./pages/ProfilePage";
-import QuizPage from "./pages/Quiz/QuizPage";
-import QuizPlayPage from "./pages/Quiz/QuizPlayPage";
-import CreateQuizPage from "./pages/Quiz/CreateQuizPage";
-import DetailPostPage from "./pages/DetailPostPage";
-import NewsPage from "./pages/NewsPage";    
-import Leaderboard from "./pages/Quiz/Leaderboard";
 import { Toaster } from "react-hot-toast";
 import useAuthStore from "./store/authStore";
 import { Howler } from "howler";
@@ -19,33 +9,62 @@ import {
   AdminAuthRoute,
   AdminRoute,
 } from "./middleware/auth";
-import AuthContainer from "./pages/AuthContainer";
-import VerifyEmailPage from "./pages/VerifyEmailPage";
-import ForgotPasswordPage from "./pages/ForgotPasswordPage";
-import ChangePasswordPage from "./pages/ChangePasswordPage";
-import UserBadgePage from "./pages/UserBadgePage";
-import LoginPage from "./pages/Admin/LoginPage";
-import DashboardPage from "./pages/Admin/DashboardPage";
-import ListUserPage from "./pages/Admin/ListUserPage";
-import AdminLayout from "./components/Admin/AdminLayout";
-import MoviePage from "./pages/MoviePage";
-import DetailMoviePage from "./pages/DetailMoviePage";
-import NotFoundPage from "./pages/NotFoundPage";
-import DetailShopPage from "./pages/DetailShopPage";
-import ShopPage from "./pages/ShopPage";
-import CartPage from "./pages/CartPage";
-import CheckoutPage from "./pages/CheckoutPage";
-import OrderPage from "./pages/OrderPage";
 import SplashScreen from "./components/SplashScreen";
-import OrderDetailPage from "./pages/OrderDetailPage";
-import GroupPage from "./pages/GroupPage";
-import DetailGroupPage from "./pages/DetailGroupPage";
-import MovieSearchPage from "./pages/MovieSearchPage";
+import SpinnerLoading from "./components/SpinnerLoading";
 import MagnifyingTranslator from "./components/MagnifyingTranslator";
-import ShortsPage from "./pages/ShortsPage";
-import CreateShortPage from "./pages/CreateShortPage";
-import MyShortPage from "./pages/MyShortPage";
-import DetailShortPage from "./pages/DetailShortPage";
+
+// ✅ Eager load - các component quan trọng cần load ngay
+import MainLayout from "./components/MainLayout";
+import AdminLayout from "./components/Admin/AdminLayout";
+import ScrollToTop from "./components/ScrollToTop";
+
+// ✅ Lazy load - các pages
+const HomePage = lazy(() => import("./pages/HomePage"));
+const FriendPage = lazy(() => import("./pages/FriendPage"));
+const ProfilePage = lazy(() => import("./pages/ProfilePage"));
+const QuizPage = lazy(() => import("./pages/Quiz/QuizPage"));
+const QuizPlayPage = lazy(() => import("./pages/Quiz/QuizPlayPage"));
+const CreateQuizPage = lazy(() => import("./pages/Quiz/CreateQuizPage"));
+const DetailPostPage = lazy(() => import("./pages/DetailPostPage"));
+const NewsPage = lazy(() => import("./pages/NewsPage"));
+const Leaderboard = lazy(() => import("./pages/Quiz/Leaderboard"));
+const AuthContainer = lazy(() => import("./pages/AuthContainer"));
+const VerifyEmailPage = lazy(() => import("./pages/VerifyEmailPage"));
+const ForgotPasswordPage = lazy(() => import("./pages/ForgotPasswordPage"));
+const ChangePasswordPage = lazy(() => import("./pages/ChangePasswordPage"));
+const UserBadgePage = lazy(() => import("./pages/UserBadgePage"));
+const LoginPage = lazy(() => import("./pages/Admin/LoginPage"));
+const DashboardPage = lazy(() => import("./pages/Admin/DashboardPage"));
+const ListUserPage = lazy(() => import("./pages/Admin/ListUserPage"));
+const MoviePage = lazy(() => import("./pages/MoviePage"));
+const DetailMoviePage = lazy(() => import("./pages/DetailMoviePage"));
+const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
+const DetailShopPage = lazy(() => import("./pages/DetailShopPage"));
+const ShopPage = lazy(() => import("./pages/ShopPage"));
+const CartPage = lazy(() => import("./pages/CartPage"));
+const CheckoutPage = lazy(() => import("./pages/CheckoutPage"));
+const OrderPage = lazy(() => import("./pages/OrderPage"));
+const OrderDetailPage = lazy(() => import("./pages/OrderDetailPage"));
+const GroupPage = lazy(() => import("./pages/GroupPage"));
+const DetailGroupPage = lazy(() => import("./pages/DetailGroupPage"));
+const MovieSearchPage = lazy(() => import("./pages/MovieSearchPage"));
+const ShortsPage = lazy(() => import("./pages/ShortsPage"));
+const CreateShortPage = lazy(() => import("./pages/CreateShortPage"));
+const MyShortPage = lazy(() => import("./pages/MyShortPage"));
+const DetailShortPage = lazy(() => import("./pages/DetailShortPage"));
+
+// ✅ Wrapper component để tránh lặp lại Suspense
+const LazyPage = ({ Element, Layout = MainLayout }) => (
+  <Suspense fallback={<SpinnerLoading />}>
+    <Layout Element={Element} />
+  </Suspense>
+);
+
+const LazyComponent = ({ Component }) => (
+  <Suspense fallback={<SpinnerLoading />}>
+    <Component />
+  </Suspense>
+);
 
 function App() {
   const { checkAuth, theme, isCheckingAuth } = useAuthStore();
@@ -85,7 +104,7 @@ function App() {
           path="/*"
           element={
             <ProtectedRoute>
-              <MainLayout Element={NotFoundPage} />
+              <LazyPage Element={NotFoundPage} />
             </ProtectedRoute>
           }
         />
@@ -93,7 +112,7 @@ function App() {
           path="/"
           element={
             <ProtectedRoute>
-              <MainLayout Element={HomePage} />
+              <LazyPage Element={HomePage} />
             </ProtectedRoute>
           }
         />
@@ -101,7 +120,7 @@ function App() {
           path="/verify-code"
           element={
             <AuthRoute>
-              <VerifyEmailPage />
+              <LazyComponent Component={VerifyEmailPage} />
             </AuthRoute>
           }
         />
@@ -109,7 +128,7 @@ function App() {
           path="/forgot-password"
           element={
             <AuthRoute>
-              <ForgotPasswordPage />
+              <LazyComponent Component={ForgotPasswordPage} />
             </AuthRoute>
           }
         />
@@ -117,16 +136,15 @@ function App() {
           path="/change-password"
           element={
             <AuthRoute>
-              <ChangePasswordPage />
+              <LazyComponent Component={ChangePasswordPage} />
             </AuthRoute>
           }
         />
-        {/* Sử dụng AuthContainer cho login và register */}
         <Route
           path="/login"
           element={
             <AuthRoute>
-              <AuthContainer />
+              <LazyComponent Component={AuthContainer} />
             </AuthRoute>
           }
         />
@@ -134,7 +152,7 @@ function App() {
           path="/register"
           element={
             <AuthRoute>
-              <AuthContainer />
+              <LazyComponent Component={AuthContainer} />
             </AuthRoute>
           }
         />
@@ -142,7 +160,7 @@ function App() {
           path="/profile/:slug/*"
           element={
             <ProtectedRoute>
-              <MainLayout Element={ProfilePage} />
+              <LazyPage Element={ProfilePage} />
             </ProtectedRoute>
           }
         />
@@ -150,7 +168,7 @@ function App() {
           path="/shop"
           element={
             <ProtectedRoute>
-              <MainLayout Element={ShopPage} />
+              <LazyPage Element={ShopPage} />
             </ProtectedRoute>
           }
         />
@@ -158,7 +176,7 @@ function App() {
           path="/shop/:shopSlug/*"
           element={
             <ProtectedRoute>
-              <MainLayout Element={DetailShopPage} />
+              <LazyPage Element={DetailShopPage} />
             </ProtectedRoute>
           }
         />
@@ -166,7 +184,7 @@ function App() {
           path="/group"
           element={
             <ProtectedRoute>
-              <MainLayout Element={GroupPage} />
+              <LazyPage Element={GroupPage} />
             </ProtectedRoute>
           }
         />
@@ -174,7 +192,7 @@ function App() {
           path="/group/:slug/*"
           element={
             <ProtectedRoute>
-              <MainLayout Element={DetailGroupPage} />
+              <LazyPage Element={DetailGroupPage} />
             </ProtectedRoute>
           }
         />
@@ -182,7 +200,7 @@ function App() {
           path="/posts/:postId"
           element={
             <ProtectedRoute>
-              <MainLayout Element={DetailPostPage} />
+              <LazyPage Element={DetailPostPage} />
             </ProtectedRoute>
           }
         />
@@ -190,7 +208,7 @@ function App() {
           path="/friends"
           element={
             <ProtectedRoute>
-              <MainLayout Element={FriendPage} />
+              <LazyPage Element={FriendPage} />
             </ProtectedRoute>
           }
         />
@@ -198,7 +216,7 @@ function App() {
           path="/news"
           element={
             <ProtectedRoute>
-              <MainLayout Element={NewsPage} />
+              <LazyPage Element={NewsPage} />
             </ProtectedRoute>
           }
         />
@@ -206,7 +224,7 @@ function App() {
           path="/shorts"
           element={
             <ProtectedRoute>
-              <MainLayout Element={ShortsPage} />
+              <LazyPage Element={ShortsPage} />
             </ProtectedRoute>
           }
         />
@@ -214,7 +232,7 @@ function App() {
           path="/shorts/:shortId"
           element={
             <ProtectedRoute>
-              <MainLayout Element={DetailShortPage} />
+              <LazyPage Element={DetailShortPage} />
             </ProtectedRoute>
           }
         />
@@ -222,7 +240,7 @@ function App() {
           path="/shorts/me"
           element={
             <ProtectedRoute>
-              <MainLayout Element={MyShortPage} />
+              <LazyPage Element={MyShortPage} />
             </ProtectedRoute>
           }
         />
@@ -230,7 +248,7 @@ function App() {
           path="/shorts/create"
           element={
             <ProtectedRoute>
-              <MainLayout Element={CreateShortPage} />
+              <LazyPage Element={CreateShortPage} />
             </ProtectedRoute>
           }
         />
@@ -238,7 +256,7 @@ function App() {
           path="/cart"
           element={
             <ProtectedRoute>
-              <MainLayout Element={CartPage} />
+              <LazyPage Element={CartPage} />
             </ProtectedRoute>
           }
         />
@@ -246,7 +264,7 @@ function App() {
           path="/checkout"
           element={
             <ProtectedRoute>
-              <MainLayout Element={CheckoutPage} />
+              <LazyPage Element={CheckoutPage} />
             </ProtectedRoute>
           }
         />
@@ -254,7 +272,7 @@ function App() {
           path="/order"
           element={
             <ProtectedRoute>
-              <MainLayout Element={OrderPage} />
+              <LazyPage Element={OrderPage} />
             </ProtectedRoute>
           }
         />
@@ -262,7 +280,7 @@ function App() {
           path="/order/:orderId"
           element={
             <ProtectedRoute>
-              <MainLayout Element={OrderDetailPage} />
+              <LazyPage Element={OrderDetailPage} />
             </ProtectedRoute>
           }
         />
@@ -270,7 +288,7 @@ function App() {
           path="/news/page/:pageNumber"
           element={
             <ProtectedRoute>
-              <MainLayout Element={NewsPage} />
+              <LazyPage Element={NewsPage} />
             </ProtectedRoute>
           }
         />
@@ -278,7 +296,7 @@ function App() {
           path="/movie"
           element={
             <ProtectedRoute>
-              <MainLayout Element={MoviePage} />
+              <LazyPage Element={MoviePage} />
             </ProtectedRoute>
           }
         />
@@ -286,7 +304,7 @@ function App() {
           path="/movie/search"
           element={
             <ProtectedRoute>
-              <MainLayout Element={MovieSearchPage} />
+              <LazyPage Element={MovieSearchPage} />
             </ProtectedRoute>
           }
         />
@@ -294,7 +312,7 @@ function App() {
           path="/movie/:id"
           element={
             <ProtectedRoute>
-              <MainLayout Element={DetailMoviePage} />
+              <LazyPage Element={DetailMoviePage} />
             </ProtectedRoute>
           }
         />
@@ -302,7 +320,7 @@ function App() {
           path="/quiz"
           element={
             <ProtectedRoute>
-              <MainLayout Element={QuizPage} />
+              <LazyPage Element={QuizPage} />
             </ProtectedRoute>
           }
         />
@@ -310,7 +328,7 @@ function App() {
           path="/quiz/play/:quizId"
           element={
             <ProtectedRoute>
-              <QuizPlayPage />
+              <LazyComponent Component={QuizPlayPage} />
             </ProtectedRoute>
           }
         />
@@ -318,7 +336,7 @@ function App() {
           path="/quiz/create"
           element={
             <ProtectedRoute>
-              <CreateQuizPage />
+              <LazyComponent Component={CreateQuizPage} />
             </ProtectedRoute>
           }
         />
@@ -326,7 +344,7 @@ function App() {
           path="/quiz/leaderboard"
           element={
             <ProtectedRoute>
-              <Leaderboard />
+              <LazyComponent Component={Leaderboard} />
             </ProtectedRoute>
           }
         />
@@ -334,7 +352,7 @@ function App() {
           path="/user/badges"
           element={
             <ProtectedRoute>
-              <MainLayout Element={UserBadgePage} />
+              <LazyPage Element={UserBadgePage} />
             </ProtectedRoute>
           }
         />
@@ -343,7 +361,7 @@ function App() {
           path="/admin/login"
           element={
             <AdminAuthRoute>
-              <LoginPage />
+              <LazyComponent Component={LoginPage} />
             </AdminAuthRoute>
           }
         />
@@ -351,7 +369,7 @@ function App() {
           path="/admin"
           element={
             <AdminRoute>
-              <AdminLayout Element={DashboardPage} />
+              <LazyPage Element={DashboardPage} Layout={AdminLayout} />
             </AdminRoute>
           }
         />
@@ -359,11 +377,12 @@ function App() {
           path="/admin/users"
           element={
             <AdminRoute>
-              <AdminLayout Element={ListUserPage} />
+              <LazyPage Element={ListUserPage} Layout={AdminLayout} />
             </AdminRoute>
           }
         />
       </Routes>
+      <ScrollToTop />
       <Toaster />
       <MagnifyingTranslator />
     </>

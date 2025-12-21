@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Search, X, Volume2, Loader2 } from "lucide-react";
+import { Search, X, Volume2, Loader2, Languages } from "lucide-react";
 import { translateAPI } from "../services/api";
 
 const MagnifyingTranslator = () => {
@@ -165,14 +165,14 @@ const MagnifyingTranslator = () => {
       {/* Toggle Button */}
       <button
         onClick={toggleMagnifier}
-        className={`fixed bottom-1 right-12 z-[9998] p-4 rounded-full shadow-2xl transition-all duration-300 ${
+        className={`fixed top-18 right-5 z-[9998] p-2 rounded-full border-gray-400 border-[1px] shadow-2xl transition-all duration-300 ${
           isActive
             ? "bg-blue-500 text-white scale-110 ring-4 ring-blue-300"
             : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
         }`}
         title="Magnifying Translator (Ctrl+M)"
       >
-        {isActive ? <X className="w-6 h-6" /> : <Search className="w-6 h-6" />}
+        {isActive ? <X className="w-6 h-6" /> : <Languages className="w-6 h-6" />}
       </button>
 
       {/* Scanning Area - Rectangle */}
@@ -262,7 +262,7 @@ const MagnifyingTranslator = () => {
           {/* Hint */}
           <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[9998] bg-black/80 text-white px-6 py-3 rounded-full shadow-xl backdrop-blur-sm animate-fadeIn">
             <p className="text-sm font-medium">
-              🔍 Di chuyển chuột qua từ để dịch • ESC hoặc Ctrl+M để thoát
+              Di chuyển chuột qua từ để dịch • ESC hoặc Ctrl+M để thoát
             </p>
           </div>
         </>

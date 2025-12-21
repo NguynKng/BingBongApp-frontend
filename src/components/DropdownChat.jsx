@@ -6,7 +6,7 @@ import useAuthStore from "../store/authStore";
 import { getBackendImgURL } from "../utils/helper";
 import CreateGroupChatDropdown from "./CreateGroupChatDropdown";
 
-function DropdownChat({ onToggleChat }) {
+function DropdownChat({ onToggleChat, onClose }) {
   const { messages, loading, updateMessage } = useGetChats();
   const { onlineUsers, user } = useAuthStore();
   const [searchTerm, setSearchTerm] = useState("");
@@ -162,7 +162,10 @@ function DropdownChat({ onToggleChat }) {
       return (
         <div
           key={chat._id}
-          onClick={() => onToggleChat(chat)}
+          onClick={() => {
+            onToggleChat(chat);
+            onClose();
+          }}
           className="flex items-center gap-3 hover:bg-gray-100 rounded-xl px-3 py-2 cursor-pointer transition-all duration-200 transform hover:scale-[1.02] hover:shadow-md dark:hover:bg-[rgb(52,52,52)]"
         >
           {/* Avatar */}

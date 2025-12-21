@@ -799,6 +799,7 @@ function ChatBox({ onClose, chat }) {
                               src={senderAvatar}
                               className="w-8 h-8 rounded-full object-cover self-start"
                               alt="Avatar"
+                              title={msg.sender.fullName}
                             />
                           )}
                           <div

@@ -5,7 +5,7 @@ import { X } from "lucide-react";
 import useCartStore from "../store/cartStore";
 import { getBackendImgURL } from "../utils/helper";
 
-function DropdownCart() {
+function DropdownCart({ onClose }) {
   const {
     cart,
     loading: isLoadingCart,
@@ -35,8 +35,10 @@ function DropdownCart() {
                     <div
                       key={cartItem._id}
                       className="flex items-center justify-between"
+                      onClick={onClose}
                     >
-                      <div className="relative flex items-center gap-4 w-full">
+                      <div className="relative flex items-center gap-4 w-full"
+                      >
                         {/* Product Image */}
                         <Link
                           to={`/shop/${cartItem.product.shop.slug}/product/detail/${cartItem.product.slug}`}
@@ -109,12 +111,14 @@ function DropdownCart() {
               <Link
                 to="/checkout"
                 className="mt-4 w-full text-center bg-blue-700 dark:bg-blue-600 text-white py-2 rounded-md font-semibold hover:bg-blue-800 dark:hover:bg-blue-500 transition-all"
+                onClick={onClose}
               >
                 Checkout
               </Link>
               <Link
                 to="/cart"
                 className="mt-4 w-full text-center bg-blue-700 dark:bg-blue-600 text-white py-2 rounded-md font-semibold hover:bg-blue-800 dark:hover:bg-blue-500 transition-all"
+                onClick={onClose}
               >
                 View Cart
               </Link>

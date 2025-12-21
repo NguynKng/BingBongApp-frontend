@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { postAPI } from "../services/api";
 import useAuthStore from "../store/authStore";
+import { useCallback } from "react";
 
 export const useGetOwnerPosts = (type, id) => {
   const { user } = useAuthStore();
@@ -36,14 +37,27 @@ export const useGetFeed = () => {
   const [feed, setFeed] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
 
-  const loadFeed = async () => {
+  const loadFeed = useCallback(async (pageNum = 1, append = false) => {
     if (!user) return;
-    setLoading(true);
+    
     try {
-      const response = await postAPI.getFeed(); // không truyền page/limit
+      setLoading(true);
+      const response = await postAPI.getFeed(pageNum, 20); // limit 20
+      
       if (response.success) {
-        setFeed(response.posts); // lấy tất cả
+        const newPosts = response.posts || [];
+        
+        if (append) {
+          setFeed((prev) => [...prev, ...newPosts]);
+        } else {
+          setFeed(newPosts);
+        }
+        
+        // Nếu số bài < 20, nghĩa là hết data
+        setHasMore(newPosts.length === 20);
       } else {
         setError(response.message);
       }
@@ -52,17 +66,30 @@ export const useGetFeed = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
+
+  const loadMore = useCallback(() => {
+    if (!loading && hasMore) {
+      const nextPage = page + 1;
+      setPage(nextPage);
+      loadFeed(nextPage, true); // append = true
+    }
+  }, [page, loading, hasMore, loadFeed]);
 
   useEffect(() => {
-    loadFeed();
-  }, []);
+    loadFeed(1, false);
+  }, [user]);
 
   return {
     feed,
     setFeed,
     loading,
     error,
-    refresh: loadFeed,
+    hasMore,
+    loadMore,
+    refresh: () => {
+      setPage(1);
+      loadFeed(1, false);
+    },
   };
 };

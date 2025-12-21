@@ -2,9 +2,9 @@ import { Link, useNavigate } from "react-router-dom";
 import useAuthStore from "../store/authStore";
 import { getBackendImgURL } from "../utils/helper";
 
-function DropdownUser() {
+function DropdownUser({ onClose }) {
   const { logout, user, theme, toggleTheme } = useAuthStore();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const handleLogout = async () => {
     await logout();
@@ -23,24 +23,30 @@ function DropdownUser() {
   return (
     <div className="absolute top-[110%] right-0 min-w-92 rounded-lg shadow-lg dark:bg-[rgb(35,35,35)] bg-white p-3">
       {/* User */}
-      <div className="shadow-lg p-1 w-full rounded-lg border-2 border-gray-200 dark:border-gray-800">
+      <div
+        className="shadow-lg p-1 w-full rounded-lg border-2 border-gray-200 dark:border-gray-800"
+        onClick={onClose}
+      >
         <Link
           to={`/profile/${user.slug}`}
           className="p-2 hover:bg-gray-100 w-full flex items-center gap-2 rounded-lg cursor-pointer dark:hover:bg-[rgb(56,56,56)]"
         >
           <img
-            src={
-              getBackendImgURL(user.avatar)
-            }
+            src={getBackendImgURL(user.avatar)}
             className="size-9 object-cover rounded-full border border-gray-200"
           />
-          <span className="text-[17px] font-medium dark:text-white">{user.fullName}</span>
+          <span className="text-[17px] font-medium dark:text-white">
+            {user.fullName}
+          </span>
         </Link>
         <div className="w-full py-1 px-2">
           <div className="w-full border-1 border-gray-300 dark:border-gray-500"></div>
         </div>
         <div className="w-full p-2">
-          <button className="rounded-md bg-gray-200 dark:bg-[rgb(52,52,52)] hover:bg-gray-300 flex items-center justify-center gap-2 w-full cursor-pointer py-2 px-4 dark:hover:bg-[rgb(56,56,56)]" onClick={() => navigate(`/profile/${user.slug}`)}>
+          <button
+            className="rounded-md bg-gray-200 dark:bg-[rgb(52,52,52)] hover:bg-gray-300 flex items-center justify-center gap-2 w-full cursor-pointer py-2 px-4 dark:hover:bg-[rgb(56,56,56)]"
+            onClick={() => navigate(`/profile/${user.slug}`)}
+          >
             <img src="/change-account.png" className="size-5 object-cover" />
             <span className="font-medium dark:text-white">View profile</span>
           </button>
@@ -54,7 +60,9 @@ function DropdownUser() {
           <div className="p-2 rounded-full bg-gray-300 dark:bg-white">
             <img src="/settings.png" className="size-5 object-cover" />
           </div>
-          <span className="font-medium dark:text-white">Settings & Privacy</span>
+          <span className="font-medium dark:text-white">
+            Settings & Privacy
+          </span>
         </div>
 
         {/* Help and support */}
