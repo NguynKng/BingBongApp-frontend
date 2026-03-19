@@ -62,7 +62,6 @@ const useUserStore = create((set, get) => ({
       set({ error: err.message || "Lỗi khi gọi API gợi ý" });
     }
   },
-
   clearSuggestions: () => set({ suggestions: [] }),
 }));
 

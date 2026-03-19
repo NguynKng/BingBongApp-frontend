@@ -268,7 +268,7 @@ function DropdownChat({ onToggleChat, onClose }) {
         </div>
 
         {/* Chat List */}
-        <div className="space-y-2 min-h-[28rem] custom-scroll overflow-y-auto pr-1 custom-scrollbar">
+        <div className="space-y-2 h-[28rem] custom-scroll overflow-y-auto pr-1 custom-scrollbar">
           {loading ? (
             <SpinnerLoading />
           ) : (

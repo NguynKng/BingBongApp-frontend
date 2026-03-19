@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import {
-    Check,
+  Check,
   CircleCheckBig,
   Pencil,
   UserCheck,
@@ -32,20 +32,32 @@ function ProfilePage({ onToggleChat }) {
     avatar: false,
     coverPhoto: false,
   });
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [newFullName, setNewFullName] = useState("");
   const [isWarningDeleteFriend, setIsWarningDeleteFriend] = useState(false);
   const { user, updateUser, theme } = useAuthStore();
   const avatarInputRef = useRef(null);
   const { profile } = useGetProfileBySlug(slug);
   const userId = useMemo(() => profile?._id ?? null, [profile]);
   const coverPhotoInputRef = useRef(null);
-  const clean = (p) => p.replace(/\/+$/, "");
-  const isCurrentTab = (tabPath) =>
-    clean(location.pathname) ===
-    clean(`/profile/${slug}${tabPath ? `/${tabPath.toLowerCase()}` : ""}`);
+  const clean = useMemo(() => (p) => p.replace(/\/+$/, ""), []);
 
-  const isMyProfile = userId === user?._id;
+  const isCurrentTab = useMemo(
+    () => (tabPath) =>
+      clean(location.pathname) ===
+      clean(`/profile/${slug}${tabPath ? `/${tabPath.toLowerCase()}` : ""}`),
+    [slug, clean]
+  );
 
-  const displayedUser = profile ?? null;
+  const isMyProfile = useMemo(() => userId === user?._id, [userId, user?._id]);
+
+  const [displayedUser, setDisplayedUser] = useState(profile ?? null);
+
+  useEffect(() => {
+    if (profile) {
+      setDisplayedUser(profile);
+    }
+  }, [profile]);
 
   const equippedBadge = useMemo(
     () => getEquippedBadge(displayedUser),
@@ -69,6 +81,18 @@ function ProfilePage({ onToggleChat }) {
     }
   }, [displayedUser, user, isMyProfile]);
 
+  const tabs = useMemo(
+    () => [
+      { name: "Posts", path: "" },
+      { name: "About", path: "about" },
+      { name: "Friends", path: "friends" },
+      { name: "Photos", path: "photos" },
+      { name: "Music", path: "music" },
+      { name: "Badge", path: "badge" },
+    ],
+    []
+  );
+
   if (!displayedUser) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -76,15 +100,6 @@ function ProfilePage({ onToggleChat }) {
       </div>
     );
   }
-
-  const tabs = [
-    { name: "Posts", path: "" },
-    { name: "About", path: "about" },
-    { name: "Friends", path: "friends" },
-    { name: "Photos", path: "photos" },
-    { name: "Music", path: "music" },
-    { name: "Badge", path: "badge" },
-  ];
 
   const handleToggleChat = async (userId) => {
     const response = await chatAPI.getChatIdByTypeId({
@@ -102,6 +117,7 @@ function ProfilePage({ onToggleChat }) {
       setIsUploading((prev) => ({ ...prev, avatar: true }));
       const response = await userAPI.uploadAvatar(file, "User", userId);
       updateUser({ avatar: response.data });
+      setDisplayedUser((prev) => ({ ...prev, avatar: response.data }));
       toast.success("Avatar updated successfully");
     } catch (error) {
       console.error("Avatar upload error:", error);
@@ -118,6 +134,7 @@ function ProfilePage({ onToggleChat }) {
       setIsUploading((prev) => ({ ...prev, coverPhoto: true }));
       const response = await userAPI.uploadCoverPhoto(file, "User", userId);
       updateUser({ coverPhoto: response.data });
+      setDisplayedUser((prev) => ({ ...prev, coverPhoto: response.data }));
       toast.success("Cover photo updated successfully");
     } catch (error) {
       console.error("Cover photo upload error:", error);
@@ -199,6 +216,23 @@ function ProfilePage({ onToggleChat }) {
     }
   };
 
+  const handleSaveFullName = async () => {
+    if (!newFullName.trim()) {
+      toast.error("Name cannot be empty");
+      return;
+    }
+    try {
+      const response = await userAPI.renameUserProfile(newFullName.trim());
+      updateUser({ fullName: response.data });
+      setDisplayedUser((prev) => ({ ...prev, fullName: response.data }));
+      setIsEditingName(false);
+      toast.success("Name updated successfully");
+    } catch (error) {
+      console.error("Error updating name:", error);
+      toast.error("Failed to update name");
+    }
+  };
+
   return (
     <>
       <div className="lg:px-[15%] bg-gray-100 dark:bg-[#181826]">
@@ -269,13 +303,57 @@ function ProfilePage({ onToggleChat }) {
                   <div className="flex lg:flex-row flex-col gap-2 justify-center items-center self-start">
                     <div className="flex flex-col justify-center items-start self-end gap-2">
                       <div className="flex flex-wrap gap-2 items-center">
-                        <h1 className="text-3xl font-bold not-[]:rounded dark:text-white">
-                          {displayedUser?.fullName || "Loading..."}
-                        </h1>
-                        {displayedUser.isVerifiedAccount && (
-                          <div className="p-2 rounded-full bg-green-500">
-                            <Check className="text-white size-4" />
+                        {isEditingName && isMyProfile ? (
+                          <div className="flex flex-wrap items-center gap-2">
+                            <input
+                              type="text"
+                              value={newFullName}
+                              onChange={(e) => setNewFullName(e.target.value)}
+                              className="text-2xl font-bold px-2 py-1 border-2 border-blue-500 rounded dark:bg-[#23233b] dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-400 w-full max-w-64"
+                              autoFocus
+                              placeholder="Enter name"
+                            />
+                            <button
+                              onClick={handleSaveFullName}
+                              className="p-2 bg-blue-500 text-white rounded hover:bg-blue-600 cursor-pointer transition-colors"
+                              title="Save"
+                            >
+                              <Check className="size-4" />
+                            </button>
+                            <button
+                              onClick={() => setIsEditingName(false)}
+                              className="p-2 cursor-pointer bg-gray-300 dark:bg-[#2b2b3d] text-gray-700 dark:text-gray-300 rounded hover:bg-gray-400 dark:hover:bg-[#35354f] transition-colors"
+                              title="Cancel"
+                            >
+                              <UserX className="size-4" />
+                            </button>
                           </div>
+                        ) : (
+                          <>
+                            <h1 className="text-3xl font-bold dark:text-white">
+                              {displayedUser?.fullName || "Loading..."}
+                            </h1>
+                            {isMyProfile && (
+                              <button
+                                onClick={() => {
+                                  setNewFullName(displayedUser?.fullName || "");
+                                  setIsEditingName(true);
+                                }}
+                                className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-[#23233b] cursor-pointer transition-colors"
+                                title="Edit name"
+                              >
+                                <Pencil className="size-4 text-gray-600 dark:text-gray-400" />
+                              </button>
+                            )}
+                            {displayedUser.isVerifiedAccount && (
+                              <div
+                                className="p-2 rounded-full bg-green-500"
+                                title="Verified account"
+                              >
+                                <Check className="text-white size-4" />
+                              </div>
+                            )}
+                          </>
                         )}
                       </div>
                       <p className="text-gray-500 dark:text-gray-400 rounded">{`${

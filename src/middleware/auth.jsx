@@ -1,6 +1,6 @@
 import { Navigate } from "react-router-dom";
 import useAuthStore from "../store/authStore";
-import SpinnerLoading from "../components/SpinnerLoading";
+import SplashScreen from "../components/SplashScreen";
 
 // Protects routes that require authentication
 export const ProtectedRoute = ({ children }) => {
@@ -8,9 +8,7 @@ export const ProtectedRoute = ({ children }) => {
 
   if (isCheckingAuth) {
     return (
-      <div className="min-h-screen w-full flex items-center justify-center">
-        <SpinnerLoading />
-      </div>
+      <SplashScreen />
     );
   }
 
@@ -25,9 +23,7 @@ export const AdminRoute = ({ children }) => {
   const { isAuthenticated, user, token, isCheckingAuth } = useAuthStore();
   if (isCheckingAuth) {
     return (
-      <div className="min-h-screen w-full flex items-center justify-center">
-        <SpinnerLoading />
-      </div>
+      <SplashScreen />
     );
   }
   if (!isAuthenticated || !user || user?.role !== "admin" || !token) {
@@ -40,9 +36,7 @@ export const AdminAuthRoute = ({ children }) => {
   const { isAuthenticated, user, isCheckingAuth, token } = useAuthStore();
   if (isCheckingAuth) {
     return (
-      <div className="min-h-screen w-full flex items-center justify-center">
-        <SpinnerLoading />
-      </div>
+      <SplashScreen />
     );
   }
   if (isAuthenticated && user?.role === "admin" && token) {
@@ -57,9 +51,7 @@ export const AuthRoute = ({ children }) => {
 
   if (isCheckingAuth) {
     return (
-      <div className="min-h-screen w-full flex items-center justify-center">
-        <SpinnerLoading />
-      </div>
+      <SplashScreen />
     );
   }
 

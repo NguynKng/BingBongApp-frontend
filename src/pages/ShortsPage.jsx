@@ -1,19 +1,20 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
-import {
-  ChevronUp,
-  ChevronDown,
-  Plus,
-} from "lucide-react";
+import { ChevronUp, ChevronDown, Plus, User2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { shortAPI } from "../services/api";
 import ShortCard from "../components/ShortCard";
 import CommentsSidebar from "../components/CommentsSidebar";
 import SpinnerLoading from "../components/SpinnerLoading";
 
+const PAGE_SIZE = 10;
+
 export default function ShortsPage() {
   const navigate = useNavigate();
   const [shorts, setShorts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [playing, setPlaying] = useState(true);
   const [showComments, setShowComments] = useState(false);
@@ -22,30 +23,76 @@ export default function ShortsPage() {
   const isScrollingRef = useRef(false);
 
   // Memoize current short to avoid unnecessary re-renders
-  const currentShort = useMemo(() => shorts[currentIndex], [shorts, currentIndex]);
+  const currentShort = useMemo(
+    () => shorts[currentIndex],
+    [shorts, currentIndex],
+  );
 
   // Memoize navigation button states
   const canNavigateUp = useMemo(() => currentIndex > 0, [currentIndex]);
-  const canNavigateDown = useMemo(() => currentIndex < shorts.length - 1, [currentIndex, shorts.length]);
+  const canNavigateDown = useMemo(
+    () => currentIndex < shorts.length - 1,
+    [currentIndex, shorts.length],
+  );
 
-  // Fetch shorts feed
-  useEffect(() => {
-    fetchShorts();
-  }, []);
-
-  const fetchShorts = async () => {
+  const fetchShorts = useCallback(async (nextPage = 1, append = false) => {
     try {
-      setLoading(true);
-      const response = await shortAPI.getShortsFeed();
+      if (append) {
+        setLoadingMore(true);
+      } else {
+        setLoading(true);
+      }
+
+      const response = await shortAPI.getShortsFeed({
+        page: nextPage,
+        limit: PAGE_SIZE,
+      });
+
       if (response && response.success) {
-        setShorts(response.data);
+        const incomingShorts = response.data || [];
+
+        setShorts((prev) => {
+          const merged = append ? [...prev, ...incomingShorts] : incomingShorts;
+          const uniqueShorts = new Map();
+
+          merged.forEach((item) => {
+            if (item && item._id) {
+              uniqueShorts.set(item._id, item);
+            }
+          });
+
+          return Array.from(uniqueShorts.values());
+        });
+
+        setPage(nextPage);
+
+        const totalPages = response.pagination?.pages;
+        if (typeof totalPages === "number") {
+          setHasMore(nextPage < totalPages);
+        } else {
+          setHasMore(incomingShorts.length === PAGE_SIZE);
+        }
       }
     } catch (error) {
       console.error("Failed to fetch shorts:", error);
     } finally {
-      setLoading(false);
+      if (append) {
+        setLoadingMore(false);
+      } else {
+        setLoading(false);
+      }
     }
-  };
+  }, []);
+
+  // Fetch shorts feed
+  useEffect(() => {
+    fetchShorts(1, false);
+  }, [fetchShorts]);
+
+  const loadMoreShorts = useCallback(() => {
+    if (loading || loadingMore || !hasMore) return;
+    fetchShorts(page + 1, true);
+  }, [fetchShorts, hasMore, loading, loadingMore, page]);
 
   // ✅ Play/Pause video when index changes
   useEffect(() => {
@@ -66,7 +113,6 @@ export default function ShortsPage() {
       }
     });
   }, [currentIndex, playing]);
-
 
   // ✅ Navigate to next/previous video (vertical)
   const navigateVideo = useCallback(
@@ -101,7 +147,7 @@ export default function ShortsPage() {
         }, 500);
       }
     },
-    [currentIndex, shorts.length]
+    [currentIndex, shorts.length],
   );
 
   // ✅ Keyboard navigation (Arrow Up/Down)
@@ -140,6 +186,10 @@ export default function ShortsPage() {
           setCurrentIndex(index);
           setPlaying(true);
         }
+
+        if (index >= shorts.length - 2) {
+          loadMoreShorts();
+        }
       }, 100);
     };
 
@@ -148,7 +198,13 @@ export default function ShortsPage() {
       container.removeEventListener("scroll", handleScroll);
       clearTimeout(scrollTimeout);
     };
-  }, [currentIndex, shorts.length]);
+  }, [currentIndex, shorts.length, loadMoreShorts]);
+
+  useEffect(() => {
+    if (currentIndex >= shorts.length - 2 && shorts.length > 0) {
+      loadMoreShorts();
+    }
+  }, [currentIndex, shorts.length, loadMoreShorts]);
 
   // ✅ Touch/Swipe support - Vertical
   const [touchStart, setTouchStart] = useState(0);
@@ -200,14 +256,23 @@ export default function ShortsPage() {
 
   return (
     <div className="relative h-[92vh] overflow-hidden">
-      {/* Create Short Button */}
-      <button
-        onClick={() => navigate("/shorts/create")}
-        className="absolute top-6 right-6 z-20 p-3 bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow-lg transition-all hover:scale-110"
-        title="Create Short"
-      >
-        <Plus className="w-6 h-6" />
-      </button>
+      {/* Quick Actions */}
+      <div className="absolute top-6 right-6 z-20 flex flex-col items-center gap-3 p-2">
+        <button
+          onClick={() => navigate("/shorts/create")}
+          className="bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow-lg transition-all hover:scale-110 p-2"
+          title="Create Short"
+        >
+          <Plus className="w-6 h-6" />
+        </button>
+        <button
+          onClick={() => navigate("/shorts/me")}
+          className="bg-white/90 hover:bg-white text-gray-900 rounded-full shadow-lg transition-all hover:scale-110 p-2 border border-gray-200"
+          title="My Shorts"
+        >
+          <User2 className="w-6 h-6" />
+        </button>
+      </div>
 
       {/* Video Container - Vertical Scroll */}
       <div
@@ -270,6 +335,12 @@ export default function ShortsPage() {
           shortId={currentShort._id}
           onClose={() => setShowComments(false)}
         />
+      )}
+
+      {loadingMore && (
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 rounded-full bg-black/70 px-4 py-2 text-xs text-white">
+          Loading more shorts...
+        </div>
       )}
     </div>
   );

@@ -1,7 +1,16 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { authAPI } from "../services/api";
-import { FaKey, FaInfoCircle, FaEnvelope, FaSpinner, FaPaperPlane, FaQuestionCircle } from "react-icons/fa";
+import {
+  FaKey,
+  FaInfoCircle,
+  FaEnvelope,
+  FaSpinner,
+  FaPaperPlane,
+  FaQuestionCircle,
+} from "react-icons/fa";
+import { validateEmail } from "../utils/validate";
+import toast from "react-hot-toast";
 
 function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -10,6 +19,11 @@ function ForgotPasswordPage() {
 
   const handleSubmit = async () => {
     if (!email) return;
+    if (!validateEmail(email)) {
+      toast.error("Please enter a valid email address.");
+      return;
+    }
+
     setLoading(true);
     try {
       const res = await authAPI.forgotPassword(email);
@@ -39,7 +53,8 @@ function ForgotPasswordPage() {
 
         <p className="text-sm text-center text-gray-600 leading-relaxed">
           <FaInfoCircle className="text-gray-400 mr-1 inline" />
-          Enter your email address below and we’ll send you a link to reset your password.
+          Enter your email address below and we’ll send you a link to reset your
+          password.
         </p>
 
         {/* Email Field */}
@@ -59,7 +74,9 @@ function ForgotPasswordPage() {
         {/* Submit Button */}
         <button
           className={`w-full py-3 rounded-lg text-white font-semibold shadow-md transition-all duration-300 ${
-            loading ? "bg-blue-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
+            loading
+              ? "bg-blue-400 cursor-not-allowed"
+              : "bg-blue-600 hover:bg-blue-700"
           } flex items-center justify-center gap-2`}
           onClick={handleSubmit}
           disabled={loading}

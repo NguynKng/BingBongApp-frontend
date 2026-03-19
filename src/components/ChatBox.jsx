@@ -10,7 +10,9 @@ import {
   UserPlus,
   LogOut,
   Edit2,
+  Smile,
 } from "lucide-react";
+import EmojiPicker from "emoji-picker-react";
 import Config from "../envVars";
 import useAuthStore from "../store/authStore";
 import { useGetChats, useGetHistoryChat } from "../hooks/useChats";
@@ -33,6 +35,7 @@ function ChatBox({ onClose, chat }) {
   const [imagesPreview, setImagesPreview] = useState([]);
   const [message, setMessage] = useState("");
   const [isMinimized, setIsMinimized] = useState(false);
+  const [showEmoji, setShowEmoji] = useState(false);
   const [showGroupSettings, setShowGroupSettings] = useState(false);
   const [editingGroupName, setEditingGroupName] = useState(false);
   const [newGroupName, setNewGroupName] = useState("");
@@ -42,7 +45,7 @@ function ChatBox({ onClose, chat }) {
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
   const [showMembersList, setShowMembersList] = useState(false);
-  const { user: currentUser, socket, onlineUsers } = useAuthStore();
+  const { user: currentUser, socket, onlineUsers, theme } = useAuthStore();
   const messagesEndRef = useRef(null);
   const isAIChat = chat?._id === "bingbong-ai";
   const isGroupChat = chat && chat.type === "group";
@@ -237,7 +240,7 @@ function ChatBox({ onClose, chat }) {
         groupName: newGroupName,
       });
       if (response.success) {
-        setUserChat((prev) => ({...prev, groupName: newGroupName}));
+        setUserChat((prev) => ({ ...prev, groupName: newGroupName }));
         setEditingGroupName(false);
         setShowGroupSettings(false);
         setNewGroupName("");
@@ -253,7 +256,7 @@ function ChatBox({ onClose, chat }) {
     try {
       await chatAPI.leaveGroupChat(chat._id);
       onClose();
-    } catch (error) {   
+    } catch (error) {
       console.error("Failed to leave group:", error);
     }
   };
@@ -273,6 +276,10 @@ function ChatBox({ onClose, chat }) {
     } catch (error) {
       console.error("Failed to change group avatar:", error);
     }
+  };
+
+  const handleEmojiClick = (emojiData) => {
+    setMessage((prev) => prev + emojiData.emoji);
   };
 
   const handleOpenAddMembers = () => {
@@ -325,7 +332,7 @@ function ChatBox({ onClose, chat }) {
   return (
     <>
       <ImagePreviewModal />
-      
+
       {/* View Members Modal */}
       {showMembersList && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50">
@@ -367,7 +374,9 @@ function ChatBox({ onClose, chat }) {
                       <p className="font-medium text-gray-900 dark:text-white">
                         {member.fullName}
                         {member._id === currentUser._id && (
-                          <span className="text-sm text-gray-500 dark:text-gray-400 ml-2">(You)</span>
+                          <span className="text-sm text-gray-500 dark:text-gray-400 ml-2">
+                            (You)
+                          </span>
                         )}
                       </p>
                       <p className="text-sm text-gray-500 dark:text-gray-400">
@@ -394,7 +403,7 @@ function ChatBox({ onClose, chat }) {
           </div>
         </div>
       )}
-      
+
       {/* Add Members Modal */}
       {showAddMembersModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50">
@@ -519,8 +528,10 @@ function ChatBox({ onClose, chat }) {
                     alt={userChat?.groupName || chat.groupName}
                   />
                   <div>
-                    <span className="text-[15px]">{userChat?.groupName || chat.groupName}</span>
-                    <span 
+                    <span className="text-[15px]">
+                      {userChat?.groupName || chat.groupName}
+                    </span>
+                    <span
                       onClick={(e) => {
                         e.stopPropagation();
                         setShowMembersList(true);
@@ -919,8 +930,9 @@ function ChatBox({ onClose, chat }) {
               )}
 
               {/* Input */}
-              <div className="p-2 flex items-center gap-2 border-t border-gray-200 dark:border-gray-700">
+              <div className="p-2 flex items-center gap-2 border-t border-gray-200 dark:border-gray-700 relative">
                 <div className="flex items-center gap-2">
+                  {/* Upload image */}
                   <input
                     type="file"
                     accept="image/*"
@@ -935,19 +947,35 @@ function ChatBox({ onClose, chat }) {
                   >
                     <ImageIcon className="size-4" />
                   </label>
+
+                  {/* Emoji button */}
+                  <button
+                    onClick={() => setShowEmoji(!showEmoji)}
+                    className="p-2 bg-yellow-400 cursor-pointer text-white rounded-full hover:bg-yellow-500 transition"
+                  >
+                    <Smile className="size-4" />
+                  </button>
                 </div>
+
+                {/* Emoji picker */}
+                {showEmoji && (
+                  <div className="absolute bottom-14 left-2 z-50">
+                    <EmojiPicker theme={theme} onEmojiClick={handleEmojiClick} />
+                  </div>
+                )}
 
                 <input
                   type="text"
                   placeholder="Nhập tin nhắn..."
-                  className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 rounded-full text-sm outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-600 text-black dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400"
+                  className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 rounded-full text-sm outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-600 text-black dark:text-white"
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSend()}
                 />
+
                 <button
                   onClick={handleSend}
-                  className="p-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 cursor-pointer transition"
+                  className="p-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition"
                 >
                   <Send className="size-4" />
                 </button>

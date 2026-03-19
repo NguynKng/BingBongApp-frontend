@@ -4,7 +4,14 @@ import { useCaptionsContext } from "./CaptionContext";
 import { AudioLines, Captions, CaptionsOff } from "lucide-react";
 
 export default function CaptionToggle() {
-  const { enabled, toggleCaptions, enableRemoteCaption, toggleRemoteCaptions, targetLang, setTargetLang } = useCaptionsContext();
+  const {
+    enabled,
+    toggleCaptions,
+    enableRemoteCaption,
+    toggleRemoteCaptions,
+    recognitionLang,
+    setRecognitionLang,
+  } = useCaptionsContext();
 
   return (
     <div className="flex items-center gap-2">
@@ -13,7 +20,11 @@ export default function CaptionToggle() {
         className={`p-4 bg-gray-700 rounded-full cursor-pointer hover:bg-gray-600`}
         title={enableRemoteCaption ? "Tắt phụ đề" : "Bật phụ đề"}
       >
-        {enableRemoteCaption ? <Captions className="text-white" /> : <CaptionsOff className="text-red-400"/>}
+        {enableRemoteCaption ? (
+          <Captions className="text-white" />
+        ) : (
+          <CaptionsOff className="text-red-400" />
+        )}
       </button>
       <button
         onClick={() => toggleCaptions()}
@@ -24,13 +35,13 @@ export default function CaptionToggle() {
       </button>
 
       <select
-        value={targetLang}
-        onChange={(e) => setTargetLang(e.target.value)}
+        value={recognitionLang}
+        onChange={(e) => setRecognitionLang(e.target.value)}
         className="px-2 py-1 bg-gray-800 text-white rounded"
-        title="Dịch sang"
+        title="Chọn ngôn ngữ nhận diện"
       >
-        <option value="vi">Tiếng Việt</option>
-        <option value="en">English</option>
+        <option value="vi-VN">Tiếng Việt</option>
+        <option value="en-US">English</option>
       </select>
     </div>
   );

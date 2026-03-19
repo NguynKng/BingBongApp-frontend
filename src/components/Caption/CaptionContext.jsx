@@ -1,229 +1,268 @@
 // components/Caption/CaptionContext.jsx
-import React, { createContext, useContext, useEffect, useRef, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import toast from "react-hot-toast";
 import useAuthStore from "../../store/authStore";
 import { translateAPI } from "../../services/api";
 
 const CaptionsContext = createContext(null);
-export function useCaptionsContext() {
-  return useContext(CaptionsContext);
-}
+export const useCaptionsContext = () => useContext(CaptionsContext);
 
-/**
- * CaptionsProvider Responsibilities:
- * - Manage whether captions enabled
- * - Run Web Speech API recognition for local speech (interim+final)
- * - Emit 'transcript' socket events as you had
- * - Call /api/translate (server) for final transcripts and emit 'translated' events
- * - Listen to socket 'transcript' and 'translated' from peer and expose remoteCaption + remoteTranslation
- *
- * Notes:
- * - For production accuracy, implement server-side STT or use Whisper/Google for STT, and use high-quality MT (DeepL/Google/OOAI).
- */
+/* -------------------- LANG HELPERS -------------------- */
+
+const getTargetLangFromRecognition = (recognitionLang) => {
+  return recognitionLang?.startsWith("vi") ? "en" : "vi";
+};
+
+const getTranslatePair = (recognitionLang) => {
+  const source = recognitionLang?.startsWith("vi") ? "vi" : "en";
+  const target = source === "vi" ? "en" : "vi";
+  return { source, target };
+};
+
+/* -------------------- PROVIDER -------------------- */
+
 export function CaptionsProvider({ callId, peerUserId, children }) {
   const socket = useAuthStore((s) => s.socket);
   const currentUser = useAuthStore((s) => s.user);
+
   const [enabled, setEnabled] = useState(false);
   const [enableRemoteCaption, setEnableRemoteCaption] = useState(false);
+
   const [localCaption, setLocalCaption] = useState("");
   const [localTranslation, setLocalTranslation] = useState("");
+
   const [remoteCaption, setRemoteCaption] = useState("");
   const [remoteTranslation, setRemoteTranslation] = useState("");
-  const [targetLang, setTargetLang] = useState("vi"); // default translate to Vietnamese
+
+  const [recognitionLang, setRecognitionLang] = useState("en-US");
+  const [targetLang, setTargetLang] = useState(
+    getTargetLangFromRecognition("en-US")
+  );
+
   const recognitionRef = useRef(null);
   const captionTimeoutRef = useRef(null);
+  const translateTimeoutRef = useRef(null);
 
-  // helper: create recognition instance
+  /* -------------------- SYNC LANG -------------------- */
+
+  useEffect(() => {
+    setTargetLang(getTargetLangFromRecognition(recognitionLang));
+  }, [recognitionLang]);
+
+  /* -------------------- SPEECH -------------------- */
+
   const createRecognition = () => {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) return null;
-    const rec = new SpeechRecognition();
-    rec.lang =  "en-US" // default — we'll try auto-detect heuristics later or allow UI to change
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (!SR) {
+      toast.error("Trình duyệt không hỗ trợ Speech Recognition");
+      return null;
+    }
+
+    const rec = new SR();
+    rec.lang = recognitionLang;
     rec.interimResults = true;
-    rec.maxAlternatives = 1;
     rec.continuous = true;
+    rec.maxAlternatives = 1;
     return rec;
   };
 
-  // start recognition
+  const clearCaptionTimeout = () => {
+    if (captionTimeoutRef.current) {
+      clearTimeout(captionTimeoutRef.current);
+      captionTimeoutRef.current = null;
+    }
+  };
+
   const startRecognition = () => {
     if (recognitionRef.current) return;
+
     const rec = createRecognition();
-    if (!rec) {
-      toast.error("Trình duyệt không hỗ trợ SpeechRecognition.");
-      return;
-    }
+    if (!rec) return;
+
     recognitionRef.current = rec;
 
-    rec.onresult = async (event) => {
+    rec.onresult = (event) => {
       let interim = "";
-      let final = "";
+      let finalText = "";
+
       for (let i = event.resultIndex; i < event.results.length; i++) {
         const r = event.results[i];
-        if (r.isFinal) final += r[0].transcript + " ";
+        if (r.isFinal) finalText += r[0].transcript + " ";
         else interim += r[0].transcript + " ";
       }
 
-      const displayText = final ? final.trim() : interim.trim();
+      const displayText = (finalText || interim).trim();
+      if (!displayText) return;
+
       setLocalCaption(displayText);
 
-      // clear flush timer for UI
-      if (captionTimeoutRef.current) clearTimeout(captionTimeoutRef.current);
-      captionTimeoutRef.current = setTimeout(() => {
-        if (!final) setLocalCaption("");
-      }, final ? 4000 : 2000);
+      clearCaptionTimeout();
+      captionTimeoutRef.current = setTimeout(
+        () => setLocalCaption(""),
+        finalText ? 4000 : 2000
+      );
 
-      // emit raw transcript over socket (so remote shows)
-      if (displayText) {
+      // Emit transcript (chỉ khi có ý nghĩa)
+      if (finalText || displayText.length > 10) {
+        socket?.emit("transcript", {
+          roomId: callId,
+          userId: currentUser?._id,
+          text: displayText,
+          isFinal: Boolean(finalText),
+        });
+      }
+
+      if (!finalText || finalText.trim().length < 3) return;
+
+      // -------- DEBOUNCE TRANSLATE --------
+      if (translateTimeoutRef.current) {
+        clearTimeout(translateTimeoutRef.current);
+      }
+
+      translateTimeoutRef.current = setTimeout(async () => {
         try {
-          socket?.emit("transcript", {
+          const { source, target } = getTranslatePair(recognitionLang);
+          const res = await translateAPI.translateText(
+            finalText.trim(),
+            source,
+            target
+          );
+
+          const translated = res?.data || "";
+          setLocalTranslation(translated);
+
+          socket?.emit("translated", {
             roomId: callId,
             userId: currentUser?._id,
-            text: displayText,
-            isFinal: Boolean(final),
+            translation: translated,
+            original: finalText.trim(),
           });
-        } catch (e) {
-          console.warn("emit transcript failed", e);
-        }
-      }
 
-      // If final, request translation from server and emit translated when available
-      if (final) {
-        // call translation endpoint on your server
-        try {
-          const response = await translateAPI.translateText(final.trim(), targetLang);
-          if (response) {
-            const translatedText = response.translated_text;
-            setLocalTranslation(translatedText || "");
-            // also emit translated event to peer so remote shows translation if you want
-            try {
-              socket?.emit("translated", {
-                roomId: callId,
-                userId: currentUser?._id,
-                translation: translatedText,
-                original: final.trim(),
-              });
-            } catch (e) {}
-            // clear local translation after a bit
-            setTimeout(() => setLocalTranslation(""), 5000);
-          } else {
-            console.warn("translate API failed", await response.success);
-          }
-        } catch (e) {
-          console.warn("translate fetch failed", e);
+          setTimeout(() => setLocalTranslation(""), 5000);
+        } catch (err) {
+          console.warn("Translate failed", err);
         }
-      }
+      }, 400);
     };
 
-    rec.onerror = (ev) => {
-      console.warn("SpeechRecognition error", ev);
+    rec.onerror = (e) => {
+      console.warn("SpeechRecognition error", e);
     };
 
     rec.onend = () => {
       recognitionRef.current = null;
-      // keep continuous: restart automatically if enabled
-      if (enabled) setTimeout(() => startRecognition(), 200);
+      if (enabled) {
+        setTimeout(startRecognition, 600); // ⬅️ quan trọng
+      }
     };
 
     try {
       rec.start();
     } catch (e) {
-      console.warn("rec.start failed", e);
+      console.warn("rec.start error", e);
     }
   };
 
   const stopRecognition = () => {
+    clearCaptionTimeout();
+
+    if (translateTimeoutRef.current) {
+      clearTimeout(translateTimeoutRef.current);
+      translateTimeoutRef.current = null;
+    }
+
+    const rec = recognitionRef.current;
+    if (!rec) return;
+
     try {
-      const rec = recognitionRef.current;
-      if (!rec) return;
       rec.onresult = null;
-      rec.onend = null;
       rec.onerror = null;
-      try { rec.stop(); } catch(e) {}
-      recognitionRef.current = null;
-    } catch (e) {
-      console.warn("stopRecognition error", e);
-    }
+      rec.onend = null;
+      rec.stop();
+    } catch {}
+
+    recognitionRef.current = null;
   };
 
-  // toggle captions on/off
-  const toggleRemoteCaptions = (val) => {
-    const next = typeof val === "boolean" ? val : !enableRemoteCaption;
-    setEnableRemoteCaption(next);
-  };
+  /* -------------------- TOGGLE -------------------- */
 
-  const toggleCaptions = (val) => {
-    const next = typeof val === "boolean" ? val : !enabled;
-    setEnabled(next);
-  };
+  const toggleCaptions = (val) =>
+    setEnabled(typeof val === "boolean" ? val : !enabled);
 
-  // start/stop recognition when enabled changes
+  const toggleRemoteCaptions = (val) =>
+    setEnableRemoteCaption(
+      typeof val === "boolean" ? val : !enableRemoteCaption
+    );
+
+  /* -------------------- EFFECTS -------------------- */
+
   useEffect(() => {
+    stopRecognition();
+    setLocalCaption("");
+    setLocalTranslation("");
+
     if (enabled) startRecognition();
-    else {
-      stopRecognition();
-      setLocalCaption("");
-      setLocalTranslation("");
-    }
-    return () => stopRecognition();
+    return stopRecognition;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [enabled, targetLang]);
+  }, [enabled, recognitionLang]);
 
-  // Listen to mic events dispatched from CallWindow (optional, more robust)
-  useEffect(() => {
-    function onMicOn(e) {
-      if (enabled) startRecognition();
-    }
-    function onMicOff(e) {
-      stopRecognition();
-      setLocalCaption("");
-      setLocalTranslation("");
-    }
-    window.addEventListener("captions:mic-on", onMicOn);
-    window.addEventListener("captions:mic-off", onMicOff);
-    return () => {
-      window.removeEventListener("captions:mic-on", onMicOn);
-      window.removeEventListener("captions:mic-off", onMicOff);
-    };
-  }, [enabled]);
-
-  // Receive transcripts / translated messages from socket (peer)
   useEffect(() => {
     if (!socket) return;
+
     const onTranscript = ({ roomId, userId, text, isFinal }) => {
-      if (roomId !== callId) return;
-      if (userId !== peerUserId) return;
+      if (roomId !== callId || userId !== peerUserId) return;
+
       setRemoteCaption(text || "");
-      if (captionTimeoutRef.current) clearTimeout(captionTimeoutRef.current);
-      captionTimeoutRef.current = setTimeout(() => setRemoteCaption(""), isFinal ? 4000 : 2000);
+      clearCaptionTimeout();
+      captionTimeoutRef.current = setTimeout(
+        () => setRemoteCaption(""),
+        isFinal ? 4000 : 2000
+      );
     };
-    const onTranslated = ({ roomId, userId, translation, original }) => {
-      if (roomId !== callId) return;
-      if (userId !== peerUserId) return;
+
+    const onTranslated = ({ roomId, userId, translation }) => {
+      if (roomId !== callId || userId !== peerUserId) return;
       setRemoteTranslation(translation || "");
-      // clear after some time
       setTimeout(() => setRemoteTranslation(""), 5000);
     };
+
     socket.on("transcript", onTranscript);
     socket.on("translated", onTranslated);
+
     return () => {
       socket.off("transcript", onTranscript);
       socket.off("translated", onTranslated);
     };
   }, [socket, callId, peerUserId]);
 
+  /* -------------------- CONTEXT -------------------- */
+
   const value = {
     enabled,
     enableRemoteCaption,
     toggleCaptions,
     toggleRemoteCaptions,
+
     localCaption,
     localTranslation,
+
     remoteCaption,
     remoteTranslation,
-    setTargetLang,
-    targetLang,
+
+    recognitionLang,
+    setRecognitionLang,
   };
 
-  return <CaptionsContext.Provider value={value}>{children}</CaptionsContext.Provider>;
+  return (
+    <CaptionsContext.Provider value={value}>
+      {children}
+    </CaptionsContext.Provider>
+  );
 }
