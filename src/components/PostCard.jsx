@@ -24,7 +24,17 @@ const PostCard = memo(({ post, onDeletePost, showComment = false }) => {
   const [isLoadingComments, setIsLoadingComments] = useState(false);
   const [isOpenPostDropdown, setIsOpenPostDropdown] = useState(false);
   const { user } = useAuthStore();
-  const { postedById, postedByType, author, createdAt, content, media } = post;
+  const {
+    postedById,
+    postedByType,
+    author,
+    createdAt,
+    content,
+    media,
+    videos,
+    mediaOrder,
+    taggedUsers,
+  } = post;
   const [userComments, setUserComments] = useState([]);
   const [hoveredEmotion, setHoveredEmotion] = useState(null);
   const [hoveredEmotionUser, setHoveredEmotionUser] = useState(null);
@@ -37,7 +47,7 @@ const PostCard = memo(({ post, onDeletePost, showComment = false }) => {
 
   // ✅ Ref để track post element và việc đã mark viewed
   const postRef = useRef(null);
-  const hasMarkedViewed = useRef(false);
+  const _hasMarkedViewed = useRef(false);
 
   const isShopPost = postedByType === "Shop";
   const isUserPost = postedByType === "User";
@@ -288,8 +298,31 @@ const PostCard = memo(({ post, onDeletePost, showComment = false }) => {
       <p className="text-gray-800 dark:text-white break-words whitespace-pre-wrap px-5">
         {content}
       </p>
+      {taggedUsers && taggedUsers.length > 0 && (
+        <div className="flex flex-wrap gap-2 px-5 mt-1">
+          {taggedUsers.map((user) => (
+            <Link
+              key={user._id}
+              to={`/profile/${user.slug}`}
+              className="inline-flex items-center gap-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 px-2 py-1 rounded-full text-sm font-medium hover:underline"
+            >
+              <img
+                src={getBackendImgURL(user.avatar)}
+                alt={user.fullName}
+                className="w-5 h-5 rounded-full object-cover"
+              />
+              @{user.fullName}
+            </Link>
+          ))}
+        </div>
+      )}
 
-      <InstagramCarousel media={media} postId={post._id} />
+      <InstagramCarousel
+        media={media}
+        videos={videos}
+        mediaOrder={mediaOrder}
+        postId={post._id}
+      />
 
       {reactions.length > 0 && (
         <div className="flex items-center mt-3 px-5">
@@ -452,6 +485,8 @@ PostCard.propTypes = {
     createdAt: PropTypes.string,
     content: PropTypes.string,
     media: PropTypes.array,
+    videos: PropTypes.array,
+    mediaOrder: PropTypes.array,
     postedByType: PropTypes.string,
     postedById: PropTypes.object,
     author: PropTypes.shape({

@@ -89,3 +89,8 @@ body {
 .magnifying-glass {
   animation: pulse 2s ease-in-out infinite;
 }
+
+.mention {
+  color: #2563eb; /* blue-600 */
+  font-weight: 600;
+}

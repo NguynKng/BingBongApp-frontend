@@ -11,6 +11,7 @@ import {
   FaLock,
 } from "react-icons/fa";
 import Meta from "../components/Meta";
+import { validateEmail } from "../utils/validate";
 
 export default function RegisterPage() {
   const [email, setEmail] = useState("");
@@ -32,6 +33,9 @@ export default function RegisterPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!validateEmail(email)) {
+        toast.error("Please enter a valid email address.");
+    }
     const currentYear = new Date().getFullYear();
 
     if (currentYear - birthYear < 18) {

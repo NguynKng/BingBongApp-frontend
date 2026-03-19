@@ -79,11 +79,11 @@ const MagnifyingTranslator = () => {
     setLoading(true);
     
     try {
-      const response = await translateAPI.translateText(text, "vi");
+      const response = await translateAPI.translateText(text, "en", "vi");
       
-      const translatedText = response.translated_text || response.translatedText || "Không thể dịch";
+      const translatedText = response.data || "Không thể dịch";
       setTranslation(translatedText);
-    } catch (error) {
+    } catch {
       setTranslation("Không thể dịch")
     } finally {
       setLoading(false);
@@ -165,14 +165,14 @@ const MagnifyingTranslator = () => {
       {/* Toggle Button */}
       <button
         onClick={toggleMagnifier}
-        className={`fixed top-18 right-5 z-[9998] p-2 rounded-full border-gray-400 border-[1px] shadow-2xl transition-all duration-300 ${
+        className={`fixed top-18 right-5 z-[40] p-2 rounded-full border-gray-400 border-[1px] shadow-2xl transition-all duration-300 ${
           isActive
             ? "bg-blue-500 text-white scale-110 ring-4 ring-blue-300"
             : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
         }`}
         title="Magnifying Translator (Ctrl+M)"
       >
-        {isActive ? <X className="w-6 h-6" /> : <Languages className="w-6 h-6" />}
+        {isActive ? <X className="w-6 h-6" /> : <Languages className="w-5 h-5" />}
       </button>
 
       {/* Scanning Area - Rectangle */}
@@ -186,7 +186,7 @@ const MagnifyingTranslator = () => {
               top: `${position.y - 40}px`,
             }}
           >
-            <div className="relative w-[150px] h-[80px] border-4 border-blue-500 bg-blue-50/20 backdrop-blur-sm shadow-xl rounded-lg flex items-center justify-center">
+            <div className="relative w-[150px] h-[80px] border-4 border-blue-500 backdrop-brightness-50 bg-blue-50/20 shadow-xl rounded-lg flex items-center justify-center">
               <Search className="w-8 h-8 text-blue-500 animate-pulse" />
               
               {/* Corner decorations */}

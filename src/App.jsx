@@ -55,19 +55,31 @@ const DetailShortPage = lazy(() => import("./pages/DetailShortPage"));
 
 // ✅ Wrapper component để tránh lặp lại Suspense
 const LazyPage = ({ Element, Layout = MainLayout }) => (
-  <Suspense fallback={<SpinnerLoading />}>
+  <Suspense
+    fallback={
+      <div className="min-h-screen w-full flex items-center justify-center">
+        <SpinnerLoading />
+      </div>
+    }
+  >
     <Layout Element={Element} />
   </Suspense>
 );
 
 const LazyComponent = ({ Component }) => (
-  <Suspense fallback={<SpinnerLoading />}>
+  <Suspense
+    fallback={
+      <div className="min-h-screen w-full flex items-center justify-center">
+        <SpinnerLoading />
+      </div>
+    }
+  >
     <Component />
   </Suspense>
 );
 
 function App() {
-  const { checkAuth, theme, isCheckingAuth } = useAuthStore();
+  const { checkAuth, theme } = useAuthStore();
 
   useEffect(() => {
     const unlock = () => {
@@ -92,10 +104,6 @@ function App() {
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
-
-  if (isCheckingAuth) {
-    return <SplashScreen />;
-  }
 
   return (
     <>

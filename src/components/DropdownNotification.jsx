@@ -34,6 +34,8 @@ const DropdownNotification = memo(({ notifications, onClose }) => {
         return `/posts/${noti.data.postId}`;
       case "new_post":
         return `/posts/${noti.data.postId}`;
+      case "tagged_in_post":
+        return `/posts/${noti.data.postId}`;
       case "friend_request":
         return `/profile/${noti.actor.slug}`;
       case "accepted_request":
@@ -118,75 +120,77 @@ const EmptyState = memo(() => (
 EmptyState.displayName = "EmptyState";
 
 // ✅ Extract NotificationItem component
-const NotificationItem = memo(({ noti, getLink, isShopNotification, onClose }) => {
-  // ✅ Memoize computed values
-  const link = useMemo(() => getLink(noti), [getLink, noti]);
-  const isShop = useMemo(
-    () => isShopNotification(noti),
-    [isShopNotification, noti]
-  );
-  const actorAvatar = useMemo(
-    () => getBackendImgURL(noti.actor?.avatar),
-    [noti.actor?.avatar]
-  );
-  const shopAvatar = useMemo(
-    () => (isShop ? getBackendImgURL(noti.data?.shopAvatar) : null),
-    [isShop, noti.data?.shopAvatar]
-  );
-  const formattedTime = useMemo(
-    () => formatTime(noti.createdAt),
-    [noti.createdAt]
-  );
+const NotificationItem = memo(
+  ({ noti, getLink, isShopNotification, onClose }) => {
+    // ✅ Memoize computed values
+    const link = useMemo(() => getLink(noti), [getLink, noti]);
+    const isShop = useMemo(
+      () => isShopNotification(noti),
+      [isShopNotification, noti]
+    );
+    const actorAvatar = useMemo(
+      () => getBackendImgURL(noti.actor?.avatar),
+      [noti.actor?.avatar]
+    );
+    const shopAvatar = useMemo(
+      () => (isShop ? getBackendImgURL(noti.data?.shopAvatar) : null),
+      [isShop, noti.data?.shopAvatar]
+    );
+    const formattedTime = useMemo(
+      () => formatTime(noti.createdAt),
+      [noti.createdAt]
+    );
 
-  const actorDisplayName = useMemo(() => {
-    switch (noti.type) {
-      case "accepted_order":
-      case "shipping_order":
-      case "shop_cancelled_order":
-        return `${noti.data.shopName}`;
-      default:
-        return noti.actor.fullName;
-    }
-  }, [noti]);
+    const actorDisplayName = useMemo(() => {
+      switch (noti.type) {
+        case "accepted_order":
+        case "shipping_order":
+        case "shop_cancelled_order":
+          return `${noti.data.shopName}`;
+        default:
+          return noti.actor.fullName;
+      }
+    }, [noti]);
 
-  return (
-    <Link
-      to={link}
-      className="flex items-start gap-3 py-3 px-2 last:border-none rounded-xl transition-all duration-300 ease-out transform hover:scale-[1.02] hover:shadow-lg dark:hover:bg-[rgb(56,56,56)]"
-      onClick={onClose}
-    >
-      <div className="rounded-full size-10 relative shadow-sm border border-blue-100">
-        <img
-          src={actorAvatar}
-          alt="avatar"
-          className="size-full rounded-full object-cover"
-          loading="lazy"
-        />
-        {isShop && shopAvatar && (
+    return (
+      <Link
+        to={link}
+        className="flex items-start gap-3 py-3 px-2 last:border-none rounded-xl transition-all duration-300 ease-out transform hover:scale-[1.02] hover:shadow-lg dark:hover:bg-[rgb(56,56,56)]"
+        onClick={onClose}
+      >
+        <div className="rounded-full size-10 relative shadow-sm border border-blue-100">
           <img
-            src={shopAvatar}
-            alt="shop"
-            className="absolute rounded-full -bottom-2 -right-2 size-7 object-cover border border-gray-300"
+            src={actorAvatar}
+            alt="avatar"
+            className="size-full rounded-full object-cover"
             loading="lazy"
           />
-        )}
-      </div>
-      <div className="flex-1">
-        <p className="text-base leading-tight">
-          <span className="dark:text-white font-medium">
-            {actorDisplayName}{" "}
+          {isShop && shopAvatar && (
+            <img
+              src={shopAvatar}
+              alt="shop"
+              className="absolute rounded-full -bottom-2 -right-2 size-7 object-cover border border-gray-300"
+              loading="lazy"
+            />
+          )}
+        </div>
+        <div className="flex-1">
+          <p className="text-base leading-tight">
+            <span className="dark:text-white font-medium">
+              {actorDisplayName}{" "}
+            </span>
+            <span className="dark:text-gray-300 text-gray-800">
+              {noti.content}
+            </span>
+          </p>
+          <span className="text-xs text-gray-500 dark:text-white">
+            {formattedTime}
           </span>
-          <span className="dark:text-gray-300 text-gray-800">
-            {noti.content}
-          </span>
-        </p>
-        <span className="text-xs text-gray-500 dark:text-white">
-          {formattedTime}
-        </span>
-      </div>
-    </Link>
-  );
-});
+        </div>
+      </Link>
+    );
+  }
+);
 
 NotificationItem.displayName = "NotificationItem";
 

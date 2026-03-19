@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import useAuthStore from "../store/authStore.js";
-import PostModal from "./PostModal"; // You must create PostModal.jsx as instructed before
+import PostModal from "./PostModal";
 import { getBackendImgURL } from "../utils/helper.js";
 
 function CreateStatus({ onPostCreated, postedBy, postedByType, postedById }) {

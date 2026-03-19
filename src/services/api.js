@@ -611,6 +611,21 @@ export const userAPI = {
       throw new Error(errorMessage);
     }
   },
+  renameUserProfile: async (newName) => {
+    try {
+      const response = await api.put(`/user/rename-profile`, { fullName: newName });
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+        throw new Error(response.data.message);
+      }
+      return response.data;
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || "Failed to rename user profile";
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
+    }
+  },
 };
 
 //POST API services
@@ -1284,9 +1299,9 @@ export const badgesAPI = {
 };
 
 export const translateAPI = {
-  translateText: async (text, to) => {
+  translateText: async (text, source, to) => {
     try {
-      const response = await api.post("/translate", { text, to });
+      const response = await api.post("/translate", { text, source, to });
 
       if (response.data.success === false) {
         throw new Error(response.data.message);
