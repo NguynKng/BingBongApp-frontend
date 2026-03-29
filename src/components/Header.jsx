@@ -220,7 +220,9 @@ function Header({ onToggleChat }) {
             </div>
 
             {/* Dropdowns */}
-            {dropdown.user && <DropdownUser onClose={() => toggleDropdown("user")} />}
+            {dropdown.user && (
+              <DropdownUser onClose={() => toggleDropdown("user")} />
+            )}
             {dropdown.chat && (
               <DropdownChat
                 onToggleChat={onToggleChat}
@@ -228,9 +230,14 @@ function Header({ onToggleChat }) {
               />
             )}
             {dropdown.notification && (
-              <DropdownNotification notifications={notifications} onClose={() => toggleDropdown("notification")} />
+              <DropdownNotification
+                notifications={notifications}
+                onClose={() => toggleDropdown("notification")}
+              />
             )}
-            {dropdown.cart && <DropdownCart onClose={() => toggleDropdown("cart")} />}
+            {dropdown.cart && (
+              <DropdownCart onClose={() => toggleDropdown("cart")} />
+            )}
             {dropdown.menu && <DropdownMenu />}
           </div>
         </div>
