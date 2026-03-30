@@ -2829,3 +2829,89 @@ export const shortAPI = {
 
 // Export the axios instance for use in other API services
 export default api;
+
+//GAME (RAWG) API services
+export const gameAPI = {
+  getGames: async (params = {}) => {
+    try {
+      const response = await api.get("/games", { params });
+      if (response.data.success === false) throw new Error(response.data.message);
+      return response.data;
+    } catch (error) {
+      const msg = error.response?.data?.message || "Failed to fetch games";
+      throw new Error(msg);
+    }
+  },
+  getTrendingGames: async () => {
+    try {
+      const response = await api.get("/games/trending");
+      if (response.data.success === false) throw new Error(response.data.message);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || "Failed to fetch trending games");
+    }
+  },
+  getGenres: async () => {
+    try {
+      const response = await api.get("/games/genres");
+      if (response.data.success === false) throw new Error(response.data.message);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || "Failed to fetch genres");
+    }
+  },
+  getGameDetail: async (id) => {
+    try {
+      const response = await api.get(`/games/detail/${id}`);
+      if (response.data.success === false) throw new Error(response.data.message);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || "Failed to fetch game detail");
+    }
+  },
+  getGameScreenshots: async (id) => {
+    try {
+      const response = await api.get(`/games/detail/${id}/screenshots`);
+      if (response.data.success === false) throw new Error(response.data.message);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || "Failed to fetch screenshots");
+    }
+  },
+  getSimilarGames: async (id) => {
+    try {
+      const response = await api.get(`/games/detail/${id}/similar`);
+      if (response.data.success === false) throw new Error(response.data.message);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || "Failed to fetch similar games");
+    }
+  },
+  getGamesByGenre: async (genre, params = {}) => {
+    try {
+      const response = await api.get(`/games/genre/${genre}`, { params });
+      if (response.data.success === false) throw new Error(response.data.message);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || "Failed to fetch games by genre");
+    }
+  },
+  searchGames: async (query, page = 1) => {
+    try {
+      const response = await api.get("/games/search", { params: { query, page } });
+      if (response.data.success === false) throw new Error(response.data.message);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || "Failed to search games");
+    }
+  },
+  getUpcomingGames: async (page = 1, page_size = 20) => {
+    try {
+      const response = await api.get("/games/upcoming", { params: { page, page_size } });
+      if (response.data.success === false) throw new Error(response.data.message);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || "Failed to fetch upcoming games");
+    }
+  },
+};

@@ -11,6 +11,15 @@
   scrollbar-width: none; /* Firefox */
 }
 
+/* Utility: hide scrollbar on any element (used in GamePage horizontal scrolls) */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 body {
   overflow-y: scroll;
 }

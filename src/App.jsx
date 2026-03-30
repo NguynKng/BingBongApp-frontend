@@ -52,6 +52,9 @@ const ShortsPage = lazy(() => import("./pages/ShortsPage"));
 const CreateShortPage = lazy(() => import("./pages/CreateShortPage"));
 const MyShortPage = lazy(() => import("./pages/MyShortPage"));
 const DetailShortPage = lazy(() => import("./pages/DetailShortPage"));
+const GamePage = lazy(() => import("./pages/GamePage"));
+const DetailGamePage = lazy(() => import("./pages/DetailGamePage"));
+const GameSearchPage = lazy(() => import("./pages/GameSearchPage"));
 
 // ✅ Wrapper component để tránh lặp lại Suspense
 const LazyPage = ({ Element, Layout = MainLayout }) => (
@@ -361,6 +364,30 @@ function App() {
           element={
             <ProtectedRoute>
               <LazyPage Element={UserBadgePage} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/games"
+          element={
+            <ProtectedRoute>
+              <LazyPage Element={GamePage} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/games/search"
+          element={
+            <ProtectedRoute>
+              <LazyPage Element={GameSearchPage} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/games/:id"
+          element={
+            <ProtectedRoute>
+              <LazyPage Element={DetailGamePage} />
             </ProtectedRoute>
           }
         />

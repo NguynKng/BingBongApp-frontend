@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import {
-    Award,
+  Award,
   Badge,
   ChevronLeft,
   Clapperboard,
@@ -14,6 +14,7 @@ import {
   Store,
   UserRound,
   UsersRound,
+  Gamepad,
 } from "lucide-react";
 import useAuthStore from "../store/authStore";
 import { useGetProfileBySlug } from "../hooks/useProfile";
@@ -35,6 +36,7 @@ function Navbar({ isCloseSidebar, setIsCloseSidebar }) {
       text: "Profile",
       link: `/profile/${user.slug}`,
     },
+    { tab: "games", src: Gamepad, text: "Games", link: "/games" },
     { tab: "quiz", src: Gamepad2, text: "Quiz", link: "/quiz" },
     { tab: "news", src: Newspaper, text: "News", link: "/news" },
     { tab: "friends", src: Handshake, text: "Friends", link: "/friends" },
