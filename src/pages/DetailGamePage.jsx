@@ -20,9 +20,9 @@ import {
 function MetaTag({ label, value }) {
   if (!value) return null;
   return (
-    <div className="flex flex-col gap-1">
-      <span className="text-xs uppercase tracking-wider text-gray-500 dark:text-gray-400 font-semibold">{label}</span>
-      <span className="text-sm font-medium text-gray-800 dark:text-gray-200">{value}</span>
+    <div className="flex flex-col gap-1 min-w-0 w-full">
+      <span className="text-xs uppercase tracking-wider text-gray-500 dark:text-gray-400 font-semibold truncate">{label}</span>
+      <span className="text-sm font-medium text-gray-800 dark:text-gray-200 break-words">{value}</span>
     </div>
   );
 }
@@ -178,17 +178,17 @@ export default function DetailGamePage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-[#0d0d1a] text-gray-900 dark:text-white">
       {/* Hero */}
-      <div className="relative h-[55vh] overflow-hidden">
+      <div className="relative w-full h-[55vh] overflow-hidden">
         <img
           src={game.background_image || "https://placehold.co/1400x600/1a1a2e/7c3aed?text=Game"}
           alt={game.name}
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-contain"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-gray-50 dark:from-[#0d0d1a] via-black/40 to-black/20" />
         <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent" />
 
         {/* Back Button */}
-        <div className="absolute top-4 left-4 z-10">
+        <div className="absolute top-4 left-[5%] z-10">
           <Link
             to="/games"
             id="back-to-games"
@@ -201,7 +201,7 @@ export default function DetailGamePage() {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-5xl mx-auto px-4 -mt-20 relative z-10 pb-16">
+      <div className="max-w-5xl w-full mx-auto px-4 md:px-6 lg:px-8 -mt-20 relative z-10 pb-16">
         {/* Title Section */}
         <div className="mb-8">
           <div className="flex flex-wrap items-center gap-3 mb-3">
@@ -216,49 +216,49 @@ export default function DetailGamePage() {
             ))}
           </div>
 
-          <h1 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-white mb-4 leading-tight">
+          <h1 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-white mb-4 leading-tight break-words">
             {game.name}
           </h1>
 
           {/* Stats Row */}
-          <div className="flex flex-wrap items-center gap-4 text-sm">
-            <div className="flex items-center gap-2 bg-white dark:bg-gray-800/80 px-4 py-2 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm">
-              <Star size={16} className="fill-yellow-400 text-yellow-400" />
+          <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-sm">
+            <div className="flex items-center gap-2 bg-white dark:bg-gray-800/80 px-3 sm:px-4 py-2 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm">
+              <Star size={16} className="fill-yellow-400 text-yellow-400 flex-shrink-0" />
               <span className="font-bold">{game.rating?.toFixed(1)}</span>
               <span className="text-gray-400">/ 5</span>
-              <span className="text-gray-400 text-xs">({game.ratings_count?.toLocaleString()} ratings)</span>
+              <span className="text-gray-400 text-xs hidden sm:inline">({game.ratings_count?.toLocaleString()})</span>
             </div>
             {game.metacritic && (
-              <div className={`flex items-center gap-2 bg-white dark:bg-gray-800/80 px-4 py-2 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm`}>
-                <Trophy size={16} className={ratingColor} />
+              <div className={`flex items-center gap-2 bg-white dark:bg-gray-800/80 px-3 sm:px-4 py-2 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm`}>
+                <Trophy size={16} className={`${ratingColor} flex-shrink-0`} />
                 <span className={`font-bold ${ratingColor}`}>{game.metacritic}</span>
-                <span className="text-gray-400 text-xs">Metacritic</span>
+                <span className="text-gray-400 text-xs hidden sm:inline">MC</span>
               </div>
             )}
             {game.released && (
-              <div className="flex items-center gap-2 bg-white dark:bg-gray-800/80 px-4 py-2 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm">
-                <Calendar size={16} className="text-gray-400" />
-                <span className="font-medium">{new Date(game.released).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })}</span>
+              <div className="flex items-center gap-2 bg-white dark:bg-gray-800/80 px-3 sm:px-4 py-2 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm">
+                <Calendar size={16} className="text-gray-400 flex-shrink-0" />
+                <span className="font-medium text-xs sm:text-sm">{new Date(game.released).toLocaleDateString("en-US", { year: "2-digit", month: "short", day: "numeric" })}</span>
               </div>
             )}
             {game.playtime > 0 && (
-              <div className="flex items-center gap-2 bg-white dark:bg-gray-800/80 px-4 py-2 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm">
-                <Clock size={16} className="text-gray-400" />
-                <span className="font-medium">{game.playtime}h avg playtime</span>
+              <div className="flex items-center gap-2 bg-white dark:bg-gray-800/80 px-3 sm:px-4 py-2 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm">
+                <Clock size={16} className="text-gray-400 flex-shrink-0" />
+                <span className="font-medium text-xs sm:text-sm">{game.playtime}h</span>
               </div>
             )}
             {game.added > 0 && (
-              <div className="flex items-center gap-2 bg-white dark:bg-gray-800/80 px-4 py-2 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm">
-                <Users size={16} className="text-gray-400" />
-                <span className="font-medium">{game.added?.toLocaleString()} players added</span>
+              <div className="flex items-center gap-2 bg-white dark:bg-gray-800/80 px-3 sm:px-4 py-2 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm hidden sm:flex">
+                <Users size={16} className="text-gray-400 flex-shrink-0" />
+                <span className="font-medium text-xs sm:text-sm line-clamp-1">{game.added?.toLocaleString()} added</span>
               </div>
             )}
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 w-full">
           {/* Left: Description & Screenshots */}
-          <div className="lg:col-span-2 space-y-8">
+          <div className="lg:col-span-2 space-y-6 lg:space-y-8 min-w-0">
             {/* Description */}
             {game.description_raw && (
               <div className="bg-white dark:bg-gray-800/60 rounded-2xl p-6 border border-gray-100 dark:border-gray-700/50 shadow-sm">
@@ -266,9 +266,11 @@ export default function DetailGamePage() {
                   <span className="w-1 h-5 bg-violet-500 rounded-full inline-block" />
                   About
                 </h2>
-                <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-sm whitespace-pre-line line-clamp-10">
-                  {game.description_raw}
-                </p>
+                <div className="max-h-80 overflow-y-auto pr-3">
+                  <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-sm whitespace-pre-line break-words">
+                    {game.description_raw}
+                  </p>
+                </div>
               </div>
             )}
 
@@ -333,12 +335,12 @@ export default function DetailGamePage() {
           </div>
 
           {/* Right: Info Panel */}
-          <div className="space-y-4">
+          <div className="space-y-4 lg:sticky lg:top-24 lg:h-fit min-w-0">
             {/* Platforms */}
             {game.platforms && game.platforms.length > 0 && (
               <div className="bg-white dark:bg-gray-800/60 rounded-2xl p-5 border border-gray-100 dark:border-gray-700/50 shadow-sm">
                 <h3 className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">Platforms</h3>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-2 max-h-40 overflow-y-auto pr-2">
                   {game.platforms.map((p) => (
                     <PlatformBadge key={p.platform?.id} platform={p} />
                   ))}
@@ -349,10 +351,12 @@ export default function DetailGamePage() {
             {/* Details */}
             <div className="bg-white dark:bg-gray-800/60 rounded-2xl p-5 border border-gray-100 dark:border-gray-700/50 shadow-sm space-y-4">
               <h3 className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Details</h3>
-              <MetaTag label="Developer" value={game.developers?.map((d) => d.name).join(", ")} />
-              <MetaTag label="Publisher" value={game.publishers?.map((p) => p.name).join(", ")} />
-              <MetaTag label="ESRB Rating" value={game.esrb_rating?.name} />
-              <MetaTag label="Tags" value={game.tags?.slice(0, 5).map((t) => t.name).join(", ")} />
+              <div className="space-y-4 max-h-96 overflow-y-auto pr-2">
+                <MetaTag label="Developer" value={game.developers?.map((d) => d.name).join(", ")} />
+                <MetaTag label="Publisher" value={game.publishers?.map((p) => p.name).join(", ")} />
+                <MetaTag label="ESRB Rating" value={game.esrb_rating?.name} />
+                <MetaTag label="Tags" value={game.tags?.slice(0, 5).map((t) => t.name).join(", ")} />
+              </div>
             </div>
 
             {/* External Links */}
@@ -385,17 +389,17 @@ export default function DetailGamePage() {
             {game.ratings && game.ratings.length > 0 && (
               <div className="bg-white dark:bg-gray-800/60 rounded-2xl p-5 border border-gray-100 dark:border-gray-700/50 shadow-sm">
                 <h3 className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">Player Ratings</h3>
-                <div className="space-y-2">
+                <div className="space-y-2 max-h-48 overflow-y-auto pr-2">
                   {game.ratings.map((r) => (
                     <div key={r.id} className="flex items-center gap-2">
-                      <span className="text-xs w-20 text-gray-600 dark:text-gray-400 capitalize">{r.title}</span>
-                      <div className="flex-1 bg-gray-100 dark:bg-gray-700 rounded-full h-1.5">
+                      <span className="text-xs w-16 sm:w-20 text-gray-600 dark:text-gray-400 capitalize truncate">{r.title}</span>
+                      <div className="flex-1 bg-gray-100 dark:bg-gray-700 rounded-full h-1.5 min-w-0">
                         <div
                           className="h-1.5 rounded-full bg-violet-500 transition-all"
                           style={{ width: `${r.percent}%` }}
                         />
                       </div>
-                      <span className="text-xs text-gray-500 dark:text-gray-400 w-10 text-right">{r.percent?.toFixed(0)}%</span>
+                      <span className="text-xs text-gray-500 dark:text-gray-400 w-8 sm:w-10 text-right flex-shrink-0">{r.percent?.toFixed(0)}%</span>
                     </div>
                   ))}
                 </div>

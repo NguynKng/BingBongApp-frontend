@@ -443,15 +443,34 @@ function HeroSlider({ games }) {
 // ─── Genre Pills ─────────────────────────────────────────────────────────────
 
 function GenreFilter({ genres, selected, onSelect }) {
+  const ref = useRef(null);
+  const scroll = (dir) => ref.current?.scrollBy({ left: dir * 200, behavior: "smooth" });
+
   return (
     <section className="mb-8">
-      <div className="flex items-center gap-3 mb-4">
-        <div className="p-2 rounded-xl bg-gray-100 dark:bg-gray-800 text-violet-500">
-          <Filter size={16} />
+      <div className="flex items-center gap-3 mb-4 justify-between">
+        <div className="flex items-center gap-3">
+          <div className="p-2 rounded-xl bg-gray-100 dark:bg-gray-800 text-violet-500">
+            <Filter size={16} />
+          </div>
+          <h2 className="text-base font-black text-gray-900 dark:text-white">Browse by Genre</h2>
         </div>
-        <h2 className="text-base font-black text-gray-900 dark:text-white">Browse by Genre</h2>
+        <div className="hidden sm:flex gap-1.5">
+          <button
+            onClick={() => scroll(-1)}
+            className="p-1.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-all cursor-pointer text-gray-500 dark:text-gray-400 hover:text-violet-500 dark:hover:text-violet-400"
+          >
+            <ChevronLeft size={15} />
+          </button>
+          <button
+            onClick={() => scroll(1)}
+            className="p-1.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-all cursor-pointer text-gray-500 dark:text-gray-400 hover:text-violet-500 dark:hover:text-violet-400"
+          >
+            <ChevronRight size={15} />
+          </button>
+        </div>
       </div>
-      <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+      <div ref={ref} className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide scroll-smooth">
         <button
           id="genre-all"
           onClick={() => onSelect(null)}
@@ -580,13 +599,10 @@ export default function GamePage() {
   const {
     trending, upcoming, popular, bestRated, genres,
     games, totalCount, sectionLoading,
+    selectedGenre, ordering, currentPage,
     fetchTrendingGames, fetchUpcomingGames, fetchPopularGames,
-    fetchBestRatedGames, fetchGenres, fetchGames, clearGames,
+    fetchBestRatedGames, fetchGenres, fetchGames, clearGames, setFilter,
   } = useGameStore();
-
-  const [selectedGenre, setSelectedGenre] = useState(null);
-  const [ordering, setOrdering] = useState("-rating");
-  const [page, setPage] = useState(1);
 
   // Fetch all sections on mount
   useEffect(() => {
@@ -599,34 +615,43 @@ export default function GamePage() {
 
   // Browse list – refetch when filter/sort changes
   const doFetch = useCallback(
-    (p, append) => {
-      const params = { page: p, page_size: PAGE_SIZE, ordering };
-      if (selectedGenre) params.genres = selectedGenre;
+    (p, append, currentGenre, currentOrdering) => {
+      const params = { page: p, page_size: PAGE_SIZE, ordering: currentOrdering };
+      if (currentGenre) params.genres = currentGenre;
       fetchGames(params, append);
     },
-    [selectedGenre, ordering, fetchGames]
+    [fetchGames]
   );
 
+  const isMounted = useRef(false);
+
   useEffect(() => {
+    if (!isMounted.current) {
+      isMounted.current = true;
+      if (games.length === 0) {
+        doFetch(1, false, selectedGenre, ordering);
+      }
+      return;
+    }
+    
     clearGames();
-    setPage(1);
-    doFetch(1, false);
+    doFetch(1, false, selectedGenre, ordering);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedGenre, ordering]);
 
   const handleLoadMore = useCallback(() => {
-    const next = page + 1;
-    setPage(next);
-    doFetch(next, true);
-  }, [page, doFetch]);
+    const next = currentPage + 1;
+    setFilter({ currentPage: next });
+    doFetch(next, true, selectedGenre, ordering);
+  }, [currentPage, doFetch, selectedGenre, ordering, setFilter]);
 
   const handleGenreSelect = useCallback((slug) => {
-    setSelectedGenre(slug);
-  }, []);
+    setFilter({ selectedGenre: slug });
+  }, [setFilter]);
 
   const handleOrderChange = useCallback((val) => {
-    setOrdering(val);
-  }, []);
+    setFilter({ ordering: val });
+  }, [setFilter]);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-[#0d0d1a] text-gray-900 dark:text-white">
