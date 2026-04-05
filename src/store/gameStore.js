@@ -11,6 +11,8 @@ const useGameStore = create((set, get) => ({
   games: [],
   totalCount: 0,
   currentPage: 1,
+  selectedGenre: null,
+  ordering: "-rating",
   loading: false,
   sectionLoading: {
     trending: false,
@@ -92,6 +94,8 @@ const useGameStore = create((set, get) => ({
   },
 
   // ── Browse / filtered list ──
+  setFilter: (updates) => set((state) => ({ ...state, ...updates })),
+
   fetchGames: async (params = {}, append = false) => {
     set((s) => ({ sectionLoading: { ...s.sectionLoading, games: true } }));
     try {
