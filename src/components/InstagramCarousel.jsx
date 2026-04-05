@@ -1,11 +1,38 @@
-import { memo, useMemo, useState } from "react";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useImagePreview } from "../hooks/useImagePreview";
 import { getBackendImgURL, getBackendVideoURL } from "../utils/helper";
 
 const ImageCarousel = memo(({ media = [], videos = [], mediaOrder = [], postId }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const carouselRef = useRef(null);
   const { openImagePreview, ImagePreviewModal } = useImagePreview();
+
+  useEffect(() => {
+    if (!carouselRef.current) return undefined;
+
+    const pauseAllVideos = () => {
+      carouselRef.current
+        ?.querySelectorAll("video")
+        .forEach((videoEl) => videoEl.pause());
+    };
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) {
+          pauseAllVideos();
+        }
+      },
+      { threshold: 0.15 },
+    );
+
+    observer.observe(carouselRef.current);
+
+    return () => {
+      pauseAllVideos();
+      observer.disconnect();
+    };
+  }, []);
 
   const items = useMemo(
     () => {
@@ -80,7 +107,10 @@ const ImageCarousel = memo(({ media = [], videos = [], mediaOrder = [], postId }
   return (
     <>
       <ImagePreviewModal />
-      <div className="relative w-full overflow-hidden mt-3 border-y-2 border-gray-200 dark:border-gray-500">
+      <div
+        ref={carouselRef}
+        className="relative w-full overflow-hidden mt-3 border-y-2 border-gray-200 dark:border-gray-500"
+      >
         {/* Container chứa tất cả media */}
         <div
           className="flex transition-transform duration-500 ease-in-out"

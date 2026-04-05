@@ -1,10 +1,14 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
 import { FaEnvelope, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import useAuthStore from "../store/authStore";
 import Meta from "../components/Meta";
+
+const inputBase =
+  "w-full px-4 py-3 rounded-lg border border-[#dde1ec] bg-[#fafbff] text-base text-gray-700 placeholder-gray-400 outline-none transition focus:border-[#5c6bc0] focus:ring-2 focus:ring-[#5c6bc0]/20";
+
+const labelBase = "block text-sm font-semibold text-[#6b7a9d] mb-1.5 uppercase tracking-wider";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -30,160 +34,109 @@ export default function LoginPage() {
   return (
     <>
       <Meta title="Login" />
-      <motion.div
-        initial={{ opacity: 0, x: -50 }}
-        animate={{ opacity: 1, x: 0 }}
-        exit={{ opacity: 0, x: 50 }}
-        transition={{ duration: 0.4 }}
-        className="w-full px-8 py-4 relative"
-      >
-        <h2 className="text-3xl font-extrabold text-blue-800 text-center mb-8 tracking-wide drop-shadow">
-          Login
-        </h2>
 
-        <form
-          onSubmit={handleSubmit}
-          className="grid grid-cols-2 gap-x-6 gap-y-4"
-        >
+      <div className="w-full">
+        <h2 className="text-3xl font-bold text-[#3b4a6b] mb-1">Welcome back</h2>
+        <p className="text-base text-[#9aa3c2] mb-7">Sign in to your BingBong account</p>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
           {/* Email */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.05 }}
-            className="col-span-2"
-          >
-            <label className="flex items-center font-semibold text-gray-700 mb-2 text-lg tracking-wide">
-              <FaEnvelope className="mr-2 text-blue-500" />
-              Email
-            </label>
+          <div>
+            <label className={labelBase}>Email</label>
             <div className="relative">
+              <FaEnvelope className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9aa3c2] text-sm" />
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full px-4 py-2 rounded-lg transition-all duration-300 bg-white text-base shadow-sm focus:border-blue-400 focus:ring-2 focus:ring-blue-200 placeholder-gray-400"
-                placeholder="Enter your email"
+                className={inputBase + " pl-9"}
+                placeholder="you@example.com"
               />
             </div>
-          </motion.div>
+          </div>
 
           {/* Password */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="col-span-2"
-          >
-            <label className="flex items-center font-semibold text-gray-700 mb-2 text-lg tracking-wide">
-              <FaLock className="mr-2 text-blue-500" />
-              Password
-            </label>
+          <div>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className={labelBase} style={{ marginBottom: 0 }}>Password</label>
+              <Link
+                to="/forgot-password"
+                className="text-xs text-[#5c6bc0] hover:underline"
+              >
+                Forgot password?
+              </Link>
+            </div>
             <div className="relative">
+              <FaLock className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9aa3c2] text-sm" />
               <input
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full px-4 py-2 rounded-lg transition-all duration-300 bg-white text-base shadow-sm focus:border-blue-400 focus:ring-2 focus:ring-blue-200 placeholder-gray-400"
-                placeholder="Enter your password"
+                className={inputBase + " pl-9 pr-10"}
+                placeholder="••••••••"
               />
               <span
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer text-lg"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9aa3c2] cursor-pointer hover:text-[#5c6bc0] transition"
                 onClick={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
               </span>
             </div>
-            {/* Forgot password */}
-            <div className="mt-2 text-right">
-              <Link
-                to="/forgot-password"
-                className="text-sm text-blue-500 hover:underline"
-              >
-                Forgot password?
-              </Link>
-            </div>
-          </motion.div>
+          </div>
 
-          {/* Login button */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.15 }}
-            className="col-span-2"
+          {/* Submit */}
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full py-3 rounded-lg bg-[#5c6bc0] hover:bg-[#4a58a8] text-white text-base font-semibold transition disabled:opacity-50 cursor-pointer mt-2"
           >
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="cursor-pointer w-full py-3 bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white font-bold rounded-lg shadow-lg transition-all duration-300 disabled:opacity-60 text-lg tracking-wide"
-            >
-              {isLoading ? "Processing..." : "Login"}
-            </button>
-          </motion.div>
+            {isLoading ? "Signing in…" : "Sign in"}
+          </button>
         </form>
 
-        {/* Separator */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="flex items-center my-6"
-        >
-          <div className="flex-grow border-t border-gray-300"></div>
-          <span className="mx-4 text-gray-500">Or</span>
-          <div className="flex-grow border-t border-gray-300"></div>
-        </motion.div>
+        {/* Divider */}
+        <div className="flex items-center gap-3 my-5">
+          <div className="flex-1 h-px bg-[#eaecf4]" />
+          <span className="text-sm text-[#b0b8d1]">or continue with</span>
+          <div className="flex-1 h-px bg-[#eaecf4]" />
+        </div>
 
-        {/* Login with Google and GitHub */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.25 }}
-          className="flex flex-col gap-4"
-        >
+        {/* Social */}
+        <div className="flex gap-3">
           <button
             onClick={handleGoogleLogin}
-            className="flex items-center justify-center gap-2 w-full py-3 bg-white hover:bg-gray-100 text-gray-700 font-semibold rounded-lg shadow-md transition-all duration-300 border border-gray-300"
+            className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg border border-[#dde1ec] bg-white hover:bg-[#f5f6fa] text-base text-gray-600 font-medium transition cursor-pointer"
           >
             <img
               src="https://developers.google.com/identity/images/g-logo.png"
-              alt="Google Logo"
+              alt="Google"
               className="w-5 h-5"
             />
-            Login with Google
+            Google
           </button>
           <button
             onClick={handleGithubLogin}
-            className="flex items-center justify-center gap-2 w-full py-3 bg-gray-500 hover:bg-gray-600 text-white font-semibold rounded-lg shadow-md transition-all duration-300"
+            className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg border border-[#dde1ec] bg-white hover:bg-[#f5f6fa] text-base text-gray-600 font-medium transition cursor-pointer"
           >
             <img
               src="https://cdn-icons-png.flaticon.com/512/25/25231.png"
-              alt="GitHub Logo"
+              alt="GitHub"
               className="w-5 h-5"
             />
-            Login with GitHub
+            GitHub
           </button>
-        </motion.div>
+        </div>
 
-        {/* Register link */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="mt-8 text-center"
-        >
-          <p className="text-gray-600 text-base">
-            Don’t have an account?{" "}
-            <Link
-              to="/register"
-              className="ml-2 text-blue-700 hover:underline font-semibold cursor-pointer text-base"
-            >
-              Register
-            </Link>
-          </p>
-        </motion.div>
-      </motion.div>
+        {/* Mobile register link */}
+        <p className="mt-6 text-center text-base text-[#9aa3c2] md:hidden">
+          New to BingBong?{" "}
+          <Link to="/register" className="text-[#5c6bc0] font-semibold hover:underline">
+            Create account
+          </Link>
+        </p>
+      </div>
     </>
   );
 }
